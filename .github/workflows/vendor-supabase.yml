@@ -1,0 +1,57 @@
+name: Vendor Supabase browser SDK
+
+on:
+  push:
+    paths:
+      - .github/workflows/vendor-supabase.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download exact SDK from npm
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf package supabase-supabase-js-*.tgz
+          PACKAGE_TGZ="$(npm pack --silent @supabase/supabase-js@2.45.3)"
+          tar -xzf "$PACKAGE_TGZ"
+          mkdir -p vendor
+          cp package/dist/umd/supabase.js vendor/supabase-2.45.3.js
+          test -s vendor/supabase-2.45.3.js
+          grep -q "supabase" vendor/supabase-2.45.3.js
+          rm -rf package "$PACKAGE_TGZ"
+
+      - name: Replace blocking external CDN script
+        shell: python
+        run: |
+          from pathlib import Path
+
+          external = '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>'
+          local = '<script src="./vendor/supabase-2.45.3.js"></script>'
+
+          for filename in ('index.html', 'app-v13.html'):
+              path = Path(filename)
+              text = path.read_text(encoding='utf-8')
+              if external not in text and local not in text:
+                  raise SystemExit(f'Expected Supabase script tag not found in {filename}')
+              path.write_text(text.replace(external, local), encoding='utf-8')
+
+      - name: Commit vendored runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add vendor/supabase-2.45.3.js index.html app-v13.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Self-host Supabase SDK for deterministic startup"
+          git push
