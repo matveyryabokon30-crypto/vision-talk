@@ -26,7 +26,7 @@ html,body{margin:0;min-height:100%;background:#070707}
 <script>
 (()=>{
   'use strict';
-  const BUILD='media-v19';
+  const BUILD='media-v19-8925362';
   const status=document.getElementById('bootText');
   const retry=document.getElementById('bootRetry');
 
@@ -129,6 +129,7 @@ html,body{margin:0;min-height:100%;background:#070707}
 
       await runFile(`./runtime-hotfix-v18.js?v=${BUILD}`);
       await runFile(`./media-transport-v17.js?v=${BUILD}`);
+      await runFile(`./build-label-v19.js?v=${BUILD}`);
     }catch(error){
       console.error('Vision Talk boot failed',error);
       document.body.innerHTML='<div class="loader"><div class="loaderCard"><div class="loaderBrand">VISION TALK</div><div class="loaderTitle">Не удалось запустить</div><div class="loaderText" id="bootText"></div><button class="loaderRetry visible" id="bootRetry">Повторить</button></div></div>';
