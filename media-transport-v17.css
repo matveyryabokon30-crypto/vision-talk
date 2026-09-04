@@ -1,0 +1,35 @@
+/* Vision Talk — private media transport, v17 */
+.attachmentSheet{grid-template-rows:auto minmax(0,1fr) auto auto}
+.attachmentSendDock{display:none;padding:7px 9px;border-top:1px solid #2a2a2a;background:#171717}
+.attachmentSendDock.visible{display:block}
+.attachmentSendButton{width:100%;min-height:44px;border:0;border-radius:13px;background:#a8ffbd;color:#101010;font:inherit;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px}
+.attachmentSendButton:disabled{opacity:.55}
+.attachmentSendButton .sendSize{font-size:12px;font-weight:600;opacity:.66}
+.mediaThumb.isRemovable:active:after{content:"Убрать";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:800}
+
+.row.mediaMessage .bubble{padding:0;overflow:hidden;background:#202020;border:1px solid #303030;min-width:190px;max-width:min(82vw,340px)}
+.row.mediaMessage.mine .bubble{background:#f1f1f1;border-color:#f1f1f1;color:#111}
+.mediaFrame{position:relative;display:block;min-width:190px;background:#111}
+.mediaFrame img,.mediaFrame video{display:block;width:100%;max-height:390px;object-fit:contain;background:#050505}
+.mediaLoading{min-height:190px;display:flex;align-items:center;justify-content:center;color:#999;font-size:14px;background:#141414}
+.mediaCaption{padding:9px 11px 0;font-size:16px;line-height:1.25;white-space:pre-wrap;overflow-wrap:anywhere}
+.mediaFooter{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 10px 9px;color:#888;font-size:11px}
+.row.mediaMessage.mine .mediaFooter{color:#777}
+.mediaFooter .seq{display:inline;margin:0;color:inherit;font-size:11px}
+.mediaName{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.documentCard{display:grid;grid-template-columns:48px minmax(0,1fr);align-items:center;gap:10px;min-width:250px;padding:12px;text-decoration:none;color:inherit}
+.documentIcon{width:48px;height:48px;border-radius:14px;background:#303030;display:flex;align-items:center;justify-content:center;color:#a8ffbd}
+.row.mediaMessage.mine .documentIcon{background:#dedede;color:#111}
+.documentIcon svg{width:26px;height:26px}
+.documentTitle{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.documentMeta{margin-top:4px;color:#888;font-size:12px}
+.mediaError{padding:18px 14px;color:#ffb3b3;font-size:13px;text-align:center}
+.mediaRetry{margin-top:8px;border:1px solid #555;border-radius:10px;background:#242424;color:#fff;padding:8px 13px;font-weight:700}
+.mediaPendingPreview{position:relative;min-height:170px;background:#141414;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.mediaPendingPreview img,.mediaPendingPreview video{display:block;width:100%;max-height:320px;object-fit:contain;background:#050505;opacity:.62}
+.mediaPendingDocument{min-height:86px;padding:12px;display:grid;grid-template-columns:48px minmax(0,1fr);align-items:center;gap:10px}
+.mediaProgressOverlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;background:rgba(0,0,0,.34);color:#fff;font-size:12px;font-weight:700;text-align:center;padding:12px}
+.mediaProgressSpinner{width:28px;height:28px;border:3px solid rgba(255,255,255,.34);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+.mediaPendingStatus{padding:8px 10px;color:#888;font-size:11px}
+.mediaOpenButton{position:absolute;inset:0;border:0;background:transparent;color:transparent}
+@media(max-width:380px){.row.mediaMessage .bubble{max-width:86vw}.documentCard{min-width:230px}.mediaFrame img,.mediaFrame video{max-height:340px}}
