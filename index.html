@@ -9,7 +9,7 @@
 <body><div class="boot"><div class="brand">VISION TALK</div><div class="title">Загрузка…</div></div>
 <script>
 (async()=>{
-  const version='gallery-v15';
+  const version='gallery-v15-d0944fd';
   const response=await fetch('./app-v13.html?base=022cfe2',{cache:'no-store'});
   if(!response.ok)throw new Error('base '+response.status);
   let html=await response.text();
