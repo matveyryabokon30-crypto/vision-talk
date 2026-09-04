@@ -9,12 +9,12 @@
 <body><div class="boot"><div class="brand">VISION TALK</div><div class="title">Загрузка…</div></div>
 <script>
 (async()=>{
-  const version='gallery-v15-d0944fd';
+  const version='documents-v16-e514482';
   const response=await fetch('./app-v13.html?base=022cfe2',{cache:'no-store'});
   if(!response.ok)throw new Error('base '+response.status);
   let html=await response.text();
   html=html.replace('</head>',`<link rel="stylesheet" href="./attachments-v14.css?v=${version}"></head>`);
-  html=html.replace('</body>','<scr'+'ipt src="./attachments-v14.js?v='+version+'"></scr'+'ipt></body>');
+  html=html.replace('</body>','<scr'+'ipt src="./attachments-v14.js?v='+version+'"></scr'+'ipt><scr'+'ipt src="./documents-v16.js?v='+version+'"></scr'+'ipt></body>');
   document.open();document.write(html);document.close();
 })().catch(error=>{document.body.innerHTML=`<div class="boot"><div class="brand">VISION TALK</div><div class="title">Ошибка загрузки</div><p>${String(error.message||error)}</p></div>`});
 </script></body></html>
