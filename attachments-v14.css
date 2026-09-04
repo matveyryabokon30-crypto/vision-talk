@@ -1,4 +1,4 @@
-/* Vision Talk — Telegram-first attachment hub, v14 */
+/* Vision Talk — Telegram gallery geometry, v15 */
 .attachmentBackdrop{position:absolute;inset:0;background:rgba(0,0,0,.58);z-index:30;display:flex;align-items:flex-end;animation:vtFadeIn .16s ease-out}
 @keyframes vtFadeIn{from{opacity:0}to{opacity:1}}
 .attachmentSheet{width:100%;height:min(78%,680px);min-height:430px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:#171717;border-radius:24px 24px 0 0;overflow:hidden;box-shadow:0 -16px 45px rgba(0,0,0,.5);animation:vtSheetUp .2s ease-out}
@@ -9,29 +9,78 @@
 .sheetTitle{text-align:center;font-size:18px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sheetSubtitle{display:block;margin-top:2px;color:#8d8d8d;font-size:11px;font-weight:500}
 .sheetSpacer{width:40px;height:40px}
-.attachmentBody{min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px;background:#111}
-.galleryLead{display:grid;grid-template-columns:minmax(112px,1.05fr) minmax(0,2fr);gap:6px;margin-bottom:6px}
-.cameraTile{position:relative;min-height:226px;border:0;border-radius:16px;overflow:hidden;background:linear-gradient(145deg,#343434,#191919);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px}
-.cameraTile:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 35% 25%,rgba(168,255,189,.18),transparent 40%)}
-.cameraTile svg,.cameraTile span{position:relative}.cameraTile svg{width:38px;height:38px}.cameraTile span{font-size:13px;font-weight:700}
-.gallerySide{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:110px;gap:6px}
-.galleryOpen,.mediaThumb,.galleryPlaceholder{position:relative;border:0;border-radius:14px;overflow:hidden;background:#242424;color:#fff;min-width:0}
-.galleryOpen{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:9px;background:linear-gradient(135deg,#26342b,#202020);font-weight:800}
-.galleryOpen svg{width:28px;height:28px;color:#a8ffbd}
-.galleryPlaceholder{background:linear-gradient(135deg,#282828,#1c1c1c)}
-.galleryPlaceholder:after{content:"";position:absolute;inset:12px;border:1px solid #353535;border-radius:10px}
-.mediaThumb img,.mediaThumb video{width:100%;height:100%;object-fit:cover;display:block}
-.mediaType{position:absolute;left:6px;bottom:6px;padding:3px 6px;border-radius:7px;background:rgba(0,0,0,.68);font-size:10px;font-weight:700}
+
+/* Exact Telegram-style gallery geometry:
+   three equal square columns; camera = exactly two squares high. */
+.attachmentBody{min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0;background:rgba(255,255,255,.88)}
+.galleryLead{
+  --gallery-cell:calc((min(100vw,760px) - 2px)/3);
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-auto-flow:row;
+  grid-auto-rows:var(--gallery-cell);
+  gap:1px;
+  margin:0;
+  padding:0;
+  background:rgba(255,255,255,.88)
+}
+.gallerySide{display:contents}
+.cameraTile,.galleryOpen,.mediaThumb,.galleryPlaceholder{
+  position:relative;
+  min-width:0;
+  min-height:0;
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  overflow:hidden;
+  color:#fff;
+  -webkit-tap-highlight-color:transparent
+}
+.cameraTile{
+  grid-row:span 2;
+  order:0;
+  background:linear-gradient(145deg,#333,#171717);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px
+}
+.cameraTile:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 35% 25%,rgba(168,255,189,.13),transparent 42%)}
+.cameraTile svg,.cameraTile span{position:relative}
+.cameraTile svg{width:35px;height:35px}
+.cameraTile span{font-size:13px;font-weight:700}
+.mediaThumb{order:1;background:#202020}
+.galleryPlaceholder{order:2;background:#171717}
+.galleryPlaceholder:after{content:"+";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#4d4d4d;font-size:25px;font-weight:300}
+.galleryOpen{
+  order:3;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:5px;
+  background:#202820;
+  font-size:11px;
+  font-weight:700
+}
+.galleryOpen svg{width:25px;height:25px;color:#a8ffbd}
+.mediaThumb img,.mediaThumb video{width:100%;height:100%;object-fit:cover;display:block;border-radius:0}
+.mediaType{position:absolute;left:0;bottom:0;padding:3px 5px;border-radius:0;background:rgba(0,0,0,.7);font-size:9px;font-weight:700}
 .mediaCheck{position:absolute;right:6px;top:6px;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#a8ffbd;color:#111;font-size:14px;font-weight:900;border:2px solid #fff}
-.attachmentHint{padding:8px 4px 2px;color:#818181;font-size:12px;line-height:1.35}
+.attachmentHint{display:none}
+
 .attachmentNav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;padding:7px 4px max(7px,env(safe-area-inset-bottom));border-top:1px solid #2a2a2a;background:#1b1b1b}
 .attachmentTab{min-width:0;height:66px;border:0;border-radius:15px;background:transparent;color:#aaa;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:9px;white-space:nowrap;overflow:hidden}
 .attachmentTab svg{width:23px;height:23px}.attachmentTab.active{background:#303030;color:#a8ffbd}
-.attachmentPanel{min-height:100%;display:flex;flex-direction:column;gap:9px}
+.attachmentPanel{min-height:100%;display:flex;flex-direction:column;gap:9px;padding:10px;background:#111}
 .panelHero{min-height:220px;border:0;border-radius:18px;background:linear-gradient(150deg,#292929,#171717);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;color:#fff}
 .panelHero svg{width:48px;height:48px;color:#a8ffbd;margin-bottom:12px}.panelHero h3{margin:0 0 6px;font-size:20px}.panelHero p{margin:0;color:#929292;line-height:1.35;font-size:14px}
 .panelAction{width:100%;min-height:64px;border:0;border-radius:16px;background:#242424;color:#fff;padding:12px 14px;display:grid;grid-template-columns:42px minmax(0,1fr);align-items:center;gap:10px;text-align:left}
 .panelAction:active{background:#303030}.panelAction svg{width:26px;height:26px;color:#a8ffbd}.panelAction strong{display:block;font-size:16px}.panelAction small{display:block;color:#898989;margin-top:3px;font-size:12px}
 .selectedFiles{display:flex;flex-direction:column;gap:7px}.selectedFile{display:grid;grid-template-columns:42px minmax(0,1fr);align-items:center;gap:10px;padding:10px;border-radius:14px;background:#232323}
 .selectedFileIcon{width:42px;height:42px;border-radius:12px;background:#303030;display:flex;align-items:center;justify-content:center;color:#a8ffbd}.selectedFileIcon svg{width:23px;height:23px}.selectedFileName{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.selectedFileMeta{color:#858585;font-size:11px;margin-top:3px}
-@media(max-width:380px){.attachmentTab{font-size:8px}.attachmentSheet{height:80%}.galleryLead{grid-template-columns:104px minmax(0,1fr)}}
+@media(max-width:380px){.attachmentTab{font-size:8px}.attachmentSheet{height:80%}}
