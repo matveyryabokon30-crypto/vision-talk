@@ -14,7 +14,7 @@
    three equal square columns; camera = exactly two squares high. */
 .attachmentBody{min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0;background:rgba(255,255,255,.88)}
 .galleryLead{
-  --gallery-cell:calc((min(100vw,760px) - 2px)/3);
+  --gallery-cell:min(calc(33.333333vw - .6667px),252.6667px);
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
   grid-auto-flow:row;
