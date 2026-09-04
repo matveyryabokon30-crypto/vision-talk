@@ -2,13 +2,14 @@
 (()=>{
 'use strict';
 const VERSION='documents-v16';
+const versionText='Vision Talk · '+VERSION;
 const fileIcon=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg>`;
 
 function updateVersion(){
   const presence=document.querySelector('.chatPresence');
-  if(presence)presence.textContent='Vision Talk · '+VERSION;
+  if(presence&&presence.textContent!==versionText)presence.textContent=versionText;
   document.querySelectorAll('.small').forEach(el=>{
-    if(el.textContent.includes('Vision talk'))el.textContent='Vision talk · '+VERSION;
+    if(el.textContent.includes('Vision talk')&&el.textContent!==versionText)el.textContent=versionText;
   });
 }
 
@@ -33,13 +34,12 @@ function patchHub(hub){
   hub.dataset.documentsV16='1';
 
   const nav=hub.querySelector('.attachmentNav');
-  const fileTab=hub.querySelector('.attachmentTab[data-tab="file"]');
-  fileTab?.remove();
+  hub.querySelector('.attachmentTab[data-tab="file"]')?.remove();
   if(nav)nav.style.gridTemplateColumns='repeat(5,minmax(0,1fr))';
 
   const documentTab=hub.querySelector('.attachmentTab[data-tab="document"]');
   const label=documentTab?.querySelector('span');
-  if(label)label.textContent='Документы';
+  if(label&&label.textContent!=='Документы')label.textContent='Документы';
 
   const body=hub.querySelector('#attachmentBodyV14');
   if(body){
