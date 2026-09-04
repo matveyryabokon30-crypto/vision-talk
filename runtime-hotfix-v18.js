@@ -2,11 +2,9 @@
 (()=>{
 'use strict';
 
-const VERSION='media-v18';
-
-// media-v17 observes child-list changes. Its status-label write used to create
-// another child-list change on every observer pass, preventing the browser
-// from painting the opened chat. Make that write idempotent.
+// media-v17 watches child-list mutations. Its status-label write used to
+// produce the same mutation again and could keep Safari inside a repaint loop.
+// Ignore only identical writes to that exact status node.
 if(!Element.prototype.__visionTalkReplaceChildrenV18){
   const nativeReplaceChildren=Element.prototype.replaceChildren;
   Object.defineProperty(Element.prototype,'__visionTalkReplaceChildrenV18',{
@@ -49,7 +47,7 @@ async function navigateToDialog(card){
   }
 }
 
-// Stable delegated handler: it survives every realtime redraw of the list.
+// Delegation survives every realtime replacement of the dialog card.
 document.addEventListener('click',event=>{
   const card=event.target.closest?.('.dialog[data-id]');
   if(!card)return;
@@ -57,22 +55,4 @@ document.addEventListener('click',event=>{
   event.stopImmediatePropagation();
   navigateToDialog(card);
 },true);
-
-function markVersion(){
-  const presence=document.querySelector('.chatPresence');
-  const text=`Vision Talk · ${VERSION}`;
-  if(presence&&presence.textContent!==text)presence.textContent=text;
-  document.querySelectorAll('.small').forEach(node=>{
-    if(node.textContent.includes('Vision talk')&&node.textContent!==`Vision talk · ${VERSION}`){
-      node.textContent=`Vision talk · ${VERSION}`;
-    }
-  });
-}
-
-const root=document.getElementById('root');
-if(root){
-  const observer=new MutationObserver(markVersion);
-  observer.observe(root,{childList:true,subtree:true});
-}
-setTimeout(markVersion,0);
 })();
