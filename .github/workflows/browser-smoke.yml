@@ -1,0 +1,59 @@
+name: Browser startup smoke test
+
+on:
+  push:
+    paths:
+      - index.html
+      - app-v13.html
+      - vendor/supabase-2.45.3.js
+      - .github/workflows/browser-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify local-only startup dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s vendor/supabase-2.45.3.js
+          grep -q './vendor/supabase-2.45.3.js' index.html
+          ! grep -q 'cdn.jsdelivr.net/npm/@supabase/supabase-js' index.html
+
+      - name: Launch static server
+        shell: bash
+        run: |
+          python3 -m http.server 8080 >/tmp/vision-talk-server.log 2>&1 &
+          echo $! >/tmp/vision-talk-server.pid
+          for attempt in $(seq 1 20); do
+            curl -fsS http://127.0.0.1:8080/ >/dev/null && exit 0
+            sleep 0.5
+          done
+          cat /tmp/vision-talk-server.log
+          exit 1
+
+      - name: Render in headless Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          test -n "$CHROME"
+          timeout 45 "$CHROME" \
+            --headless=new \
+            --disable-gpu \
+            --no-sandbox \
+            --disable-dev-shm-usage \
+            --virtual-time-budget=12000 \
+            --dump-dom \
+            'http://127.0.0.1:8080/?smoke=1' > /tmp/vision-talk-dom.html
+          test -s /tmp/vision-talk-dom.html
+          grep -q 'VISION TALK' /tmp/vision-talk-dom.html
+          grep -Eq 'Вход|Диалоги' /tmp/vision-talk-dom.html
+          ! grep -q '<body></body>' /tmp/vision-talk-dom.html
