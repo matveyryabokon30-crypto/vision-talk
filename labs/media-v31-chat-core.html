@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Vision Talk — media v31</title>
+<style>
+:root{color-scheme:dark;background:#070707;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif}html,body{margin:0;height:100%;overflow:hidden;background:#070707}#app{position:fixed;inset:0;width:100%;height:100%;border:0;background:#070707}.boot{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#070707;color:#aaa;font-size:17px;z-index:5}.boot.hide{display:none}
+</style>
+</head>
+<body>
+<div id="boot" class="boot">Запуск media-v31…</div>
+<iframe id="app" src="../?v=8dde48f-media-v29-v31-core"></iframe>
+<script>
+const frame=document.getElementById('app');
+const boot=document.getElementById('boot');
+function inject(){
+  const doc=frame.contentDocument;
+  if(!doc?.body)return;
+  if(doc.querySelector('script[data-media-v31]')){boot.classList.add('hide');return}
+  const script=doc.createElement('script');
+  script.src=new URL('./media-v31-patch.js?v=9085828',location.href).href;
+  script.dataset.mediaV31='1';
+  script.onload=()=>boot.classList.add('hide');
+  script.onerror=()=>{boot.textContent='Не удалось загрузить patch media-v31'};
+  doc.body.appendChild(script);
+}
+frame.addEventListener('load',()=>setTimeout(inject,0));
+setInterval(()=>{try{inject()}catch{}},700);
+</script>
+</body>
+</html>
