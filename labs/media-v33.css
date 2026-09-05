@@ -1,0 +1,38 @@
+/* Vision Talk media-v33: compact media, atomic chat reveal, native video fullscreen */
+:root{--v33-video-w:min(46vw,184px);--v33-video-h:min(42vh,304px);--v33-image-w:min(68vw,270px)}
+
+/* The first flex item consumes unused space, so a short history is anchored to the composer. */
+.history-loader{margin-top:auto!important;height:0!important;min-height:0!important;padding:0!important;overflow:hidden!important}
+
+/* Do not show an intermediate scroll position while the initial page is assembled. */
+.chat-screen.v33-opening .messages{visibility:hidden!important;pointer-events:none!important}
+.chat-screen.v33-opening .message-loader{opacity:1!important;pointer-events:auto!important}
+.chat-screen.v33-ready .message-loader{opacity:0!important;pointer-events:none!important}
+.messages{scroll-behavior:auto!important;overflow-anchor:none!important}
+
+/* Telegram-like compact bubbles instead of almost full-screen portrait cards. */
+.media-bubble{width:auto!important;min-width:0!important;max-width:var(--v33-image-w)!important;border-radius:18px!important}
+.media-card{width:var(--v33-image-w)!important;max-width:var(--v33-image-w)!important;border-radius:18px!important}
+.media-card.video{width:var(--v33-video-w)!important;height:var(--v33-video-h)!important;max-width:var(--v33-video-w)!important;max-height:var(--v33-video-h)!important;aspect-ratio:auto!important}
+.media-card.video.landscape{width:min(72vw,282px)!important;height:min(34vw,158px)!important;max-width:min(72vw,282px)!important;max-height:min(34vw,158px)!important}
+.media-card.image{max-height:min(46vh,360px)!important}
+.media-poster,.media-full,.media-video{border-radius:18px!important}
+.media-card.video .media-video{object-fit:cover!important}
+.media-badge{top:6px!important;right:6px!important;font-size:9px!important;padding:2px 6px!important}
+.media-meta{right:6px!important;bottom:6px!important;font-size:9px!important}
+
+/* Compact local upload card with a centered radial indicator. */
+.upload-card{width:var(--v33-video-w)!important;height:var(--v33-video-h)!important;max-width:var(--v33-video-w)!important;max-height:var(--v33-video-h)!important;aspect-ratio:auto!important;border-radius:18px!important}
+.upload-card.image{width:var(--v33-image-w)!important;height:min(44vh,340px)!important;max-width:var(--v33-image-w)!important;aspect-ratio:auto!important}
+.upload-card img,.upload-card video{border-radius:18px!important}
+.upload-overlay{border-radius:18px!important;gap:7px!important}
+.progress-ring{position:relative!important;width:44px!important;height:44px!important}
+.progress-ring:after{width:34px!important;height:34px!important}
+.progress-text{position:absolute!important;inset:0!important;z-index:2!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:9px!important;color:#fff!important}
+
+/* Native fullscreen handles video; suppress the old custom-video viewer flash. */
+.viewer.v33-suppressed{display:none!important}
+
+@media(max-width:390px){
+  :root{--v33-video-w:min(45vw,176px);--v33-video-h:min(40vh,292px);--v33-image-w:min(70vw,264px)}
+}
