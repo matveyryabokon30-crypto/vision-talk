@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Vision Talk — media v30</title>
+<style>
+:root{color-scheme:dark;background:#070707;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif}html,body{margin:0;height:100%;overflow:hidden;background:#070707}#app{position:fixed;inset:0;width:100%;height:100%;border:0;background:#070707}.viewer{position:fixed;inset:0;z-index:9999;background:#000;display:grid;grid-template-rows:54px minmax(0,1fr);touch-action:none}.bar{display:flex;align-items:center;gap:10px;padding:7px 10px;background:rgba(0,0,0,.86);border-bottom:1px solid #222}.back{width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:#fff;font-size:34px;line-height:1}.title{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:15px;color:#fff}.body{min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#000;transform:translateY(var(--dy,0px));transition:transform .14s ease}.body video{width:100%;height:100%;object-fit:contain;background:#000}.hint{position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top));transform:translateX(-50%);z-index:10000;background:#174d29;color:#fff;border-radius:14px;padding:8px 12px;font-size:13px;text-align:center;max-width:calc(100vw - 24px)}
+</style>
+</head>
+<body>
+<iframe id="app" src="../?v=8dde48f-media-v29-v30-overlay"></iframe>
+<script>
+const frame=document.getElementById('app');
+let attached=false, lastChatRoot=null, lastScrollBox=null, scrollLockUntil=0;
+function toast(t){let e=document.getElementById('hint');if(!e){e=document.createElement('div');e.id='hint';e.className='hint';document.body.appendChild(e)}e.textContent=t;clearTimeout(toast.t);toast.t=setTimeout(()=>e.remove(),1400)}
+function doc(){try{return frame.contentDocument}catch{return null}}
+function win(){try{return frame.contentWindow}catch{return null}}
+function pauseInnerVideos(){const d=doc();if(!d)return;d.querySelectorAll('video').forEach(v=>{try{v.pause()}catch{}})}
+function resumePreview(){const d=doc();if(!d)return;const videos=[...d.querySelectorAll('.mediaFrame video, .videoFrame video')];videos.forEach((v,i)=>{try{if(i===videos.length-1){v.muted=true;v.loop=true;v.playsInline=true;v.play().catch(()=>{})}else v.pause()}catch{}})}
+function forceBottom(ms=900){scrollLockUntil=Date.now()+ms;const tick=()=>{const d=doc();const box=d?.getElementById('messages')||d?.querySelector('.messages');if(box){box.scrollTop=box.scrollHeight;lastScrollBox=box}if(Date.now()<scrollLockUntil)requestAnimationFrame(tick)};requestAnimationFrame(tick)}
+function openVideo(url,name='Видео'){if(!url)return;pauseInnerVideos();document.getElementById('viewer')?.remove();const viewer=document.createElement('div');viewer.id='viewer';viewer.className='viewer';viewer.innerHTML=`<div class="bar"><button class="back" id="close">‹</button><div class="title"></div></div><div class="body" id="body"><video id="video" src="" autoplay playsinline loop></video></div>`;viewer.querySelector('.title').textContent=name;viewer.querySelector('video').src=url;document.body.appendChild(viewer);const video=viewer.querySelector('video');video.play().catch(()=>{video.muted=true;video.play().catch(()=>{})});const close=()=>{viewer.remove();resumePreview()};viewer.querySelector('#close').onclick=close;video.onclick=()=>video.paused?video.play().catch(()=>{}):video.pause();let sy=0,dy=0;viewer.addEventListener('pointerdown',e=>{sy=e.clientY;dy=0;try{viewer.setPointerCapture(e.pointerId)}catch{}});viewer.addEventListener('pointermove',e=>{dy=Math.max(0,e.clientY-sy);viewer.querySelector('#body').style.setProperty('--dy',dy+'px')});viewer.addEventListener('pointerup',()=>{if(dy>95)close();else viewer.querySelector('#body')?.style.setProperty('--dy','0px')})}
+function bind(){const d=doc();if(!d||attached)return;attached=true;d.addEventListener('pointerup',e=>{const video=e.target?.closest?.('.mediaFrame video, .videoFrame video');const frameEl=e.target?.closest?.('.mediaFrame, .videoFrame');if(video||frameEl?.querySelector?.('video')){const v=video||frameEl.querySelector('video');if(!v?.src)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();openVideo(v.currentSrc||v.src, v.closest('[data-name]')?.dataset.name || v.getAttribute('aria-label') || 'Видео');}},true);
+const mo=new MutationObserver(()=>{const root=d.querySelector('.chatShell');const box=d.getElementById('messages')||d.querySelector('.messages');if(root&&root!==lastChatRoot){lastChatRoot=root;forceBottom(1300);setTimeout(()=>resumePreview(),500)}if(box&&box!==lastScrollBox){lastScrollBox=box;forceBottom(1300)}if(Date.now()<scrollLockUntil&&box)box.scrollTop=box.scrollHeight;});
+mo.observe(d.documentElement,{childList:true,subtree:true});
+d.addEventListener('visibilitychange',()=>setTimeout(()=>{forceBottom(400);resumePreview()},80));
+toast('media-v30 включён');
+}
+frame.addEventListener('load',()=>{attached=false;setTimeout(bind,200);setTimeout(forceBottom,600);setTimeout(resumePreview,900)});
+setInterval(()=>{if(!attached)bind();const d=doc();const box=d?.getElementById('messages')||d?.querySelector('.messages');if(Date.now()<scrollLockUntil&&box)box.scrollTop=box.scrollHeight},500);
+</script>
+</body>
+</html>
