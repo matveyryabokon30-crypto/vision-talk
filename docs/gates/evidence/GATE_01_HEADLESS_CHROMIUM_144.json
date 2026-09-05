@@ -1,0 +1,96 @@
+{
+  "gate": "GATE_01_CHAT_LIST",
+  "build": "gate-01.1.0",
+  "environment": {
+    "browser": "Chromium 144.0.7559.96",
+    "mode": "headless mobile emulation",
+    "viewport_css_px": {
+      "width": 390,
+      "height": 844
+    },
+    "device_scale_factor": 3
+  },
+  "dataset": {
+    "messages": 10000,
+    "geometry": "deterministic mixed fixed heights",
+    "page_size": 50,
+    "dom_limit": 120
+  },
+  "results": [
+    {
+      "test": "initial entry at final message",
+      "status": "PASS",
+      "measured": {
+        "bottom_error_px": 0.0,
+        "last_visible_message_id": 10000
+      },
+      "criterion": "bottom_error_px <= 2 and final message visible"
+    },
+    {
+      "test": "bounded DOM on initial render",
+      "status": "PASS",
+      "measured": {
+        "rendered_rows": 13
+      },
+      "criterion": "rendered_rows <= 120"
+    },
+    {
+      "test": "prepend 50 older messages preserves visual anchor",
+      "status": "PASS",
+      "measured": {
+        "anchor_message_id": 221,
+        "anchor_displacement_px": 0.0
+      },
+      "criterion": "anchor_displacement_px <= 1.5"
+    },
+    {
+      "test": "bounded DOM after prepend",
+      "status": "PASS",
+      "measured": {
+        "rendered_rows": 22
+      },
+      "criterion": "rendered_rows <= 120"
+    },
+    {
+      "test": "append while at bottom follows latest message",
+      "status": "PASS",
+      "measured": {
+        "bottom_error_px": 0.0,
+        "last_visible_message_id": 10001
+      },
+      "criterion": "bottom_error_px <= 2 and appended message visible"
+    },
+    {
+      "test": "append while reading history preserves position",
+      "status": "PASS",
+      "measured": {
+        "scroll_delta_px": 0.0,
+        "first_visible_before": 9682,
+        "first_visible_after": 9682,
+        "new_message_badge": true
+      },
+      "criterion": "scroll_delta_px <= 1.5, same first visible ID, badge visible"
+    },
+    {
+      "test": "rapid random scrolling keeps bounded DOM",
+      "status": "PASS",
+      "measured": {
+        "maximum_rendered_rows": 28
+      },
+      "criterion": "maximum_rendered_rows <= 120"
+    },
+    {
+      "test": "return to bottom after stress",
+      "status": "PASS",
+      "measured": {
+        "bottom_error_px": 0.0
+      },
+      "criterion": "bottom_error_px <= 2"
+    }
+  ],
+  "performance": {
+    "mount_and_initial_gate_ms": 59
+  },
+  "overall": "PASS",
+  "integration_status": "BLOCKED_PENDING_IPHONE_SAFARI_AND_CHROME_PASS"
+}
