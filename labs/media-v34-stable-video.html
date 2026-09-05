@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070707">
+<title>Vision Talk — media v34</title>
+<link rel="stylesheet" href="./media-v32.css?v=0465651">
+<style>
+:root{--v34-video-w:min(47vw,184px);--v34-video-h:min(39vh,292px);--v34-image-w:min(70vw,270px)}
+.history-loader{margin-top:auto!important;height:0!important;min-height:0!important;padding:0!important;overflow:hidden!important}
+.messages{scroll-behavior:auto!important;overflow-anchor:none!important}
+.chat-screen.v34-opening .messages{visibility:hidden!important;pointer-events:none!important}
+.chat-screen.v34-opening .message-loader{opacity:1!important;pointer-events:auto!important}
+.chat-screen.v34-ready .message-loader{opacity:0!important;pointer-events:none!important}
+.media-bubble{width:auto!important;min-width:0!important;max-width:var(--v34-image-w)!important;border-radius:18px!important}
+.media-card{width:var(--v34-image-w)!important;max-width:var(--v34-image-w)!important;border-radius:18px!important}
+.media-card.video{width:var(--v34-video-w)!important;height:var(--v34-video-h)!important;max-width:var(--v34-video-w)!important;max-height:var(--v34-video-h)!important;aspect-ratio:auto!important;background:#151515!important}
+.media-card.video.landscape{width:min(72vw,286px)!important;height:min(38vw,160px)!important;max-width:min(72vw,286px)!important;max-height:min(38vw,160px)!important}
+.media-card.image{max-height:min(46vh,360px)!important}
+.media-card.video .media-video{display:none!important}
+.media-card.video .media-skeleton{display:none!important}
+.media-card.video .media-poster{display:block!important;opacity:1!important;z-index:2!important;object-fit:cover!important;border-radius:18px!important}
+.media-poster,.media-full,.media-video{border-radius:18px!important}
+.media-badge{top:6px!important;right:6px!important;font-size:9px!important;padding:2px 6px!important;z-index:6!important}
+.media-meta{right:6px!important;bottom:6px!important;font-size:9px!important;z-index:6!important}
+.v34-video-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#202020,#111);color:#777;font-size:13px;z-index:1}
+.v34-video-placeholder:before{content:'▶';width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-right:9px;background:rgba(255,255,255,.92);color:#111;font-size:18px;padding-left:3px}
+.upload-card{width:var(--v34-video-w)!important;height:var(--v34-video-h)!important;max-width:var(--v34-video-w)!important;max-height:var(--v34-video-h)!important;aspect-ratio:auto!important;border-radius:18px!important}
+.upload-card.image{width:var(--v34-image-w)!important;height:min(44vh,340px)!important;max-width:var(--v34-image-w)!important;aspect-ratio:auto!important}
+.upload-card img,.upload-card video,.upload-overlay{border-radius:18px!important}
+.progress-ring{position:relative!important;width:46px!important;height:46px!important}
+.progress-ring:after{width:36px!important;height:36px!important}
+.progress-text{position:absolute!important;inset:0!important;z-index:2!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:9px!important;color:#fff!important}
+.v34-viewer{position:fixed;inset:0;z-index:1000;background:#000;display:grid;grid-template-rows:54px minmax(0,1fr);transform:translate3d(0,var(--drag,0),0);will-change:transform;touch-action:none}
+.v34-viewer-head{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;padding:5px 8px;background:rgba(0,0,0,.92);border-bottom:1px solid #1e1e1e}
+.v34-viewer-back{width:42px;height:42px;border:0;border-radius:50%;background:transparent;color:#fff;font-size:31px;line-height:1}
+.v34-viewer-title{min-width:0;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:15px;font-weight:700}
+.v34-viewer-body{position:relative;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#000}
+.v34-viewer-body video{width:100%;height:100%;object-fit:contain;background:#000}
+.v34-viewer-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;z-index:1}
+.v34-viewer-loading{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;width:46px;height:46px;border:3px solid rgba(255,255,255,.28);border-top-color:#fff;border-radius:50%;animation:v34spin .8s linear infinite}
+@keyframes v34spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.v34-viewer.ready .v34-viewer-poster,.v34-viewer.ready .v34-viewer-loading{display:none}
+.v34-viewer-error{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;padding:24px;color:#ffb0b0;text-align:center;background:#111}
+@media(max-width:390px){:root{--v34-video-w:min(46vw,176px);--v34-video-h:min(38vh,286px);--v34-image-w:min(70vw,264px)}}
+</style>
+</head>
+<body>
+<div id="root"><div class="screen"><div class="boot-card"><div class="brand">VISION TALK</div><div class="auth-title">Загрузка…</div><div class="auth-sub">Стабильный режим видеосообщений.</div><div class="version">media-v34</div></div></div></div>
+<script src="../vendor/supabase-2.45.3.js?v=local-v34"></script>
+<script src="./media-v32.js?v=7dc8611-base-v34"></script>
+<script>
+(() => {
+'use strict';
+const BUILD='media-v34';
+const SUPABASE_URL='https://ctcoqgsztdtsazdiwcmd.supabase.co';
+const SUPABASE_KEY='sb_publishable_kMGqZAM2vadfXbBr8r5uzw_l9EiBtIw';
+const BUCKET='message-media';
+const root=document.getElementById('root');
+const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const signedCache=new Map();
+let viewer=null;
+
+function markVersion(scope=document){
+  scope.querySelectorAll('.chat-status').forEach(n=>n.textContent=`Vision Talk · ${BUILD}`);
+  scope.querySelectorAll('.version').forEach(n=>n.textContent=BUILD);
+}
+
+function holdChat(chat){
+  if(!chat||chat.dataset.v34Hold==='1')return;
+  chat.dataset.v34Hold='1';
+  chat.classList.add('v34-opening');
+  markVersion(chat);
+  const box=chat.querySelector('.messages');
+  if(!box)return;
+  const reveal=()=>{
+    if(box.classList.contains('initializing'))return false;
+    box.scrollTop=Math.max(0,box.scrollHeight-box.clientHeight);
+    requestAnimationFrame(()=>{
+      box.scrollTop=Math.max(0,box.scrollHeight-box.clientHeight);
+      chat.classList.remove('v34-opening');
+      chat.classList.add('v34-ready');
+    });
+    return true;
+  };
+  if(reveal())return;
+  const mo=new MutationObserver(()=>{if(reveal())mo.disconnect()});
+  mo.observe(box,{attributes:true,attributeFilter:['class'],childList:true});
+  setTimeout(()=>{reveal();mo.disconnect()},1800);
+}
+
+async function sign(path){
+  const cached=signedCache.get(path);
+  if(cached&&cached.expires>Date.now())return cached.url;
+  const {data,error}=await client.storage.from(BUCKET).createSignedUrl(path,3600);
+  if(error)throw error;
+  signedCache.set(path,{url:data.signedUrl,expires:Date.now()+50*60*1000});
+  return data.signedUrl;
+}
+
+function removeInlineVideo(card){
+  card.querySelectorAll('video').forEach(video=>{
+    try{video.pause();video.removeAttribute('src');video.load()}catch{}
+    video.remove();
+  });
+}
+
+function prepareCard(card){
+  if(!card||card.dataset.v34Prepared==='1')return;
+  card.dataset.v34Prepared='1';
+  card.dataset.hydrated='v34-poster';
+  removeInlineVideo(card);
+  const poster=card.querySelector('.media-poster');
+  if(poster){
+    poster.style.opacity='1';
+    poster.style.display='block';
+  }else{
+    const fallback=document.createElement('div');
+    fallback.className='v34-video-placeholder';
+    fallback.textContent='Видео';
+    card.prepend(fallback);
+  }
+  if(card.dataset.path){
+    sign(card.dataset.path).then(url=>{card.dataset.v34Url=url}).catch(()=>{});
+  }
+  let x=0,y=0,moved=false;
+  card.addEventListener('pointerdown',e=>{x=e.clientX;y=e.clientY;moved=false},{passive:true,capture:true});
+  card.addEventListener('pointermove',e=>{if(Math.abs(e.clientX-x)>10||Math.abs(e.clientY-y)>10)moved=true},{passive:true,capture:true});
+  card.addEventListener('pointerup',e=>{
+    if(moved)return;
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+    openVideo(card);
+  },true);
+  card.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation()},true);
+}
+
+function closeViewer(){
+  if(!viewer)return;
+  const video=viewer.querySelector('video');
+  try{video?.pause();video?.removeAttribute('src');video?.load()}catch{}
+  viewer.remove();viewer=null;
+}
+
+function installSwipe(node){
+  let sy=0,sx=0,dy=0,active=false;
+  node.addEventListener('touchstart',e=>{const t=e.touches[0];if(!t)return;sy=t.clientY;sx=t.clientX;dy=0;active=true},{passive:true});
+  node.addEventListener('touchmove',e=>{if(!active)return;const t=e.touches[0];if(!t)return;const nx=t.clientX-sx,ny=t.clientY-sy;if(ny>0&&Math.abs(ny)>Math.abs(nx)){dy=ny;node.style.setProperty('--drag',`${Math.min(dy,240)}px`);if(e.cancelable)e.preventDefault()}},{passive:false});
+  node.addEventListener('touchend',()=>{if(!active)return;active=false;if(dy>95)closeViewer();else node.style.setProperty('--drag','0px')},{passive:true});
+}
+
+async function openVideo(card){
+  if(viewer)return;
+  const name=card.dataset.name||'Видео';
+  const poster=card.querySelector('.media-poster')?.src||'';
+  viewer=document.createElement('div');
+  viewer.className='v34-viewer';
+  viewer.innerHTML=`<header class="v34-viewer-head"><button class="v34-viewer-back">‹</button><div class="v34-viewer-title">${name.replace(/[&<>"']/g,'')}</div><span></span></header><main class="v34-viewer-body">${poster?`<img class="v34-viewer-poster" src="${poster}" alt="">`:''}<div class="v34-viewer-loading"></div></main>`;
+  document.body.appendChild(viewer);
+  viewer.querySelector('.v34-viewer-back').onclick=closeViewer;
+  installSwipe(viewer);
+  try{
+    const url=card.dataset.v34Url||await sign(card.dataset.path);
+    card.dataset.v34Url=url;
+    if(!viewer)return;
+    const video=document.createElement('video');
+    video.src=url;
+    video.controls=true;
+    video.playsInline=true;
+    video.preload='auto';
+    video.poster=poster;
+    video.addEventListener('canplay',()=>viewer?.classList.add('ready'),{once:true});
+    video.addEventListener('loadeddata',()=>viewer?.classList.add('ready'),{once:true});
+    video.addEventListener('error',()=>{
+      if(!viewer)return;
+      viewer.querySelector('.v34-viewer-body').insertAdjacentHTML('beforeend','<div class="v34-viewer-error">Видео не удалось открыть. Для стабильной загрузки длинных роликов нужен отдельный потоковый транспорт.</div>');
+    },{once:true});
+    viewer.querySelector('.v34-viewer-body').appendChild(video);
+    video.load();
+    video.play().catch(()=>{});
+  }catch(error){
+    if(!viewer)return;
+    viewer.querySelector('.v34-viewer-body').insertAdjacentHTML('beforeend',`<div class="v34-viewer-error">${String(error.message||error).replace(/[&<>"']/g,'')}</div>`);
+  }
+}
+
+function scan(scope=document){
+  markVersion(scope);
+  scope.querySelectorAll('.chat-screen').forEach(holdChat);
+  scope.querySelectorAll('.media-card.video').forEach(prepareCard);
+  scope.querySelectorAll('.media-card.video video').forEach(video=>removeInlineVideo(video.closest('.media-card.video')));
+}
+
+const observer=new MutationObserver(records=>{
+  for(const record of records){
+    for(const node of record.addedNodes){
+      if(node instanceof Element)scan(node);
+    }
+  }
+  scan(document);
+});
+observer.observe(root,{childList:true,subtree:true});
+scan(document);
+document.documentElement.dataset.visionBuild=BUILD;
+})();
+</script>
+</body>
+</html>
