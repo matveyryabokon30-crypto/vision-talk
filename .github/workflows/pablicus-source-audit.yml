@@ -1,0 +1,28 @@
+name: Pablicus source audit
+on:
+  push:
+    branches: [messenger-architecture-1.0]
+    paths: [.github/workflows/pablicus-source-audit.yml]
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Snapshot tracked files and current references
+        run: |
+          mkdir -p audit/current audit/baseline audit/metadata
+          git archive HEAD | tar -x -C audit/current
+          git archive origin/baseline-media-v29 | tar -x -C audit/baseline
+          git status --porcelain > audit/metadata/status.txt
+          git log -12 --format='%H %s' > audit/metadata/commits.txt
+          git ls-tree -r HEAD > audit/metadata/tree.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pablicus-source-audit
+          path: audit/
+          retention-days: 14
