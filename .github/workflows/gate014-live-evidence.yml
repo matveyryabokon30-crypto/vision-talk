@@ -2,7 +2,7 @@ name: Gate 01.4 live UI evidence
 on:
   push:
     branches: [messenger-architecture-1.0]
-    paths: [.github/workflows/gate014-live-evidence.yml, gates/gate-01-4-draft/live_test.py]
+    paths: [.github/workflows/gate014-live-evidence.yml, gates/gate-01-4-draft/live_test.py, gates/gate-01-4-draft/live_test_runner.py]
 permissions:
   contents: read
 jobs:
@@ -18,7 +18,7 @@ jobs:
       - run: python -m playwright install --with-deps chromium webkit
       - run: command -v ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
       - name: Live HTTPS reload, file integrity, new tab, process restart and UI regressions
-        run: python gates/gate-01-4-draft/live_test.py
+        run: python gates/gate-01-4-draft/live_test_runner.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
