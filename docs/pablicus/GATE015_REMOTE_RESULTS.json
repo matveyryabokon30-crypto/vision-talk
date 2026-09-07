@@ -1,0 +1,1674 @@
+[
+  {
+    "engine": "chromium",
+    "physical_ios": false,
+    "url": "http://127.0.0.1:44773/",
+    "results": [
+      {
+        "name": "Public non-destructive queue tests",
+        "pass": true,
+        "detail": {
+          "checks": 22,
+          "passed": 22
+        }
+      },
+      {
+        "name": "Double activation: one atomic group with exact text and four original files",
+        "pass": true,
+        "detail": {
+          "groups": 1,
+          "files": 4
+        }
+      },
+      {
+        "name": "No fictitious server acknowledgement",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Actual navigation restores exact queue and separate new draft",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Retry does not add rows or alter payload",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "New tab restores original IDs and bytes",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Browser process restart preserves exact queue bytes and new draft",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Loaded page can enqueue with browser network offline",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Injected enqueue failure leaves text and saved draft intact",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Retry after rejected transaction adds exactly one group",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Reload after commit before UI clear: outgoing exists once, draft empty",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Cancellation survives actual page reload",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Full editor still expands and retains continued typing",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Compact menu closes with draft retained",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Simulated narrow height keeps Send accessible",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "No application upload or JavaScript error recorded",
+        "pass": true,
+        "detail": {
+          "application_requests": [],
+          "errors": []
+        }
+      },
+      {
+        "name": "Negative controls detect lost draft, duplicates and fabricated ACK",
+        "pass": true,
+        "detail": [
+          {
+            "fault": "erase_on_failure",
+            "detected": true,
+            "failed_checks": [
+              "Отказ quota: черновик и байты целы, очередь пуста",
+              "Отказ denied: черновик и байты целы, очередь пуста",
+              "Отказ abort: черновик и байты целы, очередь пуста",
+              "Выполнение теста"
+            ]
+          },
+          {
+            "fault": "duplicate_on_retry",
+            "detected": true,
+            "failed_checks": [
+              "Повтор того же намерения не создаёт дубль",
+              "Повтор сохраняет ID, порядок и байты",
+              "Новое подключение восстанавливает очередь",
+              "Две вкладки: одно исходящее на одно намерение",
+              "Одинаковый текст по новому нажатию не подавляется",
+              "У всех сообщений уникальные ID и возрастающий порядок",
+              "После отмены освобождены неиспользуемые байты"
+            ]
+          },
+          {
+            "fault": "fake_ack",
+            "detected": true,
+            "failed_checks": [
+              "Нет подтверждения сервера и статуса отправлено",
+              "Выполнение теста"
+            ]
+          }
+        ]
+      }
+    ],
+    "autotest": {
+      "build": "gate-01.5.0-outbox",
+      "generated_at": "2026-09-07T22:12:24.461Z",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/140.0.7339.16 Safari/537.36",
+      "dataset": 300,
+      "scope": "Local durable outbox; atomic draft handoff, original attachment bytes and stable IDs. Same origin/browser; no transport, auth, server ACK, offline shell or background delivery.",
+      "overall": "PASS",
+      "integration": "BLOCKED_PENDING_DEVICE_AND_REAL_TRANSPORT_GATES",
+      "results": [
+        {
+          "name": "Новая очередь пуста",
+          "pass": true,
+          "measured": true
+        },
+        {
+          "name": "Отказ quota: черновик и байты целы, очередь пуста",
+          "pass": true,
+          "measured": {
+            "injected": true,
+            "error": "QuotaExceededError"
+          }
+        },
+        {
+          "name": "Отказ denied: черновик и байты целы, очередь пуста",
+          "pass": true,
+          "measured": {
+            "injected": true,
+            "error": "NotAllowedError"
+          }
+        },
+        {
+          "name": "Отказ abort: черновик и байты целы, очередь пуста",
+          "pass": true,
+          "measured": {
+            "injected": true,
+            "error": "AbortError"
+          }
+        },
+        {
+          "name": "Один commit: черновик очищен и исходящее сохранено",
+          "pass": true,
+          "measured": {
+            "queued": 1
+          }
+        },
+        {
+          "name": "Текст и файл — отдельные сообщения с порядком",
+          "pass": true,
+          "measured": {
+            "messages": 2
+          }
+        },
+        {
+          "name": "Исходные байты в очереди совпали",
+          "pass": true,
+          "measured": {
+            "bytes": 65537
+          }
+        },
+        {
+          "name": "Перенос не копирует уже сохранённый Blob",
+          "pass": true,
+          "measured": {
+            "new_blob_puts": 0
+          }
+        },
+        {
+          "name": "Нет подтверждения сервера и статуса отправлено",
+          "pass": true,
+          "measured": {
+            "state": "queued",
+            "server_ack": null
+          }
+        },
+        {
+          "name": "Повтор того же намерения не создаёт дубль",
+          "pass": true,
+          "measured": true
+        },
+        {
+          "name": "Повтор сохраняет ID, порядок и байты",
+          "pass": true,
+          "measured": {
+            "retries": 3
+          }
+        },
+        {
+          "name": "Новое подключение восстанавливает очередь",
+          "pass": true,
+          "measured": {
+            "kind": "NEW_CONNECTION_NOT_PROCESS_RESTART"
+          }
+        },
+        {
+          "name": "Новый черновик не удаляет вложения исходящего",
+          "pass": true,
+          "measured": true
+        },
+        {
+          "name": "Устаревший снимок не забирает новый черновик",
+          "pass": true,
+          "measured": true
+        },
+        {
+          "name": "Две вкладки: одно исходящее на одно намерение",
+          "pass": true,
+          "measured": true
+        },
+        {
+          "name": "Одинаковый текст по новому нажатию не подавляется",
+          "pass": true,
+          "measured": true
+        },
+        {
+          "name": "У всех сообщений уникальные ID и возрастающий порядок",
+          "pass": true,
+          "measured": {
+            "messages": 4
+          }
+        },
+        {
+          "name": "Отмена сохранена после подключения",
+          "pass": true,
+          "measured": true
+        },
+        {
+          "name": "Отмена не воскрешается повтором",
+          "pass": true,
+          "measured": true
+        },
+        {
+          "name": "После отмены освобождены неиспользуемые байты",
+          "pass": true,
+          "measured": {
+            "drafts": 1,
+            "assets": 0,
+            "outbox": 3
+          }
+        },
+        {
+          "name": "Потеря байтов блокирует перенос, не очищая текст",
+          "pass": true,
+          "measured": true
+        },
+        {
+          "name": "Автотест не меняет черновик и пользовательскую очередь",
+          "pass": true,
+          "measured": true
+        }
+      ],
+      "manual": {
+        "status": "PENDING_DEVICE_ACCEPTANCE",
+        "keyboard": "NOT_OBSERVED",
+        "rotation": "NOT_OBSERVED",
+        "smoothness": "NOT_MEASURED"
+      },
+      "last_open": {
+        "mount_ms": 43.8,
+        "bottom_delta_px": 0,
+        "last_id": "m300",
+        "dom_rows": 6
+      },
+      "exported_at": "2026-09-07T22:12:24.461Z",
+      "viewport_now": {
+        "width": 440,
+        "height": 766,
+        "offsetTop": 0,
+        "pageTop": 0,
+        "scale": 1,
+        "list_width": 440,
+        "list_height": 550,
+        "orientation": "landscape-primary"
+      },
+      "observations": {
+        "keyboard": [],
+        "rotation": [],
+        "resizes": [
+          {
+            "width": 440,
+            "height": 766,
+            "offsetTop": 0,
+            "pageTop": 0,
+            "scale": 1,
+            "list_width": 440,
+            "list_height": 550,
+            "orientation": "landscape-primary"
+          }
+        ]
+      },
+      "scroll_evidence": {
+        "events": 1,
+        "renders": 2,
+        "gestures": 0,
+        "programmatic_writes": 1,
+        "writes_from_scroll": 0,
+        "measured_rows": 300,
+        "min_top": 66640,
+        "reached_start": false,
+        "last_write_reason": "explicit-bottom"
+      },
+      "counters": {
+        "active_lists": 1,
+        "created": 1,
+        "destroyed": 0,
+        "max_dom": 20
+      },
+      "composer_metrics": {
+        "inputs": 0,
+        "layout_updates": 2,
+        "metadata_reads": 0,
+        "metadata_active": 0,
+        "max_metadata_active": 0,
+        "urls_created": 0,
+        "urls_revoked": 0,
+        "local_sends": 0,
+        "task_events": 0,
+        "selection_failures": 0
+      },
+      "controls": {
+        "composer_height": 91,
+        "input_height": 40,
+        "input_scroll_height": 40,
+        "send_inside_shell": true,
+        "send_inside_composer": true,
+        "list_height": 550,
+        "shell_top": 0,
+        "shell_bottom": 766,
+        "composer_top": 675,
+        "composer_bottom": 766,
+        "send_top": 689,
+        "send_bottom": 729
+      },
+      "draft_summary": {
+        "characters": 0,
+        "attachments": 0,
+        "expanded": false,
+        "mode": "message",
+        "task_state": null
+      },
+      "resources": {
+        "retained_assets": 0,
+        "active_object_urls": 0
+      },
+      "errors": [],
+      "current_geometry": {
+        "rows": 6,
+        "max_overlap_px": 0,
+        "max_gap_px": 0,
+        "model_error_px": 0,
+        "clipped": 0,
+        "width_errors": 0,
+        "active": 1
+      },
+      "summary": {
+        "checks": 22,
+        "passed": 22
+      },
+      "storage": {
+        "state": "empty",
+        "error": null,
+        "revision": 0,
+        "restored_files": 0,
+        "changes": 0,
+        "failures": 0,
+        "pending": false,
+        "transaction_active": false,
+        "storage": {
+          "persistent": false,
+          "quota": 92936513126,
+          "usage": 3935
+        },
+        "database_stats": {
+          "commits": 0,
+          "blob_puts": 0,
+          "blob_deletes": 0,
+          "aborts": 0,
+          "conflicts": 0,
+          "durability": null
+        },
+        "reload_check": null,
+        "audit": null,
+        "events": [
+          {
+            "state": "empty",
+            "error": null,
+            "at": "2026-09-07T22:12:24.287Z"
+          }
+        ],
+        "scope": "THIS_ORIGIN_THIS_BROWSER_ONLY",
+        "background_save_guaranteed": false
+      },
+      "outbox": {
+        "transport": "NOT_CONNECTED",
+        "state": "ready",
+        "error": null,
+        "groups": 0,
+        "messages": 0,
+        "files": 0,
+        "cancelled": 0,
+        "entries": [],
+        "enqueued_here": 0,
+        "restored_groups": 0,
+        "retried_here": 0,
+        "cancelled_here": 0,
+        "commit_failures": 0,
+        "submit_in_progress": false,
+        "audit": null,
+        "reload_check": null,
+        "network_observed_online": true,
+        "background_delivery": false
+      },
+      "editor_regression": "NOT_RUN"
+    },
+    "report": {
+      "build": "gate-01.5.0-outbox",
+      "generated_at": null,
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/140.0.7339.16 Safari/537.36",
+      "dataset": 300,
+      "scope": "Local durable outbox; atomic draft handoff, original attachment bytes and stable IDs. Same origin/browser; no transport, auth, server ACK, offline shell or background delivery.",
+      "overall": "NOT_RUN",
+      "integration": "BLOCKED_PENDING_DEVICE_AND_REAL_TRANSPORT_GATES",
+      "results": [],
+      "manual": {
+        "status": "PENDING_DEVICE_ACCEPTANCE",
+        "keyboard": "SHRINK_OBSERVED_NOT_HUMAN_ACCEPTANCE",
+        "rotation": "WIDTH_CHANGE_OBSERVED_NOT_HUMAN_ACCEPTANCE",
+        "smoothness": "NOT_MEASURED"
+      },
+      "last_open": {
+        "mount_ms": 38,
+        "bottom_delta_px": 0,
+        "last_id": "out-8c03c859-e816-4204-98db-09f025e7ac43:0",
+        "dom_rows": 9
+      },
+      "exported_at": "2026-09-07T22:12:31.207Z",
+      "viewport_now": {
+        "width": 440,
+        "height": 766,
+        "offsetTop": 0,
+        "pageTop": 0,
+        "scale": 1,
+        "list_width": 440,
+        "list_height": 146,
+        "orientation": "landscape-primary"
+      },
+      "observations": {
+        "keyboard": [
+          {
+            "phase": "shrink",
+            "viewport": {
+              "width": 844,
+              "height": 390,
+              "offsetTop": 0,
+              "pageTop": 0,
+              "scale": 1,
+              "list_width": 800,
+              "list_height": 64,
+              "orientation": "landscape-primary"
+            },
+            "controls": {
+              "composer_height": 290,
+              "input_height": 196,
+              "input_scroll_height": 480,
+              "send_inside_shell": true,
+              "send_inside_composer": true,
+              "list_height": 64,
+              "shell_top": 0,
+              "shell_bottom": 390,
+              "composer_top": 100,
+              "composer_bottom": 390,
+              "send_top": 316,
+              "send_bottom": 356
+            },
+            "bottom_delta_px": 92
+          }
+        ],
+        "rotation": [
+          {
+            "before": {
+              "width": 440,
+              "height": 766,
+              "offsetTop": 0,
+              "pageTop": 0,
+              "scale": 1,
+              "list_width": 440,
+              "list_height": 146,
+              "orientation": "landscape-primary"
+            },
+            "after": {
+              "width": 844,
+              "height": 390,
+              "offsetTop": 0,
+              "pageTop": 0,
+              "scale": 1,
+              "list_width": 800,
+              "list_height": 64,
+              "orientation": "landscape-primary"
+            },
+            "controls": {
+              "composer_height": 290,
+              "input_height": 196,
+              "input_scroll_height": 480,
+              "send_inside_shell": true,
+              "send_inside_composer": true,
+              "list_height": 64,
+              "shell_top": 0,
+              "shell_bottom": 390,
+              "composer_top": 100,
+              "composer_bottom": 390,
+              "send_top": 316,
+              "send_bottom": 356
+            }
+          },
+          {
+            "before": {
+              "width": 844,
+              "height": 390,
+              "offsetTop": 0,
+              "pageTop": 0,
+              "scale": 1,
+              "list_width": 800,
+              "list_height": 64,
+              "orientation": "landscape-primary"
+            },
+            "after": {
+              "width": 440,
+              "height": 766,
+              "offsetTop": 0,
+              "pageTop": 0,
+              "scale": 1,
+              "list_width": 440,
+              "list_height": 146,
+              "orientation": "landscape-primary"
+            },
+            "controls": {
+              "composer_height": 580,
+              "input_height": 480,
+              "input_scroll_height": 480,
+              "send_inside_shell": true,
+              "send_inside_composer": true,
+              "list_height": 146,
+              "shell_top": 0,
+              "shell_bottom": 766,
+              "composer_top": 186,
+              "composer_bottom": 766,
+              "send_top": 689,
+              "send_bottom": 729
+            }
+          }
+        ],
+        "resizes": [
+          {
+            "width": 440,
+            "height": 766,
+            "offsetTop": 0,
+            "pageTop": 0,
+            "scale": 1,
+            "list_width": 440,
+            "list_height": 550,
+            "orientation": "landscape-primary"
+          },
+          {
+            "width": 440,
+            "height": 766,
+            "offsetTop": 0,
+            "pageTop": 0,
+            "scale": 1,
+            "list_width": 440,
+            "list_height": 146,
+            "orientation": "landscape-primary"
+          },
+          {
+            "width": 844,
+            "height": 390,
+            "offsetTop": 0,
+            "pageTop": 0,
+            "scale": 1,
+            "list_width": 800,
+            "list_height": 64,
+            "orientation": "landscape-primary"
+          },
+          {
+            "width": 440,
+            "height": 766,
+            "offsetTop": 0,
+            "pageTop": 0,
+            "scale": 1,
+            "list_width": 440,
+            "list_height": 146,
+            "orientation": "landscape-primary"
+          }
+        ]
+      },
+      "scroll_evidence": {
+        "events": 5,
+        "renders": 10,
+        "gestures": 0,
+        "programmatic_writes": 5,
+        "writes_from_scroll": 0,
+        "measured_rows": 909,
+        "min_top": 50000,
+        "reached_start": false,
+        "last_write_reason": "composer-size"
+      },
+      "counters": {
+        "active_lists": 1,
+        "created": 1,
+        "destroyed": 0,
+        "max_dom": 27
+      },
+      "composer_metrics": {
+        "inputs": 44,
+        "layout_updates": 11,
+        "metadata_reads": 0,
+        "metadata_active": 0,
+        "max_metadata_active": 0,
+        "urls_created": 0,
+        "urls_revoked": 0,
+        "local_sends": 0,
+        "task_events": 0,
+        "selection_failures": 0
+      },
+      "controls": {
+        "composer_height": 580,
+        "input_height": 480,
+        "input_scroll_height": 480,
+        "send_inside_shell": true,
+        "send_inside_composer": true,
+        "list_height": 146,
+        "shell_top": 0,
+        "shell_bottom": 766,
+        "composer_top": 186,
+        "composer_bottom": 766,
+        "send_top": 689,
+        "send_bottom": 729
+      },
+      "draft_summary": {
+        "characters": 104,
+        "attachments": 0,
+        "expanded": false,
+        "mode": "message",
+        "task_state": null
+      },
+      "resources": {
+        "retained_assets": 0,
+        "active_object_urls": 0
+      },
+      "errors": [],
+      "current_geometry": {
+        "rows": 7,
+        "max_overlap_px": 0,
+        "max_gap_px": 0,
+        "model_error_px": 0,
+        "clipped": 0,
+        "width_errors": 0,
+        "active": 1
+      },
+      "summary": null,
+      "storage": {
+        "state": "saved",
+        "error": null,
+        "revision": 12,
+        "restored_files": 0,
+        "changes": 7,
+        "failures": 0,
+        "pending": false,
+        "transaction_active": false,
+        "storage": {
+          "persistent": false,
+          "quota": 92936513126,
+          "usage": 16854373
+        },
+        "database_stats": {
+          "commits": 2,
+          "blob_puts": 0,
+          "blob_deletes": 0,
+          "aborts": 0,
+          "conflicts": 0,
+          "durability": "strict"
+        },
+        "reload_check": null,
+        "audit": null,
+        "events": [
+          {
+            "state": "restored",
+            "error": null,
+            "at": "2026-09-07T22:12:29.272Z"
+          },
+          {
+            "state": "dirty",
+            "error": null,
+            "at": "2026-09-07T22:12:29.387Z"
+          },
+          {
+            "state": "saving",
+            "error": null,
+            "at": "2026-09-07T22:12:29.637Z"
+          },
+          {
+            "state": "saved",
+            "error": null,
+            "at": "2026-09-07T22:12:29.639Z"
+          },
+          {
+            "state": "dirty",
+            "error": null,
+            "at": "2026-09-07T22:12:29.726Z"
+          },
+          {
+            "state": "dirty",
+            "error": null,
+            "at": "2026-09-07T22:12:29.739Z"
+          },
+          {
+            "state": "dirty",
+            "error": null,
+            "at": "2026-09-07T22:12:29.740Z"
+          },
+          {
+            "state": "dirty",
+            "error": null,
+            "at": "2026-09-07T22:12:29.742Z"
+          },
+          {
+            "state": "dirty",
+            "error": null,
+            "at": "2026-09-07T22:12:29.743Z"
+          },
+          {
+            "state": "dirty",
+            "error": null,
+            "at": "2026-09-07T22:12:29.777Z"
+          },
+          {
+            "state": "saving",
+            "error": null,
+            "at": "2026-09-07T22:12:30.027Z"
+          },
+          {
+            "state": "saved",
+            "error": null,
+            "at": "2026-09-07T22:12:30.029Z"
+          }
+        ],
+        "scope": "THIS_ORIGIN_THIS_BROWSER_ONLY",
+        "background_save_guaranteed": false
+      },
+      "outbox": {
+        "transport": "NOT_CONNECTED",
+        "state": "ready",
+        "error": null,
+        "groups": 3,
+        "messages": 3,
+        "files": 0,
+        "cancelled": 1,
+        "entries": [
+          {
+            "client_message_id": "d33d68e9-d929-4593-85a6-05b8aca10073",
+            "first_sequence": 6,
+            "messages": 1,
+            "files": 0,
+            "state": "queued",
+            "retries": 0,
+            "server_ack": null
+          },
+          {
+            "client_message_id": "c074cb21-ff42-4559-b3fd-7cf5c5e37545",
+            "first_sequence": 7,
+            "messages": 1,
+            "files": 0,
+            "state": "queued",
+            "retries": 0,
+            "server_ack": null
+          },
+          {
+            "client_message_id": "8c03c859-e816-4204-98db-09f025e7ac43",
+            "first_sequence": 8,
+            "messages": 1,
+            "files": 0,
+            "state": "queued",
+            "retries": 0,
+            "server_ack": null
+          }
+        ],
+        "enqueued_here": 0,
+        "restored_groups": 3,
+        "retried_here": 0,
+        "cancelled_here": 0,
+        "commit_failures": 0,
+        "submit_in_progress": false,
+        "audit": null,
+        "reload_check": null,
+        "network_observed_online": true,
+        "background_delivery": false
+      },
+      "editor_regression": "NOT_RUN"
+    },
+    "overall": "PASS"
+  },
+  {
+    "engine": "webkit",
+    "physical_ios": false,
+    "url": "http://127.0.0.1:44773/",
+    "results": [
+      {
+        "name": "Public non-destructive queue tests",
+        "pass": true,
+        "detail": {
+          "checks": 22,
+          "passed": 22
+        }
+      },
+      {
+        "name": "Double activation: one atomic group with exact text and four original files",
+        "pass": true,
+        "detail": {
+          "groups": 1,
+          "files": 4
+        }
+      },
+      {
+        "name": "No fictitious server acknowledgement",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Actual navigation restores exact queue and separate new draft",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Retry does not add rows or alter payload",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "New tab restores original IDs and bytes",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Browser process restart preserves exact queue bytes and new draft",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Loaded page can enqueue with browser network offline",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Injected enqueue failure leaves text and saved draft intact",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Retry after rejected transaction adds exactly one group",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Reload after commit before UI clear: outgoing exists once, draft empty",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Cancellation survives actual page reload",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Full editor still expands and retains continued typing",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Compact menu closes with draft retained",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "Simulated narrow height keeps Send accessible",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "No application upload or JavaScript error recorded",
+        "pass": true,
+        "detail": {
+          "application_requests": [],
+          "errors": []
+        }
+      },
+      {
+        "name": "Negative controls detect lost draft, duplicates and fabricated ACK",
+        "pass": true,
+        "detail": [
+          {
+            "fault": "erase_on_failure",
+            "detected": true,
+            "failed_checks": [
+              "Отказ quota: черновик и байты целы, очередь пуста",
+              "Отказ denied: черновик и байты целы, очередь пуста",
+              "Отказ abort: черновик и байты целы, очередь пуста",
+              "Выполнение теста"
+            ]
+          },
+          {
+            "fault": "duplicate_on_retry",
+            "detected": true,
+            "failed_checks": [
+              "Повтор того же намерения не создаёт дубль",
+              "Повтор сохраняет ID, порядок и байты",
+              "Новое подключение восстанавливает очередь",
+              "Две вкладки: одно исходящее на одно намерение",
+              "Одинаковый текст по новому нажатию не подавляется",
+              "У всех сообщений уникальные ID и возрастающий порядок",
+              "После отмены освобождены неиспользуемые байты"
+            ]
+          },
+          {
+            "fault": "fake_ack",
+            "detected": true,
+            "failed_checks": [
+              "Нет подтверждения сервера и статуса отправлено",
+              "Выполнение теста"
+            ]
+          }
+        ]
+      }
+    ],
+    "autotest": {
+      "build": "gate-01.5.0-outbox",
+      "generated_at": "2026-09-07T22:12:33.382Z",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15",
+      "dataset": 300,
+      "scope": "Local durable outbox; atomic draft handoff, original attachment bytes and stable IDs. Same origin/browser; no transport, auth, server ACK, offline shell or background delivery.",
+      "overall": "PASS",
+      "integration": "BLOCKED_PENDING_DEVICE_AND_REAL_TRANSPORT_GATES",
+      "results": [
+        {
+          "name": "Новая очередь пуста",
+          "pass": true,
+          "measured": true
+        },
+        {
+          "name": "Отказ quota: черновик и байты целы, очередь пуста",
+          "pass": true,
+          "measured": {
+            "injected": true,
+            "error": "QuotaExceededError"
+          }
+        },
+        {
+          "name": "Отказ denied: черновик и байты целы, очередь пуста",
+          "pass": true,
+          "measured": {
+            "injected": true,
+            "error": "NotAllowedError"
+          }
+        },
+        {
+          "name": "Отказ abort: черновик и байты целы, очередь пуста",
+          "pass": true,
+          "measured": {
+            "injected": true,
+            "error": "AbortError"
+          }
+        },
+        {
+          "name": "Один commit: черновик очищен и исходящее сохранено",
+          "pass": true,
+          "measured": {
+            "queued": 1
+          }
+        },
+        {
+          "name": "Текст и файл — отдельные сообщения с порядком",
+          "pass": true,
+          "measured": {
+            "messages": 2
+          }
+        },
+        {
+          "name": "Исходные байты в очереди совпали",
+          "pass": true,
+          "measured": {
+            "bytes": 65537
+          }
+        },
+        {
+          "name": "Перенос не копирует уже сохранённый Blob",
+          "pass": true,
+          "measured": {
+            "new_blob_puts": 0
+          }
+        },
+        {
+          "name": "Нет подтверждения сервера и статуса отправлено",
+          "pass": true,
+          "measured": {
+            "state": "queued",
+            "server_ack": null
+          }
+        },
+        {
+          "name": "Повтор того же намерения не создаёт дубль",
+          "pass": true,
+          "measured": true
+        },
+        {
+          "name": "Повтор сохраняет ID, порядок и байты",
+          "pass": true,
+          "measured": {
+            "retries": 3
+          }
+        },
+        {
+          "name": "Новое подключение восстанавливает очередь",
+          "pass": true,
+          "measured": {
+            "kind": "NEW_CONNECTION_NOT_PROCESS_RESTART"
+          }
+        },
+        {
+          "name": "Новый черновик не удаляет вложения исходящего",
+          "pass": true,
+          "measured": true
+        },
+        {
+          "name": "Устаревший снимок не забирает новый черновик",
+          "pass": true,
+          "measured": true
+        },
+        {
+          "name": "Две вкладки: одно исходящее на одно намерение",
+          "pass": true,
+          "measured": true
+        },
+        {
+          "name": "Одинаковый текст по новому нажатию не подавляется",
+          "pass": true,
+          "measured": true
+        },
+        {
+          "name": "У всех сообщений уникальные ID и возрастающий порядок",
+          "pass": true,
+          "measured": {
+            "messages": 4
+          }
+        },
+        {
+          "name": "Отмена сохранена после подключения",
+          "pass": true,
+          "measured": true
+        },
+        {
+          "name": "Отмена не воскрешается повтором",
+          "pass": true,
+          "measured": true
+        },
+        {
+          "name": "После отмены освобождены неиспользуемые байты",
+          "pass": true,
+          "measured": {
+            "drafts": 1,
+            "assets": 0,
+            "outbox": 3
+          }
+        },
+        {
+          "name": "Потеря байтов блокирует перенос, не очищая текст",
+          "pass": true,
+          "measured": true
+        },
+        {
+          "name": "Автотест не меняет черновик и пользовательскую очередь",
+          "pass": true,
+          "measured": true
+        }
+      ],
+      "manual": {
+        "status": "PENDING_DEVICE_ACCEPTANCE",
+        "keyboard": "NOT_OBSERVED",
+        "rotation": "NOT_OBSERVED",
+        "smoothness": "NOT_MEASURED"
+      },
+      "last_open": {
+        "mount_ms": 178,
+        "bottom_delta_px": 0,
+        "last_id": "m300",
+        "dom_rows": 6
+      },
+      "exported_at": "2026-09-07T22:12:33.382Z",
+      "viewport_now": {
+        "width": 440,
+        "height": 766,
+        "offsetTop": 0,
+        "pageTop": 0,
+        "scale": 1,
+        "list_width": 440,
+        "list_height": 550,
+        "orientation": "landscape-primary"
+      },
+      "observations": {
+        "keyboard": [],
+        "rotation": [],
+        "resizes": [
+          {
+            "width": 440,
+            "height": 766,
+            "offsetTop": 0,
+            "pageTop": 0,
+            "scale": 1,
+            "list_width": 440,
+            "list_height": 550,
+            "orientation": "landscape-primary"
+          },
+          {
+            "width": 440,
+            "height": 766,
+            "offsetTop": 0,
+            "pageTop": 0,
+            "scale": 1,
+            "list_width": 440,
+            "list_height": 550,
+            "orientation": "landscape-primary"
+          }
+        ]
+      },
+      "scroll_evidence": {
+        "events": 1,
+        "renders": 2,
+        "gestures": 0,
+        "programmatic_writes": 1,
+        "writes_from_scroll": 0,
+        "measured_rows": 300,
+        "min_top": 70707,
+        "reached_start": false,
+        "last_write_reason": "explicit-bottom"
+      },
+      "counters": {
+        "active_lists": 1,
+        "created": 1,
+        "destroyed": 0,
+        "max_dom": 20
+      },
+      "composer_metrics": {
+        "inputs": 0,
+        "layout_updates": 2,
+        "metadata_reads": 0,
+        "metadata_active": 0,
+        "max_metadata_active": 0,
+        "urls_created": 0,
+        "urls_revoked": 0,
+        "local_sends": 0,
+        "task_events": 0,
+        "selection_failures": 0
+      },
+      "controls": {
+        "composer_height": 91,
+        "input_height": 40,
+        "input_scroll_height": 40,
+        "send_inside_shell": true,
+        "send_inside_composer": true,
+        "list_height": 550,
+        "shell_top": 0,
+        "shell_bottom": 766,
+        "composer_top": 675,
+        "composer_bottom": 766,
+        "send_top": 689,
+        "send_bottom": 729
+      },
+      "draft_summary": {
+        "characters": 0,
+        "attachments": 0,
+        "expanded": false,
+        "mode": "message",
+        "task_state": null
+      },
+      "resources": {
+        "retained_assets": 0,
+        "active_object_urls": 0
+      },
+      "errors": [],
+      "current_geometry": {
+        "rows": 6,
+        "max_overlap_px": 0,
+        "max_gap_px": 0,
+        "model_error_px": 0,
+        "clipped": 0,
+        "width_errors": 0,
+        "active": 1
+      },
+      "summary": {
+        "checks": 22,
+        "passed": 22
+      },
+      "storage": {
+        "state": "empty",
+        "error": null,
+        "revision": 0,
+        "restored_files": 0,
+        "changes": 0,
+        "failures": 0,
+        "pending": false,
+        "transaction_active": false,
+        "storage": {
+          "persistent": null,
+          "quota": null,
+          "usage": null
+        },
+        "database_stats": {
+          "commits": 0,
+          "blob_puts": 0,
+          "blob_deletes": 0,
+          "aborts": 0,
+          "conflicts": 0,
+          "durability": null
+        },
+        "reload_check": null,
+        "audit": null,
+        "events": [
+          {
+            "state": "empty",
+            "error": null,
+            "at": "2026-09-07T22:12:32.704Z"
+          }
+        ],
+        "scope": "THIS_ORIGIN_THIS_BROWSER_ONLY",
+        "background_save_guaranteed": false
+      },
+      "outbox": {
+        "transport": "NOT_CONNECTED",
+        "state": "ready",
+        "error": null,
+        "groups": 0,
+        "messages": 0,
+        "files": 0,
+        "cancelled": 0,
+        "entries": [],
+        "enqueued_here": 0,
+        "restored_groups": 0,
+        "retried_here": 0,
+        "cancelled_here": 0,
+        "commit_failures": 0,
+        "submit_in_progress": false,
+        "audit": null,
+        "reload_check": null,
+        "network_observed_online": true,
+        "background_delivery": false
+      },
+      "editor_regression": "NOT_RUN"
+    },
+    "report": {
+      "build": "gate-01.5.0-outbox",
+      "generated_at": null,
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15",
+      "dataset": 300,
+      "scope": "Local durable outbox; atomic draft handoff, original attachment bytes and stable IDs. Same origin/browser; no transport, auth, server ACK, offline shell or background delivery.",
+      "overall": "NOT_RUN",
+      "integration": "BLOCKED_PENDING_DEVICE_AND_REAL_TRANSPORT_GATES",
+      "results": [],
+      "manual": {
+        "status": "PENDING_DEVICE_ACCEPTANCE",
+        "keyboard": "SHRINK_OBSERVED_NOT_HUMAN_ACCEPTANCE",
+        "rotation": "WIDTH_CHANGE_OBSERVED_NOT_HUMAN_ACCEPTANCE",
+        "smoothness": "NOT_MEASURED"
+      },
+      "last_open": {
+        "mount_ms": 182,
+        "bottom_delta_px": 0,
+        "last_id": "out-346af593-d499-4f9f-8dbd-9fae889fe008:0",
+        "dom_rows": 9
+      },
+      "exported_at": "2026-09-07T22:12:43.890Z",
+      "viewport_now": {
+        "width": 440,
+        "height": 766,
+        "offsetTop": 0,
+        "pageTop": 0,
+        "scale": 1,
+        "list_width": 440,
+        "list_height": 146,
+        "orientation": "landscape-primary"
+      },
+      "observations": {
+        "keyboard": [
+          {
+            "phase": "shrink",
+            "viewport": {
+              "width": 844,
+              "height": 390,
+              "offsetTop": 0,
+              "pageTop": 0,
+              "scale": 1,
+              "list_width": 800,
+              "list_height": 64,
+              "orientation": "landscape-primary"
+            },
+            "controls": {
+              "composer_height": 290,
+              "input_height": 196,
+              "input_scroll_height": 480,
+              "send_inside_shell": true,
+              "send_inside_composer": true,
+              "list_height": 64,
+              "shell_top": 0,
+              "shell_bottom": 390,
+              "composer_top": 100,
+              "composer_bottom": 390,
+              "send_top": 316,
+              "send_bottom": 356
+            },
+            "bottom_delta_px": 92
+          }
+        ],
+        "rotation": [
+          {
+            "before": {
+              "width": 440,
+              "height": 766,
+              "offsetTop": 0,
+              "pageTop": 0,
+              "scale": 1,
+              "list_width": 440,
+              "list_height": 146,
+              "orientation": "landscape-primary"
+            },
+            "after": {
+              "width": 844,
+              "height": 390,
+              "offsetTop": 0,
+              "pageTop": 0,
+              "scale": 1,
+              "list_width": 800,
+              "list_height": 64,
+              "orientation": "landscape-primary"
+            },
+            "controls": {
+              "composer_height": 290,
+              "input_height": 196,
+              "input_scroll_height": 480,
+              "send_inside_shell": true,
+              "send_inside_composer": true,
+              "list_height": 64,
+              "shell_top": 0,
+              "shell_bottom": 390,
+              "composer_top": 100,
+              "composer_bottom": 390,
+              "send_top": 316,
+              "send_bottom": 356
+            }
+          },
+          {
+            "before": {
+              "width": 844,
+              "height": 390,
+              "offsetTop": 0,
+              "pageTop": 0,
+              "scale": 1,
+              "list_width": 800,
+              "list_height": 64,
+              "orientation": "landscape-primary"
+            },
+            "after": {
+              "width": 440,
+              "height": 766,
+              "offsetTop": 0,
+              "pageTop": 0,
+              "scale": 1,
+              "list_width": 440,
+              "list_height": 146,
+              "orientation": "landscape-primary"
+            },
+            "controls": {
+              "composer_height": 580,
+              "input_height": 480,
+              "input_scroll_height": 480,
+              "send_inside_shell": true,
+              "send_inside_composer": true,
+              "list_height": 146,
+              "shell_top": 0,
+              "shell_bottom": 766,
+              "composer_top": 186,
+              "composer_bottom": 766,
+              "send_top": 689,
+              "send_bottom": 729
+            }
+          }
+        ],
+        "resizes": [
+          {
+            "width": 440,
+            "height": 766,
+            "offsetTop": 0,
+            "pageTop": 0,
+            "scale": 1,
+            "list_width": 440,
+            "list_height": 550,
+            "orientation": "landscape-primary"
+          },
+          {
+            "width": 440,
+            "height": 766,
+            "offsetTop": 0,
+            "pageTop": 0,
+            "scale": 1,
+            "list_width": 440,
+            "list_height": 146,
+            "orientation": "landscape-primary"
+          },
+          {
+            "width": 844,
+            "height": 390,
+            "offsetTop": 0,
+            "pageTop": 0,
+            "scale": 1,
+            "list_width": 800,
+            "list_height": 64,
+            "orientation": "landscape-primary"
+          },
+          {
+            "width": 440,
+            "height": 766,
+            "offsetTop": 0,
+            "pageTop": 0,
+            "scale": 1,
+            "list_width": 440,
+            "list_height": 146,
+            "orientation": "landscape-primary"
+          }
+        ]
+      },
+      "scroll_evidence": {
+        "events": 6,
+        "renders": 11,
+        "gestures": 0,
+        "programmatic_writes": 5,
+        "writes_from_scroll": 0,
+        "measured_rows": 909,
+        "min_top": 51767,
+        "reached_start": false,
+        "last_write_reason": "composer-size"
+      },
+      "counters": {
+        "active_lists": 1,
+        "created": 1,
+        "destroyed": 0,
+        "max_dom": 27
+      },
+      "composer_metrics": {
+        "inputs": 44,
+        "layout_updates": 10,
+        "metadata_reads": 0,
+        "metadata_active": 0,
+        "max_metadata_active": 0,
+        "urls_created": 0,
+        "urls_revoked": 0,
+        "local_sends": 0,
+        "task_events": 0,
+        "selection_failures": 0
+      },
+      "controls": {
+        "composer_height": 580,
+        "input_height": 480,
+        "input_scroll_height": 480,
+        "send_inside_shell": true,
+        "send_inside_composer": true,
+        "list_height": 146,
+        "shell_top": 0,
+        "shell_bottom": 766,
+        "composer_top": 186,
+        "composer_bottom": 766,
+        "send_top": 689,
+        "send_bottom": 729
+      },
+      "draft_summary": {
+        "characters": 104,
+        "attachments": 0,
+        "expanded": false,
+        "mode": "message",
+        "task_state": null
+      },
+      "resources": {
+        "retained_assets": 0,
+        "active_object_urls": 0
+      },
+      "errors": [],
+      "current_geometry": {
+        "rows": 7,
+        "max_overlap_px": 0,
+        "max_gap_px": 0,
+        "model_error_px": 0,
+        "clipped": 0,
+        "width_errors": 0,
+        "active": 1
+      },
+      "summary": null,
+      "storage": {
+        "state": "saved",
+        "error": null,
+        "revision": 12,
+        "restored_files": 0,
+        "changes": 7,
+        "failures": 0,
+        "pending": false,
+        "transaction_active": false,
+        "storage": {
+          "persistent": null,
+          "quota": null,
+          "usage": null
+        },
+        "database_stats": {
+          "commits": 2,
+          "blob_puts": 0,
+          "blob_deletes": 0,
+          "aborts": 0,
+          "conflicts": 0,
+          "durability": "strict"
+        },
+        "reload_check": null,
+        "audit": null,
+        "events": [
+          {
+            "state": "restored",
+            "error": null,
+            "at": "2026-09-07T22:12:39.767Z"
+          },
+          {
+            "state": "dirty",
+            "error": null,
+            "at": "2026-09-07T22:12:39.880Z"
+          },
+          {
+            "state": "saving",
+            "error": null,
+            "at": "2026-09-07T22:12:40.131Z"
+          },
+          {
+            "state": "saved",
+            "error": null,
+            "at": "2026-09-07T22:12:40.134Z"
+          },
+          {
+            "state": "dirty",
+            "error": null,
+            "at": "2026-09-07T22:12:40.253Z"
+          },
+          {
+            "state": "dirty",
+            "error": null,
+            "at": "2026-09-07T22:12:40.266Z"
+          },
+          {
+            "state": "dirty",
+            "error": null,
+            "at": "2026-09-07T22:12:40.268Z"
+          },
+          {
+            "state": "dirty",
+            "error": null,
+            "at": "2026-09-07T22:12:40.270Z"
+          },
+          {
+            "state": "dirty",
+            "error": null,
+            "at": "2026-09-07T22:12:40.271Z"
+          },
+          {
+            "state": "dirty",
+            "error": null,
+            "at": "2026-09-07T22:12:40.302Z"
+          },
+          {
+            "state": "saving",
+            "error": null,
+            "at": "2026-09-07T22:12:40.553Z"
+          },
+          {
+            "state": "saved",
+            "error": null,
+            "at": "2026-09-07T22:12:40.555Z"
+          }
+        ],
+        "scope": "THIS_ORIGIN_THIS_BROWSER_ONLY",
+        "background_save_guaranteed": false
+      },
+      "outbox": {
+        "transport": "NOT_CONNECTED",
+        "state": "ready",
+        "error": null,
+        "groups": 3,
+        "messages": 3,
+        "files": 0,
+        "cancelled": 1,
+        "entries": [
+          {
+            "client_message_id": "f7e5b398-44b8-46f9-a6fa-2e4514e4e6b2",
+            "first_sequence": 6,
+            "messages": 1,
+            "files": 0,
+            "state": "queued",
+            "retries": 0,
+            "server_ack": null
+          },
+          {
+            "client_message_id": "da58585c-1bc1-4f32-b493-9716d6f116af",
+            "first_sequence": 7,
+            "messages": 1,
+            "files": 0,
+            "state": "queued",
+            "retries": 0,
+            "server_ack": null
+          },
+          {
+            "client_message_id": "346af593-d499-4f9f-8dbd-9fae889fe008",
+            "first_sequence": 8,
+            "messages": 1,
+            "files": 0,
+            "state": "queued",
+            "retries": 0,
+            "server_ack": null
+          }
+        ],
+        "enqueued_here": 0,
+        "restored_groups": 3,
+        "retried_here": 0,
+        "cancelled_here": 0,
+        "commit_failures": 0,
+        "submit_in_progress": false,
+        "audit": null,
+        "reload_check": null,
+        "network_observed_online": true,
+        "background_delivery": false
+      },
+      "editor_regression": "NOT_RUN"
+    },
+    "overall": "PASS"
+  }
+]
