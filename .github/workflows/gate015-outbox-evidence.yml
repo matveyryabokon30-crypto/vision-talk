@@ -29,7 +29,7 @@ jobs:
       - name: Build from verified predecessor into isolated test directory
         run: python gates/gate-01-5-outbox/build.py
       - name: Queue transaction, actual reload, process restart, offline enqueue and negative controls
-        run: python gates/gate-01-5-outbox/test.py
+        run: python gates/gate-01-5-outbox/run.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
