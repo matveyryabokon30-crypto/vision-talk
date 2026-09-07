@@ -5,12 +5,21 @@ on:
     paths: ['gates/gate-01-5-outbox/**', '.github/workflows/gate015-outbox-evidence.yml']
 permissions:
   contents: read
+  actions: read
 jobs:
   outbox-proof:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
+      - name: Retrieve original Gate 01.4 served-source snapshot from its successful run
+        uses: actions/download-artifact@v4
+        with:
+          name: gate014-live-ui-and-hosted-source
+          run-id: 34161167177
+          github-token: ${{ github.token }}
+          path: parent-snapshot
+      - run: mkdir -p gates/gate-01-5-outbox/base && cp parent-snapshot/live/site/* gates/gate-01-5-outbox/base/
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
