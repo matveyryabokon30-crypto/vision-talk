@@ -3,9 +3,10 @@
 Recorded date: 2026-09-07.
 Build reported by the devices: `gate-01.1.2-staged`.
 Scope: synthetic 10,000-message list with predetermined row heights.
+Scoped gate status: **ACCEPTED_WITHIN_SYNTHETIC_10K_SCOPE**.
 Automated checks: **PASS REPORTED ON SAFARI AND CHROME, 10K EACH**.
-Manual acceptance: **SAFARI ACCEPTED; CHROME CONFIRMATION PENDING**.
-Production integration: **BLOCKED**.
+Manual acceptance: **SAFARI AND CHROME ACCEPTED — USER CONFIRMATIONS**.
+Production integration: **BLOCKED_PENDING_SUBSEQUENT_SCOPED_GATES**.
 
 ## Evidence provenance
 
@@ -31,7 +32,7 @@ Reported user agent includes `CriOS/153.0.8010.24`.
 
 14/14 automatic checks passed, but the dataset was 100 and acceptance was `SMALL_DATASET_ONLY`. Retain this as small-dataset evidence; do not reclassify it as a 10K run.
 
-### Chrome, 10,000 messages — latest run
+### Chrome, 10,000 messages — latest automatic run
 
 Report: `GATE_01_1_2_IPHONE_CHROME_10000_20260907T143752279Z.json`.
 Commit: `9f85c503e8a59fa4a19e34cd4cd2960eff2c4e9c`.
@@ -40,7 +41,15 @@ Reported user agent includes `CriOS/153.0.8010.24`.
 Viewport: 440 x 366 CSS pixels; DPR 3.
 
 The fields `dataset`, `manualOpen.count`, and `syntheticDatasetSize` all equal 10000; `scopeAcceptance` is `SYNTHETIC_10K_ONLY`.
-14/14 automatic checks passed. This closes the previously missing Chrome 10K automatic run. The `manualOpen` object records an opening operation, not a human evaluation of scrolling. A separate Chrome manual-smoothness confirmation has not yet been supplied with this report.
+14/14 automatic checks passed. This closes the previously missing Chrome 10K automatic run. The `manualOpen` object records an opening operation, not a human evaluation of scrolling.
+
+### Chrome manual acceptance — subsequent user confirmation
+
+After the Chrome 10K report, the assistant asked specifically whether the Chrome list was smooth under the user's finger, without jumps or freezes, and stated that no new run or JSON was needed.
+
+The user replied: **«Все работает хорошо плавно быстро и четко»**.
+
+This reply closes the pending Chrome manual-usability acceptance for the same reported build and synthetic 10K scope. It is user-reported visual and interaction acceptance, not an instrumented frame-rate, latency, or memory measurement. No additional browser run was performed by the assistant in this recording step.
 
 ## Results accepted within automatic-test scope
 
@@ -64,20 +73,24 @@ Render times above are single-run list measurements. They are not network latenc
 | Safari synthetic 10K automatic checks | PASS — user-supplied report | Safari JSON above |
 | Safari manual usability | ACCEPTED — user report | «Все работает» following Safari run |
 | Chrome synthetic 10K automatic checks | PASS — user-supplied report | Chrome 10K JSON above |
-| Chrome manual usability | PENDING CONFIRMATION | No explicit confirmation after the Chrome run yet |
+| Chrome manual usability | ACCEPTED — user report | «Все работает хорошо плавно быстро и четко» after the Chrome-specific question |
+| Gate 01.1.2 synthetic known-height 10K list | ACCEPTED WITHIN SCOPE | Both device reports plus both manual confirmations |
 | Natural-height real text, font/viewport/keyboard changes | NOT TESTED by these reports | Requires separate gate extension |
 | Networking, Realtime, uploads, playback | OUT OF SCOPE | Not authorized by these results |
-| Vision Talk production integration | BLOCKED | Manual device acceptance and subsequent scoped gates remain outstanding |
+| Vision Talk production integration | BLOCKED | Subsequent scoped gates remain outstanding; this gate's device acceptance is complete |
 
 ## Next action
 
-Do not ask for another unchanged Safari or Chrome automatic run: 10K reports now exist for both browsers. Obtain only the user's manual Chrome usability confirmation; if there is a visible defect, record it even though the automatic report says PASS.
+Do not request another unchanged Safari or Chrome automatic run or another manual confirmation. The agreed synthetic 10K acceptance is complete for `gate-01.1.2-staged`. Relevant future implementation or environment changes may require a separately explained regression test; do not silently extend this acceptance to changed code.
 
-The next isolated gate covers natural text heights, wrapping, and viewport/keyboard changes. It must not be described as already built or tested on the basis of this evidence record. Do not treat a synthetic known-height list as proof that media, transport, or the production messenger is ready.
+Advance to an isolated next gate for natural text heights, wrapping, and viewport/keyboard changes. It must not be described as already built or tested on the basis of this evidence record. Do not treat a synthetic known-height list as proof that media, transport, or the production messenger is ready.
+
+Keep the raw JSON files unchanged, including their historical `integration` fields. This record adds the later human decision for the scoped gate; it does not manufacture a new device measurement or authorize production integration.
 
 ## Change history and isolation
 
 - Initial acceptance recording: Safari report and user confirmation saved; Chrome pending.
 - Earlier Chrome report: 100 messages only, retained without scope expansion.
-- Latest recording: Chrome 10K raw report added and this acceptance matrix updated on `messenger-architecture-1.0`.
-- In the latest recording step, no test implementation, deployment, production entry, Supabase state, authentication, transport, or media configuration was changed. Production `main` was not updated.
+- Chrome automatic acceptance: 10K raw report added; manual confirmation remained pending.
+- Latest recording: explicit Chrome manual confirmation added; Gate 01.1.2 accepted for the synthetic known-height 10K scope in both target browsers.
+- This recording step updates only this acceptance document on `messenger-architecture-1.0`. No test implementation, deployment, production entry, Supabase state, authentication, transport, or media configuration is changed. Production `main` is not updated.
