@@ -1,0 +1,67 @@
+{
+  "build": "gate-01.2.0-natural",
+  "recorded_date": "2026-09-07",
+  "scope": "300 locally generated messages with natural DOM text heights; isolated candidate",
+  "integration": "BLOCKED_PENDING_DEVICE_ACCEPTANCE_AND_SUBSEQUENT_GATES",
+  "accepted_gate_01_1_2_unchanged": true,
+  "production_main_changed": false,
+  "source": {
+    "path": "gates/gate-01-2-natural/index.html",
+    "commit": "22afe627daab727ce7da3d18714ebab495508f80",
+    "git_blob": "1cc522e40063a2791c60d7a38652d70b625838b1",
+    "sha256": "67d092bdc8dfd7170ebab4682abfe387c77ea0984b3c11e07de8a8a2ca6bc67e",
+    "bytes": 35898,
+    "repository_blob_matches_locally_tested_bytes": true
+  },
+  "specification_commit": "75db13a3e4739c6fff3967b559757517bff9bbed",
+  "environment": {
+    "engine": "Chromium",
+    "version": "144.0.7559.96",
+    "headless": true,
+    "mobile_emulation": true,
+    "real_ios": false,
+    "load_method": "Playwright set_content of the self-contained HTML, no external application dependencies"
+  },
+  "automatic_runs": [
+    {"viewport": [440,844], "checks": 18, "passed": 18, "overall": "PASS", "max_dom_rows": 12, "initial_mount_ms": 198.6, "initial_bottom_delta_px": 0},
+    {"viewport": [320,640], "checks": 18, "passed": 18, "overall": "PASS", "max_dom_rows": 10, "initial_mount_ms": 60.2, "initial_bottom_delta_px": 0},
+    {"viewport": [390,844], "checks": 18, "passed": 18, "overall": "PASS", "max_dom_rows": 11, "initial_mount_ms": 54.7, "initial_bottom_delta_px": 0},
+    {"viewport": [844,390], "checks": 18, "passed": 18, "overall": "PASS", "max_dom_rows": 11, "initial_mount_ms": 65.2, "initial_bottom_delta_px": 0}
+  ],
+  "independent_checks": {
+    "external_viewport_change_440_to_844_anchor_delta_px": 0.140625,
+    "negative_forced_row_overlap_detected_px": 265.344,
+    "negative_disabled_anchor_restore_displacement_px": 128,
+    "negative_control_threshold_px": 1.5,
+    "local_send_last_message": 301,
+    "local_send_bottom_delta_px": 0,
+    "after_15_additional_restarts": {"created": 16, "destroyed": 15, "active": 1},
+    "javascript_disabled_explanation_visible": true
+  },
+  "deployment": {
+    "url": "https://slippery-glow-x7jr5t2.shipstatic.com/",
+    "provider_reported_status": "success",
+    "source_bytes_submitted": 35898,
+    "authentication_required": false,
+    "expires_unless_claimed": true,
+    "independent_live_browser_execution": "NOT_VERIFIED",
+    "verification_limit": "Container DNS fetch failed; Opera connector returned no tabs. Provider confirmed publication. Local Chromium tests are not represented as live Safari tests."
+  },
+  "not_verified": [
+    "Real Safari iPhone keyboard and rotation",
+    "Real Chrome iPhone keyboard and rotation",
+    "Human scrolling smoothness for this new candidate",
+    "Production networking, persistence, Realtime, uploads, video playback",
+    "Natural-height production 10K scale",
+    "Frame rate, memory under long use, screen-reader behavior"
+  ],
+  "tooling_limitations": [
+    "Playwright WebKit installation failed due to DNS download failure; no WebKit execution is claimed.",
+    "Synthetic window-height changes are explicitly not proof of an iOS keyboard."
+  ],
+  "development_findings": [
+    "A pre-release font-size test detected 57.281 px anchor movement. The candidate was corrected to preserve the last stable pre-change anchor and retested before publication.",
+    "A pre-release 320 px-width run inspected only 295 of 300 messages. The test failed coverage, then gained an explicit pass over previously unvisited message IDs. Final tested source inspected all 300. Thresholds were not weakened."
+  ],
+  "evidence_delivery": "Full per-run JSON, independent-checks JSON, source HTML, test drivers and screenshots are provided in Vision_Talk_Gate_01_2_Natural_Text.zip in the conversation. This summary is not a hardware device acceptance record."
+}
