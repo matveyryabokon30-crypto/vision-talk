@@ -1,0 +1,276 @@
+{
+  "build": "gate-01.2.1-scroll-isolation",
+  "generated_at": "2026-09-07T15:54:58.493Z",
+  "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 26_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/153.0.8010.24 Mobile/15E148 Safari/604.1",
+  "dataset": 300,
+  "scope": "Natural-height generated text; local DOM only. No Auth, network, uploads or video. This 300-message page is premeasured in bounded DOM batches, not a 10K natural-text qualification.",
+  "overall": "PASS",
+  "integration": "BLOCKED_PENDING_DEVICE_ACCEPTANCE",
+  "results": [
+    {
+      "name": "Первый показ: последнее сообщение",
+      "pass": true,
+      "measured": {
+        "mount_ms": 91,
+        "bottom_delta_px": 0,
+        "last_id": "m300",
+        "dom_rows": 6
+      },
+      "criterion": "≤2 px, m300 в DOM и виден"
+    },
+    {
+      "name": "Последняя карточка видна в первом проверенном кадре",
+      "pass": true,
+      "measured": {
+        "last_bottom": 708.25,
+        "viewport_bottom": 709
+      },
+      "criterion": "последний пузырь внутри видимой области"
+    },
+    {
+      "name": "Естественные высоты, без заданной row.height",
+      "pass": true,
+      "measured": {
+        "different_heights": 9,
+        "visited": 300
+      },
+      "criterion": "≥6 разных высот; CSS не задаёт высоту строки"
+    },
+    {
+      "name": "Тексты не обрезаются и не выходят за ширину",
+      "pass": true,
+      "measured": {
+        "clipped": 0,
+        "width_errors": 0,
+        "visited": 300
+      },
+      "criterion": "0 ошибок; осмотрены все 300 сообщений"
+    },
+    {
+      "name": "Карточки не перекрываются, модель измерена по DOM",
+      "pass": true,
+      "measured": {
+        "max_overlap_px": 0,
+        "max_gap_px": 0,
+        "model_error_px": 0
+      },
+      "criterion": "каждое отклонение ≤1.5 px"
+    },
+    {
+      "name": "50 старых: опора сохраняется",
+      "pass": true,
+      "measured": 0,
+      "criterion": "≤1.5 px"
+    },
+    {
+      "name": "Увеличение сообщения выше опоры",
+      "pass": true,
+      "measured": 0,
+      "criterion": "≤1.5 px"
+    },
+    {
+      "name": "Входящее не уводит из истории",
+      "pass": true,
+      "measured": {
+        "delta": 0,
+        "badge": true
+      },
+      "criterion": "≤1.5 px и индикатор нового сообщения"
+    },
+    {
+      "name": "Картинка после задержки не меняет зарезервированное место",
+      "pass": true,
+      "measured": {
+        "loaded": true,
+        "delta": 0
+      },
+      "criterion": "реальная загрузка локальной картинки, сдвиг ≤1.5 px"
+    },
+    {
+      "name": "Изменение ширины: переносы и опора",
+      "pass": true,
+      "measured": {
+        "delta": 0,
+        "audit": {
+          "rows": 7,
+          "max_overlap_px": 0,
+          "max_gap_px": 0,
+          "model_error_px": 0,
+          "clipped": 0,
+          "width_errors": 0,
+          "active": 1
+        },
+        "simulation": true
+      },
+      "criterion": "≤1.5 px; без обрезания; это не физический поворот"
+    },
+    {
+      "name": "Крупный текст: перерасчёт без потери опоры",
+      "pass": true,
+      "measured": {
+        "delta": 0,
+        "audit": {
+          "rows": 7,
+          "max_overlap_px": 0,
+          "max_gap_px": 0,
+          "model_error_px": 0,
+          "clipped": 0,
+          "width_errors": 0,
+          "active": 1
+        }
+      },
+      "criterion": "≤1.5 px и корректный DOM"
+    },
+    {
+      "name": "Сжатие окна в истории — симуляция",
+      "pass": true,
+      "measured": {
+        "delta": 0,
+        "simulation": true
+      },
+      "criterion": "≤1.5 px; НЕ доказательство экранной клавиатуры"
+    },
+    {
+      "name": "Сжатие окна внизу — симуляция",
+      "pass": true,
+      "measured": {
+        "distance": 0,
+        "simulation": true
+      },
+      "criterion": "≤2 px; НЕ доказательство экранной клавиатуры"
+    },
+    {
+      "name": "Входящее в конце остаётся видимым",
+      "pass": true,
+      "measured": 0,
+      "criterion": "≤2 px"
+    },
+    {
+      "name": "Обработка scroll не записывает позицию",
+      "pass": true,
+      "measured": {
+        "writes": 0
+      },
+      "criterion": "0 записей из обработчика; программные входные события, НЕ пальцевый тест"
+    },
+    {
+      "name": "Обработка scroll не измеряет текст повторно",
+      "pass": true,
+      "measured": {
+        "measured_rows": 0
+      },
+      "criterion": "0 повторных измерений на пути scroll"
+    },
+    {
+      "name": "Повторный запуск: один активный список",
+      "pass": true,
+      "measured": {
+        "active": 1,
+        "actual": 7,
+        "model": 7
+      },
+      "criterion": "1 список; actual DOM = model"
+    },
+    {
+      "name": "Ограниченный DOM во всех операциях",
+      "pass": true,
+      "measured": 29,
+      "criterion": "≤120 строк"
+    },
+    {
+      "name": "Начальная отрисовка в этом прогоне",
+      "pass": true,
+      "measured": 91,
+      "criterion": "<1500 ms; не FPS и не скорость сети"
+    },
+    {
+      "name": "Ошибки JavaScript",
+      "pass": true,
+      "measured": [],
+      "criterion": "0"
+    }
+  ],
+  "manual": {
+    "status": "PENDING_USER_CONFIRMATION",
+    "keyboard": "NOT_OBSERVED",
+    "rotation": "NOT_OBSERVED",
+    "smoothness": "NOT_MEASURED"
+  },
+  "observations": {
+    "keyboard": [],
+    "rotation": [],
+    "resizes": [
+      {
+        "width": 440,
+        "height": 766,
+        "offsetTop": 0,
+        "scale": 1,
+        "list_width": 440,
+        "list_height": 583,
+        "orientation": "portrait-primary"
+      }
+    ],
+    "local_sends": 1,
+    "text_edits": 1,
+    "delayed_images": 4
+  },
+  "scroll_evidence": {
+    "events": 2216,
+    "renders": 2438,
+    "gestures": 10,
+    "programmatic_writes": 253,
+    "writes_from_scroll": 0,
+    "measured_rows": 8682,
+    "min_top": -178,
+    "reached_start": true,
+    "last_write_reason": "explicit-bottom"
+  },
+  "errors": [],
+  "last_open": {
+    "mount_ms": 50,
+    "bottom_delta_px": 0,
+    "last_id": "m300",
+    "dom_rows": 7
+  },
+  "viewport": {
+    "width": 440,
+    "height": 766,
+    "offsetTop": 0,
+    "scale": 1,
+    "list_width": 440,
+    "list_height": 583,
+    "orientation": "portrait-primary"
+  },
+  "summary": {
+    "checks": 20,
+    "passed": 20,
+    "max_dom": 29,
+    "initial_mount_ms": 91,
+    "first_bottom_delta_px": 0
+  },
+  "exported_at": "2026-09-07T15:55:07.577Z",
+  "viewport_now": {
+    "width": 440,
+    "height": 766,
+    "offsetTop": 0,
+    "scale": 1,
+    "list_width": 440,
+    "list_height": 583,
+    "orientation": "portrait-primary"
+  },
+  "counters": {
+    "active_lists": 1,
+    "created": 13,
+    "destroyed": 12,
+    "max_dom": 29
+  },
+  "current_geometry": {
+    "rows": 7,
+    "max_overlap_px": 0,
+    "max_gap_px": 0,
+    "model_error_px": 0,
+    "clipped": 0,
+    "width_errors": 0,
+    "active": 1
+  }
+}
