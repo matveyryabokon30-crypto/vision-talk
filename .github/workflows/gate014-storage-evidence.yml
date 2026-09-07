@@ -1,0 +1,80 @@
+name: Gate 01.4 isolated storage evidence
+on:
+  push:
+    branches: [messenger-architecture-1.0]
+    paths: [.github/workflows/gate014-storage-evidence.yml]
+permissions:
+  contents: read
+jobs:
+  storage-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install playwright==1.55.0
+      - run: python -m playwright install --with-deps chromium webkit
+      - name: Test actual IndexedDB and browser process restart
+        shell: bash
+        run: |
+          mkdir -p evidence
+          cat > /tmp/test_gate014.py <<'PY'
+          import functools, http.server, json, pathlib, tempfile, threading
+          from playwright.sync_api import sync_playwright
+          root=pathlib.Path('gates/gate-01-4-draft').resolve()
+          (root/'ci.html').write_text('<!doctype html><meta charset="utf-8"><title>Gate 01.4 native storage proof</title><script src="vault.js"></script>')
+          server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(http.server.SimpleHTTPRequestHandler,directory=str(root)))
+          threading.Thread(target=server.serve_forever,daemon=True).start()
+          url=f'http://127.0.0.1:{server.server_port}/ci.html'
+          out={'environment':'GitHub Actions Linux; headless native engines; NOT physical iOS','results':[]}
+          with sync_playwright() as pw:
+            for engine in ['chromium','webkit']:
+              profile=tempfile.mkdtemp(prefix='gate014-'+engine)
+              launch=getattr(pw,engine).launch_persistent_context
+              ctx=launch(profile,headless=True)
+              p=ctx.new_page(); p.goto(url); p.wait_for_function('!!window.DraftVault')
+              res=p.evaluate('DraftVault.tests()')
+              print(engine,'UNIT',json.dumps(res,ensure_ascii=False),flush=True)
+              assert res['overall']=='PASS',res
+              expected=p.evaluate('''async()=>{
+                const file=new File([new Uint8Array(16*1024*1024).map((_,i)=>i%251)],'16MiB.bin',{type:'application/octet-stream',lastModified:12345});
+                const value={text:'Reload proof\\n\\n🙂 é exact spaces  ',selection:{start:2,end:8,direction:'forward'},expanded:true,files:[{id:'native-original',name:file.name,type:file.type,size:file.size,lastModified:file.lastModified,kind:'document',file}]};
+                window.s=new DraftVault.DraftStore('native-reload-proof');await s.write(value,0);return DraftVault.fingerprint(value);
+              }''')
+              p.reload();p.wait_for_function('!!window.DraftVault')
+              actual=p.evaluate("async()=>DraftVault.fingerprint(await new DraftVault.DraftStore('native-reload-proof').read())")
+              assert actual==expected,'reload bytes differ'
+              p.close();p=ctx.new_page();p.goto(url);p.wait_for_function('!!window.DraftVault')
+              assert p.evaluate("async()=>DraftVault.fingerprint(await new DraftVault.DraftStore('native-reload-proof').read())")==expected
+              ctx.close()
+              ctx=launch(profile,headless=True);p=ctx.new_page();p.goto(url);p.wait_for_function('!!window.DraftVault')
+              assert p.evaluate("async()=>DraftVault.fingerprint(await new DraftVault.DraftStore('native-reload-proof').read())")==expected,'process restart differs'
+              controller=p.evaluate('''async()=>{
+                let value=DraftVault.empty();const states=[];
+                const c=new DraftVault.Controller({capture:()=>value,restore:async r=>{value=r},lock:()=>{},paint:s=>states.push(s.state)});
+                c.store=new DraftVault.DraftStore('queue-'+DraftVault.uid());await c.init();
+                const original=c.store.write.bind(c.store);c.store.write=async(...args)=>{await new Promise(r=>setTimeout(r,80));return original(...args)};
+                value={...value,text:'first'};c.changed();const f=c.flush();
+                await new Promise(r=>setTimeout(r,10));const saving=states.at(-1);value={...value,text:'newest'};c.changed();await c.flush();await f;
+                const stored=await c.store.read();if(stored.text!=='newest'||c.state!=='saved')throw Error('queue lost latest');
+                c.store.fault='quota';value={...value,text:'not yet saved'};c.changed();try{await c.flush()}catch{};
+                if(c.state!=='error'||value.text!=='not yet saved'||(await c.store.read()).text!=='newest')throw Error('false saved or lost draft on failure');
+                await c.retry();if((await c.store.read()).text!=='not yet saved')throw Error('retry failed');
+                const answer={state:c.state,truthful_saving:saving==='saving',queue_preserves_latest:true,quota_is_injected:true,error_keeps_live_and_old_saved_text:true,retry:true};await c.store.destroy();return answer;
+              }''')
+              assert controller['truthful_saving'],controller
+              out['results'].append({'engine':engine,'native_idb':res,'real_page_reload':True,'real_new_tab':True,'real_browser_process_restart':True,'original_file_bytes':16*1024*1024,'sha256_match':True,'controller':controller})
+              ctx.close()
+          server.shutdown()
+          pathlib.Path('evidence/native-storage.json').write_text(json.dumps(out,ensure_ascii=False,indent=2))
+          print('GATE014_NATIVE_PROOF',json.dumps(out,ensure_ascii=False),flush=True)
+          PY
+          python /tmp/test_gate014.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gate014-native-storage-evidence
+          path: evidence/
+          retention-days: 14
