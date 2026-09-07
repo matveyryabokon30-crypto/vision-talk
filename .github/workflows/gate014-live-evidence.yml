@@ -1,0 +1,27 @@
+name: Gate 01.4 live UI evidence
+on:
+  push:
+    branches: [messenger-architecture-1.0]
+    paths: [.github/workflows/gate014-live-evidence.yml, gates/gate-01-4-draft/live_test.py]
+permissions:
+  contents: read
+jobs:
+  live-draft-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install playwright==1.55.0 pillow==11.3.0
+      - run: python -m playwright install --with-deps chromium webkit
+      - run: command -v ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+      - name: Live HTTPS reload, file integrity, new tab, process restart and UI regressions
+        run: python gates/gate-01-4-draft/live_test.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gate014-live-ui-and-hosted-source
+          path: evidence/
+          retention-days: 14
