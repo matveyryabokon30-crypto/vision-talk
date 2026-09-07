@@ -1,12 +1,15 @@
-"""Run unchanged live acceptance predicates without Playwright's eval-based wait.
-The page CSP intentionally omits unsafe-eval. Python polls debugger evaluate;
-no site policy, JavaScript implementation or assertion is changed.
+"""Run live acceptance predicates without Playwright's eval-based wait.
+Site CSP remains unchanged. Polling also waits for the diagnostic capture API,
+which is exported after asynchronous restore-checkpoint verification. vault.ready
+alone marks data restored, not completion of that diagnostic API installation.
 """
 import pathlib, time
 from playwright.sync_api import Page, TimeoutError
 
 
 def csp_safe_wait(page, expression, *, timeout=30000, **kwargs):
+    if 'vault.ready' in expression:
+        expression='('+expression+') && typeof window.gate?.captureDraft === "function"'
     deadline=time.monotonic()+timeout/1000
     while time.monotonic()<deadline:
         try:
