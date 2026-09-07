@@ -1,0 +1,31 @@
+name: Gate 01.5 isolated outbox evidence
+on:
+  push:
+    branches: [messenger-architecture-1.0]
+    paths: ['gates/gate-01-5-outbox/**', '.github/workflows/gate015-outbox-evidence.yml']
+permissions:
+  contents: read
+jobs:
+  outbox-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install playwright==1.55.0 pillow==11.3.0
+      - run: python -m playwright install --with-deps chromium webkit
+      - run: command -v ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+      - name: Build from verified predecessor into isolated test directory
+        run: python gates/gate-01-5-outbox/build.py
+      - name: Queue transaction, actual reload, process restart, offline enqueue and negative controls
+        run: python gates/gate-01-5-outbox/test.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gate015-outbox-evidence-and-source
+          path: |
+            evidence/gate015/
+            gates/gate-01-5-outbox/
+          retention-days: 14
