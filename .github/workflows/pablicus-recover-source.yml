@@ -1,0 +1,36 @@
+name: Pablicus recover verified UI
+on:
+  push:
+    branches: [messenger-architecture-1.0]
+    paths: [.github/workflows/pablicus-recover-source.yml]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: messenger-architecture-1.0
+      - uses: actions/download-artifact@v4
+        with:
+          name: gate015-outbox-evidence-and-source
+          run-id: 34165808239
+          github-token: ${{ github.token }}
+          path: /tmp/pablicus-verified
+      - name: Preserve executable predecessor and test evidence
+        run: |
+          set -euo pipefail
+          test ! -d apps/pablicus/inherited/gate015
+          mkdir -p apps/pablicus/inherited/gate015 docs/pablicus
+          cp /tmp/pablicus-verified/gates/gate-01-5-outbox/site/* apps/pablicus/inherited/gate015/
+          cp /tmp/pablicus-verified/evidence/gate015/results.json docs/pablicus/GATE015_REMOTE_RESULTS.json
+          sha256sum apps/pablicus/inherited/gate015/* > docs/pablicus/GATE015_SOURCE_SHA256.txt
+          printf '%s\n' 'Source: successful run 34165808239, artifact 10034114431. Original gate source; not production integration or iPhone acceptance. Existing scoped PASS remains unchanged.' > docs/pablicus/RECOVERY.md
+          git config user.name 'Pablicus source recovery'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/pablicus/inherited/gate015 docs/pablicus
+          git commit -m 'Preserve complete verified Gate 01.5 executable source and evidence for Pablicus'
+          git push origin HEAD:messenger-architecture-1.0
