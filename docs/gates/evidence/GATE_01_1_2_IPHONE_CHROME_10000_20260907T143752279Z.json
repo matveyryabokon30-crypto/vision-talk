@@ -1,0 +1,130 @@
+{
+  "build": "gate-01.1.2-staged",
+  "generated_at": "2026-09-07T14:37:52.279Z",
+  "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 26_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/153.0.8010.24 Mobile/15E148 Safari/604.1",
+  "viewport": {
+    "width": 440,
+    "height": 366,
+    "dpr": 3
+  },
+  "dataset": 10000,
+  "results": [
+    {
+      "name": "Начальное открытие сразу в конце",
+      "pass": true,
+      "measured": "distance=0.00px, last=#10000",
+      "criterion": "≤2px и последнее сообщение видно",
+      "detail": ""
+    },
+    {
+      "name": "Ограниченное число DOM-строк",
+      "pass": true,
+      "measured": "12 rows",
+      "criterion": "≤120",
+      "detail": ""
+    },
+    {
+      "name": "Prepend сохраняет визуальный anchor",
+      "pass": true,
+      "measured": "0.00px",
+      "criterion": "≤1.5px",
+      "detail": "anchor message #221"
+    },
+    {
+      "name": "DOM-лимит сохраняется после prepend",
+      "pass": true,
+      "measured": "21 rows",
+      "criterion": "≤120",
+      "detail": ""
+    },
+    {
+      "name": "Новое сообщение следует за пользователем внизу",
+      "pass": true,
+      "measured": "distance=0.00px, last=#10001",
+      "criterion": "≤2px и новое видно",
+      "detail": ""
+    },
+    {
+      "name": "Новое сообщение не уводит из истории",
+      "pass": true,
+      "measured": "scroll Δ=0.00px, first #9682→#9682",
+      "criterion": "≤1.5px",
+      "detail": "badge должен появиться"
+    },
+    {
+      "name": "Стресс-прокрутка не раздувает DOM",
+      "pass": true,
+      "measured": "max 24 rows",
+      "criterion": "≤120",
+      "detail": ""
+    },
+    {
+      "name": "Возврат в конец после стресс-теста",
+      "pass": true,
+      "measured": "0.00px",
+      "criterion": "≤2px",
+      "detail": ""
+    },
+    {
+      "name": "Лента не шире экрана",
+      "pass": true,
+      "measured": "440.0px / экран 440px",
+      "criterion": "лента полностью внутри экрана",
+      "detail": ""
+    },
+    {
+      "name": "Нет старых активных списков",
+      "pass": true,
+      "measured": 1,
+      "criterion": "ровно 1",
+      "detail": ""
+    },
+    {
+      "name": "Фактический DOM совпадает с моделью",
+      "pass": true,
+      "measured": "11 DOM / 11 model",
+      "criterion": "совпадение, ≤120",
+      "detail": ""
+    },
+    {
+      "name": "Реальная геометрия совпадает с моделью",
+      "pass": true,
+      "measured": "0.00px",
+      "criterion": "≤1.5px",
+      "detail": ""
+    },
+    {
+      "name": "Время начальной отрисовки",
+      "pass": true,
+      "measured": "60.0ms",
+      "criterion": "<1000ms в этом прогоне",
+      "detail": ""
+    },
+    {
+      "name": "Нет ошибок JavaScript",
+      "pass": true,
+      "measured": 0,
+      "criterion": "0",
+      "detail": ""
+    }
+  ],
+  "overall": "PASS",
+  "integration": "BLOCKED_PENDING_DEVICE_ACCEPTANCE",
+  "scope": "Synthetic known-height list; not proof of networking, media, or natural text sizing",
+  "manualOpen": {
+    "count": 10000,
+    "bottom_delta_px": 0,
+    "last_id": 10000,
+    "dom_rows": 12,
+    "mount_ms": 43.99999999999818
+  },
+  "syntheticDatasetSize": 10000,
+  "scopeAcceptance": "SYNTHETIC_10K_ONLY",
+  "summary": {
+    "mount_ms": 60,
+    "initial_bottom_delta_px": 0,
+    "prepend_anchor_delta_px": 0,
+    "max_dom_rows": 24,
+    "final_bottom_delta_px": 0
+  }
+}
