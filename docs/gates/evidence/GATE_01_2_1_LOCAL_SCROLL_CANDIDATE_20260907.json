@@ -1,0 +1,57 @@
+{
+  "build": "gate-01.2.1-scroll-isolation",
+  "recorded_date": "2026-09-07",
+  "status": "LOCAL_TESTS_PASS_DEVICE_ACCEPTANCE_PENDING",
+  "integration": "BLOCKED",
+  "predecessor_status": "gate-01.2.0-natural FAIL_MANUAL_SCROLL",
+  "device_failure_record_commit": "61acd60d41b8b8eee8003e83a161d72bd4c95fca",
+  "source": {
+    "sha256": "2475d8d580a5582d993dacbe75b9df41015f3fa19e148b9b797566bfb7626b6c",
+    "bytes": 40043,
+    "delivery": "Conversation artifact Vision_Talk_Gate_01_2_1_Scroll_Isolation.zip, site/index.html",
+    "reproducibility": "Archive includes original/site/index.html, candidate.patch, build.py, newclass.js, test drivers and result JSON",
+    "base_repository_commit": "22afe627daab727ce7da3d18714ebab495508f80",
+    "base_path": "gates/gate-01-2-natural/index.html",
+    "base_sha256": "67d092bdc8dfd7170ebab4682abfe387c77ea0984b3c11e07de8a8a2ca6bc67e"
+  },
+  "environment": {"engine": "Chromium", "version": "144.0.7559.96", "headless": true, "mobile_emulation": true, "real_ios": false},
+  "automatic_checks": [
+    {"viewport": [440,844], "passed": 20, "total": 20},
+    {"viewport": [320,640], "passed": 20, "total": 20},
+    {"viewport": [390,844], "passed": 20, "total": 20},
+    {"viewport": [844,390], "passed": 20, "total": 20}
+  ],
+  "external_property_probe": {
+    "eight_CDP_touch_gestures_original": {"application_scrollTop_assignments": 205, "DOM_rect_reads": 3843},
+    "eight_CDP_touch_gestures_candidate": {"application_scrollTop_assignments": 0, "DOM_rect_reads": 0},
+    "note": "External wrappers, not only the application's own counters. Not a device momentum trace."
+  },
+  "native_wheel_traversal": {
+    "start": "m300", "end": "m1", "steps": 56, "reached_start": true,
+    "monotonic_upward": true, "application_scrollTop_assignments": 0,
+    "DOM_rect_reads": 0, "remeasured_rows": 0, "total_height_delta_px": 0
+  },
+  "negative_controls": {
+    "reintroduced_scroll_correction": "DETECTED",
+    "forced_row_overlap": "DETECTED",
+    "disabled_anchor_restore": "DETECTED"
+  },
+  "delayed_image_after_user_scroll": {"same_anchor": true, "displacement_px": 0},
+  "deployment": {
+    "url": "https://resonant-aura-p792qtp.shipstatic.com/",
+    "provider_status": "success",
+    "provider_total_bytes_including_config": 40138,
+    "expires_epoch_unless_claimed": 1789055088,
+    "independent_live_browser_execution": "NOT_VERIFIED",
+    "limitation": "Opera browser connector returned Browser not connected; container external DNS unavailable."
+  },
+  "limits": [
+    "300 generated natural-height messages, premeasured in batches of at most 20 DOM rows before scrolling",
+    "Not proof of 10K natural-message startup or production paging",
+    "No actual iPhone keyboard, rotation, or manual smoothness acceptance for this candidate",
+    "No network, auth, Realtime, uploads or video tested"
+  ],
+  "production_main_changed": false,
+  "accepted_gate_01_1_2_changed": false,
+  "next_device_check": "Chrome: open chat, swipe to #1 without the top button or automatic test, then verify keyboard while reading history. A manual failure blocks the gate even if auto checks pass."
+}
