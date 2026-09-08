@@ -31,7 +31,7 @@
   if(!navigator.onLine)return 'Нет сети. Подключитесь и повторите вход.';
   return 'Не удалось завершить вход. Проверьте соединение и повторите попытку.';
  }
- function mount({client,projectUrl,authenticate}){
+ function mount({client,projectUrl,authenticate,recoveryClient=client,canSignIn=()=>true}){
   const $=id=>document.getElementById(id),key='pablicus:pending-email-login:v1';
   let requestedEmail='',nextRequest=0,busy=false;
   const error=t=>{$('loginError').textContent=t},notice=t=>{$('loginNotice').textContent=t};
@@ -40,20 +40,20 @@
   function persist(){try{localStorage.setItem(key,JSON.stringify({email:requestedEmail,until:Date.now()+3600000,nextRequest}))}catch{}}
   $('showLoginPassword').onchange=()=>{$('password').type=$('showLoginPassword').checked?'text':'password'};
   $('recoverPassword').onclick=async()=>{
-   if(busy)return;error('');notice('');
+   if(busy||!canSignIn())return;error('');notice('');
    if(!$('email').reportValidity())return;
    if(Date.now()<nextRequest){error('Новое письмо можно запросить через '+Math.ceil((nextRequest-Date.now())/1000)+' сек.');return}
    busy=true;$('recoverPassword').disabled=true;
    try{
     const redirectTo=new URL('access.html',location.href).href;
-    const result=await client.auth.resetPasswordForEmail($('email').value.trim(),{redirectTo});
+    const result=await recoveryClient.auth.resetPasswordForEmail($('email').value.trim(),{redirectTo});
     if(result.error)throw result.error;
     nextRequest=Date.now()+60000;
     notice('Восстановление запрошено. Если аккаунт существует, на указанную почту придёт письмо. Нажмите кнопку в письме и задайте новый пароль.');
    }catch(e){error(message(e))}finally{busy=false;$('recoverPassword').disabled=false}
   };
   $('magicForm').onsubmit=async e=>{
-   e.preventDefault();if(busy)return;
+   e.preventDefault();if(busy||!canSignIn())return;
    const email=$('email').value.trim().toLowerCase();
    if(!$('email').reportValidity())return;
    if(Date.now()<nextRequest){error('Новое письмо можно запросить через '+Math.ceil((nextRequest-Date.now())/1000)+' сек.');return}
@@ -66,7 +66,7 @@
    }catch(e){notice('');error(message(e))}finally{busy=false;$('magicSubmit').disabled=false}
   };
   $('proofForm').onsubmit=async e=>{
-   e.preventDefault();if(busy)return;error('');
+   e.preventDefault();if(busy||!canSignIn())return;error('');
    const email=$('email').value.trim().toLowerCase();
    if(!$('email').reportValidity())return;
    if(requestedEmail&&requestedEmail!==email){error('Адрес изменился. Запросите письмо для нового адреса.');return}
@@ -86,11 +86,11 @@
    if(!navigator.clipboard?.readText)throw Error('manual');
    $('emailProof').value=await navigator.clipboard.readText();$('emailProof').focus();
   }catch{notice('Коснитесь поля «Код или ссылка» и выберите «Вставить». Доступ к буферу автоматически не требуется.');$('emailProof').focus()}};
-  $('loginForm').onsubmit=async e=>{e.preventDefault();if(busy)return;error('');busy=true;$('loginSubmit').disabled=true;try{
+  $('loginForm').onsubmit=async e=>{e.preventDefault();if(busy||!canSignIn())return;error('');busy=true;$('loginSubmit').disabled=true;try{
    const result=await client.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});
    if(result.error)throw result.error;$('password').value='';$('password').type='password';$('showLoginPassword').checked=false;await authenticate(result.data.session);clear();
   }catch(e){error(message(e))}finally{busy=false;$('loginSubmit').disabled=false}};
-  return {clear};
+  return {clear,isBusy:()=>busy};
  }
  const api=Object.freeze({parseProof,mount});
  if(typeof module!=='undefined'&&module.exports)module.exports=api;
