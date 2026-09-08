@@ -5,6 +5,9 @@ on:
     paths: ['apps/pablicus/**', '.github/workflows/pablicus-rc2-check.yml']
 permissions:
   contents: read
+concurrency:
+  group: pablicus-rc2-check
+  cancel-in-progress: true
 jobs:
   candidate:
     runs-on: ubuntu-latest
@@ -14,10 +17,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Build and check syntax
+      - name: Build, finalize lifecycle, and check syntax
         run: |
-          python -m pip install playwright==1.55.0
+          python -m pip install playwright==1.55.0 pillow==11.3.0
           python apps/pablicus/build.py
+          python apps/pablicus/finalize.py
+          grep -F 'async leave(){await this.flush();input.blur();closeMenu(false);list?.destroy();list=null;}' apps/pablicus/dist/chat.js
           for f in apps/pablicus/dist/*.js; do node --check "$f"; done
       - name: Install test browser engines
         run: python -m playwright install --with-deps chromium webkit
