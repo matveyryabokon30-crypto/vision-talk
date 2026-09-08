@@ -2,7 +2,8 @@
 
 Run after installing Playwright browsers. An isolated threaded localhost HTTP
 fixture serves source files and synthetic audio. Media requests never pass
-through Playwright interception; no live account or credentials are used.
+through Playwright interception; only an optional waveform fetch failure is
+explicitly injected. No live account or credentials are used.
 """
 import argparse
 import asyncio
@@ -103,11 +104,10 @@ def fixture_server(html, requests):
 
         def do_GET(self):
             path = urlsplit(self.path).path
-            optional_waveform = self.headers.get('X-Pablicus-Fixture-Waveform') == '1'
-            kind = 'fetch' if optional_waveform else 'media' if path.endswith('.wav') else 'document'
+            kind = 'media' if path.endswith('.wav') else 'document'
             requests.append((path, kind))
             if path.endswith('.wav'):
-                print(f'VOICE_HTTP method={self.command} path={path} range={self.headers.get("Range")} waveform={optional_waveform}', flush=True)
+                print(f'VOICE_HTTP method={self.command} path={path} range={self.headers.get("Range")}', flush=True)
             headers, status, mime = {}, 200, 'text/html; charset=utf-8'
             if path == '/':
                 body = html.encode('utf-8')
@@ -116,10 +116,7 @@ def fixture_server(html, requests):
                 mime, body = 'text/javascript; charset=utf-8', sources[path]
             elif path in ['/voice.wav', '/fallback.wav']:
                 mime = 'audio/wav'
-                if path == '/fallback.wav' and optional_waveform:
-                    status, body = 403, b'Optional waveform unavailable'
-                else:
-                    status, headers, body = media_response(media, self.headers.get('range'))
+                status, headers, body = media_response(media, self.headers.get('range'))
             elif path == '/favicon.ico':
                 status, body = 204, b''
             else:
@@ -207,11 +204,17 @@ async def run(name, browser_type):
     html = '''<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>''' + css + '''
 #canvas{padding:35px 18px}.bubble{margin:0 0 12px;width:max-content;max-width:90%;padding:9px 12px}.richMessage{width:250px}.measureBox{visibility:hidden;height:0;overflow:hidden}
 </style><main id="canvas"></main><aside class="measureBox"></aside><script src="/message-menu.js"></script><script src="/rich-message.js"></script><script>
-window.resolves=0;window.replies=[];window.opens=0;
-// This fixture marks optional JS waveform fetches, preserving native fetch and
-// its AbortSignal. HTMLMediaElement requests remain completely untouched.
+window.resolves=0;window.replies=[];window.opens=0;window.waveformFailures=0;
+// Preserve native request headers/cache semantics for real media and normal
+// waveform decoding. Only the optional fallback waveform fetch is faulted;
+// HTMLMediaElement still receives its complete, real WAV from the HTTP server.
 const realFetch=window.fetch.bind(window);
-window.fetch=(resource,options={})=>realFetch(resource,{...options,headers:{...options.headers,'X-Pablicus-Fixture-Waveform':'1'}});
+window.fetch=(resource,options)=>{
+  if(new URL(typeof resource==='string'?resource:resource.url,location.href).pathname==='/fallback.wav'){
+    window.waveformFailures++;return Promise.reject(new TypeError('Injected optional waveform network failure'));
+  }
+  return realFetch(resource,options);
+};
 const options={resolveUrl:(path)=>{resolves++;return location.origin+'/'+path},onReply:b=>replies.push(b.id),openMedia:()=>opens++};
 function mount(id,path,where='#canvas'){
  const row=document.createElement('div'); row.className='bubble';
@@ -307,9 +310,9 @@ window.first=mount('one','voice.wav');mount('two','voice.wav');mount('measure','
         checks.append('row removal stops playback and releases the media URL; measurement copy never starts')
         assert not errors, errors
         assert not unexpected, unexpected
-        assert ('/fallback.wav', 'fetch') in requests, 'Waveform failure path was not exercised'
+        assert await page.evaluate('waveformFailures') == 1, 'Optional waveform failure path was not exercised exactly once'
         await browser.close()
-        return {'engine': name, 'pass': True, 'checks': checks, 'scope': 'isolated source module with real threaded localhost HTTP and synthetic WAV decoding; no intercepted media, live account or physical iPhone claim'}
+        return {'engine': name, 'pass': True, 'checks': checks, 'scope': 'isolated source module with real threaded localhost HTTP and synthetic WAV decoding; one explicitly injected optional waveform fetch failure; no intercepted native media, live account or physical iPhone claim'}
 
 
 async def main(names):
