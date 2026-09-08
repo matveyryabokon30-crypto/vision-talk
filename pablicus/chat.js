@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const BUILD='pablicus-0.1.0-rc2',COUNT=0,LIMIT=120,OVERSCAN=560;
+const BUILD='pablicus-0.1.0-rc3',COUNT=0,LIMIT=120,OVERSCAN=560;
 const $=id=>document.getElementById(id),vp=$('vp'),canvas=$('canvas'),app=$('app'),input=$('input');
 let sourceMessages=[],scopeUser=null,scopeChat=null,vaultBound=false;let list=null,running=false,seq=COUNT,simulating=false,layoutFrame=0;
 const round=x=>Number(Number(x).toFixed(3));
@@ -485,7 +485,7 @@ window.PablicusChat={
  async refreshQueue(){if(vault)return refreshQueue()},
  get scope(){return{user:scopeUser,chat:scopeChat}},
  get store(){return vault?.store},get snapshot(){return publicSnapshot()},
- async leave(){await this.flush();input.blur();closeMenu(false);list?.destroy();list=null;},
+ async leave(){await this.flush();input.blur();closeMenu(false);},
  addFiles,fillDraft,get list(){return list},get draft(){return draft},get assets(){return assets},
 };
 
