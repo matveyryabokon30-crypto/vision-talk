@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const BUILD='pablicus-0.1.0-rc4',COUNT=0,LIMIT=120,OVERSCAN=560;
+const BUILD='pablicus-0.1.0-rc5',COUNT=0,LIMIT=120,OVERSCAN=560;
 const $=id=>document.getElementById(id),vp=$('vp'),canvas=$('canvas'),app=$('app'),input=$('input');
 let sourceMessages=[],scopeUser=null,scopeChat=null,vaultBound=false;let list=null,running=false,seq=COUNT,simulating=false,layoutFrame=0;
 const round=x=>Number(Number(x).toFixed(3));

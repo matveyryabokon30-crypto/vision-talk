@@ -1,5 +1,6 @@
 /* Pablicus: redeem the user's email proof IN THIS browser or installed app.
- * No session relay, password reset, privileged key, or redirect navigation.
+ * Password recovery is requested only by an explicit user action.
+ * No session relay or privileged key.
  * The proof is sent only to the configured Supabase Auth verify endpoint.
  */
 (function(root){
@@ -26,17 +27,31 @@
   const code=error?.code||'';
   if(['otp_expired','otp_disabled','access_denied'].includes(code)||/expired|invalid.*token/i.test(error?.message||''))return 'Ссылка уже использована или истекла. Получите новое письмо и скопируйте ссылку, НЕ нажимая её.';
   if(error?.status===429||/rate.limit|too many|security purposes/i.test(error?.message||''))return 'Слишком частые запросы. Подождите минуту перед новым письмом.';
-  if(/invalid.*credentials/i.test(error?.message||''))return 'Не подошёл пароль Pablicus. Пароль от почты здесь не используется; можно войти по письму выше.';
+  if(/invalid.*credentials/i.test(error?.message||''))return 'Неверная почта или пароль. Проверьте адрес и пароль Pablicus.';
   if(!navigator.onLine)return 'Нет сети. Подключитесь и повторите вход.';
-  return 'Вход не завершён. Проверьте адрес одобренного аккаунта и используйте новое письмо. Если не получилось — повторите запрос через минуту.';
+  return 'Не удалось завершить вход. Проверьте соединение и повторите попытку.';
  }
  function mount({client,projectUrl,authenticate}){
   const $=id=>document.getElementById(id),key='pablicus:pending-email-login:v1';
   let requestedEmail='',nextRequest=0,busy=false;
   const error=t=>{$('loginError').textContent=t},notice=t=>{$('loginNotice').textContent=t};
-  try{const saved=JSON.parse(localStorage.getItem(key)||'null');if(saved?.email&&saved.until>Date.now()){requestedEmail=saved.email;nextRequest=saved.nextRequest||0;$('email').value=saved.email;$('proofSection').hidden=false}}catch{}
+  try{const saved=JSON.parse(localStorage.getItem(key)||'null');if(saved?.email&&saved.until>Date.now()){requestedEmail=saved.email;nextRequest=saved.nextRequest||0;$('email').value=saved.email;$('proofSection').hidden=false;$('emailLogin').open=true}}catch{}
   const clear=()=>{requestedEmail='';try{localStorage.removeItem(key)}catch{};$('emailProof').value='';$('proofSection').hidden=true;notice('')};
   function persist(){try{localStorage.setItem(key,JSON.stringify({email:requestedEmail,until:Date.now()+3600000,nextRequest}))}catch{}}
+  $('showLoginPassword').onchange=()=>{$('password').type=$('showLoginPassword').checked?'text':'password'};
+  $('recoverPassword').onclick=async()=>{
+   if(busy)return;error('');notice('');
+   if(!$('email').reportValidity())return;
+   if(Date.now()<nextRequest){error('Новое письмо можно запросить через '+Math.ceil((nextRequest-Date.now())/1000)+' сек.');return}
+   busy=true;$('recoverPassword').disabled=true;
+   try{
+    const redirectTo=new URL('access.html',location.href).href;
+    const result=await client.auth.resetPasswordForEmail($('email').value.trim(),{redirectTo});
+    if(result.error)throw result.error;
+    nextRequest=Date.now()+60000;
+    notice('Восстановление запрошено. Если аккаунт существует, на указанную почту придёт письмо. Нажмите кнопку в письме и задайте новый пароль.');
+   }catch(e){error(message(e))}finally{busy=false;$('recoverPassword').disabled=false}
+  };
   $('magicForm').onsubmit=async e=>{
    e.preventDefault();if(busy)return;
    const email=$('email').value.trim().toLowerCase();
@@ -73,7 +88,7 @@
   }catch{notice('Коснитесь поля «Код или ссылка» и выберите «Вставить». Доступ к буферу автоматически не требуется.');$('emailProof').focus()}};
   $('loginForm').onsubmit=async e=>{e.preventDefault();if(busy)return;error('');busy=true;$('loginSubmit').disabled=true;try{
    const result=await client.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});
-   if(result.error)throw result.error;$('password').value='';await authenticate(result.data.session);clear();
+   if(result.error)throw result.error;$('password').value='';$('password').type='password';$('showLoginPassword').checked=false;await authenticate(result.data.session);clear();
   }catch(e){error(message(e))}finally{busy=false;$('loginSubmit').disabled=false}};
   return {clear};
  }

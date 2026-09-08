@@ -1,7 +1,7 @@
-/* Pablicus 0.1.0-rc4. Existing Auth, server sequence, RPCs, Realtime + polling.
+/* Pablicus 0.1.0-rc5. Existing Auth, server sequence, RPCs, Realtime + polling.
    Feed/tasks/AI/video-processing/push are explicitly not enabled in this release. */
 (() => {'use strict';
- const URL='https://ctcoqgsztdtsazdiwcmd.supabase.co',KEY='sb_publishable_kMGqZAM2vadfXbBr8r5uzw_l9EiBtIw',BUCKET='message-media',VERSION='0.1.0-rc4';
+ const URL='https://ctcoqgsztdtsazdiwcmd.supabase.co',KEY='sb_publishable_kMGqZAM2vadfXbBr8r5uzw_l9EiBtIw',BUCKET='message-media',VERSION='0.1.0-rc5';
  const $=x=>document.getElementById(x),el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n};
  const safeGet=k=>{try{return JSON.parse(localStorage.getItem(k))}catch{return null}},safeSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
  const timeoutFetch=async(u,opts={},ms=25000)=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);const abort=()=>c.abort();opts.signal?.addEventListener('abort',abort,{once:true});try{return await fetch(u,{...opts,signal:c.signal})}finally{clearTimeout(t);opts.signal?.removeEventListener('abort',abort)}};
