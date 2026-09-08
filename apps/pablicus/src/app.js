@@ -38,6 +38,7 @@
   if(signal?.aborted)return;
   const attempt=++authVersion;
   if(!session){clearSessionView();return}
+  if(!PablicusPublicPasskey.identityValid(session.user)){clearSessionView();throw Error('Ключ не удалось связать с прежним аккаунтом. Войдите прежним способом.')}
   if(!verifiedPasskey&&(passkeyUnvalidated||safeGet(passkeyGuardKey)===true)){clearSessionView();return}
   if(user?.id===session.user.id&&profile)return;
   if(user&&user.id!==session.user.id)clearSessionView();
@@ -51,9 +52,10 @@
  $('loginForm').onsubmit=async e=>{e.preventDefault();if(passkeySigninActive)return;$('loginSubmit').disabled=true;$('loginError').textContent='';try{const r=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(r.error)throw r.error;$('password').value='';trustExplicitSignIn();await authenticate(r.data.session)}catch(e){$('loginError').textContent=e.message}finally{$('loginSubmit').disabled=false}};
  const authConfig=globalThis.PablicusAuthConfig;
  const passkeyConfig=authConfig?.passkeys;
+ const publicKeyEnabled=authConfig?.publicPasskey?.enabled===true&&authConfig.publicPasskey.origin===location.origin;
  const passkeyEnabled=passkeyConfig?.enabled===true&&passkeyConfig.origin===location.origin&&passkeyConfig.rpId===location.hostname;
  function paintPasskeys(state){
-  $('passkeyLogin').hidden=!(state.enabled&&state.supported);
+  $('passkeyLogin').hidden=!((state.enabled||publicKeyEnabled)&&state.supported);
   $('passkeySignIn').disabled=state.busy;
   $('passkeyLoginStatus').textContent=state.operation==='signIn'?state.message:'';
   const button=$('passkeyRegister'),status=$('passkeySettingsStatus'),list=$('passkeyList');
@@ -84,8 +86,15 @@
   onChange:paintPasskeys,
  });
  paintPasskeys(passkeys.snapshot());
+ const publicKeyFlow=PablicusPublicPasskey.create({client:sb,config:{enabled:publicKeyEnabled},projectUrl:URL,redirectTo:new window.URL('./',location.href).href,validateAuthorizeUrl:PablicusOAuth.validateAuthorizeUrl,onChange:state=>{
+  $('passkeySignIn').disabled=state.busy;
+  $('passkeyLoginStatus').textContent=state.phase==='error'?'Не удалось открыть вход. Попробуйте ещё раз.':state.busy?'Открываем вход с ключом доступа…':'';
+ }});
+ window.addEventListener('pageshow',()=>publicKeyFlow.resume());
+ if(publicKeyEnabled){$('accessModeNote').textContent='Первый вход: имя и ключ доступа. Пароль и SMS не нужны.'}
  $('passkeySignIn').onclick=async()=>{
   if(passkeys.snapshot().busy||passwordLogin?.isBusy())return;
+  if(publicKeyEnabled){await publicKeyFlow.start();return}
   passkeyUnvalidated=true;safeSet(passkeyGuardKey,true);
   if(safeGet(passkeyGuardKey)!==true){$('passkeyLoginStatus').textContent='Разрешите сохранение данных сайта, чтобы безопасно войти с ключом доступа.';return}
   passkeySigninActive=true;passkeyAuthEvent=null;
@@ -100,6 +109,7 @@
   const state=passkeys.snapshot();if(!state.enabled||!state.supported)return;
   const section=el('section','passkey-settings');section.id='passkeySettings';
   section.append(el('h3','','Ключ доступа'),el('p','muted','Вход через Face ID, отпечаток или код устройства. Сохраните ключ в менеджере паролей, чтобы использовать его и на других устройствах.'));
+  if(PablicusPublicPasskey.ownsPublicKey(user)&&!user.email_confirmed_at&&!user.phone_confirmed_at){section.append(el('p','','Аккаунт создан с ключом доступа. Для повторного входа используйте сохранённый ключ.'));container.append(section);return}
   const button=el('button','setting','Создать ключ доступа');button.id='passkeyRegister';button.type='button';button.onclick=()=>passkeys.register();
   const status=el('p');status.id='passkeySettingsStatus';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
   const list=el('ul');list.id='passkeyList';section.append(button,status,list);container.append(section);paintPasskeys(state);passkeys.list();
