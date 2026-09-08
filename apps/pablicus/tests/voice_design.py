@@ -150,8 +150,55 @@ def fixture_server(html, requests):
         thread.join(timeout=2)
 
 
+async def diagnose_native_audio(name, browser):
+    """Separate native transport/decoder behavior from the product renderer.
+
+    These observations never replace or relax the actual player assertions.
+    Every mode receives the same real 12-second WAV and native media APIs.
+    """
+    html = '''<!doctype html><meta charset="utf-8"><button id="play">Play</button>
+<audio id="audio" preload="none"></audio><script>
+window.nativeErrors=[];window.decodedDuration=null;window.mediaUrl='/voice.wav';
+document.querySelector('#play').onclick=()=>{
+  const audio=document.querySelector('#audio');audio.src=window.mediaUrl;
+  audio.play().catch(error=>nativeErrors.push(error.name+': '+error.message));
+  if(window.mode==='http-with-waveform'){
+    fetch('/voice.wav').then(response=>response.arrayBuffer()).then(bytes=>
+      new OfflineAudioContext(1,1,16000).decodeAudioData(bytes)
+    ).then(decoded=>window.decodedDuration=decoded.duration)
+     .catch(error=>nativeErrors.push('decode: '+error.name));
+  }
+};
+</script>'''
+    requests = []
+    with fixture_server(html, requests) as origin:
+        for mode in ['http', 'http-with-waveform', 'blob']:
+            context = await browser.new_context(viewport={'width': 390, 'height': 844}, has_touch=True, service_workers='block')
+            page = await context.new_page()
+            page.set_default_timeout(5000)
+            snapshots = []
+            try:
+                await page.goto(origin + '/')
+                await page.evaluate('(mode)=>window.mode=mode', mode)
+                if mode == 'blob':
+                    await page.evaluate("async()=>{const response=await fetch('/voice.wav');const bytes=await response.arrayBuffer();window.blobBytes=bytes.byteLength;window.mediaUrl=URL.createObjectURL(new Blob([bytes],{type:'audio/wav'}));}")
+                await page.locator('#play').click()
+                elapsed = 0
+                for delay in [150, 350, 500, 1000]:
+                    await page.wait_for_timeout(delay)
+                    elapsed += delay
+                    state = await page.locator('audio').evaluate('a=>({duration:a.duration,currentTime:a.currentTime,ended:a.ended,paused:a.paused,readyState:a.readyState,networkState:a.networkState,seekable:Array.from({length:a.seekable.length},(_,i)=>[a.seekable.start(i),a.seekable.end(i)]),mediaError:a.error?.message||null,decodedDuration:window.decodedDuration,blobBytes:window.blobBytes||null,errors:window.nativeErrors})')
+                    snapshots.append({'elapsedMs': elapsed, **state})
+            except Exception as error:
+                snapshots.append({'diagnosticError': str(error)[:500]})
+            finally:
+                print('VOICE_NATIVE_MEDIA ' + json.dumps({'engine': name, 'mode': mode, 'snapshots': snapshots}), flush=True)
+                await context.close()
+
+
 async def run(name, browser_type):
     browser = await browser_type.launch(headless=True)
+    await diagnose_native_audio(name, browser)
     context = await browser.new_context(viewport={'width': 390, 'height': 844}, has_touch=True, service_workers='block')
     page = await context.new_page()
     requests, errors, checks = [], [], []
