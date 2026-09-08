@@ -29,14 +29,17 @@ jobs:
       - name: Verify provider requests and subject adapter
         run: node --test apps/pablicus/tests/oauth_module.test.js apps/pablicus/public-access/yandex-userinfo/handler.test.mjs
       - name: Install test browsers
+        id: browsers
         run: python -m playwright install --with-deps chromium webkit
       - name: OAuth callback and browser isolation
         run: python apps/pablicus/tests/oauth_login.py
       - name: Existing sign-in and password recovery
+        if: ${{ !cancelled() && steps.browsers.outcome == 'success' }}
         run: |
           python apps/pablicus/tests/auth_local.py
           python apps/pablicus/tests/access_setup.py
       - name: Chat and outbox regression
+        if: ${{ !cancelled() && steps.browsers.outcome == 'success' }}
         run: python apps/pablicus/tests/run_isolated.py
       - uses: actions/upload-artifact@v4
         if: always()

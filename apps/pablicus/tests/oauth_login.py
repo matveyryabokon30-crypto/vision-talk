@@ -52,6 +52,9 @@ def fixture_session(provider="google"):
         "user_metadata": {},
         "created_at": "2026-09-08T00:00:00Z",
     }
+    if provider == "custom:yandex":
+        user["email"] = ""
+        user.pop("email_confirmed_at")
     token = ".".join([
         b64url(json.dumps({"alg": "HS256", "typ": "JWT"}).encode()),
         b64url(json.dumps({
@@ -72,6 +75,7 @@ def fixture_session(provider="google"):
 
 async def one(engine, name):
     checks, errors, contexts, directories, states = [], [], [], [], []
+    result = {"engine": name, "pass": False, "checks": checks, "error": "Execution interrupted"}
 
     async def make(*, enabled=True, ready=True, approved=True,
                    identity_matches=True, deny=False, initial_url=SITE):
@@ -91,6 +95,18 @@ async def one(engine, name):
         states.append(state)
 
         async def handle(route):
+            response_attempted = False
+
+            async def fulfill(**kwargs):
+                nonlocal response_attempted
+                response_attempted = True
+                await route.fulfill(**kwargs)
+
+            async def abort():
+                nonlocal response_attempted
+                response_attempted = True
+                await route.abort()
+
             parsed = urlparse(route.request.url)
             query = parse_qs(parsed.query)
             headers = {
@@ -105,15 +121,15 @@ async def one(engine, name):
                             "publicSignupReady": ready,
                             "providers": {key: True for key in PROVIDERS},
                         }
-                        return await route.fulfill(
+                        return await fulfill(
                             status=200, content_type="application/javascript",
                             body="window.PablicusAuthConfig=" + json.dumps(config) + ";",
                         )
                     file = DIST / (parsed.path.lstrip("/") or "index.html")
                     assert file.is_relative_to(DIST)
                     if not file.is_file():
-                        return await route.fulfill(status=404, body="Not found")
-                    return await route.fulfill(
+                        return await fulfill(status=404, body="Not found")
+                    return await fulfill(
                         status=200,
                         content_type=mimetypes.guess_type(str(file))[0]
                         or "application/octet-stream",
@@ -121,9 +137,9 @@ async def one(engine, name):
                     )
                 if parsed.netloc != PROJECT_HOST:
                     state["faults"].append("Unexpected network destination: " + parsed.netloc)
-                    return await route.abort()
+                    return await abort()
                 if route.request.method == "OPTIONS":
-                    return await route.fulfill(status=204, headers=headers)
+                    return await fulfill(status=204, headers=headers)
                 body = route.request.post_data_json if route.request.post_data else {}
                 payload, status = {}, 200
                 if parsed.path == "/auth/v1/authorize":
@@ -141,10 +157,12 @@ async def one(engine, name):
                         "error": "access_denied",
                         "error_description": UNTRUSTED_ERROR,
                     } if deny else {"code": CODE}
-                    return await route.fulfill(
-                        status=302,
-                        headers={"location": SITE + ("#" if deny == "fragment" else "?") + urlencode(callback)},
-                        body="Mock authorizer: no external provider login occurred.",
+                    callback_url = SITE + ("#" if deny == "fragment" else "?") + urlencode(callback)
+                    return await fulfill(
+                        status=200, content_type="text/html",
+                        body="<!doctype html><meta charset=utf-8>"
+                        "<p>Mock authorizer: no external provider login occurred.</p>"
+                        "<script>location.replace(" + json.dumps(callback_url) + ");</script>",
                     )
                 if parsed.path == "/auth/v1/token":
                     state["exchanges"] += 1
@@ -178,16 +196,22 @@ async def one(engine, name):
                     payload = []
                 else:
                     raise AssertionError("Unexpected mocked endpoint: " + parsed.path)
-                await route.fulfill(
+                await fulfill(
                     status=status, headers=headers, content_type="application/json",
                     body=json.dumps(payload),
                 )
             except Exception:
                 state["faults"].append(traceback.format_exc())
-                await route.fulfill(
-                    status=500, headers=headers, content_type="application/json",
-                    body=json.dumps({"error": "mock_contract_failed"}),
-                )
+                # A failed fulfill can already consume the route. Never try to
+                # handle it twice or replace the original failure with cleanup.
+                if not response_attempted:
+                    try:
+                        await fulfill(
+                            status=500, headers=headers, content_type="application/json",
+                            body=json.dumps({"error": "mock_contract_failed"}),
+                        )
+                    except Exception:
+                        state["faults"].append("Error returning mock failure:\n" + traceback.format_exc())
 
         await context.route("**/*", handle)
         page = context.pages[0] if context.pages else await context.new_page()
@@ -203,7 +227,7 @@ async def one(engine, name):
         assert await page.evaluate("PablicusDebug.user") is None
 
     async def assert_error(page):
-        await page.wait_for_function("document.getElementById('loginError').textContent.trim().length > 0")
+        await page.wait_for_function("document.getElementById('loginError')?.textContent.trim().length > 0")
         await assert_closed(page)
         assert not urlparse(page.url).query
         assert not urlparse(page.url).fragment
@@ -299,7 +323,7 @@ async def one(engine, name):
         faults = [fault for state in states for fault in state["faults"]]
         assert not faults, faults
         assert not errors, errors
-        return {
+        result = {
             "engine": name, "pass": True, "checks": checks,
             "scope": "REAL_BUNDLED_SDK_MOCK_AUTH_HTTP_SEPARATE_BROWSER_STORES",
             "provider_ui_screenshot": name + "-oauth-providers-MOCK.png",
@@ -309,26 +333,56 @@ async def one(engine, name):
             "errors": errors,
         }
     except Exception:
-        return {
+        result = {
             "engine": name, "pass": False, "checks": checks,
             "error": traceback.format_exc(), "errors": errors,
             "mock_faults": [fault for state in states for fault in state["faults"]],
         }
     finally:
+        result["mock_states"] = [{
+            key: state[key] for key in ("authorize", "exchanges", "get_user", "profiles", "events", "faults")
+        } for state in states]
+        result["last_urls"] = [page.url for context in contexts for page in context.pages]
+        checkpoint = EVIDENCE / (name + "-oauth-login.json")
+        # Preserve the test outcome before cleanup can fail or hang.
+        checkpoint.write_text(json.dumps(result, ensure_ascii=False, indent=2))
+        cleanup_errors = []
         for context in contexts:
-            await context.close()
+            try:
+                await context.close()
+            except Exception:
+                cleanup_errors.append(traceback.format_exc())
         for directory in directories:
-            directory.cleanup()
+            try:
+                directory.cleanup()
+            except Exception:
+                cleanup_errors.append(traceback.format_exc())
+        if cleanup_errors:
+            result["pass"] = False
+            result["cleanup_errors"] = cleanup_errors
+        late_faults = [fault for state in states for fault in state["faults"]]
+        if late_faults:
+            result["pass"] = False
+            result["mock_faults"] = late_faults
+        checkpoint.write_text(json.dumps(result, ensure_ascii=False, indent=2))
+    return result
 
 
 async def main():
     EVIDENCE.mkdir(exist_ok=True)
     assert (DIST / "auth-config.js").is_file(), "Build the OAuth candidate before running this test"
-    async with async_playwright() as playwright:
-        results = [await one(getattr(playwright, name), name) for name in ("chromium", "webkit")]
-    (EVIDENCE / "oauth-login.json").write_text(
-        json.dumps(results, ensure_ascii=False, indent=2)
-    )
+    results = []
+    try:
+        async with async_playwright() as playwright:
+            for name in ("chromium", "webkit"):
+                results.append(await one(getattr(playwright, name), name))
+                (EVIDENCE / "oauth-login.json").write_text(
+                    json.dumps(results, ensure_ascii=False, indent=2)
+                )
+    finally:
+        (EVIDENCE / "oauth-login.json").write_text(
+            json.dumps(results, ensure_ascii=False, indent=2)
+        )
     print(json.dumps(results, ensure_ascii=False))
     assert all(result["pass"] for result in results)
 
