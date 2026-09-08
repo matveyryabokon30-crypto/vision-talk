@@ -1,4 +1,4 @@
-name: Pablicus RC5 password login and recovery
+name: Pablicus RC5 passkey login and recovery
 on:
   push:
     branches: [pablicus-rc2-release]
@@ -12,12 +12,15 @@ concurrency:
 jobs:
   checked-release:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
           path: source
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -34,12 +37,37 @@ jobs:
           d=Path('apps/pablicus/dist');a=(d/'app.js').read_text();h=(d/'index.html').read_text()
           assert json.loads((d/'version.json').read_text())['version']=='0.1.0-rc5'
           assert 'PablicusLogin.mount' in a and 'auth-local.js' in h
+          assert 'PablicusPasskeys.create' in a and 'passkey-login.js' in h
           assert 'shouldCreateUser:false' in (d/'auth-local.js').read_text()
           assert 'pablicus-auth-handoff' not in a and 'Ссылка отправлена.' not in a
           assert '__ASSET_REVISION__' not in (d/'sw.js').read_text()
           PY
+          node - <<'JS'
+          const assert = require('node:assert/strict');
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+          const context = {};
+          vm.runInNewContext(fs.readFileSync('apps/pablicus/dist/auth-config.js', 'utf8'), context);
+          const config = context.PablicusAuthConfig;
+          assert.equal(config.passkeys.enabled, true);
+          assert.equal(config.passkeys.rpId, 'matveyryabokon30-crypto.github.io');
+          assert.equal(config.passkeys.origin, 'https://matveyryabokon30-crypto.github.io');
+          assert.equal(config.publicSignupReady, false);
+          assert.ok(Object.values(config.providers).every(enabled => enabled === false));
+          JS
+      - name: Verify vendored SDK and authentication module contracts
+        working-directory: source
+        run: |
+          python apps/pablicus/vendor/verify-supabase.py
+          node --test apps/pablicus/tests/oauth_module.test.js apps/pablicus/tests/passkey_module.test.js apps/pablicus/public-access/yandex-userinfo/handler.test.mjs
       - name: Install browser engines
         run: python -m playwright install --with-deps chromium webkit
+      - name: Native WebAuthn enrollment and sign-in with virtual authenticator and mocked Auth HTTP
+        working-directory: source
+        run: python apps/pablicus/tests/passkey_login.py
+      - name: OAuth callback and browser isolation with mocked Auth HTTP
+        working-directory: source
+        run: python apps/pablicus/tests/oauth_login.py
       - name: Isolated stores and Auth proof checks with explicit mocked Auth HTTP
         working-directory: source
         run: python apps/pablicus/tests/auth_local.py
@@ -74,7 +102,7 @@ jobs:
           git config user.name 'Pablicus release automation'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -- pablicus
-          if ! git diff --cached --quiet; then git commit -m 'Publish checked Pablicus RC5 visible password login and recovery'; git push origin HEAD:main; fi
+          if ! git diff --cached --quiet; then git commit -m 'Publish checked Pablicus RC5 passkey login and recovery'; git push origin HEAD:main; fi
           git rev-parse HEAD > ../evidence/publication-commit.txt
           gh api -X POST repos/${{ github.repository }}/pages/builds > ../evidence/pages-build.json
       - name: Confirm all published bytes over stable HTTPS and live unauthenticated launch
@@ -102,18 +130,26 @@ jobs:
             out=[]
             async with async_playwright() as p:
               for name in ['chromium','webkit']:
-                b=await getattr(p,name).launch();c=await b.new_context(viewport={'width':440,'height':766},service_workers='block');page=await c.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+                b=await getattr(p,name).launch();c=await b.new_context(viewport={'width':440,'height':766},service_workers='block');page=await c.new_page();errors=[];passkey_requests=[];page.on('pageerror',lambda e:errors.append(str(e)))
+                page.on('request',lambda request:passkey_requests.append(request.method) if '/auth/v1/passkeys' in request.url else None)
                 await page.goto(url+'?release='+expected['asset_revision'],wait_until='domcontentloaded',timeout=40000)
                 await page.wait_for_function('window.PablicusDebug?.version==="0.1.0-rc5"')
                 for selector in ['#email','#password','#loginSubmit','#recoverPassword']:assert await page.locator(selector).is_visible()
                 assert await page.locator('#loginSubmit').inner_text()=='Войти'
                 assert not await page.locator('#magicSubmit').is_visible()
+                assert await page.evaluate('PablicusAuthConfig.passkeys.enabled === true')
+                supported=await page.evaluate('PablicusPasskeys.support().supported')
+                assert await page.locator('#passkeySignIn').is_visible()==supported
+                if supported:
+                  assert await page.locator('#passkeySignIn').is_enabled()
+                  assert await page.locator('#passkeySignIn').inner_text()=='Войти с ключом доступа'
                 assert await page.evaluate('document.documentElement.scrollWidth<=innerWidth')
                 assert await page.locator('#loginPane').is_visible()
                 assert not await page.locator('#workspace').is_visible()
                 assert not errors,errors
+                assert not passkey_requests,passkey_requests
                 await page.screenshot(path='evidence/'+name+'-rc5-live.png')
-                out.append({'engine':name,'online_login_screen':'PASS','real_email_verification':'NOT_TESTED','physical_iPhone':False});await b.close()
+                out.append({'engine':name,'online_login_screen':'PASS','passkey_button_visible':supported,'automatic_passkey_requests':0,'real_passkey_ceremony':'NOT_TESTED','real_email_verification':'NOT_TESTED','physical_iPhone':False});await b.close()
             Path('evidence/live-launch.json').write_text(json.dumps(out,indent=2))
           asyncio.run(live())
           print('PABLICUS_RC5_LIVE_CHECKED',url,expected)

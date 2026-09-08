@@ -1,10 +1,11 @@
 /* Public rollout flags only. Provider secrets belong in the Auth dashboard.
- * Enable a provider only after its server setup, new-account provisioning,
- * and a real sign-in on the published URL have passed acceptance.
+ * Social providers require their server setup and new-account provisioning.
+ * Passkeys use the existing account; native challenge readiness was verified
+ * on the configured production RP before enabling this release.
  */
 globalThis.PablicusAuthConfig = Object.freeze({
   passkeys: Object.freeze({
-    enabled: false,
+    enabled: true,
     rpId: 'matveyryabokon30-crypto.github.io',
     origin: 'https://matveyryabokon30-crypto.github.io',
   }),

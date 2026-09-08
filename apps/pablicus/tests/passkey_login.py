@@ -228,10 +228,10 @@ async def one(engine, name):
             }
             try:
                 if parsed.netloc == urlparse(SITE).netloc:
-                    if parsed.path.endswith("/auth-config.js") and enabled:
+                    if parsed.path.endswith("/auth-config.js"):
                         config = {
                             "publicSignupReady": False, "providers": {},
-                            "passkeys": {"enabled": True, "rpId": RP_ID, "origin": origin},
+                            "passkeys": {"enabled": enabled, "rpId": RP_ID, "origin": origin},
                         }
                         return await fulfill(status=200, content_type="application/javascript",
                                              body="window.PablicusAuthConfig=" + json.dumps(config) + ";")
@@ -439,7 +439,7 @@ async def one(engine, name):
         await assert_closed(disabled)
         assert not await disabled.locator("#passkeyLogin").is_visible()
         await assert_no_prompt(disabled, state)
-        checks.append("Published default configuration hides passkeys and invokes no credential API")
+        checks.append("Explicit disabled configuration hides passkeys and invokes no credential API")
 
         unsupported, state = await make(api="unsupported")
         await assert_closed(unsupported)
