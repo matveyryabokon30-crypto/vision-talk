@@ -1,0 +1,120 @@
+name: Pablicus checked account access setup
+on:
+  push:
+    branches: [pablicus-rc2-release]
+    paths: [.github/workflows/pablicus-access-setup-release.yml]
+permissions:
+  contents: write
+  pages: write
+concurrency:
+  group: pablicus-publication
+  cancel-in-progress: false
+jobs:
+  access:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: source
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Persist account access source and build inclusion before testing
+        working-directory: source
+        run: |
+          python apps/pablicus/migrate_access_v1.py
+          node --check apps/pablicus/src/access.js
+          git config user.name 'Pablicus release automation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/pablicus/src/access.js apps/pablicus/build.py
+          if ! git diff --cached --quiet; then git commit -m 'Finalize self-service account access source and build inputs'; fi
+          git push origin HEAD:pablicus-rc2-release
+      - name: Build and install browser test runtime
+        working-directory: source
+        run: |
+          python -m pip install playwright==1.55.0 pillow==11.3.0
+          python apps/pablicus/build.py
+          python apps/pablicus/finalize.py
+          python -m playwright install --with-deps chromium webkit
+      - name: Verify existing-session setup and separate-store login with real SDK and mocked Auth HTTP
+        working-directory: source
+        run: python apps/pablicus/tests/access_setup.py
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: publication
+      - name: Publish only new access resources; leave every existing application file unchanged
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p evidence
+          gh api repos/${{ github.repository }}/pages > evidence/pages.json
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,shutil,subprocess
+          root=Path('publication');d=Path('source/apps/pablicus/dist')
+          cfg=json.loads(Path('evidence/pages.json').read_text());assert cfg['build_type']=='legacy' and cfg['source']=={'branch':'main','path':'/'}
+          changed={'pablicus/access.html','pablicus/access.css','pablicus/access.js','pablicus/access-version.json'}
+          old={str(f.relative_to(root)):hashlib.sha256(f.read_bytes()).hexdigest() for f in root.rglob('*') if f.is_file() and '.git' not in f.parts and str(f.relative_to(root)) not in changed}
+          report=json.loads(Path('source/apps/pablicus/evidence/access-setup.json').read_text());assert len(report)==2 and all(r['pass'] for r in report)
+          for n in ['access.html','access.css','access.js']:shutil.copy2(d/n,root/'pablicus'/n)
+          sha=subprocess.check_output(['git','rev-parse','HEAD'],cwd='source',text=True).strip()
+          v={'feature':'existing-session-self-service-password','version':'access-v1','source_commit':sha,'live_user_password_changed':False}
+          (root/'pablicus/access-version.json').write_text(json.dumps(v,indent=2));Path('evidence/access-version.json').write_text(json.dumps(v,indent=2))
+          for n,h in old.items():assert hashlib.sha256((root/n).read_bytes()).hexdigest()==h,n
+          Path('evidence/unchanged-application.json').write_text(json.dumps({'unchanged_files':len(old),'pass':True}))
+          PY
+          cd publication
+          git config user.name 'Pablicus release automation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add pablicus/access.html pablicus/access.js pablicus/access.css pablicus/access-version.json
+          if ! git diff --cached --quiet; then git commit -m 'Add checked self-service access setup to existing Pablicus'; git push origin HEAD:main; fi
+          git rev-parse HEAD > ../evidence/publication-commit.txt
+          gh api -X POST repos/${{ github.repository }}/pages/builds > ../evidence/pages-build.json
+      - name: Verify exact HTTPS bytes and unauthenticated live page without changing any account
+        run: |
+          python - <<'PY'
+          import asyncio,hashlib,json,time,urllib.request
+          from pathlib import Path
+          from playwright.async_api import async_playwright
+          base='https://matveyryabokon30-crypto.github.io/vision-talk/pablicus/'
+          expected=json.loads(Path('evidence/access-version.json').read_text())
+          for _ in range(30):
+            try:
+              actual=json.load(urllib.request.urlopen(base+'access-version.json?v='+str(time.time()),timeout=10))
+              if actual==expected:break
+            except Exception:pass
+            time.sleep(5)
+          else:raise RuntimeError('New access page not reachable within bounded wait')
+          out=[]
+          for n in ['access.html','access.css','access.js','access-version.json']:
+            data=urllib.request.urlopen(base+n+'?v='+expected['source_commit'],timeout=20).read()
+            good=hashlib.sha256(data).digest()==hashlib.sha256(Path('publication/pablicus',n).read_bytes()).digest();assert good,n
+            out.append({'path':n,'match':True})
+          Path('evidence/live-bytecheck.json').write_text(json.dumps(out,indent=2))
+          async def check():
+            result=[]
+            async with async_playwright() as p:
+              for name in ['chromium','webkit']:
+                b=await getattr(p,name).launch();page=await b.new_page(viewport={'width':440,'height':766});errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+                await page.goto(base+'access.html',wait_until='domcontentloaded',timeout=30000)
+                await page.locator('#needsSession').wait_for(timeout=15000)
+                assert not await page.locator('#passwordSetup').is_visible()
+                assert await page.evaluate('document.documentElement.scrollWidth<=innerWidth+1')
+                assert not errors,errors
+                await page.screenshot(path='evidence/'+name+'-live-access.png',full_page=True)
+                result.append({'engine':name,'live_anonymous_access_page':'PASS','live_password_change':'NOT_TESTED','physical_iPhone':False});await b.close()
+            Path('evidence/live-check.json').write_text(json.dumps(result,indent=2))
+          asyncio.run(check());print('LIVE_ACCESS_PAGE_CHECKED',base+'access.html')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pablicus-access-setup-checked
+          path: |
+            evidence/
+            source/apps/pablicus/evidence/access-setup.json
+            source/apps/pablicus/evidence/*access*.png
+          retention-days: 14
