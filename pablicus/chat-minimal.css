@@ -1,6 +1,7 @@
-/* Quiet chrome for the real conversation workspace. Keep the measured
-   timeline, editor grid, media geometry and theme palette unchanged. */
+/* White and translucent conversation surfaces. Preserve the measured
+   timeline, editor grid and media geometry. Keyboard focus stays visible. */
 #home .homeHeader {
+  gap: 0;
   padding: 12px 20px 7px;
 }
 #home .wordmark img {
@@ -16,8 +17,9 @@
 #workspace .workspaceTop h1 {
   margin: 9px 0 14px;
   font-size: 23px;
-  font-weight: 600;
-  letter-spacing: -.55px;
+  font-weight: 400;
+  text-align: center;
+  letter-spacing: -.35px;
   line-height: 1.25;
 }
 #workspace #searchChats {
@@ -59,7 +61,7 @@
 }
 #screenContent .chatCard {
   margin: 0 20px;
-  border-bottom-color: color-mix(in srgb, var(--line) 52%, transparent);
+  border-bottom-color: transparent;
 }
 #screenContent .chatMain {
   gap: 12px;
@@ -121,7 +123,9 @@
 #home #mainNav {
   border-top-color: color-mix(in srgb, var(--line) 65%, transparent);
   padding-top: 5px;
-  background: var(--bg);
+  background: var(--glass);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 #home #mainNav button {
   gap: 2px;
@@ -151,14 +155,15 @@
   --state: 0px;
 }
 #app > header {
-  padding-right: 14px;
+  padding-right: 10px;
   padding-left: 10px;
   border-bottom-color: transparent;
 }
 #app > header #chatTitle {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 400;
   letter-spacing: -.2px;
+  text-align: center;
 }
 #app > header #chatHint {
   font-size: 11px;
@@ -166,11 +171,17 @@
 }
 #app #chatBack,
 #app #reportBtn {
+  flex: 0 0 44px;
+  width: 44px;
+  min-width: 44px;
+  padding: 0;
+  display: grid;
+  place-items: center;
   color: var(--muted);
 }
 #app .bubble {
-  background: var(--surface) !important;
-  border: 0;
+  background: var(--incoming) !important;
+  border: 1px solid var(--bubble-edge);
   border-radius: 19px 19px 19px 6px;
   box-shadow: none;
 }
@@ -194,8 +205,10 @@
 #app:not(.composer-fullscreen) #composeBox {
   border-color: transparent !important;
   border-radius: 26px;
-  background: var(--surface) !important;
-  box-shadow: 0 2px 14px color-mix(in srgb, var(--text) 3%, transparent);
+  background: var(--glass) !important;
+  box-shadow: 0 4px 24px color-mix(in srgb, var(--text) 3%, transparent);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 #composer #composeBox.rich-composer #attach {
   background: transparent;
@@ -247,3 +260,94 @@
   #screenContent .savedConversation { width: calc(100% - 64px); margin-right: 32px; margin-left: 32px; }
   #home #mainNav button { gap: 8px; font-size: 13px; }
 }
+
+/* Neutral, low-contrast boundaries replace the old accent-colored chrome. */
+#home .wordmark img { filter: grayscale(1); }
+#app > header { background: var(--glass); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); }
+#app > header .chatHeading { align-items: center; }
+#app > header #chatHint { font-weight: 400; text-align: center; }
+#app #new:focus-visible,
+#app #pop button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+#app #newDot { background: var(--accent); border-color: var(--surface); }
+#app #pop .menuChevron { color: var(--muted); }
+#app #pop .destructive { color: #bb3e44; }
+#app #pop { background: var(--glass); border-color: var(--line); box-shadow: 0 10px 35px #00000016; }
+#app .bubble > .meta { padding-right: 0; }
+#app .messageReactions { padding-right: 0; }
+#app .richMessage .richMediaGallery { background: transparent; }
+#app .richMessage .richMedia-video { background: var(--soft); }
+#app .richMessage .richAudioPlay { box-shadow: inset 0 0 0 1px var(--bubble-edge); }
+#app .richMessage .richAudioTrack { opacity: 1; background: color-mix(in srgb,var(--muted) 22%,transparent); }
+#app #editor.richEditor .richMedia { background: transparent; border-color: var(--bubble-edge); }
+#app #composer #taskBar { background: var(--soft); color: var(--text); }
+#app #composer #taskNext { background: var(--control); color: var(--control-text); }
+#app #composer .attachment .fileGlyph { color: var(--accent); }
+#app #composer .remove { color: var(--text); background: var(--glass); border-color: var(--line); }
+#queueDialog,
+#app #modal { background: var(--surface); color: var(--text); border-color: var(--line); }
+#queueDialog .queueItem { border-color: var(--line); }
+#queueDialog .queueItem strong { color: var(--text); }
+#queueDialog .modalActions,
+#app #modal .modalActions { background: var(--surface); }
+#app #modal p,
+#app #reportRows { color: var(--muted); }
+#app #reportView { background: var(--soft); color: var(--text); }
+#home .setting { border-color: transparent; background: var(--incoming); }
+#productDialog,
+#toast { background: var(--glass); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); }
+#productDialog { border-color: var(--line); }
+@media (prefers-reduced-transparency: reduce) {
+  #home #mainNav, #app > header, #app:not(.composer-fullscreen) #composeBox,
+  #app #pop, .pablicusMessageMenu, .peoplePicker, #productDialog, #toast,
+  #inboxMonitor .inboxMonitorShell { background: var(--surface) !important; backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+
+/* Lightweight titles and status glyphs: the message itself remains central. */
+#home .homeHeader #brandTitle {
+  flex: 1;
+  margin: 0;
+  padding-left: 44px;
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 44px;
+  letter-spacing: -.2px;
+  text-align: center;
+}
+#home .homeHeader:has(#newChat[hidden]) #brandTitle { padding-left: 0; }
+#app > header .chatSectionLabel {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: .02em;
+}
+#app > header .chatHeading { justify-content: center; }
+#app .messageReceipt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  min-height: 0;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  line-height: 1;
+  margin-left: 5px;
+  vertical-align: -3px;
+  color: var(--muted);
+}
+#app .messageReceipt svg { display: block; width: 14px; height: 14px; }
+#app .messageReceipt[data-message-status="read"] { color: var(--text); }
+#app .messageReceipt[data-message-status="error"] { color: #b14047; }
+#app .messageEdited { display: inline-flex; align-items: center; margin-left: 4px; vertical-align: -2px; }
+#app .messageEdited svg { display: block; width: 12px; height: 12px; }
+.pushSettings { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+.pushSettings h3 { margin: 0 0 8px; font-size: 18px; font-weight: 400; }
+.pushSettings p { font-size: 14px; line-height: 1.5; color: var(--muted); }
+.pushSettings .pushButton { width: 100%; min-height: 48px; background: var(--control); color: var(--control-text); border: 0; border-radius: 15px; }
+.pushSettings .pushButton:disabled { opacity: .6; cursor: default; }
+.pushSettings .pushStatus { min-height: 1.4em; margin: 10px 0 0; font-size: 13px; line-height: 1.5; color: var(--muted); overflow-wrap: anywhere; }
+.pushSettings .pushStatus:empty { display: none; }
