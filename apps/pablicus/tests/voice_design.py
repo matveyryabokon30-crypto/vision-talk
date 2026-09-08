@@ -98,11 +98,16 @@ def fixture_server(html, requests):
         def log_message(self, *_):
             pass
 
+        def do_HEAD(self):
+            self.do_GET()
+
         def do_GET(self):
             path = urlsplit(self.path).path
             optional_waveform = self.headers.get('X-Pablicus-Fixture-Waveform') == '1'
             kind = 'fetch' if optional_waveform else 'media' if path.endswith('.wav') else 'document'
             requests.append((path, kind))
+            if path.endswith('.wav'):
+                print(f'VOICE_HTTP method={self.command} path={path} range={self.headers.get("Range")} waveform={optional_waveform}', flush=True)
             headers, status, mime = {}, 200, 'text/html; charset=utf-8'
             if path == '/':
                 body = html.encode('utf-8')
@@ -128,7 +133,8 @@ def fixture_server(html, requests):
                 self.send_header('Content-Length', str(len(body)))
             self.end_headers()
             try:
-                self.wfile.write(body)
+                if self.command != 'HEAD':
+                    self.wfile.write(body)
             except (BrokenPipeError, ConnectionResetError):
                 # Audio is intentionally paused/released during these checks.
                 pass
@@ -150,19 +156,11 @@ async def run(name, browser_type):
     page = await context.new_page()
     requests, errors, checks = [], [], []
     page.on('pageerror', lambda error: errors.append(str(error)))
-    page.on('console', lambda message: print(name + ' ' + message.text, flush=True) if message.text.startswith('VOICE_NATIVE_') else None)
     css = (ROOT / 'src/pablicus.css').read_text() + '\n' + (ROOT / 'src/rich-message.css').read_text()
     html = '''<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>''' + css + '''
 #canvas{padding:35px 18px}.bubble{margin:0 0 12px;width:max-content;max-width:90%;padding:9px 12px}.richMessage{width:250px}.measureBox{visibility:hidden;height:0;overflow:hidden}
 </style><main id="canvas"></main><aside class="measureBox"></aside><script src="/message-menu.js"></script><script src="/rich-message.js"></script><script>
 window.resolves=0;window.replies=[];window.opens=0;
-// Observe the real native setter without replacing its behavior.
-const rateDescriptor=Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype,'playbackRate');
-Object.defineProperty(HTMLMediaElement.prototype,'playbackRate',{...rateDescriptor,set(value){
- console.log('VOICE_NATIVE_BEFORE '+JSON.stringify({rate:value,paused:this.paused,ended:this.ended,time:this.currentTime,duration:this.duration}));
- rateDescriptor.set.call(this,value);
- console.log('VOICE_NATIVE_AFTER '+JSON.stringify({rate:this.playbackRate,paused:this.paused,ended:this.ended,time:this.currentTime}));
-}});
 // This fixture marks optional JS waveform fetches, preserving native fetch and
 // its AbortSignal. HTMLMediaElement requests remain completely untouched.
 const realFetch=window.fetch.bind(window);
@@ -197,40 +195,31 @@ window.first=mount('one','voice.wav');mount('two','voice.wav');mount('measure','
         checks.append('actual decoded WAV silence and increasing amplitude appear faithfully in 40 bars; playback stays inline')
         assert (await first.bounding_box())['height'] <= 70
         snapshot = await first.locator('audio').evaluate('a=>({paused:a.paused,ended:a.ended,time:a.currentTime,duration:a.duration})')
-        print(f'VOICE_RATE_START engine={name} snapshot={snapshot}', flush=True)
-        assert not snapshot['paused'] and not snapshot['ended'], 'Rate transitions must be exercised during playback'
-        await first.locator('.richAudioRate').click()
-        assert await first.locator('audio').evaluate('(a)=>a.playbackRate === 1.5 && !a.paused')
-        print(f'VOICE_RATE_DONE engine={name} rate=1.5', flush=True)
-        await first.locator('.richAudioRate').click()
-        assert await first.locator('audio').evaluate('(a)=>a.playbackRate === 2 && !a.paused')
-        await first.locator('.richAudioRate').click()
-        assert await first.locator('audio').evaluate('(a)=>a.playbackRate === 1 && !a.paused')
-        checks.append('compact 68px voice strip; speed cycles 1, 1.5, 2 and back to 1 on actual audio element')
+        print(f'VOICE_CORE_STATE engine={name} snapshot={snapshot}', flush=True)
+        assert not snapshot['paused'] and not snapshot['ended'], 'Voice should still be playing'
+        assert await first.locator('button').count() == 2, 'Only play and reply are offered'
+        checks.append('compact 68px voice strip with play and separate reply controls')
         await first.locator('.richAudioPlay').click()
         assert await first.locator('audio').evaluate('(a)=>a.paused')
         await first.locator('.richAudioSeek').evaluate("s=>{s.value='500';s.dispatchEvent(new Event('input',{bubbles:true}))}")
         assert 5.9 <= await first.locator('audio').evaluate('(a)=>a.currentTime') <= 6.1
         paused_at = await first.locator('audio').evaluate('(a)=>a.currentTime')
-        await first.locator('.richAudioRate').click()
-        assert await first.locator('.richAudioRate').get_attribute('data-rate') == '1.5'
         await page.wait_for_timeout(120)
         assert await first.locator('audio').evaluate('(a)=>a.paused')
         assert abs(await first.locator('audio').evaluate('(a)=>a.currentTime') - paused_at) < .1
+        print(f'VOICE_SEEK_RESUME_START engine={name}', flush=True)
         await first.locator('.richAudioPlay').click()
-        await page.wait_for_function("(()=>{const a=document.querySelector('[data-block-id=one] audio');return !a.paused&&a.playbackRate===1.5&&a.currentTime>6.05})()")
-        # Reach a real end-of-stream, then select speed without implicitly
-        # restarting. The next explicit play must leave EOS and apply that rate.
+        await page.wait_for_function("(()=>{const a=document.querySelector('[data-block-id=one] audio');return !a.paused&&a.currentTime>6.05})()")
+        # Reach a real end-of-stream, then explicitly play again. This protects
+        # the basic voice lifecycle independently from optional future features.
         await first.locator('.richAudioSeek').evaluate("s=>{s.value='980';s.dispatchEvent(new Event('input',{bubbles:true}))}")
         await page.wait_for_function("document.querySelector('[data-block-id=one] audio').ended")
-        print(f'VOICE_ENDED_RATE_START engine={name}', flush=True)
-        await first.locator('.richAudioRate').click()
-        assert await first.locator('.richAudioRate').get_attribute('data-rate') == '2'
         assert await first.locator('audio').evaluate('(a)=>a.ended && a.paused')
+        print(f'VOICE_ENDED_REPLAY_START engine={name}', flush=True)
         await first.locator('.richAudioPlay').click()
-        await page.wait_for_function("(()=>{const a=document.querySelector('[data-block-id=one] audio');return !a.paused&&!a.ended&&a.playbackRate===2&&a.currentTime>.1&&a.currentTime<3})()")
+        await page.wait_for_function("(()=>{const a=document.querySelector('[data-block-id=one] audio');return !a.paused&&!a.ended&&a.currentTime>.1&&a.currentTime<3})()")
         print(f'VOICE_ENDED_REPLAY_DONE engine={name}', flush=True)
-        checks.append('paused speed selection preserves position; ended speed selection stays stopped; explicit play resumes at selected real rate')
+        checks.append('paused seek preserves position; real end-of-stream stays stopped until an explicit replay from the beginning')
         await second.locator('.richAudioPlay').click()
         await page.wait_for_function("document.querySelector('[data-block-id=two] audio').currentTime > .1")
         assert await first.locator('audio').evaluate('(a)=>a.paused')

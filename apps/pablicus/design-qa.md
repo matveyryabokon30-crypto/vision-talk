@@ -55,14 +55,15 @@ real account data. The compact menu replaces the broad central dialog with
 220px anchored action rows and a reaction strip; editing uses a 300px contextual
 form. Official Lucide icons carry license notices in message-menu.js.
 
-The voice strip shows real decoded waveform samples, elapsed/total time, speed
-and inline reply. No synthetic waveform is presented as recorded sound. A plain
+The voice strip shows real decoded waveform samples, elapsed/total time,
+inline play/pause and a separate reply control. No synthetic waveform is presented as recorded sound. A plain
 progress line remains before decoding or when decoding is unavailable.
 
 The inherited 73px of empty toolbar/status grid tracks are removed. Mobile
 header/list spacing, surfaces and composer controls are simplified. Functional
 QA uses the full generated app and isolated Supabase fixtures in chat_polish.py;
-voice_design.py uses a real PCM fixture for waveform/seek/rate checks. Physical
+voice_design.py uses a real PCM fixture over threaded localhost HTTP for
+waveform, seek, pause and end-of-stream replay checks. Physical
 iPhone contact-book access is not offered as a working feature.
 
 The final local Chromium build (3f4762ef38b6a88d) passed all 11 integrated
@@ -73,3 +74,10 @@ checks and 6 focused voice checks also passed. Final 390×844 menu, home, dark
 chat and people-picker screenshots were inspected. Headless emoji glyph gaps
 reflect the test font environment; physical iPhone rendering remains untested.
 Both Chromium and WebKit are required by the release workflow before promotion.
+
+Voice release scope: the optional speed selector was withdrawn after repeatable
+WebKit rate/resume failures; no speed button or native playbackRate writes remain.
+This does not waive the core voice gates. The focused suite still verifies actual
+play/pause, seek position, exclusive playback, replies, waveform failure fallback,
+real end-of-stream replay and disposal. Speed needs a later independently verified
+implementation. Final WebKit results must come from the revised CI run.
