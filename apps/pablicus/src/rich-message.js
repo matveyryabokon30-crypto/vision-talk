@@ -372,10 +372,14 @@
       function start(operation) {
         if (disposed || !isLiveRow() || operation !== epoch || activeAudio !== player) return;
         loading = false;
-        audio.playbackRate = speed;
-        if (audio.ended) audio.currentTime = 0;
         let result;
-        try { result = audio.play(); } catch (error) { failed(error, operation); return; }
+        try {
+          // Leave end-of-stream before changing rate: some media pipelines seek
+          // synchronously when playbackRate changes and cannot do that at EOS.
+          if (audio.ended) audio.currentTime = 0;
+          if (audio.playbackRate !== speed) audio.playbackRate = speed;
+          result = audio.play();
+        } catch (error) { failed(error, operation); return; }
         if (result && typeof result.catch === 'function') result.catch(error => failed(error, operation));
         if (resolvedUrl) loadWaveform(resolvedUrl);
         sync();
@@ -410,9 +414,19 @@
         event.stopPropagation();
         if (disposed || !isLiveRow()) return;
         speed = speed === 1 ? 1.5 : speed === 1.5 ? 2 : 1;
-        audio.playbackRate = speed;
+        // A paused/ended/loading voice keeps the selection for its next explicit
+        // play. Never start audio just because its speed button was pressed.
+        const resume = !audio.paused && !audio.ended && activeAudio === player;
         rate.textContent = String(speed).replace('.', ',') + '×';
         rate.setAttribute('aria-label', 'Скорость воспроизведения: ' + String(speed).replace('.', ',') + '. Изменить');
+        rate.dataset.rate = String(speed);
+        if (resume) {
+          // Keep pause/change/resume in the same user gesture. Invalidate the
+          // earlier play promise before pause rejects it with AbortError.
+          const operation = ++epoch;
+          audio.pause();
+          start(operation);
+        }
       });
       container.addEventListener('click', event => {
         if (event.target.closest('button,input,audio')) return;

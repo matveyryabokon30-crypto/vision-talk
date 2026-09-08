@@ -31,8 +31,8 @@ def wav():
         # Silence followed by a rising signal allows checking actual decoded
         # samples, rather than accepting arbitrary decorative waveform bars.
         target.writeframes(b''.join(struct.pack('<h', round(
-            (0 if i < 16000 else 3000 * (i - 16000) / 48000) * math.sin(i * math.tau * 240 / 16000)
-        )) for i in range(16000 * 4)))
+            (0 if i < 16000 else 3000 * (i - 16000) / (16000 * 11)) * math.sin(i * math.tau * 240 / 16000)
+        )) for i in range(16000 * 12)))
     return stream.getvalue()
 
 
@@ -150,11 +150,19 @@ async def run(name, browser_type):
     page = await context.new_page()
     requests, errors, checks = [], [], []
     page.on('pageerror', lambda error: errors.append(str(error)))
+    page.on('console', lambda message: print(name + ' ' + message.text, flush=True) if message.text.startswith('VOICE_NATIVE_') else None)
     css = (ROOT / 'src/pablicus.css').read_text() + '\n' + (ROOT / 'src/rich-message.css').read_text()
     html = '''<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>''' + css + '''
 #canvas{padding:35px 18px}.bubble{margin:0 0 12px;width:max-content;max-width:90%;padding:9px 12px}.richMessage{width:250px}.measureBox{visibility:hidden;height:0;overflow:hidden}
 </style><main id="canvas"></main><aside class="measureBox"></aside><script src="/message-menu.js"></script><script src="/rich-message.js"></script><script>
 window.resolves=0;window.replies=[];window.opens=0;
+// Observe the real native setter without replacing its behavior.
+const rateDescriptor=Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype,'playbackRate');
+Object.defineProperty(HTMLMediaElement.prototype,'playbackRate',{...rateDescriptor,set(value){
+ console.log('VOICE_NATIVE_BEFORE '+JSON.stringify({rate:value,paused:this.paused,ended:this.ended,time:this.currentTime,duration:this.duration}));
+ rateDescriptor.set.call(this,value);
+ console.log('VOICE_NATIVE_AFTER '+JSON.stringify({rate:this.playbackRate,paused:this.paused,ended:this.ended,time:this.currentTime}));
+}});
 // This fixture marks optional JS waveform fetches, preserving native fetch and
 // its AbortSignal. HTMLMediaElement requests remain completely untouched.
 const realFetch=window.fetch.bind(window);
@@ -182,26 +190,47 @@ window.first=mount('one','voice.wav');mount('two','voice.wav');mount('measure','
         await page.wait_for_function("document.querySelector('[data-block-id=one] audio').currentTime > .1")
         await page.wait_for_selector('[data-block-id="one"].richAudioHasWave')
         heights = await first.locator('.richAudioWave rect').evaluate_all('(bars)=>bars.map(b=>+b.getAttribute("height"))')
-        assert len(heights) == 40 and all(height == 1.5 for height in heights[:9])
-        assert heights[-1] > heights[15] > heights[9]
+        assert len(heights) == 40 and all(height == 1.5 for height in heights[:3])
+        assert heights[-1] > heights[15] > heights[4]
         assert await page.evaluate('opens') == 0
         await page.wait_for_function("+document.querySelector('[data-block-id=one] .richAudioSeek').value > 0")
         checks.append('actual decoded WAV silence and increasing amplitude appear faithfully in 40 bars; playback stays inline')
         assert (await first.bounding_box())['height'] <= 70
-        print(f'VOICE_RATE_START engine={name} rate=1.5', flush=True)
+        snapshot = await first.locator('audio').evaluate('a=>({paused:a.paused,ended:a.ended,time:a.currentTime,duration:a.duration})')
+        print(f'VOICE_RATE_START engine={name} snapshot={snapshot}', flush=True)
+        assert not snapshot['paused'] and not snapshot['ended'], 'Rate transitions must be exercised during playback'
         await first.locator('.richAudioRate').click()
-        assert await first.locator('audio').evaluate('(a)=>a.playbackRate') == 1.5
+        assert await first.locator('audio').evaluate('(a)=>a.playbackRate === 1.5 && !a.paused')
         print(f'VOICE_RATE_DONE engine={name} rate=1.5', flush=True)
         await first.locator('.richAudioRate').click()
-        assert await first.locator('audio').evaluate('(a)=>a.playbackRate') == 2
+        assert await first.locator('audio').evaluate('(a)=>a.playbackRate === 2 && !a.paused')
         await first.locator('.richAudioRate').click()
-        assert await first.locator('audio').evaluate('(a)=>a.playbackRate') == 1
+        assert await first.locator('audio').evaluate('(a)=>a.playbackRate === 1 && !a.paused')
         checks.append('compact 68px voice strip; speed cycles 1, 1.5, 2 and back to 1 on actual audio element')
         await first.locator('.richAudioPlay').click()
         assert await first.locator('audio').evaluate('(a)=>a.paused')
         await first.locator('.richAudioSeek').evaluate("s=>{s.value='500';s.dispatchEvent(new Event('input',{bubbles:true}))}")
-        assert 1.9 <= await first.locator('audio').evaluate('(a)=>a.currentTime') <= 2.1
+        assert 5.9 <= await first.locator('audio').evaluate('(a)=>a.currentTime') <= 6.1
+        paused_at = await first.locator('audio').evaluate('(a)=>a.currentTime')
+        await first.locator('.richAudioRate').click()
+        assert await first.locator('.richAudioRate').get_attribute('data-rate') == '1.5'
+        await page.wait_for_timeout(120)
+        assert await first.locator('audio').evaluate('(a)=>a.paused')
+        assert abs(await first.locator('audio').evaluate('(a)=>a.currentTime') - paused_at) < .1
         await first.locator('.richAudioPlay').click()
+        await page.wait_for_function("(()=>{const a=document.querySelector('[data-block-id=one] audio');return !a.paused&&a.playbackRate===1.5&&a.currentTime>6.05})()")
+        # Reach a real end-of-stream, then select speed without implicitly
+        # restarting. The next explicit play must leave EOS and apply that rate.
+        await first.locator('.richAudioSeek').evaluate("s=>{s.value='980';s.dispatchEvent(new Event('input',{bubbles:true}))}")
+        await page.wait_for_function("document.querySelector('[data-block-id=one] audio').ended")
+        print(f'VOICE_ENDED_RATE_START engine={name}', flush=True)
+        await first.locator('.richAudioRate').click()
+        assert await first.locator('.richAudioRate').get_attribute('data-rate') == '2'
+        assert await first.locator('audio').evaluate('(a)=>a.ended && a.paused')
+        await first.locator('.richAudioPlay').click()
+        await page.wait_for_function("(()=>{const a=document.querySelector('[data-block-id=one] audio');return !a.paused&&!a.ended&&a.playbackRate===2&&a.currentTime>.1&&a.currentTime<3})()")
+        print(f'VOICE_ENDED_REPLAY_DONE engine={name}', flush=True)
+        checks.append('paused speed selection preserves position; ended speed selection stays stopped; explicit play resumes at selected real rate')
         await second.locator('.richAudioPlay').click()
         await page.wait_for_function("document.querySelector('[data-block-id=two] audio').currentTime > .1")
         assert await first.locator('audio').evaluate('(a)=>a.paused')
