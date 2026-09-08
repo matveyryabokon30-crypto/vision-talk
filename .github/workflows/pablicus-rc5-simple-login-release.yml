@@ -73,6 +73,12 @@ jobs:
           node --test apps/pablicus/tests/rich_message_module.test.js
       - name: Install browser engines
         run: python -m playwright install --with-deps chromium webkit
+      - name: Focused voice playback and integrated chat actions in both browser engines
+        working-directory: source
+        run: |
+          python apps/pablicus/tests/voice_design.py chromium
+          python apps/pablicus/tests/voice_design.py webkit
+          python apps/pablicus/tests/chat_polish.py
       - name: Public first-key page with virtual WebAuthn and mocked provider HTTP
         working-directory: source
         run: python apps/pablicus/tests/public_passkey_page.py
@@ -101,9 +107,6 @@ jobs:
           python apps/pablicus/tests/rich_message_integration.py
           python apps/pablicus/tests/message_interactions.py
           python apps/pablicus/tests/inbox_monitor.py
-          python apps/pablicus/tests/voice_design.py chromium
-          python apps/pablicus/tests/voice_design.py webkit
-          python apps/pablicus/tests/chat_polish.py
       - uses: actions/checkout@v4
         with:
           ref: main
