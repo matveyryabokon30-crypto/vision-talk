@@ -1,0 +1,26 @@
+name: Pablicus Pages configuration audit
+on:
+  push:
+    branches: [pablicus-rc2-release]
+    paths: [.github/workflows/pablicus-pages-audit.yml]
+permissions:
+  contents: read
+  pages: read
+jobs:
+  pages-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Read existing Pages configuration without changing it
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p audit
+          gh api --include repos/${{ github.repository }}/pages > audit/pages.txt 2>&1 || true
+          gh api repos/${{ github.repository }}/actions/workflows > audit/workflows.json
+          cat audit/pages.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pablicus-pages-configuration
+          path: audit/
+          retention-days: 14
