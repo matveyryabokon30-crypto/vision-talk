@@ -130,3 +130,8 @@ correct duration. No unsupported speed control is shipped. Core playback, pause,
 seek, per-voice reply, one active voice, waveform fallback, end-of-stream replay
 and cleanup remain required checks. Future speed support needs separate browser
 and physical-device validation.
+
+Native seek capability is separate from decoded waveform duration. If a browser
+reports an unseekable stream, its waveform and time display continue, but the
+seek control is disabled and forced input cannot change native position. A
+positive native duration and a non-empty seekable range enable actual scrubbing.

@@ -81,3 +81,9 @@ This does not waive the core voice gates. The focused suite still verifies actua
 play/pause, seek position, exclusive playback, replies, waveform failure fallback,
 real end-of-stream replay and disposal. Speed needs a later independently verified
 implementation. Final WebKit results must come from the revised CI run.
+
+The core voice test distinguishes real native seek capability from decoded PCM
+duration: seekable media must reach six seconds; an unseekable stream must expose
+disabled scrubbing and ignore forced input. Both branches still require playback,
+pause, natural end-of-stream and explicit replay. Chromium verifies the positive
+WAV seek path; the WebKit run must verify the observed duration-zero fallback.
