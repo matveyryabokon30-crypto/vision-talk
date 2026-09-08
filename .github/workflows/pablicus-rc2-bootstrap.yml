@@ -1,0 +1,33 @@
+name: Pablicus RC2 source bootstrap
+on:
+  push:
+    branches: [pablicus-rc2-release]
+    paths:
+      - 'apps/pablicus-bootstrap/**'
+      - '.github/workflows/pablicus-rc2-bootstrap.yml'
+permissions:
+  contents: write
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Reconstruct audited RC2 source
+        run: |
+          set -euo pipefail
+          cat apps/pablicus-bootstrap/part-*.txt | base64 -d > /tmp/pablicus.zip
+          echo 'ba4c7af91dfe60116fc9d06f8602ab9cab0f07b113c23237bbd85243b7b8a226  /tmp/pablicus.zip' | sha256sum -c -
+          rm -rf apps/pablicus
+          mkdir -p apps/pablicus
+          unzip -q /tmp/pablicus.zip -d apps/pablicus
+          rm -rf apps/pablicus-bootstrap
+          rm -f apps/pablicus/RC2_WRITE_PROBE.txt
+          git add -A apps/pablicus apps/pablicus-bootstrap
+          git config user.name 'Pablicus release bootstrap'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Materialize Pablicus 0.1.0-rc2 source' || exit 0
+          git push origin HEAD:pablicus-rc2-release
