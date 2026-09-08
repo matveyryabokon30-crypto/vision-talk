@@ -2,6 +2,10 @@
   "name": "pablicus-rich-message-schema-tests",
   "private": true,
   "type": "module",
-  "scripts": { "test": "node --test rich-message.test.mjs" },
-  "devDependencies": { "@electric-sql/pglite": "0.5.8" }
+  "scripts": {
+    "test": "node --test rich-message.test.mjs actions.test.mjs contacts.test.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8"
+  }
 }

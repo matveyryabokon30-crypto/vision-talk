@@ -202,7 +202,7 @@ async def one(name, engine):
         await page.locator('#vp').evaluate('(node)=>node.scrollTop=0')
         original = page.locator(f'#canvas .row[data-id="{TEXT_ID}"]')
         await original.locator('.messageActions').click()
-        await page.locator('#productDialog').get_by_role('button', name='Ответить', exact=True).click()
+        await page.locator('.pablicusMessageMenu .pmmAction[data-action="reply"]').click()
         await page.locator('#replyDraft').wait_for(state='visible')
         await page.locator('#input').fill('Текст не должен потеряться при отмене ответа')
         await page.evaluate('PablicusChat.flush()')

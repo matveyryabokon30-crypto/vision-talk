@@ -86,3 +86,35 @@ canvas. The reference's shared plan, tasks and assistant are not implemented by
 this release. Existing assistant/action placeholders must not be described as
 real AI execution. Feed, tasks, push, automatic video conversion and a full
 reference-layout redesign are still separate work.
+
+
+## Compact actions and people discovery follow-up
+
+The centered message-action dialog is replaced with an anchored 220px menu and
+small contextual forms. Available actions are reply, copy, pin/unpin, forward,
+select, download, edit own text and delete own messages; reactions are shared.
+Edits preserve media placement and original send identifiers. The actions RPC
+stores text overlays and a revision; a conflicting edit cannot overwrite newer
+text silently. Deleted rows are hidden from REST by a restrictive SELECT policy,
+and list RPC previews/unread counts omit them. Deletion is a server tombstone,
+not a claim of secure media erasure or revoking already downloaded copies.
+
+The migrations applied on 2026-09-08 are `pablicus_message_actions` and
+`pablicus_people_and_direct_conversations`. Exact proposals are in chat-workspace.
+Action state is polled for already loaded messages because edits/reactions do
+not allocate a new message sequence. Forwarding downloads authorized source
+bytes, preserves the destination draft, and waits for the user's Send action.
+It does not send in the background on selecting the menu item.
+
+The voice strip uses a waveform derived from actual decoded audio, playback
+rates and an accessible seek input. Waveform decoding is optional and bounded;
+a straight progress track remains usable when the browser cannot decode it.
+The minimal stylesheet removes the inherited hidden toolbar grid tracks and
+retains the established light/dark purple palette.
+
+People can be found by display name, username or a shared `?person=` link.
+Shared links still require explicitly selecting the intended profile. Profiles
+show a Share/Copy link action. The direct-conversation RPC serializes both
+participants through the same lock and reuses their existing conversation.
+The directory returns only public name/handle/avatar fields to approved users.
+Phonebook import and automatic matching by unverified phone numbers are absent.
