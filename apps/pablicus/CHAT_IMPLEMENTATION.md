@@ -106,8 +106,8 @@ not allocate a new message sequence. Forwarding downloads authorized source
 bytes, preserves the destination draft, and waits for the user's Send action.
 It does not send in the background on selecting the menu item.
 
-The voice strip uses a waveform derived from actual decoded audio, playback
-rates and an accessible seek input. Waveform decoding is optional and bounded;
+The voice strip uses a waveform derived from actual decoded audio, inline
+play/pause and an accessible seek input. Waveform decoding is optional and bounded;
 a straight progress track remains usable when the browser cannot decode it.
 The minimal stylesheet removes the inherited hidden toolbar grid tracks and
 retains the established light/dark purple palette.
@@ -118,3 +118,15 @@ show a Share/Copy link action. The direct-conversation RPC serializes both
 participants through the same lock and reuses their existing conversation.
 The directory returns only public name/handle/avatar fields to approved users.
 Phonebook import and automatic matching by unverified phone numbers are absent.
+
+### Voice speed deferred (release scope decision)
+
+Playback speed was an optional implementation addition, not part of the user's
+requested compact voice redesign. Its button and all native playbackRate writes
+were removed from this release after WebKit failed the rate/resume scenario.
+The failure persisted with valid byte ranges and a real threaded HTTP fixture;
+diagnostics showed WebKit reporting native duration 0 while decoded PCM had the
+correct duration. No unsupported speed control is shipped. Core playback, pause,
+seek, per-voice reply, one active voice, waveform fallback, end-of-stream replay
+and cleanup remain required checks. Future speed support needs separate browser
+and physical-device validation.
