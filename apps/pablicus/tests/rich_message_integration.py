@@ -327,6 +327,8 @@ async def main(engines):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('engines', nargs='*', choices=['chromium', 'webkit'], default=['chromium', 'webkit'])
+    parser.add_argument('engines', nargs='*', metavar='ENGINE')
     args = parser.parse_args()
-    asyncio.run(main(args.engines))
+    if any(name not in ('chromium', 'webkit') for name in args.engines):
+        parser.error('engines must be chromium or webkit')
+    asyncio.run(main(args.engines or ['chromium', 'webkit']))
