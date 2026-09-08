@@ -1,0 +1,35 @@
+#inboxMonitor{--monitor-max-height:248px;position:fixed;z-index:1800;width:232px;color:var(--text);font:13px/1.35 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;isolation:isolate;filter:drop-shadow(0 10px 24px #0002);transition:opacity .15s}
+#inboxMonitor[hidden],#inboxMonitor.inboxMonitorSpaceHidden{display:none!important}
+#inboxMonitor .inboxMonitorShell{max-height:var(--monitor-max-height);display:flex;flex-direction:column;overflow:hidden;border:1px solid color-mix(in srgb,var(--accent) 32%,var(--line));border-radius:17px 17px 7px 17px;background:var(--surface);box-shadow:inset 0 1px 0 #fff2}
+#inboxMonitor .inboxMonitorHead{display:flex;align-items:center;flex-shrink:0;gap:3px;padding:3px 4px 3px 2px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--soft) 65%,var(--surface))}
+#inboxMonitor button{min-height:32px;border:0;background:transparent;color:var(--text);font:inherit;padding:4px 6px;border-radius:8px;cursor:pointer;touch-action:manipulation}
+#inboxMonitor button:focus-visible,#inboxMonitor .inboxMonitorBody:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+#inboxMonitor button:hover{background:var(--soft)}
+#inboxMonitor button:disabled{opacity:.4;cursor:default}
+#inboxMonitor .inboxMonitorDrag{width:28px;flex-shrink:0;touch-action:none;cursor:grab;font-size:21px;color:var(--muted);padding:0;user-select:none;-webkit-user-select:none}
+#inboxMonitor.inboxMonitorDragging .inboxMonitorDrag{cursor:grabbing}
+#inboxMonitor .inboxMonitorTitle{font-size:12px;font-weight:600;min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#inboxMonitor .inboxMonitorCollapse,#inboxMonitor .inboxMonitorClose{width:29px;padding:0;font-size:21px;flex-shrink:0}
+#inboxMonitor .inboxMonitorBody{min-height:46px;max-height:174px;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;scrollbar-width:thin;padding:8px;display:flex;flex-direction:column;gap:7px}
+#inboxMonitor .inboxMonitorText{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.45}
+#inboxMonitor .inboxMonitorGallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px;flex-shrink:0}
+#inboxMonitor .inboxMonitorGallery>.inboxMonitorTile:only-child{grid-column:1/-1;aspect-ratio:16/10}
+#inboxMonitor .inboxMonitorTile{position:relative;min-width:0;overflow:hidden;background:var(--soft);border-radius:7px;aspect-ratio:1;flex-shrink:0}
+#inboxMonitor .inboxMonitorImage,#inboxMonitor .inboxMonitorVideo{display:block;width:100%;height:100%;object-fit:cover;background:var(--soft)}
+#inboxMonitor .inboxMonitorVideo{object-fit:contain;background:#121217}
+#inboxMonitor .inboxMonitorTile-audio{aspect-ratio:auto;min-height:42px;background:transparent}
+#inboxMonitor .inboxMonitorAudio{display:block;width:100%;height:38px}
+#inboxMonitor .inboxMonitorMediaStatus{pointer-events:none;position:absolute;top:6px;left:5px;right:5px;padding:3px 5px;background:color-mix(in srgb,var(--surface) 87%,transparent);border-radius:5px;font-size:11px;color:var(--muted)}
+#inboxMonitor .inboxMonitorMediaStatus[hidden]{display:none}
+#inboxMonitor .inboxMonitorTile-audio .inboxMonitorMediaStatus{position:static;display:block;padding:2px 0;font-size:11px}
+#inboxMonitor .inboxMonitorTile-audio .inboxMonitorMediaStatus[hidden]{display:none}
+#inboxMonitor .inboxMonitorDocument{margin:0;padding:7px 8px;min-width:0;overflow-wrap:anywhere;border-radius:8px;background:var(--soft);font-size:12px}
+#inboxMonitor .inboxMonitorFoot{display:flex;align-items:center;gap:1px;flex-shrink:0;border-top:1px solid var(--line);padding:2px 4px}
+#inboxMonitor .inboxMonitorPrev,#inboxMonitor .inboxMonitorNext{width:27px;font-size:21px;padding:0}
+#inboxMonitor .inboxMonitorCount{color:var(--muted);font-size:10px;white-space:nowrap;min-width:30px;text-align:center}
+#inboxMonitor .inboxMonitorOpen{margin-left:auto;color:var(--accent);font-size:11px;font-weight:600;padding:3px 7px}
+#inboxMonitor .inboxMonitorBadge{display:none;min-height:44px;width:72px;background:var(--surface);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:15px 15px 5px 15px;font-size:12px;font-weight:600}
+#inboxMonitor.inboxMonitorCompact .inboxMonitorShell{display:none}
+#inboxMonitor.inboxMonitorCompact .inboxMonitorBadge{display:block}
+#inboxMonitor .inboxMonitorAnnounce{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(prefers-reduced-motion:reduce){#inboxMonitor{transition:none}}

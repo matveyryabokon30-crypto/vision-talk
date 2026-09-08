@@ -46,3 +46,38 @@ test('local assets and final server paths both preserve their identifiers', () =
   assert.equal(result.content.blocks[0].assetId, 'asset-1');
   assert.equal(result.content.blocks[1].path, 'account/conversation/file.png');
 });
+
+test('adjacent photos and videos form a gallery across empty insertion points', () => {
+  const blocks = [
+    { id: 't1', type: 'text', text: 'Смотри' },
+    { id: 'i1', type: 'image', path: 'photo.jpg' },
+    { id: 'empty', type: 'text', text: '  \n' },
+    { id: 'v1', type: 'video', path: 'movie.mp4' },
+    { id: 't2', type: 'text', text: 'Продолжение' },
+    { id: 'i2', type: 'image', path: 'second.jpg' }
+  ];
+  const layout = rich.groupBlocks(blocks);
+  assert.deepEqual(layout.map(item => item.type), ['text', 'gallery', 'text', 'image']);
+  assert.deepEqual(layout[1].blocks.map(block => block.id), ['i1', 'v1']);
+  assert.equal(blocks.length, 6);
+});
+
+test('voice and documents stop visual groups and each retains its reply target', () => {
+  const blocks = [
+    { id: 'i1', type: 'image' }, { id: 'voice-1', type: 'audio' },
+    { id: 'i2', type: 'image' }, { id: 'doc-1', type: 'document' },
+    { id: 'v1', type: 'video' }, { id: 'i3', type: 'image' }
+  ];
+  const layout = rich.groupBlocks(blocks);
+  assert.deepEqual(layout.map(item => item.type), ['image', 'audio', 'image', 'document', 'gallery']);
+  assert.equal(layout[1].id, 'voice-1');
+  assert.equal(layout[3].id, 'doc-1');
+});
+
+test('a collapsed large gallery still retains every original attachment in order', () => {
+  const blocks = Array.from({ length: 9 }, (_, index) => ({ id: 'image-' + index, type: index % 2 ? 'video' : 'image' }));
+  const layout = rich.groupBlocks(blocks);
+  assert.equal(layout.length, 1);
+  assert.equal(layout[0].type, 'gallery');
+  assert.deepEqual(layout[0].blocks.map(block => block.id), blocks.map(block => block.id));
+});

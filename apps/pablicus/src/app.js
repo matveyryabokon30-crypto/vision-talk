@@ -25,6 +25,38 @@
  let authVersion=0,passkeys=null,passwordLogin=null,passkeySigninActive=false,passkeyAuthEvent=null,sessionCleanup=Promise.resolve();
  let user=null,profile=null,dialogs=[],current=null,rows=[],page='chats',filter='all',opening=false,syncing=false,olderBusy=false,refreshing=false,worker=false,channel=null,epoch=0,toastTimer=0,peersRead=0;
  const signed=new Map(),cacheKey=()=>`pablicus:${user?.id}:dialogs`,focusKey=()=>`pablicus:${user?.id}:focus`;
+ const replyCache=new Map();
+ const mediaViewer=PablicusMediaViewer.create({resolveUrl:mediaUrl,download:downloadAttachment});
+ const inboxMonitor=PablicusInboxMonitor.create({resolveUrl:block=>mediaUrl(mediaItem(block)),openConversation:async id=>{if(opening)throw Error('Разговор ещё открывается');const uid=user?.id;await PablicusChat.flush();if(!uid||user?.id!==uid)return;await openConversation(dialogs.find(d=>d.id===id)||{id,title:'Разговор'});if(user?.id===uid&&current?.id!==id)throw Error('Не удалось открыть разговор. Повторите попытку')},onError:problem});
+ let inboxChannel=null,inboxEpoch=0,inboxPolling=false;
+ const inboxSeq=new Map(),inboxSeen=new Set();
+ function inboxContext(){inboxMonitor.setContext({userId:user?.id||null,conversationId:current?.id||null,active:!!current&&!document.hidden});}
+ function stopInbox(){++inboxEpoch;if(inboxChannel)sb.removeChannel(inboxChannel);inboxChannel=null;inboxSeq.clear();inboxSeen.clear();inboxMonitor.setContext({userId:null,conversationId:null,active:false});}
+ function deliverInbox(message,uid,token){
+  if(user?.id!==uid||token!==inboxEpoch||!current||document.hidden||!message?.id||message.sender_id===uid||message.conversation_id===current.id||inboxSeen.has(message.id))return;
+  if(inboxMonitor.push({message,conversationTitle:dialogs.find(d=>d.id===message.conversation_id)?.title||'Другой чат'})){inboxSeen.add(message.id);if(inboxSeen.size>512)inboxSeen.delete(inboxSeen.values().next().value);}
+ }
+ function startInbox(){stopInbox();if(!user)return;const uid=user.id,token=inboxEpoch;for(const d of dialogs)inboxSeq.set(d.id,+d.last_seq||0);inboxContext();
+  inboxChannel=sb.channel('pablicus-inbox-'+uid).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},payload=>deliverInbox(payload.new,uid,token)).subscribe(state=>{if(state==='SUBSCRIBED')pollInbox()});
+ }
+ async function pollInbox(){
+  if(!user||!current||opening||document.hidden||!navigator.onLine||inboxPolling)return;
+  inboxPolling=true;const uid=user.id,token=inboxEpoch;
+  try{await loadDialogs();if(user?.id!==uid||token!==inboxEpoch)return;
+   for(const d of dialogs){
+    if(user?.id!==uid||token!==inboxEpoch||!current||document.hidden)return;
+    const last=+d.last_seq||0;if(d.id===current.id){inboxSeq.set(d.id,last);continue;}
+    const after=inboxSeq.has(d.id)?inboxSeq.get(d.id):Math.max(0,last-20);if(last<=after)continue;
+    const r=await sb.from('messages').select('*').eq('conversation_id',d.id).gt('server_seq',after).order('server_seq',{ascending:true}).limit(50);
+    if(user?.id!==uid||token!==inboxEpoch)return;if(r.error)continue;
+    // Realtime and polling can overlap or arrive out of order. Only this ordered
+    // catch-up query advances its watermark; the delivery set handles duplicates.
+    for(const message of r.data||[])deliverInbox(message,uid,token);
+    if(r.data?.length)inboxSeq.set(d.id,+r.data.at(-1).server_seq);
+   }
+  }catch(_){}finally{inboxPolling=false;}
+ }
+
  function toast(text){$('toast').textContent=text;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,5000)}
  function problem(e){console.warn(e?.name||'Pablicus error');toast(e?.message||'Не удалось выполнить действие. Черновик сохранён.')}
  function connection(){const offline=!navigator.onLine;$('connection').hidden=!offline;$('connection').textContent=offline?'Нет сети · исходящие сохраняются на устройстве':'';if(current)$('chatHint').textContent=offline?'Нет сети · очередь сохранена':'Pablicus'}
@@ -34,7 +66,7 @@
  $('dialogClose').onclick=()=>$('productDialog').close();$('installLogin').onclick=install;
  function theme(value){safeSet('pablicus:theme',value);document.documentElement.dataset.theme=value;const dark=value==='dark'||value==='system'&&matchMedia('(prefers-color-scheme:dark)').matches;$('logo').src='assets/wordmark-'+(dark?'dark':'light')+'.png';$('logo').parentElement.querySelector('source')?.remove();document.querySelector('meta[name="theme-color"]').content=dark?'#111218':'#FAF9FC';window.PablicusChat?.list?.refreshFont()}
  theme(safeGet('pablicus:theme')||'system');matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>theme(safeGet('pablicus:theme')||'system'));
- function clearSessionView(){sessionCleanup=sessionCleanup.then(()=>window.PablicusChat?.leave()).catch(e=>toast('Не удалось сохранить черновик на устройстве. '+e.message));$('newChat').hidden=true;if(passkeys?.snapshot().busy&&passkeys.snapshot().operation!=='signIn')passkeys.cancel();$('productDialog').close();$('dialogContent').replaceChildren();user=null;profile=null;dialogs=[];rows=[];current=null;epoch++;signed.clear();if(channel)sb.removeChannel(channel);channel=null;$('app').hidden=true;$('home').hidden=false;$('workspace').hidden=true;$('mainNav').hidden=true;$('loginPane').hidden=false;}
+ function clearSessionView(){stopInbox();PablicusRichMessage.stopAll?.();mediaViewer.close();replyCache.clear();sessionCleanup=sessionCleanup.then(()=>window.PablicusChat?.leave()).catch(e=>toast('Не удалось сохранить черновик на устройстве. '+e.message));$('newChat').hidden=true;if(passkeys?.snapshot().busy&&passkeys.snapshot().operation!=='signIn')passkeys.cancel();$('productDialog').close();$('dialogContent').replaceChildren();user=null;profile=null;dialogs=[];rows=[];current=null;epoch++;signed.clear();if(channel)sb.removeChannel(channel);channel=null;$('app').hidden=true;$('home').hidden=false;$('workspace').hidden=true;$('mainNav').hidden=true;$('loginPane').hidden=false;}
  async function authenticate(session,{signal,verifiedPasskey=false}={}){
   if(signal?.aborted)return;
   const attempt=++authVersion;
@@ -49,7 +81,7 @@
   if(attempt!==authVersion||signal?.aborted)return;
   if(r.error){const cached=safeGet('pablicus:'+uid+':profile');if(!verifiedPasskey&&!navigator.onLine&&cached)profile=cached;else{user=null;throw Error('Не удалось проверить доступ к аккаунту. '+r.error.message)}}else profile=r.data;
   if(!profile.is_approved){profile=null;user=null;throw Error('Аккаунт ещё не одобрен. Свяжитесь с владельцем Pablicus.')}
-  safeSet('pablicus:'+uid+':profile',profile);$('loginPane').hidden=true;$('workspace').hidden=false;$('mainNav').hidden=false;dialogs=safeGet(cacheKey())||[];renderHome();await loadDialogs();pump();
+  safeSet('pablicus:'+uid+':profile',profile);$('loginPane').hidden=true;$('workspace').hidden=false;$('mainNav').hidden=false;dialogs=safeGet(cacheKey())||[];renderHome();await loadDialogs();if(user?.id!==uid)return;startInbox();pump();
  }
  $('loginForm').onsubmit=async e=>{e.preventDefault();if(passkeySigninActive)return;$('loginSubmit').disabled=true;$('loginError').textContent='';try{const r=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(r.error)throw r.error;$('password').value='';trustExplicitSignIn();await authenticate(r.data.session)}catch(e){$('loginError').textContent=e.message}finally{$('loginSubmit').disabled=false}};
  const authConfig=globalThis.PablicusAuthConfig;
@@ -162,41 +194,80 @@
  document.querySelectorAll('#mainNav button').forEach(b=>b.onclick=()=>{page=b.dataset.page;renderHome()});document.querySelectorAll('#chatFilters button').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll('#chatFilters button').forEach(x=>x.classList.toggle('selected',x===b));renderHome()});$('searchChats').oninput=renderHome;
  $('newChat').onclick=()=>{const c=dialog('Новый разговор'),f=el('form'),i=el('input'),b=el('button','solid','Начать');i.placeholder='username';i.autocomplete='off';i.required=true;f.append(i,b);f.onsubmit=async e=>{e.preventDefault();b.disabled=true;try{const username=i.value.trim().replace(/^@/,'').toLowerCase(),r=await sb.rpc('start_direct_conversation',{target_username:username});if(r.error)throw r.error;$('productDialog').close();await loadDialogs();await openConversation(dialogs.find(d=>d.id===r.data)||{id:r.data,title:'@'+username})}catch(e){problem(e)}finally{b.disabled=false}};c.append(f);i.focus()};
  function mapped(m){return{id:m.id,number:m.server_seq,mine:m.sender_id===user?.id,text:m.body||'',revision:0,remote:m}}
- async function openConversation(d){if(opening||!user)return;opening=true;const uid=user.id,ep=++epoch;current=d;rows=[];peersRead=0;if(channel){await sb.removeChannel(channel);channel=null}$('home').hidden=true;$('app').style.visibility='hidden';$('app').inert=true;$('app').hidden=false;$('chatTitle').textContent=d.title||'Разговор';connection();try{
-   let remote=[];const r=navigator.onLine?await sb.from('messages').select('*').eq('conversation_id',d.id).order('server_seq',{ascending:false}).limit(150):{data:[],error:null};if(r.error){if(navigator.onLine)toast('История пока недоступна. Черновик и очередь доступны локально.')}else remote=(r.data||[]).reverse();if(ep!==epoch)return;rows=remote;await PablicusChat.open(uid,d.id,rows.map(mapped));if(ep!==epoch||user?.id!==uid)return;$('app').style.visibility='';$('app').inert=false;
+ async function openConversation(d){if(opening||!user)return;PablicusRichMessage.stopAll?.();mediaViewer.close();opening=true;const uid=user.id,ep=++epoch;current=d;inboxContext();rows=[];peersRead=0;if(channel){await sb.removeChannel(channel);channel=null}$('home').hidden=true;$('app').style.visibility='hidden';$('app').inert=true;$('app').hidden=false;$('chatTitle').textContent=d.title||'Разговор';connection();try{
+   let remote=[];const r=navigator.onLine?await sb.from('messages').select('*').eq('conversation_id',d.id).order('server_seq',{ascending:false}).limit(150):{data:[],error:null};if(r.error){if(navigator.onLine)toast('История пока недоступна. Черновик и очередь доступны локально.')}else remote=(r.data||[]).reverse();if(ep!==epoch)return;rows=remote;inboxSeq.set(d.id,Math.max(inboxSeq.get(d.id)||0,+rows.at(-1)?.server_seq||0));await PablicusChat.open(uid,d.id,rows.map(mapped));if(ep!==epoch||user?.id!==uid)return;$('app').style.visibility='';$('app').inert=false;
    channel=sb.channel('pablicus-chat-'+d.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'conversation_id=eq.'+d.id},()=>syncMessages()).subscribe(state=>{if(state==='SUBSCRIBED')syncMessages()});pump();
-  }catch(e){problem(e);current=null;$('app').hidden=true;$('home').hidden=false;renderHome()}finally{opening=false}}
- $('chatBack').onclick=async()=>{try{await PablicusChat.leave();current=null;epoch++;if(channel)sb.removeChannel(channel);channel=null;$('app').hidden=true;$('home').hidden=false;renderHome();loadDialogs()}catch(e){problem(e)}};
+  }catch(e){problem(e);current=null;$('app').hidden=true;$('home').hidden=false;renderHome()}finally{opening=false;inboxContext()}}
+ $('chatBack').onclick=async()=>{PablicusRichMessage.stopAll?.();mediaViewer.close();try{await PablicusChat.leave();current=null;inboxContext();epoch++;if(channel)sb.removeChannel(channel);channel=null;$('app').hidden=true;$('home').hidden=false;renderHome();loadDialogs()}catch(e){problem(e)}};
  async function syncMessages(){if(!current||!user||syncing||opening||document.hidden||!navigator.onLine)return;syncing=true;const d=current,uid=user.id,ep=epoch;try{
   const last=rows.at(-1)?.server_seq||0,r=await sb.from('messages').select('*').eq('conversation_id',d.id).gt('server_seq',last).order('server_seq',{ascending:true}).limit(200);if(r.error)throw r.error;if(ep!==epoch||uid!==user?.id)return;
   if(r.data?.length){const seen=new Set(rows.map(m=>m.id));rows.push(...r.data.filter(m=>!seen.has(m.id)));PablicusChat.update(rows.map(mapped))}
+  inboxSeq.set(d.id,Math.max(inboxSeq.get(d.id)||0,+rows.at(-1)?.server_seq||0));
   if(PablicusChat.list?.follow&&rows.length)await sb.rpc('mark_conversation_read',{p_conversation_id:d.id,p_last_read_seq:rows.at(-1).server_seq});
   const peer=await sb.from('conversation_members').select('last_read_seq').eq('conversation_id',d.id).neq('user_id',uid);if(ep!==epoch)return;const next=peer.data?.length?Math.min(...peer.data.map(p=>+p.last_read_seq)):0;
   if(next!==peersRead){peersRead=next;document.querySelectorAll('#canvas [data-server-seq]').forEach(n=>{const meta=n.querySelector('.meta');if(meta&&n.classList.contains('mine'))meta.textContent=stamp(n.dataset.created)+' · '+(+n.dataset.serverSeq<=peersRead?'Прочитано':'Отправлено')})}
  }catch(e){if(navigator.onLine)$('chatHint').textContent='Повторяем подключение…'}finally{syncing=false}}
  const stamp=d=>{try{return new Date(d).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})}catch{return''}};
  function renderMessage(m){const r=m.remote,row=el('article','row'+(m.mine?' mine':'')),b=el('div','bubble'),t=el('div','text');row.dataset.id=m.id;row.dataset.rev=m.revision;row.dataset.serverSeq=r.server_seq;row.dataset.created=r.created_at;
-  if(r.type==='rich')b.append(renderRichContent(r.attachment_metadata));
+  if(r.attachment_metadata?.reply_to)b.append(replyQuote(r.attachment_metadata.reply_to));
+  if(r.type==='rich')b.append(renderRichContent(r.attachment_metadata,false,r));
+  else if((r.attachment_metadata?.mime_type||'').startsWith('audio/'))b.append(renderRichContent({v:1,blocks:[{id:'legacy-audio',type:'audio',path:r.attachment_path,name:r.attachment_metadata.name,mime:r.attachment_metadata.mime_type,size:r.attachment_metadata.size_bytes}]},false,r));
   else if(r.type==='text')t.textContent=r.body||'';
   else{const md=r.attachment_metadata||{},button=el('button','mediaOpen'),name=md.name||'Вложение';button.setAttribute('aria-label','Открыть '+name);
    if(r.type==='image'){const im=el('img','messageImage');im.alt='Фото';im.loading='lazy';if(/^data:image\/(jpeg|png|webp);base64,/.test(md.thumb_data_url||''))im.src=md.thumb_data_url;button.append(im);if(!im.src){const fallback=el('span','mediaLabel','Фото');button.append(fallback);requestAnimationFrame(()=>{if(!im.isConnected||!im.closest('#canvas'))return;signedUrl(r.attachment_path).then(u=>{if(im.isConnected){im.src=u;fallback.remove()}}).catch(()=>{fallback.textContent='Фото · нажмите, чтобы повторить'})})}}
    else button.append(el('span','mediaGlyph',r.type==='video'?'▷':'▤'),el('span','fileName',name),el('span','muted',md.size_bytes?Math.round(md.size_bytes/1024)+' КБ':''));
    button.onclick=()=>viewAttachment(r).catch(problem);b.append(button);if(r.body)t.textContent=r.body;
   }
-  b.append(t,el('div','meta',stamp(r.created_at)+(m.mine?' · '+(+r.server_seq<=peersRead?'Прочитано':'Отправлено'):'')));row.append(b);return row;
+  b.append(t,el('div','meta',stamp(r.created_at)+(m.mine?' · '+(+r.server_seq<=peersRead?'Прочитано':'Отправлено'):'')));bindMessageActions(row,b,r);row.append(b);return row;
  }
 
- function renderRichContent(content,local=false){return PablicusRichMessage.render(content,{
+ function renderRichContent(content,local=false,source=null){return PablicusRichMessage.render(content,{
   resolveUrl:(path,block)=>local?PablicusChat.localAssetUrl(block.assetId):signedUrl(path),
-  openMedia:block=>viewAttachment({type:block.type,localAssetId:local?block.assetId:null,attachment_path:block.path,attachment_metadata:{name:block.name,mime_type:block.mime,size_bytes:block.size}}),
+  openMedia:(block,gallery)=>['image','video'].includes(block.type)?mediaViewer.open((gallery?.items||[block]).map(b=>mediaItem(b,local)),gallery?.index||0):viewAttachment({type:block.type,localAssetId:local?block.assetId:null,attachment_path:block.path,attachment_metadata:{name:block.name,mime_type:block.mime,size_bytes:block.size}}),
+  onReply:source?block=>chooseReply(source,source.type==='rich'?block.id:null):undefined,
  });}
  function renderPendingMessage(m){const row=el('article','row mine outgoing-pending'),bubble=el('div','bubble');row.dataset.id=m.id;row.dataset.rev=m.revision;row.dataset.outboxId=m.outboxId;
   const blocks=m.richBlocks.map(block=>{if(block.type==='text')return block;const asset=PablicusChat.assets.get(block.assetId);return {...block,name:asset?.name||'Вложение',mime:asset?.file?.type||'',size:asset?.file?.size||0}});
+  if(m.reply_to)bubble.append(replyQuote(m.reply_to));
   bubble.append(renderRichContent({v:1,blocks},true),el('div','meta',({queued:'В очереди',sending:'Отправляется…',error:'Ошибка · открыть исходящие'})[m.queueState]||'В очереди'));row.append(bubble);return row;
+ }
+ function mediaItem(block,local=false){return{type:block.type,path:block.path,localAssetId:local?block.assetId:null,name:block.name||'Вложение',mime:block.mime,size:block.size,blockId:block.id};}
+ async function mediaUrl(item){const uid=user?.id;if(!uid)throw Error('Войдите в приложение');const result=item.localAssetId?PablicusChat.localAssetUrl(item.localAssetId):await signedUrl(item.path);if(user?.id!==uid)throw Error('Аккаунт изменился');return result;}
+ async function downloadAttachment(item){const uid=user?.id;if(!uid)throw Error('Войдите в приложение');let url;if(item.localAssetId)url=PablicusChat.localAssetUrl(item.localAssetId);else{const r=await sb.storage.from(BUCKET).createSignedUrl(item.path,300,{download:item.name||true});if(r.error)throw r.error;url=r.data.signedUrl}if(user?.id!==uid)throw Error('Аккаунт изменился');const a=el('a');a.href=url;a.download=item.name||'Вложение';a.rel='noopener';document.body.append(a);a.click();a.remove();}
+ function replyDescription(target,ref){const block=ref.block_id?target?.attachment_metadata?.blocks?.find(b=>b.id===ref.block_id):null,type=block?.type||target?.type;
+  const labels={audio:'Голосовое сообщение',image:'Фото',video:'Видео',document:'Документ',file:'Файл'};
+  const kind=ref.block_id?labels[type]||'Фрагмент сообщения':'Сообщение';
+  const text=block?(block.type==='text'?block.text:labels[type]+(block.type==='audio'?'':': '+(block.name||''))):(target?.body||labels[type]||'Сообщение');
+  return{title:'Ответ: '+kind.toLowerCase()+(target?.created_at?' · '+stamp(target.created_at):''),text:String(text||'Сообщение').slice(0,240)};
+ }
+ async function replyMessage(ref){const known=rows.find(r=>r.id===ref.message_id)||replyCache.get(ref.message_id);if(known)return known;const uid=user?.id,cid=current?.id;if(!uid||!cid)return null;const r=await sb.from('messages').select('*').eq('conversation_id',cid).eq('id',ref.message_id).maybeSingle();if(user?.id!==uid||current?.id!==cid)return null;if(r.error)throw r.error;if(r.data)replyCache.set(r.data.id,r.data);return r.data;}
+ function replyQuote(ref){const q=el('div','replyQuote'),title=el('strong','','Ответ на сообщение'),preview=el('span','','Загрузка цитаты…');q.append(title,preview);q.dataset.replyMessageId=ref.message_id;if(ref.block_id)q.dataset.replyBlockId=ref.block_id;
+  const paint=target=>{const d=target?replyDescription(target,ref):{title:'Ответ на сообщение',text:'Исходное сообщение недоступно'};title.textContent=d.title;preview.textContent=d.text};
+  const cached=rows.find(r=>r.id===ref.message_id)||replyCache.get(ref.message_id);if(cached)paint(cached);else requestAnimationFrame(()=>{if(!q.isConnected||q.closest('.measureBox'))return;replyMessage(ref).then(paint).catch(()=>paint(null))});return q;
+ }
+ function paintReplyDraft(ref){const container=$('replyDraft');container.hidden=!ref;$('replyDraftText').replaceChildren();if(ref)$('replyDraftText').append(replyQuote(ref));}
+ function chooseReply(message,blockId=null){if(!current||message.conversation_id!==current.id)return;replyCache.set(message.id,message);$('productDialog').close();PablicusChat.setReply({message_id:message.id,...(blockId?{block_id:blockId}:{})});}
+ $('cancelReply').onclick=()=>PablicusChat.setReply(null);
+ function messageActions(message,blockId=null){const block=blockId?message.attachment_metadata?.blocks?.find(b=>b.id===blockId):null,c=dialog(block?.type==='audio'?'Голосовое сообщение':'Сообщение');
+  const reply=el('button','setting','Ответить');reply.onclick=()=>chooseReply(message,blockId);c.append(reply);
+  const text=block?(block.type==='text'?block.text:''):message.body;
+  if(text){const copy=el('button','setting','Скопировать текст');copy.onclick=async()=>{try{await navigator.clipboard.writeText(text);$('productDialog').close();toast('Текст скопирован')}catch(e){problem(e)}};c.append(copy)}
+  const item=block&&block.type!=='text'?mediaItem(block):message.attachment_path?{type:message.type,path:message.attachment_path,name:message.attachment_metadata?.name||'Вложение'}:null;
+  if(item){const save=el('button','setting','Скачать');save.onclick=()=>downloadAttachment(item).catch(problem);c.append(save)}
+ }
+ function bindMessageActions(row,bubble,message){const action=el('button','messageActions','⋯');action.type='button';action.setAttribute('aria-label','Действия с сообщением');action.onclick=e=>{e.stopPropagation();messageActions(message)};bubble.append(action);
+  let timer=0,start=null,suppressUntil=0;const blockFor=e=>message.type==='rich'?e.target.closest('[data-block-id]')?.dataset.blockId||null:null;
+  const cancel=()=>{clearTimeout(timer);timer=0};
+  row.addEventListener('contextmenu',e=>{if(!row.closest('#canvas'))return;e.preventDefault();cancel();messageActions(message,blockFor(e))});
+  row.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch'||e.target.closest('input,video,audio'))return;start={x:e.clientX,y:e.clientY};timer=setTimeout(()=>{if(!row.isConnected||message.conversation_id!==current?.id)return;suppressUntil=Date.now()+900;messageActions(message,blockFor(e))},500)});
+  row.addEventListener('pointermove',e=>{if(start&&Math.hypot(e.clientX-start.x,e.clientY-start.y)>10)cancel()});
+  for(const event of ['pointerup','pointercancel','pointerleave'])row.addEventListener(event,cancel);
+  row.addEventListener('click',e=>{if(Date.now()<suppressUntil){e.preventDefault();e.stopImmediatePropagation()}},true);
+  bubble.addEventListener('click',e=>{if(!e.target.closest('button,input,a,video,audio')&&!String(getSelection()).trim())messageActions(message)});
  }
  async function loadOlder(){if(!current||olderBusy||!navigator.onLine||!rows.length)return;const first=+rows[0].server_seq;if(first<=1)return;olderBusy=true;const d=current,ep=epoch;try{const r=await sb.from('messages').select('*').eq('conversation_id',d.id).lt('server_seq',first).order('server_seq',{ascending:false}).limit(100);if(r.error)throw r.error;if(ep!==epoch||current?.id!==d.id)return;const older=(r.data||[]).reverse();if(older.length){rows=[...older,...rows];PablicusChat.prepend(older.map(mapped))}}catch(e){if(navigator.onLine)console.warn('history')}finally{olderBusy=false}}
  async function signedUrl(path){const old=signed.get(path);if(old&&old.until>Date.now())return old.url;const r=await sb.storage.from(BUCKET).createSignedUrl(path,300);if(r.error)throw r.error;signed.set(path,{url:r.data.signedUrl,until:Date.now()+240000});return r.data.signedUrl}
- async function viewAttachment(r){const md=r.attachment_metadata||{},c=dialog(md.name||'Вложение');c.append(el('p','','Открываю…'));const uid=user?.id,u=r.localAssetId?PablicusChat.localAssetUrl(r.localAssetId):await signedUrl(r.attachment_path);if(user?.id!==uid)return;c.replaceChildren();
+ async function viewAttachment(r){if(['image','video'].includes(r.type))return mediaViewer.open([{type:r.type,path:r.attachment_path,localAssetId:r.localAssetId,name:r.attachment_metadata?.name||'Вложение',mime:r.attachment_metadata?.mime_type}],0);const md=r.attachment_metadata||{},c=dialog(md.name||'Вложение');c.append(el('p','','Открываю…'));const uid=user?.id,u=r.localAssetId?PablicusChat.localAssetUrl(r.localAssetId):await signedUrl(r.attachment_path);if(user?.id!==uid)return;c.replaceChildren();
   if(r.type==='image'){const im=el('img','viewerImage');im.src=u;im.alt='Фотография';c.append(im)}
   else if((md.mime_type||'').startsWith('audio/')){const a=el('audio');a.controls=true;a.src=u;c.append(a)}
   else if(r.type==='video'){const v=el('video','viewerVideo');v.controls=true;v.playsInline=true;v.preload='metadata';v.src=u;v.onerror=()=>{if(v.isConnected)c.prepend(el('p','muted','Браузер не смог воспроизвести это видео. Откройте или сохраните файл ниже.'))};c.append(v)}
@@ -209,7 +280,7 @@
  const b64=s=>btoa(unescape(encodeURIComponent(s)));
  const attachmentName=f=>f.name.normalize('NFKC').replace(/[^a-zA-Z0-9._-]/g,'_').slice(-80).replace(/^\.+/,'')||'file';
  const stableContent=value=>JSON.stringify(value,(_,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.keys(v).sort().map(k=>[k,v[k]])):v);
- function richContent(item,m,cid,uid,id){return {v:1,blocks:m.blocks.flatMap(block=>{
+ function richContent(item,m,cid,uid,id){return {v:1,...(m.reply_to?{reply_to:m.reply_to}:{}),blocks:m.blocks.flatMap(block=>{
   if(block.type==='text')return block.text.trim()?[{id:block.id,type:'text',text:block.text}]:[];
   const f=item.files.find(file=>file.id===block.assetId);if(!f)throw Error('Байты вложения не найдены');
   return [{id:block.id,type:block.type,path:cid+'/'+uid+'/'+id+'/'+block.id+'/'+attachmentName(f),name:f.name,mime:f.type||'application/octet-stream',size:f.size}];
@@ -225,7 +296,7 @@
   return{path,id};
  }
  async function pump(){if(worker||!user||!navigator.onLine||document.hidden)return;worker=true;const uid=user.id,owner=DraftVault.uid();try{
-  for(const d of dialogs){if(user?.id!==uid)break;const store=PablicusChat.scope.chat===d.id?PablicusChat.store:new PablicusStore(uid,d.id);if(!store)continue;try{
+  for(const d of dialogs){if(user?.id!==uid)break;const store=PablicusChat.scope.user===uid&&PablicusChat.scope.chat===d.id?PablicusChat.store:new PablicusStore(uid,d.id);if(!store)continue;try{
    const queue=await store.readQueue();for(const it of queue){if(user?.id!==uid||!navigator.onLine)break;if(it.state==='error'&&(!it.retryable||it.nextAttemptAt>Date.now()))break;if(!['queued','sending','error'].includes(it.state))continue;const claimed=await store.claim(it.id,owner);if(!claimed)break;const item={...claimed,files:it.files};
     try{for(const m of item.messages){if(user?.id!==uid)throw Error('Аккаунт изменился');if(item.parts?.[m.id]?.ack)continue;const id=await pablicusClientId(item.id,m.id);
      const content=m.kind==='rich'?richContent(item,m,d.id,uid,id):null;
@@ -253,8 +324,9 @@
   }finally{if(store!==PablicusChat.store)store.close()}}
  }catch(e){problem(e)}finally{worker=false}}
  async function showOutbox(){const c=dialog('Исходящие'),store=PablicusChat.store;if(!store)return;const q=(await store.readQueue(false)).filter(r=>!['sent','cancelled'].includes(r.state));if(!q.length)c.append(el('p','','Все исходящие подтверждены сервером. Это не означает, что получатель их прочитал.'));for(const r of q){const b=el('section','outboxItem');b.append(el('strong','',({queued:'В очереди',sending:'Отправляется',error:'Ошибка'})[r.state]||r.state),el('p','',r.messages.find(m=>m.kind==='text')?.text.slice(0,180)||'Вложения'));if(r.error)b.append(el('p','danger',r.error.message));const retry=el('button','setting','Повторить');retry.onclick=async()=>{try{await store.retry(r.id);$('productDialog').close();pump()}catch(e){problem(e)}};b.append(retry);c.append(b)}}
- window.PablicusHost={renderMessage,renderPendingMessage,notify:toast,acceptFile,unavailable,showOutbox,historyTop:loadOlder,canSend:()=>{if(!user||!profile?.is_approved||!current)return false;if((PablicusChat.rich?.capture().text||$('input').value||'').length>5000){toast('Одно сообщение — до 5000 символов. Черновик сохранён; сократите его или разделите.');return false}return true}};
- window.addEventListener('pablicus:queued',()=>pump());window.addEventListener('online',()=>{connection();loadDialogs();syncMessages();pump()});window.addEventListener('offline',connection);document.addEventListener('visibilitychange',()=>{if(!document.hidden){connection();loadDialogs();syncMessages();pump()}});
+ window.PablicusHost={renderMessage,renderPendingMessage,paintReplyDraft,notify:toast,acceptFile,unavailable,showOutbox,historyTop:loadOlder,canSend:()=>{if(!user||!profile?.is_approved||!current)return false;if((PablicusChat.rich?.capture().text||$('input').value||'').length>5000){toast('Одно сообщение — до 5000 символов. Черновик сохранён; сократите его или разделите.');return false}return true}};
+ window.addEventListener('pablicus:queued',()=>pump());window.addEventListener('online',()=>{connection();loadDialogs();syncMessages();pump()});window.addEventListener('offline',connection);document.addEventListener('visibilitychange',()=>{inboxContext();if(!document.hidden){connection();loadDialogs();syncMessages();pump()}});
+ setInterval(pollInbox,5000);
  setInterval(()=>{if(!document.hidden){if(current)syncMessages();else loadDialogs();pump()}},1300);connection();
  if('serviceWorker'in navigator){let approveUpdate=false;const hadController=!!navigator.serviceWorker.controller;
   navigator.serviceWorker.register('sw.js',{scope:'./',updateViaCache:'none'}).then(reg=>{const show=()=>{$('updateNotice').hidden=!reg.waiting};reg.addEventListener('updatefound',()=>reg.installing?.addEventListener('statechange',show));show();

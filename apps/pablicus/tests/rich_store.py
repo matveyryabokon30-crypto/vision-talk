@@ -1,7 +1,7 @@
 """Real browser IndexedDB checks for one-message atomic rich drafts/outbox.
 
 No Supabase, messages, microphone, or user accounts are accessed. Binary fixtures
-verify persistence, not codec playback. The harness applies the product DB-v2
+verify persistence, not codec playback. The harness applies the product DB-v3
 upgrade to the inherited vault while loading the actual product rich store.
 """
 import asyncio
@@ -33,20 +33,50 @@ CHECKS = r'''async () => {
    {id:'v',type:'video',assetId:'video'},{id:'a',type:'audio',assetId:'voice'},{id:'d',type:'document',assetId:'doc'},{id:'t3',type:'text',text:'Конец'}],files:[photo,video,audio,doc]};
  const raw=()=>s.transaction(['drafts'],'readonly',(tx,done)=>{const q=tx.objectStore('drafts').get('draft');q.onsuccess=()=>done(q.result)});
  try{
-  assert((await s.open()).version===2,'database v2 upgrades the existing account/chat namespace');
-  let saved=await s.write(shot,0);s.close();let restored=await s.read();
+  await new Promise((resolve,reject)=>{
+   const q=indexedDB.open(s.name,2);
+   q.onupgradeneeded=()=>{for(const name of ['drafts','assets','proofs','outbox','meta'])q.result.createObjectStore(name,{keyPath:'id'})};
+   q.onerror=()=>reject(q.error);q.onsuccess=()=>{
+    const db=q.result,tx=db.transaction(['drafts'],'readwrite');
+    tx.objectStore('drafts').put({id:'draft',schema:1,revision:1,text:'Старый черновик',files:[],selection:{start:3,end:3},expanded:false});
+    tx.oncomplete=()=>{db.close();resolve()};tx.onabort=()=>{db.close();reject(tx.error)};
+   };
+  });
+  assert((await s.open()).version===3,'database v3 upgrades the existing account/chat namespace');
+  const migrated=await s.read();
+  assert(migrated.text==='Старый черновик'&&!migrated.reply_to&&migrated.revision===1,'upgrade preserves a deployed v2 draft without a reply target');
+  let saved=await s.write(shot,migrated.revision);s.close();let restored=await s.read();
   assert(JSON.stringify(restored.blocks)===JSON.stringify(shot.blocks)&&restored.text===shot.text,'mixed block order survives a new database connection');
   assert((await Promise.all(restored.files.map(f=>digest(f.file)))).join() === (await Promise.all(shot.files.map(f=>digest(f.file)))).join(),'all original media bytes survive restoration');
   const puts=s.stats.blob_puts;
   saved=await s.write({...shot,selection:{start:3,end:3}},saved.revision);
   assert(saved.intent===restored.intent&&s.stats.blob_puts===puts,'selection changes retain intent and do not rewrite media bytes');
-  const reordered={...shot,blocks:[shot.blocks[0],shot.blocks[3],shot.blocks[1],shot.blocks[2],...shot.blocks.slice(4)]};
+  const reply={message_id:crypto.randomUUID(),block_id:'voice-block_1'};
+  let replied=await s.write({...shot,reply_to:{...reply,message_id:reply.message_id.toUpperCase()}},saved.revision);
+  s.close();restored=await s.read();
+  assert(JSON.stringify(restored.reply_to)===JSON.stringify(reply),'the exact voice-block reply target survives reopening and normalizes UUID casing');
+  saved=await s.write({...shot,reply_to:reply,selection:{start:4,end:4}},replied.revision);
+  assert(saved.intent===replied.intent&&s.stats.blob_puts===puts,'reply selection changes and UUID casing retain intent without rewriting media bytes');
+  const otherTarget={message_id:crypto.randomUUID(),block_id:'voice-block_2'};
+  replied=await s.write({...shot,reply_to:otherTarget},saved.revision);
+  assert(replied.intent!==saved.intent,'changing only the reply target creates a new send intent');
+  await rejects(s.write({...shot,reply_to:reply},saved.revision),'ConflictError','a stale tab cannot overwrite a newer reply target');
+  saved=await s.write({...shot,reply_to:{message_id:otherTarget.message_id}},replied.revision);
+  assert(saved.intent!==replied.intent,'switching a block reply to a whole-message reply creates a new intent');
+  replied=await s.write({...shot,reply_to:{message_id:otherTarget.message_id,block_id:null}},saved.revision);
+  assert(replied.intent===saved.intent&&!Object.hasOwn((await s.read()).reply_to,'block_id'),'null and absent optional block IDs normalize to the same whole-message reply');
+  saved=await s.write({...shot,reply_to:null},replied.revision);
+  replied=await s.write(shot,saved.revision);
+  assert(saved.intent===replied.intent&&!Object.hasOwn(await s.read(),'reply_to'),'null and absent reply targets retain the same intent');
+  saved=await s.write({...shot,reply_to:reply},replied.revision);
+  const reordered={...shot,reply_to:reply,blocks:[shot.blocks[0],shot.blocks[3],shot.blocks[1],shot.blocks[2],...shot.blocks.slice(4)]};
   const moved=await s.write(reordered,saved.revision);
   assert(moved.intent!==saved.intent,'changing media order creates a new send intent');
   await rejects(s.write(shot,saved.revision),'ConflictError','stale tab cannot overwrite a newer rich draft');
   await rejects(s.write(DraftVault.empty(),moved.revision),'ConflictError','legacy-shaped snapshot cannot erase a rich draft');
   // A v1 request is exactly how the old deployed writer reopens after onversionchange.
   await rejects(new Promise((resolve,reject)=>{const q=indexedDB.open(s.name,1);q.onsuccess=()=>{q.result.close();resolve()};q.onerror=()=>reject(q.error)}),'VersionError','old DB-v1 client cannot reopen the upgraded database');
+  await rejects(new Promise((resolve,reject)=>{const q=indexedDB.open(s.name,2);q.onsuccess=()=>{q.result.close();resolve()};q.onerror=()=>reject(q.error)}),'VersionError','old DB-v2 rich writer cannot reopen and erase reply metadata');
   const before=JSON.stringify(await raw());
   for(const [fault,name] of [['quota','QuotaExceededError'],['denied','NotAllowedError'],['abort','AbortError']]){
    s.enqueueFault=fault;await rejects(s.enqueue(moved.intent,moved.revision),name,'enqueue '+fault+' reports failure');
@@ -59,7 +89,8 @@ CHECKS = r'''async () => {
   const queued=outcomes.find(x=>!x.deduplicated).item;
   assert(outcomes.filter(x=>x.deduplicated).length===1&&(await s.readQueue()).length===1,'two simultaneous enqueues produce one durable message');
   assert(queued.messages.length===1&&queued.messages[0].kind==='rich'&&JSON.stringify(queued.messages[0].blocks)===JSON.stringify(reordered.blocks),'one rich outbox message contains the complete ordered body');
-  assert(!(await s.read()).text&&!(await s.read()).files.length,'successful queue commit clears the composer atomically');
+  assert(JSON.stringify(queued.messages[0].reply_to)===JSON.stringify(reply),'the same atomic outbox commit includes the exact message and voice-block reply target');
+  assert(!(await s.read()).text&&!(await s.read()).files.length&&!(await s.read()).reply_to,'successful queue commit clears the body and reply target atomically');
   assert(s.stats.blob_puts===puts,'enqueue references original bytes without cloning their stored Blob');
   let d=await s.read();
   saved=await s.write({text:'Следующий черновик',blocks:[{id:'next',type:'text',text:'Следующий черновик'},{id:'image',type:'image',assetId:'photo'}],files:[photo]},d.revision);
@@ -84,6 +115,13 @@ CHECKS = r'''async () => {
   const legacy=await s.enqueue(saved.intent,saved.revision);
   assert(legacy.item.messages.length===2&&legacy.item.messages[0].kind==='text'&&legacy.item.messages[1].kind==='document','legacy snapshots and split outgoing messages remain compatible');
   d=await s.read();saved=await s.write(shot,d.revision);
+  for(const invalid of ['message',[],{}, {message_id:'not-a-uuid'}, {message_id:reply.message_id,block_id:''},
+   {message_id:reply.message_id,block_id:'a'.repeat(129)}, {message_id:reply.message_id,block_id:'voice/1'},
+   {message_id:reply.message_id,block_id:3}, {message_id:reply.message_id,preview:'untrusted extra field'}]){
+   await rejects(s.write({...shot,reply_to:invalid},saved.revision),'DataError','invalid reply schema is rejected: '+JSON.stringify(invalid));
+  }
+  assert((await s.read()).revision===saved.revision,'invalid reply targets never mutate the durable draft');
+  await rejects(s.write({...DraftVault.empty(),text:'Legacy response',reply_to:reply},saved.revision),'DataError','a legacy-shaped reply is rejected instead of silently losing its target');
   await rejects(s.write({...shot,files:shot.files.slice(1)},saved.revision),'DataError','missing referenced file is rejected');
   await rejects(s.write({...shot,blocks:shot.blocks.filter(b=>b.assetId!=='doc')},saved.revision),'DataError','unreferenced file is rejected');
   await rejects(s.write({text:'a'.repeat(5001),files:[],blocks:[{id:'text',type:'text',text:'a'.repeat(5001)}]},saved.revision),'DataError','aggregate text length is limited');
@@ -107,7 +145,7 @@ async def one(engine, name):
                 if filename in SCRIPTS:
                     source = SCRIPTS[filename].read_text()
                     if filename == 'vault.js':
-                        source = source.replace('indexedDB.open(this.name,1)', 'indexedDB.open(this.name,2)')
+                        source = source.replace('indexedDB.open(this.name,1)', 'indexedDB.open(this.name,3)')
                     await request.fulfill(status=200, content_type='application/javascript', body=source)
                 else:
                     await request.fulfill(status=200, content_type='text/html', body=''.join(
