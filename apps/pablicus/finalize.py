@@ -30,5 +30,5 @@ rev=sha.hexdigest()[:16]
 sw=(D/'sw.js').read_text().replace('__ASSET_REVISION__',rev);(D/'sw.js').write_text(sw)
 try:commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip()
 except subprocess.CalledProcessError:commit='local-uncommitted'
-(D/'version.json').write_text(json.dumps({'product':'Pablicus','version':'0.1.0-rc2','commit':commit,'asset_revision':rev,'stage':'CANDIDATE_PENDING_LIVE_TWO_ACCOUNT_AND_DEVICE_ACCEPTANCE'},indent=2))
+(D/'version.json').write_text(json.dumps({'product':'Pablicus','version':json.loads((D/'version.json').read_text())['version'],'commit':commit,'asset_revision':rev,'stage':'CANDIDATE_PENDING_LIVE_TWO_ACCOUNT_AND_DEVICE_ACCEPTANCE'},indent=2))
 print('PWA artifact complete; asset revision',rev,'commit',commit)
