@@ -9,6 +9,10 @@ globalThis.PablicusAuthConfig = Object.freeze({
     rpId: 'matveyryabokon30-crypto.github.io',
     origin: 'https://matveyryabokon30-crypto.github.io',
   }),
+  publicPasskey: Object.freeze({
+    enabled: false,
+    origin: 'https://matveyryabokon30-crypto.github.io',
+  }),
   publicSignupReady: false,
   providers: Object.freeze({
     google: false,

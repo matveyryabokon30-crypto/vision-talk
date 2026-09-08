@@ -1,0 +1,115 @@
+name: Pablicus public first-key candidate
+on:
+  push:
+    branches: [pablicus-public-passkey-signup]
+    paths: ['apps/pablicus/**', '.github/workflows/pablicus-public-passkey-candidate.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pablicus-public-first-key-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: isolated-fixture-only
+          POSTGRES_DB: pablicus_fixture
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # Supabase edge-runtime v1.76.2 embeds Deno 2.1.4:
+      # https://github.com/supabase/edge-runtime/blob/v1.76.2/deno/Cargo.toml
+      # Standard Deno checks compatibility; it does not emulate hosted Edge.
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: '2.1.4'
+      - name: Check pinned Deno entrypoint and dependency graph
+        working-directory: apps/pablicus/public-passkey
+        run: |
+          deno --version
+          if test -f deno.lock; then
+            deno cache --frozen index.ts
+          else
+            deno cache --frozen=false index.ts
+          fi
+          deno check --frozen index.ts
+      - name: Capture public Deno dependency lock for review
+        if: ${{ !cancelled() }}
+        working-directory: apps/pablicus/public-passkey
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          lock = Path('deno.lock')
+          if lock.is_file():
+              print('BEGIN_PABLICUS_DENO_LOCK')
+              print(lock.read_text(), end='')
+              print('END_PABLICUS_DENO_LOCK')
+          PY
+      - name: Preserve generated Deno lock
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: pablicus-public-passkey-deno-lock
+          path: apps/pablicus/public-passkey/deno.lock
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Install pinned verifier and test dependencies
+        if: ${{ !cancelled() }}
+        id: dependencies
+        run: |
+          npm ci --ignore-scripts --prefix apps/pablicus/public-passkey
+          python -m pip install playwright==1.55.0 pillow==11.3.0
+          command -v psql || (sudo apt-get update && sudo apt-get install -y postgresql-client)
+      - name: Backend WebAuthn, OAuth and native-bridge contracts
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        run: node --test apps/pablicus/public-passkey/handler.test.mjs apps/pablicus/public-passkey/native.test.mjs
+      - name: PostgreSQL atomicity, provisioning and role isolation
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          DATABASE_URL: postgresql://postgres:isolated-fixture-only@127.0.0.1:5432/pablicus_fixture
+        run: node --test apps/pablicus/public-passkey/store-postgres.test.mjs
+      - name: Build and client Auth contracts
+        if: ${{ !cancelled() }}
+        id: build
+        run: |
+          python apps/pablicus/build.py
+          python apps/pablicus/finalize.py
+          node --test apps/pablicus/tests/public_passkey_module.test.js apps/pablicus/tests/passkey_module.test.js apps/pablicus/tests/oauth_module.test.js
+      - name: Install browser engines
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        id: browsers
+        run: python -m playwright install --with-deps chromium webkit
+      - name: Public first-key page
+        if: ${{ !cancelled() && steps.browsers.outcome == 'success' && steps.build.outcome == 'success' }}
+        run: python apps/pablicus/tests/public_passkey_page.py
+      - name: Existing native keys, Auth, recovery and chat
+        if: ${{ !cancelled() && steps.browsers.outcome == 'success' && steps.build.outcome == 'success' }}
+        run: |
+          python apps/pablicus/tests/passkey_login.py
+          python apps/pablicus/tests/oauth_login.py
+          python apps/pablicus/tests/auth_local.py
+          python apps/pablicus/tests/access_setup.py
+          python apps/pablicus/tests/run_isolated.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pablicus-public-first-key-candidate
+          path: apps/pablicus/evidence/
+          retention-days: 14

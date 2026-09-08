@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src https://ctcoqgsztdtsazdiwcmd.supabase.co/functions/v1/pablicus-passkey/; form-action 'none'; object-src 'none'">
+  <title>Ключ доступа — Pablicus</title>
+  <script src="passkey-start.js"></script>
+  <link rel="stylesheet" href="passkey-start.css">
+  <meta name="theme-color" content="#FAF9FC" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111218" media="(prefers-color-scheme: dark)">
+</head>
+<body>
+  <header class="brand">
+    <a href="https://matveyryabokon30-crypto.github.io/vision-talk/pablicus/" aria-label="Вернуться в Pablicus">
+      <picture><source srcset="assets/wordmark-dark.png" media="(prefers-color-scheme: dark)"><img src="assets/wordmark-light.png" width="164" alt="pablicus"></picture>
+    </a>
+  </header>
+  <main id="passkeyStart">
+    <h1>Ближе к своим.</h1>
+    <p class="intro">Введите имя и создайте ключ доступа. Устройство предложит Face ID, отпечаток или свой код разблокировки.</p>
+    <form id="createAccount" novalidate>
+      <label for="displayName">Как вас зовут?</label>
+      <input id="displayName" name="name" type="text" autocomplete="nickname" maxlength="80" placeholder="Имя или псевдоним" aria-describedby="nameHelp" required disabled>
+      <p class="hint" id="nameHelp">Так вас увидят собеседники.</p>
+      <button id="createKey" type="submit" class="primary" disabled>Создать аккаунт и ключ</button>
+    </form>
+    <button id="useKey" type="button" class="secondary" disabled>У меня уже есть ключ</button>
+    <p id="passkeyStatus" role="status" aria-live="polite" aria-atomic="true"></p>
+    <button id="cancelKey" type="button" class="text-button" hidden>Отменить</button>
+    <a id="restartLogin" class="restart" href="https://matveyryabokon30-crypto.github.io/vision-talk/pablicus/" hidden>Вернуться к входу</a>
+    <p class="storage-note">Сохраните ключ в менеджере паролей — он понадобится для следующих входов и на других устройствах.</p>
+    <noscript><p>Для входа включите JavaScript в браузере и откройте Pablicus снова.</p></noscript>
+  </main>
+</body>
+</html>
