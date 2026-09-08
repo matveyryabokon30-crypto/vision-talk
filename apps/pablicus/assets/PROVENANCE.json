@@ -1,0 +1,55 @@
+{
+  "original_icon_sha256": "82d462b1c7f95b255501c1b0393c253bfe3af1dc88b404a5ade367e52a1f8713",
+  "original_wordmark_sha256": "908faa4f67adb8b811f3c0bcbd2ea58e2b7b142ab3c4b1cfac48d2a1e54eafc9",
+  "process": "Raster-only resizing, preserved aspect ratio. WebP intermediates; no vector tracing or new symbol.",
+  "exports": [
+    {
+      "path": "icon-180.png",
+      "dimensions": [
+        180,
+        180
+      ],
+      "sha256": "0937043ce490199f7a7034522f1a626b651fd8e4b461dedd13eda1cfa1e3d0dc"
+    },
+    {
+      "path": "icon-192.png",
+      "dimensions": [
+        192,
+        192
+      ],
+      "sha256": "0ec7ed23024be6d30a11b9fee61749e04cdaeb1cedda8896cfdde67b0f69ecce"
+    },
+    {
+      "path": "icon-32.png",
+      "dimensions": [
+        32,
+        32
+      ],
+      "sha256": "d2e8cf57014e984068c70e7491cf30908f769e59ce19335047ed5ca957c2b2c0"
+    },
+    {
+      "path": "icon-512.png",
+      "dimensions": [
+        512,
+        512
+      ],
+      "sha256": "7be39d062cafb3cf3de41814391834459d6a2da2d383dfcd63972fcb8e355581"
+    },
+    {
+      "path": "wordmark-dark.png",
+      "dimensions": [
+        360,
+        97
+      ],
+      "sha256": "fd04f676a7cbfecb2b8aef1b3da0aeb05715e48184a302f9d93000381ea5a212"
+    },
+    {
+      "path": "wordmark-light.png",
+      "dimensions": [
+        360,
+        97
+      ],
+      "sha256": "b2b4356783dcf2f67c39673d0905ae96cc8f4f7db1e022aea4d3b51724276368"
+    }
+  ]
+}
