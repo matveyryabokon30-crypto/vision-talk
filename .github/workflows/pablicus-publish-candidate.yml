@@ -1,0 +1,113 @@
+name: Publish checked Pablicus candidate
+on:
+  push:
+    branches: [pablicus-rc2-release]
+    paths: [.github/workflows/pablicus-publish-candidate.yml]
+permissions:
+  contents: write
+  actions: read
+  pages: write
+concurrency:
+  group: pablicus-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: publication
+          fetch-depth: 1
+      - uses: actions/download-artifact@v4
+        with:
+          name: pablicus-rc2-checked-candidate
+          run-id: 34203868313
+          github-token: ${{ github.token }}
+          path: checked
+      - name: Verify exact tested artifact and existing publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p evidence
+          gh api repos/${{ github.repository }}/pages > evidence/pages-before.json
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          p=json.loads(Path('evidence/pages-before.json').read_text())
+          assert p['build_type']=='legacy' and p['source']=={'branch':'main','path':'/'}, 'Publication changed: review required'
+          commit='4fcf34507ecb56bca3590f864ae56d46354b831d'
+          assert Path('checked/evidence/commit.txt').read_text().strip()==commit
+          checks=json.loads(Path('checked/apps/pablicus/evidence/integration.json').read_text())
+          assert len(checks)==2 and all(x['pass'] for x in checks)
+          d=Path('checked/apps/pablicus/dist')
+          assert json.loads((d/'version.json').read_text())['commit']==commit
+          assert '__ASSET_REVISION__' not in (d/'sw.js').read_text()
+          assert json.loads((d/'manifest.webmanifest').read_text())['scope']=='./'
+          old={str(f.relative_to('publication')):hashlib.sha256(f.read_bytes()).hexdigest() for f in Path('publication').rglob('*') if f.is_file() and '.git' not in f.parts and f.parts[1]!='pablicus'}
+          Path('evidence/old-site-hashes.json').write_text(json.dumps(old))
+          Path('evidence/app-url.txt').write_text(p['html_url'].rstrip('/')+'/pablicus/')
+          print('Preserving existing root. Candidate:',Path('evidence/app-url.txt').read_text())
+          PY
+      - name: Add only the checked application subdirectory
+        run: |
+          mkdir -p publication/pablicus
+          cp -a checked/apps/pablicus/dist/. publication/pablicus/
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          for name,digest in json.loads(Path('evidence/old-site-hashes.json').read_text()).items():
+            assert hashlib.sha256((Path('publication')/name).read_bytes()).hexdigest()==digest, name
+          PY
+          cd publication
+          git config user.name 'Pablicus release automation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- pablicus
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish Pablicus 0.1.0-rc2 from checked 4fcf345 at /pablicus/'
+            git push origin HEAD:main
+          fi
+          git rev-parse HEAD > ../evidence/publication-commit.txt
+      - name: Build existing Pages site
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X POST repos/${{ github.repository }}/pages/builds > evidence/pages-build.json
+          for attempt in $(seq 1 36); do
+            gh api repos/${{ github.repository }}/pages/builds/latest > evidence/pages-latest.json
+            STATE=$(jq -r '.status' evidence/pages-latest.json)
+            if [ "$STATE" = built ]; then break; fi
+            if [ "$STATE" = errored ]; then cat evidence/pages-latest.json; exit 1; fi
+            sleep 5
+          done
+      - name: Verify published bytes over HTTPS
+        run: |
+          python - <<'PY'
+          import json,time,hashlib,urllib.request
+          from pathlib import Path
+          root=Path('checked/apps/pablicus/dist');url=Path('evidence/app-url.txt').read_text()
+          expected=json.loads((root/'version.json').read_text())
+          for attempt in range(24):
+            try:
+              actual=json.load(urllib.request.urlopen(url+'version.json?release='+str(time.time()),timeout=15))
+              if actual.get('asset_revision')==expected['asset_revision']: break
+            except Exception: pass
+            time.sleep(5)
+          else: raise RuntimeError('Published version did not become reachable within bounded wait')
+          results=[]
+          for f in sorted(root.rglob('*')):
+            if not f.is_file():continue
+            name=str(f.relative_to(root));data=urllib.request.urlopen(url+name,timeout=20).read()
+            ok=hashlib.sha256(data).digest()==hashlib.sha256(f.read_bytes()).digest()
+            results.append({'path':name,'bytes':len(data),'matches_tested_artifact':ok})
+          Path('evidence/live-byte-check.json').write_text(json.dumps({'url':url,'version':expected,'files':results},indent=2))
+          assert all(x['matches_tested_artifact'] for x in results),results
+          print('LIVE_HTTPS_EXACT_BYTES_PASS',len(results),'files',url)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pablicus-stable-publication-evidence
+          path: evidence/
+          retention-days: 30
