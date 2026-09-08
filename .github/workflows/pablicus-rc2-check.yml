@@ -1,0 +1,65 @@
+name: Pablicus RC2 build and browser checks
+on:
+  push:
+    branches: [pablicus-rc2-release]
+    paths: ['apps/pablicus/**', '.github/workflows/pablicus-rc2-check.yml']
+permissions:
+  contents: write
+concurrency:
+  group: pablicus-rc2-check
+  cancel-in-progress: false
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore approved binary derivatives and keep ordinary source files
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import subprocess,json,base64,hashlib
+          from pathlib import Path
+          root=Path('apps/pablicus/web-asset-source');root.mkdir(parents=True,exist_ok=True)
+          entries=[('icon.webp','38684e17db44208471d517cde84707158bd2b92d','6ef7ec4c800123ecc129bd2d32630faae630cf0f8b2568ac86a0a7e830e6d5e0'),('wordmark-light.webp','17695f913a3f8dbf00f2b176cbf30d145e62117e','b652d3a733d7a32071daa6379a8e093df41275a0d8c379403be3fb5fe225b000'),('wordmark-dark.webp','1d263873958a91c6f40dbc9385c969ec676cdc11','3c4ed9a8094f4eb69c1de7a6ce7917e6eaf36587b73b333f7f5d52ee248d26bd')]
+          for name,sha,digest in entries:
+            j=json.loads(subprocess.check_output(['gh','api','repos/matveyryabokon30-crypto/vision-talk/git/blobs/'+sha]));b=base64.b64decode(j['content']);assert hashlib.sha256(b).hexdigest()==digest; (root/name).write_bytes(b)
+          PY
+          python -m pip install pillow==11.3.0 playwright==1.55.0
+          python apps/pablicus/generate_assets.py
+          mkdir -p apps/pablicus/vendor
+          cp vendor/supabase-2.45.3.js apps/pablicus/vendor/supabase.js
+          git config user.name 'Pablicus build'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/pablicus/web-asset-source apps/pablicus/assets apps/pablicus/vendor
+          if ! git diff --cached --quiet; then git commit -m 'Preserve approved raster exports and pinned SDK as ordinary source files'; git push origin HEAD:pablicus-rc2-release; fi
+      - name: Build and check syntax
+        run: |
+          python apps/pablicus/build.py
+          python apps/pablicus/finalize.py
+          for f in apps/pablicus/dist/*.js; do node --check "$f"; done
+      - name: Archive exact source before executing tests
+        if: always()
+        run: |
+          mkdir -p evidence
+          git archive HEAD > evidence/source.tar
+          git rev-parse HEAD > evidence/commit.txt
+      - name: Install test browser engines
+        run: python -m playwright install --with-deps chromium webkit
+      - name: Browser integration, mock backend explicitly labelled
+        run: python apps/pablicus/tests/integration.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pablicus-rc2-checked-candidate
+          path: |
+            apps/pablicus/dist/
+            apps/pablicus/evidence/
+            evidence/
+          retention-days: 14
