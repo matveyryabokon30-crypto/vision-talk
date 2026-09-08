@@ -1,8 +1,56 @@
 /* Public-shell allowlist only. Auth, API, messages, signed media and local drafts are NEVER cached here. */
 const VERSION='pablicus-shell-__ASSET_REVISION__';
-const FILES=['./','index.html','style.css','pablicus.css','vault.js','outbox.js','transport-store.js','rich-store.js','rich-composer.js','rich-composer.css','rich-message.js','rich-message.css','media-viewer.js','media-viewer.css','inbox-monitor.js','inbox-monitor.css','message-menu.js','message-menu.css','people.js','people.css','chat-actions.js','chat-actions.css','chat-minimal.css','profile-discovery.css','chat.js','app.js','auth-local.js','auth-config.js','oauth-login.js','oauth-session.js','passkey-login.js','public-passkey.js','passkey-start.html','passkey-start.js','passkey-start.css','vendor/supabase.js','manifest.webmanifest','assets/icon-32.png','assets/icon-180.png','assets/icon-192.png','assets/icon-512.png','assets/wordmark-light.png','assets/wordmark-dark.png'];
+const FILES=['./','index.html','style.css','pablicus.css','vault.js','outbox.js','transport-store.js','rich-store.js','rich-composer.js','rich-composer.css','rich-message.js','rich-message.css','media-viewer.js','media-viewer.css','inbox-monitor.js','inbox-monitor.css','message-menu.js','message-menu.css','people.js','people.css','chat-actions.js','chat-actions.css','chat-minimal.css','profile-discovery.css','push-notifications.js','chat.js','app.js','auth-local.js','auth-config.js','oauth-login.js','oauth-session.js','passkey-login.js','public-passkey.js','passkey-start.html','passkey-start.js','passkey-start.css','vendor/supabase.js','manifest.webmanifest','assets/icon-32.png','assets/icon-180.png','assets/icon-192.png','assets/icon-512.png','assets/wordmark-light.png','assets/wordmark-dark.png'];
 const urls=FILES.map(p=>new URL(p,self.registration.scope).href);
 self.addEventListener('install',e=>e.waitUntil((async()=>{const c=await caches.open(VERSION);for(const url of urls){const r=await fetch(new Request(url,{cache:'reload'}));if(!r.ok)throw Error('Shell asset unavailable');await c.put(url,r)}})()));
 self.addEventListener('message',e=>{if(e.data==='ACTIVATE')self.skipWaiting()});
 self.addEventListener('activate',e=>e.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith('pablicus-shell-')&&key!==VERSION)await caches.delete(key);await self.clients.claim()})()));
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;const u=new URL(e.request.url);if(!urls.includes(u.href))return;e.respondWith(caches.open(VERSION).then(async c=>(await c.match(e.request))||fetch(e.request)));});
+
+/* The worker stores only opaque recipient/message UUIDs to reject notifications left over
+   from a previous login and repeated deliveries. No credentials, message text or private media. */
+const PUSH_UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+function pushState(write,value,key='recipient'){return new Promise((resolve,reject)=>{
+ const opening=indexedDB.open('pablicus-push-state',1);
+ opening.onupgradeneeded=()=>opening.result.createObjectStore('settings');
+ opening.onerror=()=>reject(opening.error);
+ opening.onsuccess=()=>{const db=opening.result,tx=db.transaction('settings',write?'readwrite':'readonly'),store=tx.objectStore('settings');let result=null;
+  const req=write?store.put(value||null,key):store.get(key);req.onsuccess=()=>{result=req.result;};
+  tx.oncomplete=()=>{db.close();resolve(write?value:result);};tx.onerror=tx.onabort=()=>{db.close();reject(tx.error||Error('Push state unavailable'));};
+ };
+});}
+const pushOwner=(write,value)=>pushState(write,value);
+let pushQueue=Promise.resolve();
+function queuePush(work){pushQueue=pushQueue.catch(()=>{}).then(work);return pushQueue;}
+function pushClientUrl(value){try{const u=new URL(value),scope=new URL(self.registration.scope);return u.origin===scope.origin&&u.pathname.startsWith(scope.pathname);}catch{return false;}}
+self.addEventListener('message',event=>{
+ if(event.data?.type!=='PABLICUS_PUSH_BIND')return;
+ const recipient=event.data.recipientId;
+ if(!pushClientUrl(event.source?.url)||(recipient!==null&&!PUSH_UUID.test(recipient||''))){event.ports?.[0]?.postMessage({ok:false});return;}
+ event.waitUntil(queuePush(async()=>{if(recipient===null||await pushOwner(false)!==recipient)await pushState(true,[],'recent');await pushOwner(true,recipient);}).then(()=>event.ports?.[0]?.postMessage({ok:true})).catch(()=>event.ports?.[0]?.postMessage({ok:false})));
+});
+self.addEventListener('push',event=>event.waitUntil(queuePush(async()=>{
+ let payload;try{payload=event.data?.json();}catch{return;}
+ if(!payload||!PUSH_UUID.test(payload.recipient_id||'')||!PUSH_UUID.test(payload.conversation_id||'')||!PUSH_UUID.test(payload.message_id||''))return;
+ if(await pushOwner(false)!==payload.recipient_id)return;
+ const stored=await pushState(false,null,'recent'),recent=Array.isArray(stored)?stored.filter(id=>PUSH_UUID.test(id)).slice(-128):[];
+ if(recent.includes(payload.message_id))return;
+ await self.registration.showNotification('Pablicus',{
+  body:'Новое сообщение',lang:'ru',icon:new URL('assets/icon-192.png',self.registration.scope).href,
+  tag:'pablicus-conversation-'+payload.conversation_id,renotify:true,
+  data:{conversationId:payload.conversation_id,messageId:payload.message_id,recipientId:payload.recipient_id}
+ });
+ // Record only after successful presentation. Bind changes share this queue, so a stale
+ // delivery cannot restore history belonging to the account that has just signed out.
+ await pushState(true,[...recent,payload.message_id].slice(-128),'recent');
+})));
+self.addEventListener('notificationclick',event=>{
+ event.notification.close();const data=event.notification.data;
+ event.waitUntil((async()=>{
+  if(!data||!PUSH_UUID.test(data.conversationId||'')||!PUSH_UUID.test(data.recipientId||'')||await pushOwner(false)!==data.recipientId)return;
+  const list=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+  const client=list.filter(c=>pushClientUrl(c.url)).sort((a,b)=>Number(b.focused)-Number(a.focused))[0];
+  if(client){try{await client.focus();client.postMessage({type:'PABLICUS_PUSH_OPEN',conversationId:data.conversationId,recipientId:data.recipientId});return;}catch{}}
+  const url=new URL(self.registration.scope);url.searchParams.set('conversation',data.conversationId);url.searchParams.set('recipient',data.recipientId);await self.clients.openWindow(url.href);
+ })());
+});

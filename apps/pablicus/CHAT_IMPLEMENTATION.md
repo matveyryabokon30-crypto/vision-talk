@@ -84,7 +84,7 @@ Return to the supplied visual reference after this functional slice: inline
 replies from Focus, additional message actions, and a shared conversation
 canvas. The reference's shared plan, tasks and assistant are not implemented by
 this release. Existing assistant/action placeholders must not be described as
-real AI execution. Feed, tasks, push, automatic video conversion and a full
+real AI execution. Feed, tasks, automatic video conversion and a full
 reference-layout redesign are still separate work.
 
 
@@ -110,7 +110,7 @@ The voice strip uses a waveform derived from actual decoded audio, inline
 play/pause and an accessible seek input. Waveform decoding is optional and bounded;
 a straight progress track remains usable when the browser cannot decode it.
 The minimal stylesheet removes the inherited hidden toolbar grid tracks and
-retains the established light/dark purple palette.
+now uses the neutral white/translucent palette described below.
 
 People can be found by display name, username or a shared `?person=` link.
 Shared links still require explicitly selecting the intended profile. Profiles
@@ -141,3 +141,39 @@ Native timeline queries wait until media metadata is available. Querying
 as an unknown duration, producing premature end-of-stream. The real HTTP fixture
 now checks that the compact player retains the same 12-second native timeline as
 a plain audio element, alongside pause, actual six-second seeking and replay.
+
+## White/translucent design and system notifications
+
+The user confirmed successful two-account text, voice, photo, video and document
+exchange with Katya before this change. Preserve that working transport.
+
+Purple surfaces and outlines are replaced by neutral white/translucent surfaces,
+subtle gray edges and monochrome controls. The home wordmark is removed; the
+regular-weight title is `Чат`. The conversation header retains the recipient.
+Message actions open on tap, long press, context menu or focused Enter/Space;
+there are no per-message ellipsis buttons. Inline media controls remain usable.
+
+Visible message metadata uses time and small SVG symbols: clock for queued or
+sending, hollow circle for server-accepted, filled circle for read, exclamation
+for failure. Accessible labels explain the symbols. Server acceptance does not
+prove delivery to another device, and push-provider acceptance is not a read
+receipt. No new device-delivery state is invented.
+
+`push/` contains the private notification outbox and encrypted Web Push worker.
+The profile offers per-device opt-in, and the service worker opens only a
+conversation belonging to the current bound recipient. No app-icon badges are
+set. Each iPhone user must open the installed Home Screen app, choose Profile →
+Enable notifications and approve the system prompt. Physical lock-screen
+delivery remains a user acceptance check after consent, separate from the
+previously confirmed message transport.
+
+Applied on 2026-09-08: `pablicus_web_push_prerequisites`,
+`pablicus_private_web_push_outbox`, `pablicus_web_push_retry_worker`.
+`pablicus_push_network_permissions` attempted to restrict extension ACLs, but
+live readback showed provider-owned grants could not be revoked by postgres.
+The network and private push schemas are not exposed through REST (HTTP 406
+verified for both). Worker launch uses short-lived, single-use capabilities;
+the reusable server secret is never put in the network queue.
+The deployed worker returned HTTP 200 with zero claimed/sent jobs during its
+empty-queue initialization, and a stable VAPID key was created on the server.
+No test notification was sent to either real account.

@@ -107,7 +107,8 @@
   }
   function decorate(row,bubble,raw){
    if(raw.deleted_at){bubble.classList.add('deletedMessage');return}
-   const button=node('button','messageActions');button.type='button';button.setAttribute('aria-label','Действия с сообщением');button.textContent='⋯';button.onclick=event=>{event.stopPropagation();open(raw,{anchor:bubble})};bubble.append(button);
+   bubble.tabIndex=0;bubble.setAttribute('aria-haspopup','menu');bubble.setAttribute('aria-label','Сообщение. Нажмите, чтобы открыть действия');
+   bubble.addEventListener('keydown',event=>{if(event.target!==bubble)return;if(event.key==='Enter'||event.key===' '){event.preventDefault();open(raw,{anchor:bubble})}});
    const mark=node('span','messageSelectMark');mark.hidden=!selected.has(raw.id);mark.append(icon('check'));mark.setAttribute('aria-hidden','true');row.append(mark);row.classList.toggle('messageSelected',selected.has(raw.id));
    const metadata=state.get(raw.id);if(metadata?.reactions?.length){const reactions=node('div','messageReactions');for(const r of metadata.reactions){const react=node('button','messageReaction',r.emoji+' '+r.count);react.type='button';react.dataset.emoji=r.emoji;react.setAttribute('aria-label',r.emoji+' · '+r.count);react.setAttribute('aria-pressed',r.mine?'true':'false');react.onclick=event=>{event.stopPropagation();setReaction(raw,r.emoji).catch(options.onError)};reactions.append(react)}bubble.append(reactions)}
    if(raw.edited_at){const meta=bubble.querySelector('.meta');if(meta&&!meta.querySelector('.messageEdited'))meta.append(node('span','messageEdited',' · изм.'))}
@@ -116,7 +117,7 @@
    bubble.addEventListener('contextmenu',event=>{event.preventDefault();event.stopPropagation();open(raw,{anchor:bubble,point:{x:event.clientX,y:event.clientY},blockId:blockFor(event)})});
    bubble.addEventListener('pointerdown',event=>{if(event.pointerType==='mouse'||event.button!==0||event.target.closest('button,input,a,video,audio,textarea'))return;cancel();start={x:event.clientX,y:event.clientY};timer=scope.setTimeout(()=>{timer=0;if(!bubble.isConnected)return;suppressUntil=Date.now()+900;open(raw,{anchor:bubble,point:{x:event.clientX,y:event.clientY},blockId:blockFor(event)})},500)});
    bubble.addEventListener('pointermove',event=>{if(start&&Math.hypot(event.clientX-start.x,event.clientY-start.y)>10)cancel()});for(const name of['pointerup','pointercancel','pointerleave'])bubble.addEventListener(name,cancel);
-   bubble.addEventListener('click',event=>{if(Date.now()<suppressUntil){event.preventDefault();event.stopImmediatePropagation();return}if(selected.size){event.preventDefault();event.stopImmediatePropagation();try{select(raw)}catch(error){options.onError?.(error)}return}if(event.target.closest('button,input,a,video,audio,textarea')||scope.getSelection?.().toString())return;open(raw,{anchor:bubble,point:{x:event.clientX,y:event.clientY},blockId:blockFor(event)})},true);
+   bubble.addEventListener('click',event=>{if(Date.now()<suppressUntil){event.preventDefault();event.stopImmediatePropagation();return}if(selected.size){event.preventDefault();event.stopImmediatePropagation();try{select(raw)}catch(error){options.onError?.(error)}return}if(event.target.closest('button,input,a,video,audio,textarea,.richMedia-audio')||scope.getSelection?.().toString())return;open(raw,{anchor:bubble,point:{x:event.clientX,y:event.clientY},blockId:blockFor(event)})},true);
   }
   function destroy(){clear();destroyed=true;menu.destroy()}
   return Object.freeze({open,decorate,revision,sync,clear,destroy,effective,get selected(){return [...selected]}});

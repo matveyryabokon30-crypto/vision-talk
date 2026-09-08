@@ -117,11 +117,43 @@ async def one(name, engine):
         await page.locator('.chatMain').filter(has_text='Основной QA чат').click()
         await ready_chat(MAIN_CHAT)
 
+    async def assert_neutral_surfaces(selectors):
+        # Read rendered colors, not stylesheet spelling: variables, color-mix,
+        # inherited controls and both themes must resolve without color accents.
+        colors = await page.evaluate("""selectors=>{
+          const canvas=document.createElement('canvas');canvas.width=canvas.height=1;
+          const context=canvas.getContext('2d',{willReadFrequently:true});
+          const result=[];
+          for(const selector of selectors)for(const node of document.querySelectorAll(selector)){
+            const style=getComputedStyle(node);
+            for(const property of ['color','backgroundColor','borderTopColor']){
+              if(property==='borderTopColor'&&parseFloat(style.borderTopWidth)===0)continue;
+              context.clearRect(0,0,1,1);context.fillStyle=style[property];context.fillRect(0,0,1,1);
+              result.push({selector,property,color:style[property],rgba:[...context.getImageData(0,0,1,1).data]});
+            }
+          }
+          return result;
+        }""", selectors)
+        assert colors, selectors
+        for color in colors:
+            red, green, blue, alpha = color['rgba']
+            if alpha > 30:
+                assert max(red, green, blue) - min(red, green, blue) <= 12, color
+        return colors
+
     try:
         EVIDENCE.mkdir(exist_ok=True)
         await page.goto('http://127.0.0.1:8765/', wait_until='domcontentloaded')
         await page.wait_for_selector('.chatMain')
         await page.locator('#toast').wait_for(state='hidden')
+        assert await page.locator('#brandTitle').inner_text() == 'Чат'
+        assert await page.locator('.wordmark').count() == 0
+        home_title = await page.locator('#brandTitle').evaluate("""node=>{
+          const range=document.createRange();range.selectNodeContents(node);const r=range.getBoundingClientRect();
+          return {weight:getComputedStyle(node).fontWeight,center:r.x+r.width/2,viewport:innerWidth};
+        }""")
+        assert home_title['weight'] == '400' and abs(home_title['center'] - home_title['viewport']/2) <= 2, home_title
+        await assert_neutral_surfaces(['html', '#brandTitle', '#newChat', '#chatFilters button', '#mainNav button'])
         await page.screenshot(path=str(EVIDENCE / f'chat-polish-{name}-home.png'))
         await open_main()
 
@@ -130,17 +162,38 @@ async def one(name, engine):
         assert layout['width'] <= layout['viewport'], layout
         await page.locator('#vp').evaluate('(node)=>node.scrollTop=node.scrollHeight')
         own = page.locator(f'#canvas .row[data-id="{OWN_ID}"]')
-        await own.locator('.messageActions').click()
+        await own.wait_for(state='visible')
+        assert await page.locator('.messageActions').count() == 0
+        assert await page.locator('#chatHint').is_hidden()
+        assert await page.locator('.chatSectionLabel').inner_text() == 'Чат'
+        chat_title = await page.locator('#chatTitle').evaluate("""node=>{
+          const r=node.getBoundingClientRect();return {weight:getComputedStyle(node).fontWeight,
+            center:r.x+r.width/2,viewport:innerWidth};
+        }""")
+        assert chat_title['weight'] == '400' and abs(chat_title['center'] - chat_title['viewport']/2) <= 3, chat_title
+        receipt = own.locator('.messageReceipt')
+        assert await receipt.locator('svg').count() == 1
+        assert (await receipt.inner_text()).strip() == ''
+        assert await receipt.get_attribute('aria-label')
+        visible_meta = await own.locator('.meta').inner_text()
+        assert not any(word in visible_meta.casefold() for word in ['отправлено', 'доставлено', 'прочитано']), visible_meta
+        colors = await assert_neutral_surfaces(['html', '#app>header', '.bubble', '#composeBox', '#send', '.richAudioPlay'])
+        surface = next(color for color in colors if color['selector'] == 'html' and color['property'] == 'backgroundColor')
+        assert min(surface['rgba'][:3]) >= 245 and surface['rgba'][3] == 255, surface
+        await page.screenshot(path=str(EVIDENCE / f'chat-polish-{name}-chat-light.png'))
+        checks.append('white neutral chat chrome has no purple controls or message dots; regular centered titles and accessible status glyphs replace visible delivery words')
+        await own.locator('.text').click()
         menu = page.locator('.pablicusMessageMenu')
         await menu.wait_for(state='visible')
         box = await menu.bounding_box()
-        anchor = await own.locator('.messageActions').bounding_box()
+        anchor = await own.locator('.meta').bounding_box()
         assert box['width'] <= 280 and box['x'] >= 0 and box['x'] + box['width'] <= 391, box
         assert box['height'] < 550 and box['y'] >= 0 and box['y'] + box['height'] <= 845, box
         assert abs((box['y'] + box['height']) - anchor['y']) < 140 or abs(box['y'] - (anchor['y'] + anchor['height'])) < 140, (box, anchor)
         assert not await page.locator('#productDialog').evaluate('(node)=>node.open')
         for action in ('reply', 'copy', 'pin', 'forward', 'edit', 'delete', 'select'):
             assert await menu.locator(f'[data-action="{action}"]').count() == 1, action
+        await assert_neutral_surfaces(['.pablicusMessageMenu', '.pmmAction:not(.pmmDanger)'])
         await page.screenshot(path=str(EVIDENCE / f'chat-polish-{name}-menu.png'))
         await menu.locator('[data-action="copy"]').click()
         assert await page.evaluate('__copiedText') == 'Мой текст для редактирования'
@@ -149,7 +202,7 @@ async def one(name, engine):
 
         await page.locator('#vp').evaluate('(node)=>node.scrollTop=0')
         original = page.locator(f'#canvas .row[data-id="{TEXT_ID}"]')
-        await original.locator('.messageActions').click()
+        await original.locator('.meta').click()
         assert await menu.locator('[data-action="edit"]').count() == 0
         assert await menu.locator('[data-action="delete"]').count() == 0
         await menu.locator('[data-action="reply"]').click()
@@ -159,7 +212,7 @@ async def one(name, engine):
         checks.append('another author\'s message offers Reply while edit/delete stay absent, and selecting Reply targets that message')
 
         await page.locator('#vp').evaluate('(node)=>node.scrollTop=node.scrollHeight')
-        await own.locator('.messageActions').click()
+        await own.locator('.meta').click()
         await menu.locator('[data-reaction-id="🔥"]').click()
         reaction = own.locator('.messageReactions [data-emoji="🔥"]')
         await reaction.wait_for()
@@ -168,7 +221,7 @@ async def one(name, engine):
         await reaction.click()
         await reaction.wait_for(state='hidden')
         assert await page.evaluate('__mock.actionCalls.at(-1).args.p_active') is False
-        await own.locator('.messageActions').click()
+        await own.locator('.meta').click()
         await menu.locator('[data-action="pin"]').click()
         await page.locator(f'#pinnedMessages [data-pinned-message-id="{OWN_ID}"]').wait_for()
         assert await page.evaluate(f'__mock.messageActions.get("{OWN_ID}").pinned') is True
@@ -176,7 +229,7 @@ async def one(name, engine):
         assert pin_layout['pinBottom'] <= pin_layout['headerBottom'] + 1 and abs(pin_layout['stageTop'] - pin_layout['headerBottom']) < 2, pin_layout
         checks.append('reaction selection/toggle and shared pin call their backend operations and repaint the existing message immediately')
 
-        await own.locator('.messageActions').click()
+        await own.locator('.meta').click()
         await menu.locator('[data-action="edit"]').click()
         editor = page.locator('.chatActionEdit')
         await editor.locator('textarea[name="messageText"]').fill('Исправленный текст в том же сообщении')
@@ -186,9 +239,11 @@ async def one(name, engine):
         assert await page.evaluate(f'__mock.getMessage("{OWN_ID}").edited_body') == 'Исправленный текст в том же сообщении'
         assert await page.evaluate('__mock.actionCalls.filter(c=>c.name==="edit_message_text").at(-1).args.p_expected_revision') == 0
         assert await page.locator(f'#canvas .row[data-id="{OWN_ID}"]').count() == 1
+        assert await own.locator('.messageEdited svg').count() == 1
+        assert 'Изменено' not in await own.locator('.meta').inner_text()
         checks.append('editing updates the same visible message through a revision-checked RPC and retains its original delivery payload')
 
-        await own.locator('.messageActions').click()
+        await own.locator('.meta').click()
         await menu.locator('[data-action="select"]').click()
         selected = page.locator('#messageSelectionToolbar')
         await selected.wait_for(state='visible')
@@ -208,7 +263,7 @@ async def one(name, engine):
           stable=value===last?stable+1:0;last=value;if(stable>=4)resolve();else if(++frames>240)reject(Error('Composer layout did not settle'));else requestAnimationFrame(frame);
         }requestAnimationFrame(frame)})''')
         rich = page.locator(f'#canvas .row[data-id="{RICH_ID}"]')
-        await rich.locator('.messageActions').click()
+        await rich.locator('.meta').click()
         await menu.locator('[data-action="forward"]').click()
         await page.locator(f'.chatForwardPicker [data-conversation-id="{OTHER_CHAT}"]').click()
         await ready_chat(OTHER_CHAT)
@@ -230,7 +285,7 @@ async def one(name, engine):
         checks.append('forwarding a mixed message builds one destination draft with its text, two images, video and two voice files; it waits for Send and preserves the source draft')
 
         await page.locator('#vp').evaluate('(node)=>node.scrollTop=node.scrollHeight')
-        await own.locator('.messageActions').click()
+        await own.locator('.meta').click()
         await menu.locator('[data-action="delete"]').click()
         confirm = page.locator('.chatActionDelete [data-confirm-delete]')
         await confirm.wait_for()
@@ -243,6 +298,7 @@ async def one(name, engine):
         checks.append('own-message deletion requires explicit confirmation, checks its current revision and renders a tombstone')
 
         await page.evaluate("document.documentElement.dataset.theme='dark'")
+        await assert_neutral_surfaces(['html', '#app>header', '.bubble', '#composeBox', '#send', '.richAudioPlay'])
         await page.screenshot(path=str(EVIDENCE / f'chat-polish-{name}-chat-dark.png'))
         await page.evaluate("document.documentElement.dataset.theme='light'")
 
