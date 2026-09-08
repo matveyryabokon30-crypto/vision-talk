@@ -268,7 +268,7 @@ async def one(engine, name):
         await page.wait_for_selector("#workspace", state="visible")
         await page.locator('#mainNav [data-page="profile"]').click()
         await page.wait_for_selector("#screenContent .profileCard", state="visible")
-        assert await page.locator("#screenContent .profileCard h2").inner_text() == "OAuth QA"
+        assert await page.locator("#screenContent .profileCard > h2").inner_text() == "OAuth QA"
         await broadcast_auth(page, "SIGNED_IN", fixture_session(user_id=OTHER_ID))
         await asyncio.wait_for(state["other_profile_started"].wait(), timeout=12)
         await page.wait_for_selector("#workspace", state="hidden")
