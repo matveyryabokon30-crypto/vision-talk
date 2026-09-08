@@ -1,0 +1,7 @@
+{
+  "name": "pablicus-rich-message-schema-tests",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node --test rich-message.test.mjs" },
+  "devDependencies": { "@electric-sql/pglite": "0.5.8" }
+}
