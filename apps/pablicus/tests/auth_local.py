@@ -61,8 +61,8 @@ async def one(engine,name):
   safari=await make(True);await safari.wait_for_selector('#workspace',state='visible')
   pwa=await make(False);await pwa.wait_for_selector('#loginPane',state='visible')
   assert not await pwa.locator('#workspace').is_visible();checks.append('Authenticated browser does not authorize separate installed-app store')
-  assert await pwa.evaluate('PablicusDebug.version')=='0.1.0-rc4'
-  await pwa.locator('#email').fill(EMAIL);await pwa.locator('#magicSubmit').click();await pwa.wait_for_selector('#proofSection',state='visible')
+  assert await pwa.evaluate('PablicusDebug.version')=='0.1.0-rc5'
+  await pwa.locator('#email').fill(EMAIL);await pwa.locator('#emailLogin summary').click();await pwa.locator('#magicSubmit').click();await pwa.wait_for_selector('#proofSection',state='visible')
   assert state['otp']==1;assert state['verify']==0;checks.append('Closed email request does not navigate, create a user or fake a session')
   await pwa.reload();await pwa.wait_for_selector('#proofSection',state='visible');assert await pwa.locator('#email').input_value()==EMAIL;checks.append('Pending email form survives relaunch without retaining a credential')
   await pwa.locator('#emailProof').fill('https://evil.invalid/?token='+PROOF);await pwa.locator('#proofSubmit').click();assert state['verify']==0;checks.append('Untrusted link never reaches Auth and never navigates')
@@ -74,7 +74,7 @@ async def one(engine,name):
   saved=await pwa.evaluate('Object.values(localStorage).join(" ")');assert PROOF not in saved
   checks.append('Actual bundled SDK verifyOtp writes session in requesting context; proof erased; no new tab')
   await pwa.reload();await pwa.wait_for_selector('#workspace',state='visible');assert state['verify']==1 and state['otp']==1;checks.append('Session restores after reload without another email or verification')
-  expired=await make(False);await expired.locator('#email').fill(EMAIL)
+  expired=await make(False);await expired.locator('#email').fill(EMAIL);await expired.locator('#emailLogin summary').click()
   await expired.evaluate('document.getElementById("proofSection").hidden=false')
   await expired.locator('#emailProof').fill(LINK);await expired.locator('#proofSubmit').click();await expired.wait_for_function('document.getElementById("loginError").textContent.includes("уже использована")')
   assert not await expired.locator('#workspace').is_visible();checks.append('Reused proof fails closed and asks for new mail without redirect loop')

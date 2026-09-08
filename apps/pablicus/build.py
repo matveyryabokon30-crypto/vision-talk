@@ -5,7 +5,7 @@ BASE=ROOT/'inherited'/'gate015'
 OUT=ROOT/'dist'; OUT.mkdir(exist_ok=True)
 for n in ('vault.js','outbox.js','style.css'):shutil.copy2(BASE/n,OUT/n)
 s=(BASE/'app.js').read_text()
-s=re.sub(r"const BUILD='[^']+'", "const BUILD='pablicus-0.1.0-rc4'",s,count=1)
+s=re.sub(r"const BUILD='[^']+'", "const BUILD='pablicus-0.1.0-rc5'",s,count=1)
 s=s.replace('COUNT=300','COUNT=0')
 s=s.replace("let list=null", "let sourceMessages=[],scopeUser=null,scopeChat=null,vaultBound=false;let list=null",1)
 s=s.replace("function nodeFor(m){", "function nodeFor(m){if(m.remote)return window.PablicusHost.renderMessage(m);",1)
@@ -71,7 +71,7 @@ h=h.replace('VISION TALK','Pablicus').replace('Vision Talk','Pablicus')
 for n in ['transport-store.js','app.js','auth-local.js','pablicus.css','sw.js','manifest.webmanifest']:shutil.copy2(ROOT/'src'/n,OUT/n)
 # Pablicus app transport and authentication adaptations.
 app=(OUT/'app.js').read_text()
-app=app.replace('0.1.0-rc2','0.1.0-rc4')
+app=app.replace('0.1.0-rc2','0.1.0-rc5')
 app=app.replace('detectSessionInUrl:false','detectSessionInUrl:true',1)
 # Standard provider verification completes in the requesting browsing context.
 needle=" sb.auth.onAuthStateChange("
@@ -86,6 +86,6 @@ shutil.copytree(ROOT/'assets',OUT/'assets',dirs_exist_ok=True)
 vendor=ROOT/'vendor'/'supabase.js'
 if not vendor.exists():vendor=ROOT.parents[1]/'vendor'/'supabase-2.45.3.js'
 shutil.copy2(vendor,OUT/'vendor'/'supabase.js')
-(OUT/'version.json').write_text(json.dumps({'version':'0.1.0-rc4','product':'Pablicus','stage':'RELEASE_CANDIDATE_NOT_DEVICE_ACCEPTED'}))
+(OUT/'version.json').write_text(json.dumps({'version':'0.1.0-rc5','product':'Pablicus','stage':'RELEASE_CANDIDATE_NOT_DEVICE_ACCEPTED'}))
 for n in ['access.html','access.js','access.css']:shutil.copy2(ROOT/'src'/n,OUT/n)
 print('Built',len(list(OUT.rglob('*'))),'paths')

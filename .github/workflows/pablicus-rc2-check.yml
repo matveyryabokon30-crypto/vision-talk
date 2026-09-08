@@ -16,7 +16,7 @@ jobs:
           python-version: '3.12'
       - name: Build, apply lifecycle fix, fingerprint and validate artifact
         run: |
-          python -m pip install playwright==1.55.0
+          python -m pip install playwright==1.55.0 Pillow==11.3.0
           python apps/pablicus/build.py
           python apps/pablicus/finalize.py
           for f in apps/pablicus/dist/*.js; do node --check "$f"; done

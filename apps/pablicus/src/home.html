@@ -1,12 +1,15 @@
 <div id="home">
  <header class="homeHeader"><picture class="wordmark"><source srcset="assets/wordmark-dark.png" media="(prefers-color-scheme: dark)"><img id="logo" src="assets/wordmark-light.png" alt="pablicus"></picture><button id="newChat" class="plain" aria-label="Новый разговор">✎</button></header>
  <div id="connection" role="status" hidden></div>
- <section id="loginPane" class="loginPane" style="padding-top:24px"><h1>Ближе к своим.</h1><p>Вход прямо в этом приложении.</p>
-  <form id="magicForm"><label>Почта аккаунта Pablicus<input id="email" type="email" autocomplete="username" autocapitalize="none" spellcheck="false" required></label><button class="solid" id="magicSubmit">Получить письмо для входа</button></form>
+ <section id="loginPane" class="loginPane"><h1>Вход в Pablicus</h1>
+  <form id="loginForm"><label for="email">Почта<input id="email" name="email" type="email" autocomplete="username" autocapitalize="none" spellcheck="false" required></label><label for="password">Пароль Pablicus<input id="password" name="password" type="password" autocomplete="current-password" minlength="6" required></label><label class="passwordVisibility"><input id="showLoginPassword" type="checkbox">Показать пароль</label><button class="solid" id="loginSubmit">Войти</button></form>
   <p id="loginError" role="alert"></p><p id="loginNotice" class="muted" role="status"></p>
+  <button class="textBtn recoveryButton" id="recoverPassword" type="button">Забыли пароль?</button>
+  <details id="emailLogin" class="emailLogin"><summary>Другой способ: письмо для входа</summary>
+  <form id="magicForm"><button class="secondary" id="magicSubmit">Получить письмо для входа</button></form>
   <section id="proofSection" hidden><p>В письме <strong>удерживайте кнопку входа</strong> → «Скопировать ссылку». Не открывайте её. Вернитесь в Pablicus через иконку.</p><form id="proofForm"><label>Код или ссылка из письма<input id="emailProof" type="text" autocomplete="one-time-code" autocapitalize="none" spellcheck="false" placeholder="Вставьте скопированную ссылку" maxlength="4096" required></label><button id="pasteProof" class="textBtn" type="button">Вставить из буфера</button><button id="proofSubmit" class="solid">Войти в приложении</button></form></section>
-  <details class="passwordLogin"><summary>Войти с паролем Pablicus</summary><form id="loginForm"><label>Пароль Pablicus — не пароль от почты<input id="password" type="password" autocomplete="current-password" minlength="6" required></label><button class="secondary" id="loginSubmit">Войти с паролем</button></form></details>
-  <p class="muted">Закрытый доступ. Новые аккаунты здесь не создаются. Подтверждение из письма никому не пересылайте.</p><button class="textBtn" id="installLogin">Добавить на iPhone</button><p class="muted" id="releaseLabel">0.1.0-rc4 · вход в приложении</p>
+  </details>
+  <p class="muted">Вход для участников с одобренным аккаунтом.</p><button class="textBtn" id="installLogin">Добавить на iPhone</button><p class="muted" id="releaseLabel">0.1.0-rc5</p>
  </section>
  <section id="workspace" hidden><div class="workspaceTop"><h1 id="sectionTitle">Чаты</h1><input id="searchChats" type="search" placeholder="Люди и разговоры" aria-label="Поиск разговоров"><div id="chatFilters"><button data-filter="all" class="selected">Все</button><button data-filter="focus">Фокус</button></div></div><div id="screenContent"></div></section>
  <nav id="mainNav" hidden aria-label="Главные разделы"><button data-page="chats" class="selected"><span>▢</span>Чаты</button><button data-page="feed"><span>≋</span>Лента</button><button data-page="tasks"><span>✓</span>Дела</button><button data-page="profile"><span>♙</span>Профиль</button></nav>

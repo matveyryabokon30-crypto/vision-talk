@@ -3,7 +3,7 @@ No production credentials, sessions, users or password changes are used.
 """
 import asyncio,base64,json,mimetypes,tempfile,time,traceback
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urlparse,parse_qs
 from playwright.async_api import async_playwright
 R=Path(__file__).resolve().parents[1];D=R/'dist';E=R/'evidence';E.mkdir(exist_ok=True)
 SITE='http://127.0.0.1:8765/';PROJECT='https://ctcoqgsztdtsazdiwcmd.supabase.co';EMAIL='access-qa@example.invalid';UID='11111111-1111-4111-8111-111111111111'
@@ -13,7 +13,7 @@ now=int(time.time());JWT=b64({'alg':'HS256','typ':'JWT'})+'.'+b64({'sub':UID,'ex
 user={'id':UID,'email':EMAIL,'aud':'authenticated','role':'authenticated','app_metadata':{'provider':'email','providers':['email']},'user_metadata':{},'created_at':'2026-09-01T00:00:00Z'}
 session={'access_token':JWT,'refresh_token':'MOCK_REFRESH_ONLY','expires_in':3600,'expires_at':now+3600,'token_type':'bearer','user':user}
 async def one(engine,name):
- state={'puts':0,'saved':None,'reject':False,'nonce':False,'approved':True,'switched':False,'logins':0,'forbidden':0};checks=[];errors=[];violations=[];contexts=[];dirs=[]
+ state={'puts':0,'saved':None,'reject':False,'nonce':False,'approved':True,'switched':False,'logins':0,'forbidden':0,'recoveries':0,'reject_recovery':False};checks=[];errors=[];violations=[];contexts=[];dirs=[]
  async def make(primed=False,path='access.html'):
   t=tempfile.TemporaryDirectory(prefix='pablicus-access-');dirs.append(t)
   c=await engine.launch_persistent_context(t.name,headless=True,viewport={'width':440,'height':766},service_workers='block');contexts.append(c)
@@ -39,6 +39,11 @@ async def one(engine,name):
     elif state['reject']:status=422;payload={'code':'weak_password','msg':'Password should be stronger'}
     elif state['nonce'] and body.get('nonce')!='123456':status=403;payload={'code':'reauthentication_needed','msg':'Reauthentication required'}
     else:state['saved']=body['password'];payload=user
+   elif u.path=='/auth/v1/recover':
+    state['recoveries']+=1
+    assert body.get('email')==EMAIL and 'password' not in body
+    assert parse_qs(u.query).get('redirect_to')==[SITE+'access.html']
+    if state['reject_recovery']:status=429;payload={'code':'over_email_send_rate_limit','msg':'Too many requests'}
    elif u.path=='/auth/v1/reauthenticate':payload={}
    elif u.path=='/auth/v1/token':
     if 'grant_type=password' in u.query:
@@ -59,6 +64,22 @@ async def one(engine,name):
   checks.append('No session: no password form and no update request')
   state['approved']=False;unapproved=await make(True);await unapproved.locator('#needsSession').wait_for();assert not await unapproved.locator('#passwordSetup').is_visible();state['approved']=True
   checks.append('Unapproved profile fails closed')
+  recovery=await make(False,path='');await recovery.locator('#loginPane').wait_for()
+  for selector in ['#email','#password','#loginSubmit','#recoverPassword']:assert await recovery.locator(selector).is_visible()
+  assert not await recovery.locator('#magicSubmit').is_visible()
+  assert await recovery.locator('#loginSubmit').inner_text()=='Войти'
+  assert await recovery.evaluate('document.documentElement.scrollWidth<=innerWidth')
+  await recovery.locator('#email').fill(EMAIL);await recovery.locator('#recoverPassword').click();await recovery.locator('#loginNotice').filter(has_text='Восстановление запрошено').wait_for()
+  assert state['recoveries']==1 and state['puts']==0
+  await recovery.locator('#recoverPassword').click();assert state['recoveries']==1
+  checks.append('Password form visible immediately; explicit recovery uses correct email/callback, no password required, duplicate request throttled')
+  state['reject_recovery']=True;failed=await make(False,path='');await failed.locator('#loginPane').wait_for();await failed.locator('#email').fill(EMAIL);await failed.locator('#recoverPassword').click();await failed.locator('#loginError').filter(has_text='частые').wait_for()
+  assert await failed.locator('#loginNotice').inner_text()=='';state['reject_recovery']=False
+  checks.append('Recovery server rejection does not claim an email was sent')
+  callback=await make(False,path='access.html#access_token='+JWT+'&refresh_token=MOCK_REFRESH_ONLY&expires_in=3600&token_type=bearer&type=recovery')
+  await callback.locator('#passwordSetup').wait_for();assert await callback.locator('#account').inner_text()==EMAIL and state['puts']==0
+  assert '#' not in callback.url
+  checks.append('Fresh browser accepts recovery callback through actual SDK, verifies own approved account, clears URL; no automatic password update')
   safari=await make(True);await safari.locator('#passwordSetup').wait_for();assert await safari.locator('#account').inner_text()==EMAIL and state['puts']==0
   checks.append('Actual SDK getUser and own profile checked before showing form; no automatic change')
   await fill(safari);await safari.locator('#repeatPassword').fill(PASS+'different');await safari.locator('#savePassword').click();assert state['puts']==0
@@ -70,7 +91,8 @@ async def one(engine,name):
   assert PASS not in await safari.evaluate('Object.values(localStorage).join(" ")+Object.values(sessionStorage).join(" ")+location.href')
   checks.append('Explicit updateUser saves only fixture current-user password; fields erased; no password retention')
   pwa=await make(False,path='');await pwa.locator('#loginPane').wait_for();assert not await pwa.locator('#workspace').is_visible()
-  await pwa.locator('#email').fill(EMAIL);await pwa.locator('.passwordLogin summary').click();await pwa.locator('#password').fill(PASS);await pwa.locator('#loginSubmit').click();await pwa.locator('#workspace').wait_for()
+  await pwa.locator('#email').fill(EMAIL);await pwa.locator('#password').fill(PASS);await pwa.locator('#showLoginPassword').check();assert await pwa.locator('#password').get_attribute('type')=='text';await pwa.locator('#showLoginPassword').uncheck();assert await pwa.locator('#password').get_attribute('type')=='password'
+  await pwa.locator('#loginSubmit').click();await pwa.locator('#workspace').wait_for()
   assert await pwa.evaluate('PablicusDebug.user')==UID and state['logins']==1
   checks.append('Independent app store signs in with user-chosen password using actual SDK; no link or token copied')
   await pwa.reload();await pwa.locator('#workspace').wait_for();assert state['logins']==1
@@ -83,7 +105,7 @@ async def one(engine,name):
   checks.append('Server-requested reauthentication handled; no policy bypass')
   assert not errors,errors;assert not violations,violations;assert state['forbidden']==0
   await safari.screenshot(path=str(E/(name+'-access-success.png')))
-  checks.append('No signup/admin/OTP recovery endpoint called; no JavaScript errors')
+  checks.append('No signup/admin endpoint called; all Auth HTTP mocked; no JavaScript errors')
   return {'engine':name,'pass':True,'checks':checks,'scope':'REAL_SDK_MOCK_AUTH_HTTP_EXISTING_SESSION_SELF_SERVICE_AND_SEPARATE_APP_LOGIN','physical_iPhone':False,'real_user_password_changed':False}
  except Exception:return {'engine':name,'pass':False,'checks':checks,'error':traceback.format_exc(),'js_errors':errors,'request_shape_violations':violations}
  finally:
