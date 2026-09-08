@@ -1,0 +1,46 @@
+name: Pablicus OAuth candidate checks
+on:
+  push:
+    branches: [pablicus-public-access]
+    paths: ['apps/pablicus/**', '.github/workflows/pablicus-oauth-candidate.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pablicus-oauth-candidate-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build candidate
+        run: |
+          python -m pip install playwright==1.55.0 pillow==11.3.0
+          python apps/pablicus/build.py
+          python apps/pablicus/finalize.py
+      - name: Verify provider requests and subject adapter
+        run: node --test apps/pablicus/tests/oauth_module.test.js apps/pablicus/public-access/yandex-userinfo/handler.test.mjs
+      - name: Install test browsers
+        run: python -m playwright install --with-deps chromium webkit
+      - name: OAuth callback and browser isolation
+        run: python apps/pablicus/tests/oauth_login.py
+      - name: Existing sign-in and password recovery
+        run: |
+          python apps/pablicus/tests/auth_local.py
+          python apps/pablicus/tests/access_setup.py
+      - name: Chat and outbox regression
+        run: python apps/pablicus/tests/run_isolated.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pablicus-oauth-candidate-evidence
+          path: apps/pablicus/evidence/
+          retention-days: 7

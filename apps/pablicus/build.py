@@ -64,19 +64,18 @@ h=re.sub(r'<header>.*?</header>', '<header><button id="chatBack" aria-label="К 
 h=h.replace('<div id="app">','<div id="app" hidden>')
 h=h.replace('<body>','<body>'+ (ROOT/'src'/'home.html').read_text())
 h=re.sub(r'<script src="[^"]+"[^>]*></script>','',h)
-h=h.replace('</body>', '<script src="vendor/supabase.js"></script><script src="vault.js"></script><script src="outbox.js"></script><script src="transport-store.js"></script><script src="chat.js"></script><script src="auth-local.js"></script><script src="app.js"></script></body>')
+h=h.replace('</body>', '<script src="vendor/supabase.js"></script><script src="vault.js"></script><script src="outbox.js"></script><script src="transport-store.js"></script><script src="chat.js"></script><script src="auth-local.js"></script><script src="auth-config.js"></script><script src="oauth-login.js"></script><script src="oauth-session.js"></script><script src="app.js"></script></body>')
 h=h.replace('VISION TALK','Pablicus').replace('Vision Talk','Pablicus')
 (OUT/'index.html').write_text(h)
 (OUT/'chat.js').write_text(s)
-for n in ['transport-store.js','app.js','auth-local.js','pablicus.css','sw.js','manifest.webmanifest']:shutil.copy2(ROOT/'src'/n,OUT/n)
+for n in ['transport-store.js','app.js','auth-local.js','auth-config.js','oauth-login.js','oauth-session.js','pablicus.css','sw.js','manifest.webmanifest']:shutil.copy2(ROOT/'src'/n,OUT/n)
 # Pablicus app transport and authentication adaptations.
 app=(OUT/'app.js').read_text()
 app=app.replace('0.1.0-rc2','0.1.0-rc5')
-app=app.replace('detectSessionInUrl:false','detectSessionInUrl:true',1)
-# Standard provider verification completes in the requesting browsing context.
+# OAuth callback exchange completes explicitly in the requesting browser.
 needle=" sb.auth.onAuthStateChange("
 assert app.count(needle)==1,'Auth event binding changed; review required'
-app=app.replace(needle," PablicusLogin.mount({client:sb,projectUrl:URL,authenticate});\n"+needle,1)
+app=app.replace(needle," PablicusLogin.mount({client:sb,recoveryClient,projectUrl:URL,authenticate});\n"+needle,1)
 app=app.replace('refreshing=false,worker=false,channel=null', 'refreshing=false,worker=false,pumpPending=false,channel=null',1)
 app=app.replace("async function pump(){if(worker||!user||!navigator.onLine||document.hidden)return;worker=true;", "async function pump(){if(worker){pumpPending=true;return}if(!user||!navigator.onLine||document.hidden)return;worker=true;",1)
 app=app.replace("}catch(e){problem(e)}finally{worker=false}}\n async function showOutbox()", "}catch(e){problem(e)}finally{worker=false;if(pumpPending){pumpPending=false;setTimeout(()=>pump(),0)}}}\n async function showOutbox()",1)

@@ -31,7 +31,7 @@
   if(!navigator.onLine)return 'Нет сети. Подключитесь и повторите вход.';
   return 'Не удалось завершить вход. Проверьте соединение и повторите попытку.';
  }
- function mount({client,projectUrl,authenticate}){
+ function mount({client,projectUrl,authenticate,recoveryClient=client}){
   const $=id=>document.getElementById(id),key='pablicus:pending-email-login:v1';
   let requestedEmail='',nextRequest=0,busy=false;
   const error=t=>{$('loginError').textContent=t},notice=t=>{$('loginNotice').textContent=t};
@@ -46,7 +46,7 @@
    busy=true;$('recoverPassword').disabled=true;
    try{
     const redirectTo=new URL('access.html',location.href).href;
-    const result=await client.auth.resetPasswordForEmail($('email').value.trim(),{redirectTo});
+    const result=await recoveryClient.auth.resetPasswordForEmail($('email').value.trim(),{redirectTo});
     if(result.error)throw result.error;
     nextRequest=Date.now()+60000;
     notice('Восстановление запрошено. Если аккаунт существует, на указанную почту придёт письмо. Нажмите кнопку в письме и задайте новый пароль.');

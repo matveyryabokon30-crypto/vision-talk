@@ -5,7 +5,15 @@
  const $=x=>document.getElementById(x),el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n};
  const safeGet=k=>{try{return JSON.parse(localStorage.getItem(k))}catch{return null}},safeSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
  const timeoutFetch=async(u,opts={},ms=25000)=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);const abort=()=>c.abort();opts.signal?.addEventListener('abort',abort,{once:true});try{return await fetch(u,{...opts,signal:c.signal})}finally{clearTimeout(t);opts.signal?.removeEventListener('abort',abort)}};
- const sb=supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false},global:{fetch:timeoutFetch}});
+ const authStorageKey='sb-ctcoqgsztdtsazdiwcmd-auth-token';
+ // The bundled SDK can auto-detect PKCE despite detectSessionInUrl:false.
+ // Capture and clean the callback before constructing any Auth client.
+ const authCallbackHref=PablicusOAuthSession.capture();
+ const sb=supabase.createClient(URL,KEY,{auth:{storageKey:authStorageKey,persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,flowType:'pkce'},global:{fetch:timeoutFetch}});
+ // Recovery requests do not bind an email link to the PWA's PKCE store.
+ // This client cannot read or persist the signed-in application's session.
+ const recoveryClient=supabase.createClient(URL,KEY,{auth:{storageKey:'pablicus-recovery-request',persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,flowType:'implicit'},global:{fetch:timeoutFetch}});
+ let authVersion=0;
  let user=null,profile=null,dialogs=[],current=null,rows=[],page='chats',filter='all',opening=false,syncing=false,olderBusy=false,refreshing=false,worker=false,channel=null,epoch=0,toastTimer=0,peersRead=0;
  const signed=new Map(),cacheKey=()=>`pablicus:${user?.id}:dialogs`,focusKey=()=>`pablicus:${user?.id}:focus`;
  function toast(text){$('toast').textContent=text;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,5000)}
@@ -18,17 +26,36 @@
  function theme(value){safeSet('pablicus:theme',value);document.documentElement.dataset.theme=value;const dark=value==='dark'||value==='system'&&matchMedia('(prefers-color-scheme:dark)').matches;$('logo').src='assets/wordmark-'+(dark?'dark':'light')+'.png';$('logo').parentElement.querySelector('source')?.remove();document.querySelector('meta[name="theme-color"]').content=dark?'#111218':'#FAF9FC';window.PablicusChat?.list?.refreshFont()}
  theme(safeGet('pablicus:theme')||'system');matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>theme(safeGet('pablicus:theme')||'system'));
  async function authenticate(session){
+  const attempt=++authVersion;
   if(!session){$('productDialog').close();$('dialogContent').replaceChildren();user=null;profile=null;dialogs=[];rows=[];current=null;epoch++;signed.clear();if(channel)sb.removeChannel(channel);channel=null;$('app').hidden=true;$('home').hidden=false;$('workspace').hidden=true;$('mainNav').hidden=true;$('loginPane').hidden=false;return}
   if(user?.id===session.user.id&&profile)return;
   user=session.user;const uid=user.id;
   const r=await sb.from('profiles').select('id,username,display_name,avatar_url,is_approved').eq('id',uid).single();
+  if(attempt!==authVersion)return;
   if(r.error){const cached=safeGet('pablicus:'+uid+':profile');if(!navigator.onLine&&cached)profile=cached;else{user=null;throw Error('Не удалось проверить доступ к аккаунту. '+r.error.message)}}else profile=r.data;
   if(!profile.is_approved){profile=null;user=null;throw Error('Аккаунт ещё не одобрен. Свяжитесь с владельцем Pablicus.')}
   safeSet('pablicus:'+uid+':profile',profile);$('loginPane').hidden=true;$('workspace').hidden=false;$('mainNav').hidden=false;dialogs=safeGet(cacheKey())||[];renderHome();await loadDialogs();pump();
  }
  $('loginForm').onsubmit=async e=>{e.preventDefault();$('loginSubmit').disabled=true;$('loginError').textContent='';try{const r=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(r.error)throw r.error;$('password').value='';await authenticate(r.data.session)}catch(e){$('loginError').textContent=e.message}finally{$('loginSubmit').disabled=false}};
- sb.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>{if(session?.user.id===user?.id&&profile)return;authenticate(session).catch(e=>{$('loginError').textContent=e.message})},0)});
- sb.auth.getSession().then(r=>authenticate(r.data.session)).catch(e=>{$('loginError').textContent=e.message});
+ const authConfig=globalThis.PablicusAuthConfig;
+ const oauthReady=authConfig?.publicSignupReady===true&&Object.values(authConfig.providers||{}).some(value=>value===true);
+ $('oauthLogin').hidden=!oauthReady;
+ if(oauthReady){
+  $('accessModeNote').textContent='При первом входе аккаунт создаётся автоматически.';
+  PablicusOAuth.mount({client:sb,projectUrl:URL,element:$('oauthProviders'),config:authConfig,redirectTo:new window.URL('./',location.href).href});
+  $('loginForm').classList.add('legacy-login');
+  $('loginForm').insertAdjacentHTML('beforebegin','<details id="passwordLogin"><summary>Войти с паролем Pablicus</summary></details>');
+  $('passwordLogin').append($('loginForm'),$('recoverPassword'),$('emailLogin'));
+ }
+ let authBooting=true,pendingAuthEvent=null;
+ sb.auth.onAuthStateChange((_event,session)=>{
+  if(authBooting){pendingAuthEvent={session};return}
+  const observed=++authVersion;
+  setTimeout(()=>{if(observed!==authVersion)return;if(session?.user.id===user?.id&&profile)return;authenticate(session).catch(e=>{$('loginError').textContent=e.message})},0);
+ });
+ PablicusOAuthSession.restore({client:sb,storageKey:authStorageKey,href:authCallbackHref}).then(session=>{
+  authBooting=false;const next=pendingAuthEvent?pendingAuthEvent.session:session;pendingAuthEvent=null;return authenticate(next);
+ }).catch(e=>{authBooting=false;pendingAuthEvent=null;authenticate(null);$('loginError').textContent=e.message});
  async function loadDialogs(){if(!user||refreshing||!navigator.onLine)return;refreshing=true;const uid=user.id;try{let r=await sb.rpc('my_conversations_v3');if(r.error)r=await sb.rpc('my_conversations_v2');if(r.error)throw r.error;if(user?.id!==uid)return;dialogs=r.data||[];safeSet(cacheKey(),dialogs);if(!current&&page==='chats')renderHome()}catch(e){if(!dialogs.length)toast('Не удалось обновить список разговоров')}finally{refreshing=false}}
  function renderHome(){
   if(!user||current)return;const c=$('screenContent');c.replaceChildren();$('sectionTitle').textContent={chats:'Чаты',feed:'Лента',tasks:'Дела',profile:'Профиль'}[page];$('searchChats').hidden=page!=='chats';$('chatFilters').hidden=page!=='chats';$('newChat').hidden=page!=='chats';

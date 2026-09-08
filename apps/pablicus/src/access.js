@@ -8,7 +8,7 @@
  const publishable='sb_publishable_kMGqZAM2vadfXbBr8r5uzw_l9EiBtIw';
  const $=id=>document.getElementById(id);
  const limitedFetch=async(url,options={})=>{const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);const abort=()=>controller.abort();options.signal?.addEventListener('abort',abort,{once:true});try{return await fetch(url,{...options,signal:controller.signal,cache:'no-store'})}finally{clearTimeout(timer);options.signal?.removeEventListener('abort',abort)}};
- const client=supabase.createClient(project,publishable,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true},global:{fetch:limitedFetch}});
+ const client=supabase.createClient(project,publishable,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:new URL(location.href).searchParams.has('code')?'pkce':'implicit'},global:{fetch:limitedFetch}});
  let identity=null,busy=false,success=false,nonceAfter=0;
  function wipe() { for(const id of ['newPassword','repeatPassword','currentPassword','nonce'])$(id).value=''; }
  function lock(on){busy=on;$('savePassword').disabled=on;$('recheck').disabled=on;$('requestNonce').disabled=on;}

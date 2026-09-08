@@ -1,0 +1,337 @@
+"""OAuth browser contract against the REAL bundled SDK with MOCKED HTTP only.
+
+No provider account, consent, email, production signup or physical iPhone is
+tested. The mock authorizer redirects in the same tab without visiting a mail
+provider. Credentials below are deliberately invalid fixtures. All other network
+requests are blocked. Run against an already built apps/pablicus/dist directory.
+"""
+import asyncio
+import base64
+import hashlib
+import json
+import mimetypes
+import tempfile
+import time
+import traceback
+from pathlib import Path
+from urllib.parse import parse_qs, urlencode, urlparse
+
+from playwright.async_api import async_playwright
+
+
+ROOT = Path(__file__).resolve().parents[1]
+DIST = ROOT / "dist"
+EVIDENCE = ROOT / "evidence"
+SITE = "https://pablicus-test.example.invalid/"
+PROJECT_HOST = "ctcoqgsztdtsazdiwcmd.supabase.co"
+USER_ID = "11111111-1111-4111-8111-111111111111"
+OTHER_ID = "22222222-2222-4222-8222-222222222222"
+CODE = "MOCK_OAUTH_CODE_NOT_A_CREDENTIAL"
+UNTRUSTED_ERROR = "UNTRUSTED_PROVIDER_TEXT_<script>alert(1)</script>"
+PROVIDERS = {
+    "google": "Войти через Google",
+    "custom:yandex": "Войти через Яндекс",
+    "custom:mailru": "Войти через Mail.ru",
+    "azure": "Войти через Outlook / Hotmail",
+}
+
+
+def b64url(value):
+    return base64.urlsafe_b64encode(value).decode().rstrip("=")
+
+
+def fixture_session(provider="google"):
+    now = int(time.time())
+    user = {
+        "id": USER_ID,
+        "email": "oauth-qa@example.invalid",
+        "email_confirmed_at": "2026-09-08T00:00:00Z",
+        "aud": "authenticated",
+        "role": "authenticated",
+        "app_metadata": {"provider": provider, "providers": [provider]},
+        "user_metadata": {},
+        "created_at": "2026-09-08T00:00:00Z",
+    }
+    token = ".".join([
+        b64url(json.dumps({"alg": "HS256", "typ": "JWT"}).encode()),
+        b64url(json.dumps({
+            "sub": USER_ID, "exp": now + 3600, "iat": now,
+            "aud": "authenticated", "role": "authenticated",
+        }).encode()),
+        "MOCK_SIGNATURE_NOT_A_CREDENTIAL",
+    ])
+    return {
+        "access_token": token,
+        "refresh_token": "MOCK_REFRESH_NOT_A_CREDENTIAL",
+        "expires_in": 3600,
+        "expires_at": now + 3600,
+        "token_type": "bearer",
+        "user": user,
+    }
+
+
+async def one(engine, name):
+    checks, errors, contexts, directories, states = [], [], [], [], []
+
+    async def make(*, enabled=True, ready=True, approved=True,
+                   identity_matches=True, deny=False, initial_url=SITE):
+        directory = tempfile.TemporaryDirectory(prefix="pablicus-oauth-")
+        directories.append(directory)
+        context = await engine.launch_persistent_context(
+            directory.name, headless=True,
+            viewport={"width": 390, "height": 844},
+            service_workers="block",
+        )
+        contexts.append(context)
+        state = {
+            "authorize": [], "exchanges": 0, "get_user": 0,
+            "profiles": 0, "events": [], "faults": [], "challenge": None,
+            "provider": "google",
+        }
+        states.append(state)
+
+        async def handle(route):
+            parsed = urlparse(route.request.url)
+            query = parse_qs(parsed.query)
+            headers = {
+                "access-control-allow-origin": "*",
+                "access-control-allow-headers": "*",
+                "access-control-allow-methods": "GET,POST,OPTIONS",
+            }
+            try:
+                if parsed.netloc == urlparse(SITE).netloc:
+                    if parsed.path.rsplit("/", 1)[-1] == "auth-config.js" and enabled:
+                        config = {
+                            "publicSignupReady": ready,
+                            "providers": {key: True for key in PROVIDERS},
+                        }
+                        return await route.fulfill(
+                            status=200, content_type="application/javascript",
+                            body="window.PablicusAuthConfig=" + json.dumps(config) + ";",
+                        )
+                    file = DIST / (parsed.path.lstrip("/") or "index.html")
+                    assert file.is_relative_to(DIST)
+                    if not file.is_file():
+                        return await route.fulfill(status=404, body="Not found")
+                    return await route.fulfill(
+                        status=200,
+                        content_type=mimetypes.guess_type(str(file))[0]
+                        or "application/octet-stream",
+                        body=file.read_bytes(),
+                    )
+                if parsed.netloc != PROJECT_HOST:
+                    state["faults"].append("Unexpected network destination: " + parsed.netloc)
+                    return await route.abort()
+                if route.request.method == "OPTIONS":
+                    return await route.fulfill(status=204, headers=headers)
+                body = route.request.post_data_json if route.request.post_data else {}
+                payload, status = {}, 200
+                if parsed.path == "/auth/v1/authorize":
+                    provider = query.get("provider", [None])[0]
+                    assert provider in PROVIDERS, query
+                    assert query.get("redirect_to") == [SITE], query
+                    assert query.get("code_challenge_method", [""])[0].lower() == "s256", query
+                    challenge = query.get("code_challenge", [""])[0]
+                    assert len(challenge) == 43, query
+                    state["challenge"] = challenge
+                    state["provider"] = provider
+                    state["authorize"].append(provider)
+                    state["events"].append("authorize")
+                    callback = {
+                        "error": "access_denied",
+                        "error_description": UNTRUSTED_ERROR,
+                    } if deny else {"code": CODE}
+                    return await route.fulfill(
+                        status=302,
+                        headers={"location": SITE + ("#" if deny == "fragment" else "?") + urlencode(callback)},
+                        body="Mock authorizer: no external provider login occurred.",
+                    )
+                if parsed.path == "/auth/v1/token":
+                    state["exchanges"] += 1
+                    state["events"].append("exchange")
+                    assert query.get("grant_type") == ["pkce"], query
+                    assert body.get("auth_code") == CODE, body
+                    verifier = body.get("code_verifier", "")
+                    assert isinstance(verifier, str) and 43 <= len(verifier) <= 128
+                    assert b64url(hashlib.sha256(verifier.encode()).digest()) == state["challenge"]
+                    payload = fixture_session(state["provider"])
+                elif parsed.path == "/auth/v1/user":
+                    state["get_user"] += 1
+                    state["events"].append("get_user")
+                    assert route.request.headers.get("authorization", "").startswith("Bearer ")
+                    payload = fixture_session(state["provider"])["user"]
+                    if not identity_matches:
+                        payload["id"] = OTHER_ID
+                elif parsed.path == "/auth/v1/logout":
+                    state["events"].append("logout")
+                elif parsed.path == "/rest/v1/profiles":
+                    state["profiles"] += 1
+                    state["events"].append("profile")
+                    assert state["get_user"] > 0, "Profile read preceded server identity validation"
+                    assert query.get("id") == ["eq." + USER_ID], query
+                    payload = {
+                        "id": USER_ID, "username": "oauth_qa",
+                        "display_name": "OAuth QA", "avatar_url": None,
+                        "is_approved": approved,
+                    }
+                elif parsed.path.startswith("/rest/v1/rpc/my_conversations"):
+                    payload = []
+                else:
+                    raise AssertionError("Unexpected mocked endpoint: " + parsed.path)
+                await route.fulfill(
+                    status=status, headers=headers, content_type="application/json",
+                    body=json.dumps(payload),
+                )
+            except Exception:
+                state["faults"].append(traceback.format_exc())
+                await route.fulfill(
+                    status=500, headers=headers, content_type="application/json",
+                    body=json.dumps({"error": "mock_contract_failed"}),
+                )
+
+        await context.route("**/*", handle)
+        page = context.pages[0] if context.pages else await context.new_page()
+        page.set_default_timeout(12000)
+        page.on("pageerror", lambda error: errors.append(str(error)))
+        await page.goto(initial_url, wait_until="domcontentloaded")
+        await page.wait_for_function("typeof window.PablicusDebug !== 'undefined'")
+        return page, state
+
+    async def assert_closed(page):
+        await page.wait_for_selector("#loginPane", state="visible")
+        assert not await page.locator("#workspace").is_visible()
+        assert await page.evaluate("PablicusDebug.user") is None
+
+    async def assert_error(page):
+        await page.wait_for_function("document.getElementById('loginError').textContent.trim().length > 0")
+        await assert_closed(page)
+        assert not urlparse(page.url).query
+        assert not urlparse(page.url).fragment
+        assert CODE not in await page.evaluate("Object.values(localStorage).join(' ')")
+        assert UNTRUSTED_ERROR not in await page.locator("body").inner_text()
+
+    try:
+        disabled, state = await make(enabled=False)
+        await assert_closed(disabled)
+        assert not await disabled.locator("#oauthLogin").is_visible()
+        assert state["authorize"] == [] and state["exchanges"] == 0
+        checks.append("Published default config hides unavailable OAuth and makes no authorization request")
+
+        unready, state = await make(ready=False)
+        await assert_closed(unready)
+        assert not await unready.locator("#oauthLogin").is_visible()
+        assert state["authorize"] == [] and state["exchanges"] == 0
+        checks.append("Provider flags alone cannot enable login before public signup readiness")
+
+        for provider, label in PROVIDERS.items():
+            page, state = await make()
+            await page.wait_for_selector("#oauthLogin", state="visible")
+            for expected_label in PROVIDERS.values():
+                assert await page.locator("#oauthProviders").get_by_role(
+                    "button", name=expected_label, exact=True,
+                ).count() == 1
+            assert await page.evaluate(
+                "document.documentElement.scrollWidth <= window.innerWidth"
+            ), "Mobile provider list has horizontal overflow"
+            if provider == "google":
+                await page.screenshot(path=str(EVIDENCE / (name + "-oauth-providers-MOCK.png")))
+            initial_pages = len(page.context.pages)
+            await page.get_by_role("button", name=label, exact=True).click()
+            await page.wait_for_selector("#workspace", state="visible")
+            assert len(page.context.pages) == initial_pages, "OAuth unexpectedly opened a popup"
+            assert page.url == SITE
+            assert await page.evaluate("PablicusDebug.user") == USER_ID
+            assert state["authorize"] == [provider] and state["exchanges"] == 1
+            assert state["get_user"] >= 1
+            assert state["events"].index("get_user") < state["events"].index("profile")
+            assert CODE not in await page.evaluate("Object.values(localStorage).join(' ')")
+            await page.reload()
+            await page.wait_for_selector("#workspace", state="visible")
+            assert state["exchanges"] == 1 and state["authorize"] == [provider]
+            checks.append(
+                provider + ": SDK S256 challenge matches exchanged verifier; same tab, "
+                "server identity checked before profile, callback scrubbed, session restores"
+            )
+
+        for denial_format in ("query", "fragment"):
+            denied, state = await make(deny=denial_format)
+            await denied.get_by_role("button", name=PROVIDERS["google"], exact=True).click()
+            await assert_error(denied)
+            assert state["exchanges"] == 0 and state["profiles"] == 0
+            checks.append(
+                "Provider denial in " + denial_format
+                + " is scrubbed, shows safe error, and never creates a session"
+            )
+
+        implicit, state = await make(initial_url=SITE + "#" + urlencode({
+            "access_token": fixture_session()["access_token"],
+            "refresh_token": fixture_session()["refresh_token"],
+            "token_type": "bearer", "expires_in": "3600",
+        }))
+        await assert_error(implicit)
+        assert state["exchanges"] == 0 and state["get_user"] == 0 and state["profiles"] == 0
+        assert await implicit.evaluate(
+            "localStorage.getItem('sb-ctcoqgsztdtsazdiwcmd-auth-token')"
+        ) is None
+        checks.append("Implicit access-token fragments are scrubbed and cannot bypass the PKCE flow")
+
+        foreign, state = await make(initial_url=SITE + "?code=" + CODE)
+        await assert_error(foreign)
+        assert state["exchanges"] == 0 and state["profiles"] == 0
+        checks.append("Callback in a separate browser store fails before exchange when verifier is missing")
+
+        unapproved, state = await make(approved=False)
+        await unapproved.get_by_role("button", name=PROVIDERS["google"], exact=True).click()
+        await assert_error(unapproved)
+        assert state["exchanges"] == 1 and state["profiles"] >= 1
+        checks.append("Valid OAuth session does not bypass the existing profile approval gate")
+
+        mismatch, state = await make(identity_matches=False)
+        await mismatch.get_by_role("button", name=PROVIDERS["google"], exact=True).click()
+        await assert_error(mismatch)
+        assert state["exchanges"] == 1 and state["profiles"] == 0
+        assert "logout" in state["events"]
+        assert await mismatch.evaluate(
+            "localStorage.getItem('sb-ctcoqgsztdtsazdiwcmd-auth-token')"
+        ) is None
+        checks.append("Server identity mismatch fails closed before any profile or conversation fetch")
+
+        faults = [fault for state in states for fault in state["faults"]]
+        assert not faults, faults
+        assert not errors, errors
+        return {
+            "engine": name, "pass": True, "checks": checks,
+            "scope": "REAL_BUNDLED_SDK_MOCK_AUTH_HTTP_SEPARATE_BROWSER_STORES",
+            "provider_ui_screenshot": name + "-oauth-providers-MOCK.png",
+            "real_provider_authorization": "NOT_TESTED",
+            "real_public_signup": "NOT_TESTED",
+            "physical_iPhone": False,
+            "errors": errors,
+        }
+    except Exception:
+        return {
+            "engine": name, "pass": False, "checks": checks,
+            "error": traceback.format_exc(), "errors": errors,
+            "mock_faults": [fault for state in states for fault in state["faults"]],
+        }
+    finally:
+        for context in contexts:
+            await context.close()
+        for directory in directories:
+            directory.cleanup()
+
+
+async def main():
+    EVIDENCE.mkdir(exist_ok=True)
+    assert (DIST / "auth-config.js").is_file(), "Build the OAuth candidate before running this test"
+    async with async_playwright() as playwright:
+        results = [await one(getattr(playwright, name), name) for name in ("chromium", "webkit")]
+    (EVIDENCE / "oauth-login.json").write_text(
+        json.dumps(results, ensure_ascii=False, indent=2)
+    )
+    print(json.dumps(results, ensure_ascii=False))
+    assert all(result["pass"] for result in results)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

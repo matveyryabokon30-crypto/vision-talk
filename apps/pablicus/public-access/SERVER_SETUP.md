@@ -1,5 +1,7 @@
 # Pablicus: public account provisioning proposal
 
+**Current direction, 2026-09-08:** owner cancelled SMS and requested Google, Yandex and other mail-account OAuth. The older SMS-specific setup/acceptance rows below are historical and are not deployment instructions for the current scope. Shared username/pending-activation work is still required. See `OAUTH_PROVIDERS.md` and the Yandex extension below.
+
 **Status: NOT APPLIED.** This is a reviewable SQL proposal, not an executed migration or evidence that public signup/SMS works. The current Supabase connection permits read-only inspection. Applying it requires legitimate database write access, an independent review, and staging acceptance. Do not attempt to work around that access restriction. No provider has been selected or purchased; no SMS has been sent by this work.
 
 Owner decision, 2026-09-08: allow public registration and a phone → SMS code flow without requiring a new Pablicus password. This supersedes the earlier closed-registration product rule. It does not make private conversations or attachments public.
@@ -216,6 +218,60 @@ The username fallback uses a bounded collision retry. Exhausting the retries mus
 | Delivery and cost | Real SMS receipt verified in the supported destinations; server limits and billing arrangement recorded. Mocks alone do not establish delivery. |
 
 The browser candidate must remain unpublished or clearly unavailable until server configuration and the migration pass these gates. A successful local/mocked OTP test verifies client behavior only; it does not mean the provider is connected, new profiles are activated on the live server, or real SMS delivery has been accepted.
+
+## Yandex identity activation extension — NOT APPLIED
+
+For the current subject-only Yandex route, there is deliberately no email or phone to confirm. The trusted proof is an Auth-created identity for the exact configured provider `custom:yandex`. Read-only schema inspection on 2026-09-08 confirmed `auth.identities.user_id uuid`, `provider text`, and `provider_id text`. The upstream Auth source was inspected; the hosted project version and insertion order still need staging acceptance.
+
+Include the following only in the same reviewed staging migration after the base proposal, before publication. Do not independently paste it into production. It requires the base private schema, new `activation_pending` flag and its approval-consumption trigger. It is not a bypass for the current read-only database connection.
+
+```sql
+CREATE FUNCTION pablicus_private.activate_yandex_identity()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $function$
+BEGIN
+  IF NEW.provider <> 'custom:yandex'
+     OR nullif(NEW.provider_id, '') IS NULL THEN
+    RETURN NEW;
+  END IF;
+
+  -- A provider-authenticated subject-only account. No user-editable claim,
+  -- claimed email address, old blocked profile or phone account is trusted.
+  IF NOT EXISTS (
+    SELECT 1 FROM auth.users AS u
+    WHERE u.id = NEW.user_id
+      AND NOT coalesce(u.is_anonymous, false)
+      AND coalesce(u.email, '') = ''
+      AND coalesce(u.phone, '') = ''
+      AND (u.banned_until IS NULL OR u.banned_until <= now())
+  ) THEN
+    RETURN NEW;
+  END IF;
+
+  UPDATE public.profiles
+     SET is_approved = true, activation_pending = false
+   WHERE id = NEW.user_id
+     AND activation_pending = true
+     AND is_approved = false;
+  RETURN NEW;
+END;
+$function$;
+
+REVOKE ALL ON FUNCTION pablicus_private.activate_yandex_identity()
+  FROM PUBLIC, anon, authenticated;
+
+CREATE TRIGGER yandex_identity_activates_pending_profile
+AFTER INSERT ON auth.identities
+FOR EACH ROW
+EXECUTE FUNCTION pablicus_private.activate_yandex_identity();
+```
+
+This extension intentionally trusts only the Yandex provider configured with our verified UserInfo adapter. Mail.ru is not added speculatively. Neither `identity_data` nor `raw_user_meta_data` grants approval. No existing rows are updated in a backfill. Repeated logins, relinking identities and server profile blocks must not reactivate `activation_pending=false`.
+
+Staging must demonstrate a real new Yandex account entering without an email/password prompt from Pablicus; a second login preserving the same user ID; no automatic merge with an existing email account; no activation for another provider/anonymous user/admin-denied profile; and unchanged conversation/file isolation. Before deployment, review all Auth-identity triggers and verify client roles cannot insert/update `auth.identities`. Existing base email-confirmation tests remain necessary for Google/Microsoft where a verified email is returned.
 
 ## Deployment / rollback boundary
 
