@@ -1,0 +1,90 @@
+name: Pablicus targeted WebKit offline diagnostic
+on:
+  push:
+    branches: [pablicus-rc2-release]
+    paths: [.github/workflows/pablicus-webkit-offline-diagnostic.yml]
+permissions:
+  contents: read
+jobs:
+  webkit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install WebKit only
+        run: |
+          pip -q install playwright==1.55.0
+          python -m playwright install --with-deps webkit >/dev/null
+      - name: Independent read-only subchecks; no failed criterion hidden
+        run: |
+          mkdir -p evidence
+          cat > /tmp/check.py <<'PY'
+          import asyncio,json,tempfile,traceback
+          from pathlib import Path
+          from playwright.async_api import async_playwright
+          URL='https://matveyryabokon30-crypto.github.io/vision-talk/pablicus/'
+          E=Path('evidence')
+          result={'url':URL,'engine':'webkit','scope':'Public unauthenticated launch and offline shell; NOT real iPhone, login or two-account delivery','online':'NOT_RUN','cache_visibility':'NOT_RUN','offline_restart':'NOT_RUN','errors':[],'requests_failed':[]}
+          async def changed_document(page,old):
+            for _ in range(80):
+              try:
+                state=await page.evaluate('({origin:performance.timeOrigin,ready:window.PablicusDebug?.version,online:navigator.onLine})')
+                if state['origin']!=old and state.get('ready')=='0.1.0-rc2':return state
+              except Exception:pass
+              await asyncio.sleep(.2)
+            raise AssertionError('No newly initialized document')
+          async def main():
+            with tempfile.TemporaryDirectory() as profile:
+              async with async_playwright() as p:
+                c=await p.webkit.launch_persistent_context(profile,headless=True,viewport={'width':440,'height':766})
+                page=c.pages[0];page.on('pageerror',lambda e:result['errors'].append(str(e)))
+                page.on('requestfailed',lambda r:result['requests_failed'].append({'url':r.url,'failure':r.failure}))
+                try:
+                  response=await page.goto(URL,wait_until='networkidle',timeout=30000)
+                  await page.wait_for_function('window.PablicusDebug?.version==="0.1.0-rc2"')
+                  assert response.status==200 and await page.locator('#loginPane').is_visible()
+                  assert not result['errors'];result['online']='PASS'
+                  await page.screenshot(path=str(E/'webkit-online.png'))
+                  await asyncio.wait_for(page.evaluate('navigator.serviceWorker.ready.then(r=>r.scope)'),20)
+                  old=await page.evaluate('performance.timeOrigin');await page.evaluate('setTimeout(()=>location.reload(),25)')
+                  await changed_document(page,old)
+                  await page.wait_for_function('!!navigator.serviceWorker.controller')
+                  result['registration']=await page.evaluate('navigator.serviceWorker.getRegistration().then(r=>({scope:r.scope,active:r.active?.state,script:r.active?.scriptURL}))')
+                  result['cache_names']=await page.evaluate('caches.keys()')
+                  result['cache_urls']=await page.evaluate('(async()=>{let a=[];for(const k of await caches.keys())for(const r of await(await caches.open(k)).keys())a.push(r.url);return a})()')
+                  result['cache_visibility']='PASS' if result['cache_urls'] and all(u.startswith(URL) for u in result['cache_urls']) else 'FAIL'
+                  # Cache inspection and real restart are independent observations.
+                  # A cache-inspection FAIL remains FAIL even if the user-visible restart works.
+                  await page.set_viewport_size({'width':1280,'height':800})
+                  result['desktop_fits']=await page.evaluate('document.documentElement.scrollWidth<=innerWidth+1')
+                  await page.screenshot(path=str(E/'webkit-desktop.png'))
+                  await page.set_viewport_size({'width':440,'height':766})
+                  await c.set_offline(True)
+                  old=await page.evaluate('performance.timeOrigin');await page.evaluate('setTimeout(()=>location.reload(),25)')
+                  state=await changed_document(page,old)
+                  assert not state['online'] and await page.locator('#loginPane').is_visible()
+                  assert await page.locator('#connection').is_visible()
+                  result['offline_restart']='PASS';result['offline_state']=state
+                  await page.screenshot(path=str(E/'webkit-offline.png'))
+                except Exception:
+                  result['failure']=traceback.format_exc()
+                  if result['online']=='NOT_RUN':result['online']='FAIL'
+                  elif result['offline_restart']=='NOT_RUN':result['offline_restart']='FAIL'
+                finally:
+                  result['overall']='PASS' if all(result[k]=='PASS' for k in ['online','cache_visibility','offline_restart']) and not result['errors'] else 'FAIL'
+                  (E/'webkit-diagnostic.json').write_text(json.dumps(result,ensure_ascii=False,indent=2))
+                  print(json.dumps(result,ensure_ascii=False))
+                  try:await asyncio.wait_for(c.close(),10)
+                  except Exception:pass
+          asyncio.run(main())
+          assert result['overall']=='PASS','Subcheck failures retained in evidence; app and existing data unchanged'
+          PY
+          python /tmp/check.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pablicus-webkit-offline-diagnostic
+          path: evidence/
+          retention-days: 30
