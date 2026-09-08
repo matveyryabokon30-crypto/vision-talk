@@ -1,5 +1,8 @@
-"""Browser integration with an EXPLICIT mock backend. Not live-server/iPhone evidence."""
-import asyncio,json,mimetypes,traceback
+"""Browser + IndexedDB integration with EXPLICIT mocked Supabase.
+Persistent profiles model ordinary browsing. Private/incognito Blob persistence
+is not claimed; the earlier ephemeral-WebKit failure remains in CI evidence.
+"""
+import asyncio,json,mimetypes,traceback,tempfile,shutil
 from pathlib import Path
 from urllib.parse import urlparse
 from playwright.async_api import async_playwright
@@ -14,7 +17,8 @@ return{auth:{getSession:()=>result({session:{user,access_token:'MOCK'}}),onAuthS
 rpc:async(name,args)=>{if(name.startsWith('my_conversations'))return result([{id:chat,title:'@qa_peer',last_message:messages.at(-1)?.body||'',last_seq:seq,last_read_seq:2,unread_count:1,last_message_at:new Date().toISOString()}]);if(name==='mark_conversation_read'){window.__mock.read=args.p_last_read_seq;return result(args.p_last_read_seq)}if(name==='start_direct_conversation')return result(chat);if(name==='send_message'||name==='send_attachment_message'){if(!window.__mock.online)return result(null,{name:'TypeError',message:'network request failed'});const old=messages.find(m=>m.client_message_id===args.p_client_message_id);if(old)return result(old);const type=name==='send_message'?'text':args.p_type;const m={id:'s'+(++seq),client_message_id:args.p_client_message_id,conversation_id:chat,server_seq:seq,sender_id:user.id,type,body:args.p_body||args.p_caption||null,attachment_path:args.p_attachment_path||null,attachment_metadata:name==='send_attachment_message'?{name:args.p_attachment_name,mime_type:args.p_mime_type,size_bytes:args.p_size_bytes}:null,created_at:new Date().toISOString()};messages.push(m);window.__mock.sent.push(m);return result(m)}return result(null)},
 channel(){return{on(){return this},subscribe(cb){setTimeout(()=>cb?.('SUBSCRIBED'),10);return this}}},removeChannel:()=>Promise.resolve(),storage:{from(){return{async upload(path,blob){if(!window.__mock.online)return result(null,{name:'TypeError',message:'network request failed'});window.__mock.objects.set(path,blob);window.__mock.uploadedSize=blob.size;return result({path})},async createSignedUrl(path){if(!window.__mock.objects.has(path))return result(null,{message:'missing'});return result({signedUrl:'data:text/plain,stored'})}}}}};}};'''
 async def one(name,engine):
- browser=await engine.launch();ctx=await browser.new_context(viewport={'width':440,'height':766},has_touch=True,service_workers='block')
+ directory=tempfile.mkdtemp(prefix='pablicus-browser-')
+ ctx=await engine.launch_persistent_context(directory,headless=True,viewport={'width':440,'height':766},has_touch=True,service_workers='block')
  async def route(route):
   path=urlparse(route.request.url).path.lstrip('/') or 'index.html'
   if path=='vendor/supabase.js':return await route.fulfill(status=200,content_type='application/javascript',body=MOCK)
@@ -37,13 +41,13 @@ async def one(name,engine):
   await page.reload();await page.wait_for_selector('.chatMain');await page.locator('.chatMain').click();await page.wait_for_function('__mock.sent.length===1',timeout=35000);await page.wait_for_function('PablicusChat.store.readQueue(false).then(x=>x.length===0)');checks.append('reopen resumes one send')
   await page.evaluate("PablicusChat.addFiles([new File(['document bytes'],'test.txt',{type:'text/plain'})])");await page.wait_for_timeout(700);await page.locator('#send').click();await page.wait_for_function('__mock.sent.length===2');assert await page.evaluate('__mock.uploadedSize')==14;checks.append('original document bytes reach upload adapter')
   await page.locator('#input').fill('строка\n'*25);await page.locator('#expand').click();assert await page.evaluate('PablicusChat.draft.expanded');await page.locator('#input').press('End');await page.locator('#input').press_sequentially(' продолжение');assert await page.evaluate('PablicusChat.draft.expanded');checks.append('fullscreen persists during typing')
-  await page.locator('#expand').click();await page.locator('#chatBack').click();await page.locator('#mainNav [data-page="profile"]').click();await page.locator('.profileCard select').select_option('dark');checks.append('profile and dark theme')
+  await page.locator('#expand').click();await page.locator('#chatBack').click();await page.locator('#mainNav [data-page="profile"]').click();await page.locator('.profileCard select').select_option('dark');await page.wait_for_timeout(150);checks.append('profile and dark theme')
   assert not errors,errors;checks.append('no JS errors')
   await page.screenshot(path=str(E/f'{name}-pass.png'))
-  return {'engine':name,'pass':True,'checks':checks,'scope':'browser + IndexedDB + mocked Supabase; NOT live backend or physical iPhone'}
+  return {'engine':name,'pass':True,'checks':checks,'profile_mode':'persistent ordinary profile','scope':'browser + IndexedDB + mocked Supabase; NOT live backend or physical iPhone'}
  except Exception:
   await page.screenshot(path=str(E/f'{name}-failure.png'));(E/f'{name}-failure.txt').write_text(traceback.format_exc()+'\nJS errors: '+str(errors));return {'engine':name,'pass':False,'checks':checks,'error':traceback.format_exc(),'js_errors':errors}
- finally:await browser.close()
+ finally:await ctx.close();shutil.rmtree(directory,ignore_errors=True)
 async def main():
  async with async_playwright() as p:out=[await one(n,getattr(p,n)) for n in ('chromium','webkit')]
  (E/'integration.json').write_text(json.dumps(out,ensure_ascii=False,indent=2));print(json.dumps(out,ensure_ascii=False));assert all(r['pass'] for r in out)
