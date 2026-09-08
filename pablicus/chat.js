@@ -167,7 +167,7 @@ const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 function audit(){let maxOverlap=0,maxGap=0,maxModel=0,clipped=0,widthErrors=0;const nodes=[...canvas.querySelectorAll('.row')].sort((a,b)=>list.index.get(a.dataset.id)-list.index.get(b.dataset.id));for(let i=0;i<nodes.length;i++){const n=nodes[i],r=n.getBoundingClientRect(),t=n.querySelector('.text,.richMessage'),b=n.querySelector('.bubble'),c=b.getBoundingClientRect(),nr=vp.getBoundingClientRect();maxModel=Math.max(maxModel,Math.abs(r.height-(list.heights.get(n.dataset.id)||0)));if((t&&t.scrollWidth>t.clientWidth+2)||b.scrollWidth>b.clientWidth+2||c.bottom>r.bottom+1||c.top<r.top-1)clipped++;if(r.left<nr.left-1||r.right>nr.right+1||vp.scrollWidth>vp.clientWidth+1)widthErrors++;if(i&&list.index.get(n.dataset.id)===list.index.get(nodes[i-1].dataset.id)+1){const diff=nodes[i-1].getBoundingClientRect().bottom-r.top;maxOverlap=Math.max(maxOverlap,diff);maxGap=Math.max(maxGap,-diff)}}return{rows:nodes.length,max_overlap_px:round(maxOverlap),max_gap_px:round(maxGap),model_error_px:round(maxModel),clipped,width_errors:widthErrors,active:counters.active_lists}}
 function okGeometry(g){return g.max_overlap_px<=1.5&&g.max_gap_px<=1.5&&g.model_error_px<=1.5&&!g.clipped&&!g.width_errors}
 const draft={expanded:false,mode:'message',attachments:[],task:null,composing:false};
-let richComposer=null;
+let richComposer=null,replyTarget=null;
 const assets=new Map(),liveUrls=new Set();
 const cm={inputs:0,layout_updates:0,metadata_reads:0,metadata_active:0,max_metadata_active:0,urls_created:0,urls_revoked:0,local_sends:0,task_events:0,selection_failures:0};
 let aid=0,menuOrigin=null,savedSelection=null,menuWasTyping=false,metadataQueue=Promise.resolve(),generation=0,keyStart=null,lastOrientation=null,composerFrame=0,composerPendingAnchor=null;
@@ -277,7 +277,7 @@ const a={id:'a'+DraftVault.uid(),name:file.name,file,kind,preview:null,state:kin
 metadataQueue=metadataQueue.then(()=>makePreview(a)).catch(fatal);}});restoreSelection(s);draftChanged();return metadataQueue;
 }
 function removeAsset(id){const i=draft.attachments.indexOf(id);if(i<0)return;const s=selection();changeUI(()=>{draft.attachments.splice(i,1);$('tray').querySelector('[data-asset="'+id+'"]')?.remove();const a=assets.get(id);urlRevoke(a?.preview);assets.delete(id)});restoreSelection(s);draftChanged()}
-function clearDraft(){richComposer?.clear();const s=selection();changeUI(()=>{for(const id of draft.attachments){urlRevoke(assets.get(id)?.preview);assets.delete(id)}draft.attachments=[];$('tray').replaceChildren();input.value='';draft.expanded=false;draft.mode='message';draft.task=null;renderTask()});restoreSelection({start:0,end:0,direction:'none',scroll:0});draftChanged()}
+function clearDraft(){replyTarget=null;paintReply();richComposer?.clear();const s=selection();changeUI(()=>{for(const id of draft.attachments){urlRevoke(assets.get(id)?.preview);assets.delete(id)}draft.attachments=[];$('tray').replaceChildren();input.value='';draft.expanded=false;draft.mode='message';draft.task=null;renderTask()});restoreSelection({start:0,end:0,direction:'none',scroll:0});draftChanged()}
 async function demoPhoto(){const c=document.createElement('canvas');c.width=320;c.height=240;const ctx=c.getContext('2d');ctx.fillStyle='#263c52';ctx.fillRect(0,0,320,240);ctx.fillStyle='#acf4c4';ctx.fillRect(45,45,230,150);ctx.fillStyle='#263c52';ctx.font='bold 24px sans-serif';ctx.fillText('LOCAL TEST',78,128);const blob=await canvasBlob(c);return addFiles([new File([blob],'test-photo.jpg',{type:'image/jpeg'})])}
 function renderTask(){const t=draft.task;$('taskBar').hidden=!t;$('taskText').textContent=t?'ДЕМО · '+(t.kind==='assistant'?'Помощник':'Задача')+' · '+t.state:'';$('taskNext').hidden=!t||['Готово','Отменено'].includes(t.state)}
 function startTask(){if(!input.value.trim()&&!draft.attachments.length)return;changeUI(()=>{draft.task={kind:draft.mode==='assistant'?'assistant':'task',state:'В очереди',input_chars:input.value.length,attachments:draft.attachments.length};draft.mode='message';cm.task_events++;renderTask()});status('Демонстрация. Никакой агент не запущен; черновик сохранён.')}
@@ -368,10 +368,10 @@ applyLayout();syncComposer();
 }
 async function fillDraft(value){input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));await frames(3)}
 let vault=null,storeTests=null,storeTesting=false;
-function captureDraft(){if(richComposer)return {...richComposer.capture(),expanded:draft.expanded};return {text:input.value,expanded:draft.expanded,selection:{start:input.selectionStart,end:input.selectionEnd,direction:input.selectionDirection},files:draft.attachments.map(id=>{const a=assets.get(id);if(!a?.file)throw Error('Missing local file');return{id:a.id,name:a.name,type:a.file.type,size:a.file.size,lastModified:a.file.lastModified,kind:a.kind,file:a.file}})}}
+function captureDraft(){if(richComposer)return {...richComposer.capture(),reply_to:replyTarget,expanded:draft.expanded};return {text:input.value,expanded:draft.expanded,selection:{start:input.selectionStart,end:input.selectionEnd,direction:input.selectionDirection},files:draft.attachments.map(id=>{const a=assets.get(id);if(!a?.file)throw Error('Missing local file');return{id:a.id,name:a.name,type:a.file.type,size:a.file.size,lastModified:a.file.lastModified,kind:a.kind,file:a.file}})}}
 function draftChanged(){vault?.changed()}
 async function restoreDraft(s){
- if(richComposer){if(!list)await openChat();await richComposer.restore(s);draft.expanded=!!s.expanded;syncComposer();return;}
+ if(richComposer){if(!list)await openChat();await richComposer.restore(s);replyTarget=s.reply_to||null;paintReply();draft.expanded=!!s.expanded;syncComposer();return;}
  if(!list)await openChat();
  clearDraft();
  input.value=s.text;draft.expanded=!!s.expanded;draft.mode='message';draft.task=null;renderTask();
@@ -417,7 +417,7 @@ async function initializeVault(){
 }
 let queueRows=[],queueLoaded=false,queueError=null,submitBusy=false,queueAudit=null,queueReloadCheck=null,queueTests=null,queueTestsBusy=false,submitToken=null;
 const queueStats={enqueued_here:0,restored_groups:0,retried_here:0,cancelled_here:0,commit_failures:0};
-function queueMessages(){return queueRows.filter(r=>!['sent','cancelled'].includes(r.state)).flatMap(r=>r.messages.map(m=>({id:'out-'+m.id,number:COUNT+m.sequence,mine:true,text:m.text||'',richBlocks:m.kind==='rich'?m.blocks:null,image:false,revision:r.version||1,attachmentId:m.assetId||null,outboxId:r.id,queueState:r.state,queueSequence:m.sequence})))}
+function queueMessages(){return queueRows.filter(r=>!['sent','cancelled'].includes(r.state)).flatMap(r=>r.messages.map(m=>({id:'out-'+m.id,number:COUNT+m.sequence,mine:true,text:m.text||'',reply_to:m.reply_to||null,richBlocks:m.kind==='rich'?m.blocks:null,image:false,revision:r.version||1,attachmentId:m.assetId||null,outboxId:r.id,queueState:r.state,queueSequence:m.sequence})))}
 function decorateQueueRow(node,m){if(!m.outboxId)return node;node.classList.add('outgoing-pending');const meta=node.querySelector('.meta');meta.textContent=({queued:'◷ В очереди',sending:'Отправляется…',error:'Ошибка · открыть очередь'})[m.queueState]||'В очереди';node.dataset.outboxId=m.outboxId;return node;}
 function queueSummary(){const active=queueRows.filter(OutboxVault.active);return{transport:'NOT_CONNECTED',state:queueError?'error':queueLoaded?'ready':'loading',error:queueError?{name:queueError.name,message:queueError.message}:null,groups:active.length,messages:active.reduce((n,x)=>n+x.messages.length,0),files:active.reduce((n,x)=>n+x.files.length,0),cancelled:queueRows.filter(x=>!OutboxVault.active(x)).length,entries:active.map(r=>({client_message_id:r.id,first_sequence:r.first_sequence,messages:r.messages.length,files:r.files.length,state:r.state,retries:r.retries,server_ack:r.server_ack})),...queueStats,submit_in_progress:submitBusy,audit:queueAudit,reload_check:queueReloadCheck,network_observed_online:navigator.onLine,background_delivery:false}}
 function paintQueue(){const q=queueSummary();$('queueBtn').textContent=q.groups?'Очередь · '+q.groups:'Очередь';$('queueError').hidden=!queueError;$('queueError').textContent=queueError?(queueError.committed?'Очередь уже записана. Обнови страницу.':'Не добавлено в очередь: '+queueError.message+' · черновик не очищен'):'';if(!$('queueDialog').open)return;renderQueueDialog();}
@@ -439,7 +439,7 @@ async function localSend(){
   status('Сохраняю исходящее в очередь…');const result=await vault.store.enqueue(submitToken.intent,submitToken.revision);committed=true;
   if(window.gate.crashAfterCommit){location.reload();return}
   const latest=await vault.store.read();vault.pending=null;vault.rev=latest.revision;
-  if(!result.deduplicated){richComposer?.clear();input.value='';draft.attachments=[];$('tray').replaceChildren();draft.expanded=false;draft.mode='message';draft.task=null;renderTask();}
+  if(!result.deduplicated){replyTarget=null;paintReply();richComposer?.clear();input.value='';draft.attachments=[];$('tray').replaceChildren();draft.expanded=false;draft.mode='message';draft.task=null;renderTask();}
   else await restoreDraft(latest);
   vault.lastSignature=DraftVault.signature(captureDraft());vault.restoring=false;vault.set('saved');
   await refreshQueue();syncComposer();list.bottom();queueStats.enqueued_here+=result.deduplicated?0:1;cm.local_sends++;
@@ -466,6 +466,8 @@ window.gate={build:BUILD,open:openChat,run:runStorageTests,report:snapshot,audit
 
 
 function hasComposerContent(){const c=richComposer?.capture();return c?!!c.text.trim()||c.files.length>0:!!input.value.trim()||draft.attachments.length>0;}
+function paintReply(){app.classList.toggle('has-reply',!!replyTarget);window.PablicusHost?.paintReplyDraft(replyTarget);}
+function setReply(ref){if(submitBusy||vault?.restoring){window.PablicusHost?.notify('Дождитесь сохранения сообщения');return;}if(!list||!vault?.ready)throw Error('Сначала откройте разговор');replyTarget=ref?structuredClone(ref):null;paintReply();draftChanged();queueComposer();richComposer?.focus();}
 function ensureRichComposer(){if(richComposer)return;richComposer=PablicusRichComposer.create({
  container:$('editor'),input,
  onChange:()=>{draftChanged();queueComposer()},onGeometry:queueComposer,
@@ -479,7 +481,7 @@ window.PablicusChat={
   closeMenu(false);input.blur();list?.destroy();list=null;
   for(const u of [...liveUrls])urlRevoke(u);assets.clear();queueRows=[];queueLoaded=false;queueError=null;
   input.value='';draft.attachments=[];draft.expanded=false;draft.mode='message';draft.task=null;$('tray').replaceChildren();renderTask();
-  richComposer.clear();sourceMessages=messages;scopeUser=user;scopeChat=chat;
+  richComposer.clear();replyTarget=null;paintReply();sourceMessages=messages;scopeUser=user;scopeChat=chat;
   if(!vaultBound){vaultBound=true;await initializeVault()}
   else{vault=new DraftVault.Controller({capture:captureDraft,restore:restoreDraft,paint:paintVault,lock:lockDraft});vault.store=new PablicusRichStore(user,chat);window.vault=vault;queueRows=await vault.store.readQueue();queueLoaded=true;ingestQueue(queueRows);await vault.init();}
   if(!list)await openChat();if(!vault.ready)throw Error('Локальное хранилище недоступно: черновик не будет потерян молча');
@@ -497,7 +499,7 @@ window.PablicusChat={
  get scope(){return{user:scopeUser,chat:scopeChat}},
  get store(){return vault?.store},get snapshot(){return publicSnapshot()},
  async leave(){await this.flush();input.blur();closeMenu(false);list?.destroy();list=null;},
- get rich(){return richComposer},
+ setReply,get reply(){return replyTarget},get rich(){return richComposer},
  localAssetUrl(id){const a=assets.get(id);if(!a?.file)throw Error('Вложение не найдено на устройстве');return a.richUrl||(a.richUrl=urlCreate(a.file));},
  addFiles,fillDraft,get list(){return list},get draft(){return draft},get assets(){return assets},
 };

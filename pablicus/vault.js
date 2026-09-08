@@ -13,7 +13,7 @@ class DraftStore {
    let request,done=false;
    const finish=(e,db)=>{if(done){db?.close();return}done=true;clearTimeout(timer);if(e)reject(e);else{this.db=db;db.onversionchange=()=>{db.close();this.db=null};db.onclose=()=>{this.db=null};resolve(db)}};
    const timer=setTimeout(()=>finish(err('TimeoutError','Открытие локального хранилища не завершилось')),12000);
-   try{request=indexedDB.open(this.name,2)}catch(e){finish(e);return}
+   try{request=indexedDB.open(this.name,3)}catch(e){finish(e);return}
    request.onupgradeneeded=()=>{const d=request.result;for(const n of ['drafts','assets','proofs','outbox','meta'])if(!d.objectStoreNames.contains(n))d.createObjectStore(n,{keyPath:'id'})};
    request.onerror=()=>finish(request.error);request.onblocked=()=>finish(err('BlockedError','Хранилище занято другой вкладкой'));
    request.onsuccess=()=>finish(null,request.result);
@@ -76,9 +76,9 @@ class DraftStore {
  close(){this.db?.close();this.db=null}
  async destroy(){this.close();return new Promise((resolve,reject)=>{const q=indexedDB.deleteDatabase(this.name);q.onsuccess=()=>resolve();q.onerror=()=>reject(q.error);q.onblocked=()=>reject(err('BlockedError','Тестовая база занята'))})}
 }
-const signature=s=>JSON.stringify({text:s.text,blocks:s.blocks,recording:s.recording,selection:s.selection,expanded:s.expanded,files:s.files.map(({file,...m})=>m)});
+const signature=s=>JSON.stringify({text:s.text,blocks:s.blocks,reply_to:s.reply_to||null,recording:s.recording,selection:s.selection,expanded:s.expanded,files:s.files.map(({file,...m})=>m)});
 async function digest(blob){const bytes=await blob.arrayBuffer();const v=await crypto.subtle.digest('SHA-256',bytes);return Array.from(new Uint8Array(v),n=>n.toString(16).padStart(2,'0')).join('')}
-async function fingerprint(s){return {blocks:s.blocks,recording:s.recording,text:await digest(new Blob([s.text])),selection:s.selection,expanded:s.expanded,files:await Promise.all(s.files.map(async f=>({id:f.id,size:f.size,type:f.type,name:f.name,lastModified:f.lastModified,hash:await digest(f.file)})))}}
+async function fingerprint(s){return {blocks:s.blocks,reply_to:s.reply_to||null,recording:s.recording,text:await digest(new Blob([s.text])),selection:s.selection,expanded:s.expanded,files:await Promise.all(s.files.map(async f=>({id:f.id,size:f.size,type:f.type,name:f.name,lastModified:f.lastModified,hash:await digest(f.file)})))}}
 const empty=()=>({text:'',selection:{start:0,end:0,direction:'none'},expanded:false,files:[]});
 class Controller {
  constructor(adapter){this.a=adapter;this.store=new DraftStore();this.ready=false;this.restoring=true;this.rev=0;this.pending=null;this.flight=null;this.timer=0;this.firstDirty=0;this.lastSignature='';this.state='loading';this.error=null;this.restored=0;this.reloadCheck=null;this.audit=null;this.info={persistent:null,quota:null,usage:null};this.history=[];this.changeCount=0;this.failures=0;this.bootId=uid();}
