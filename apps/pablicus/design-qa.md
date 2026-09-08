@@ -24,3 +24,24 @@ The interactive cloud preview could not start in its restricted runtime;
 visual evidence therefore comes from the explicit isolated application test.
 Physical Safari/PWA recording, system file-picker interruptions, keyboard
 ergonomics and actual two-phone receipt remain device acceptance checks.
+
+
+## Media, replies and side monitor follow-up
+
+The user's follow-up references request Telegram-style compact media albums,
+voice playback in place, a frame-free fullscreen viewer and a YouTube-like mini
+player for messages arriving in another conversation. Implemented within the
+existing Pablicus identity: adjacent visual blocks share an album; text keeps
+its insertion position; an audio block remains an inline player with its own
+reply action. The viewer uses the viewport rather than a framed content card.
+
+The side monitor starts at the bottom-right above the composer, docks to either
+side when dragged, keeps internal text scroll and can collapse. It does not
+focus the editor or reset the message being composed. It hides when there is
+insufficient space or the fullscreen composer needs the viewport.
+
+`tests/message_interactions.py` uses playable WAV/WebM and a mocked authorized
+transport against the full build at 390×844. It checks audio decoding/play/pause,
+only-one voice playback, album geometry, fullscreen bounds, downloads, durable
+reply references and actual Realtime callback delivery into the side monitor.
+The test does not establish physical-device autoplay or keyboard behavior.

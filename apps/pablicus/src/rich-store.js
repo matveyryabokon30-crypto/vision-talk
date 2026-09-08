@@ -1,6 +1,6 @@
 /* One ordered message uses the existing account/conversation draft + outbox DB.
-   Load after transport-store.js. The product vault must open DB version 2 so an
-   older version-1 client cannot overwrite a rich draft after an upgrade. */
+   Load after transport-store.js. The product vault must open DB version 3 so an
+   older client cannot overwrite rich blocks or reply targets after an upgrade. */
 (() => {
  'use strict';
  const {uid,empty}=DraftVault;
@@ -8,8 +8,19 @@
  const active=row=>!['sent','cancelled'].includes(row.state);
  const media=new Set(['image','video','audio','document']);
  const own=(value,key)=>Object.prototype.hasOwnProperty.call(value,key);
- const contentKey=s=>JSON.stringify([s.text,s.blocks??null,s.files.map(({file,...m})=>m)]);
+ const contentKey=s=>JSON.stringify([s.text,s.blocks??null,s.files.map(({file,...m})=>m),normalizeReply(s.reply_to)]);
  const validId=value=>typeof value==='string'&&value.length>0&&value.length<=200;
+
+ function normalizeReply(value){
+  if(value==null)return null;
+  if(typeof value!=='object'||Array.isArray(value)||
+     Object.keys(value).some(key=>key!=='message_id'&&key!=='block_id')||
+     typeof value.message_id!=='string'||!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value.message_id)||
+     (value.block_id!=null&&(typeof value.block_id!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(value.block_id)))){
+   throw error('DataError','Некорректное сообщение для ответа');
+  }
+  return {message_id:value.message_id.toLowerCase(),...(value.block_id==null?{}:{block_id:value.block_id})};
+ }
 
  function validate(snapshot,withBytes){
   if(typeof snapshot?.text!=='string'||!Array.isArray(snapshot.files))throw error('DataError','Некорректный черновик');
@@ -51,6 +62,8 @@
  class RichStore extends PablicusStore {
   async write(snapshot,expected){
    const blocks=validate(snapshot,true),isRich=blocks!==null;
+   const reply=normalizeReply(snapshot.reply_to);
+   if(reply&&!isRich)throw error('DataError','Для ответа нужен составной редактор сообщения');
    const recording=snapshot.recording==null?null:structuredClone(snapshot.recording);
    const fault=this.fault;this.fault=null;let puts=0,deletes=0;
    const result=await this.transaction(['drafts','assets','outbox'],'readwrite',(tx,done,fail)=>{
@@ -68,7 +81,7 @@
       for(const f of snapshot.files)if(!prior.has(f.id)&&!held.has(f.id)){as.put({id:f.id,blob:f.file});puts++}
       for(const id of prior)if(!ids.has(id)&&!held.has(id)){as.delete(id);deletes++}
       const files=snapshot.files.map(({file,...m})=>m);
-      const content={text:snapshot.text,files,...(isRich?{blocks}:{})};
+      const content={text:snapshot.text,files,...(isRich?{blocks}:{}),...(reply?{reply_to:reply}:{})};
       const hasContent=!!snapshot.text.trim()||files.length>0||blocks?.some(b=>b.pending);
       const intent=hasContent?(old?.intent&&contentKey(old)===contentKey(content)?old.intent:uid()):null;
       const record={id:'draft',schema:1,revision:rev+1,savedAt:new Date().toISOString(),...content,
@@ -93,14 +106,15 @@
      const q=ds.get('draft');q.onsuccess=()=>{try{
       const d=q.result;
       if(!d||d.revision!==expectedRevision||d.intent!==intent){fail(error('ConflictError','Изменился черновик. Повторное добавление остановлено.'));return}
-      const blocks=validate(d,false);
+      const blocks=validate(d,false),reply=normalizeReply(d.reply_to);
+      if(reply&&blocks===null){fail(error('DataError','Для ответа нужен составной редактор сообщения'));return}
       if(blocks?.some(b=>b.pending)||d.recording){fail(error('InvalidStateError','Завершите запись голосового сообщения перед отправкой'));return}
       if(!d.text.trim()&&!d.files.length){fail(error('DataError','Пустое сообщение'));return}
       if(fault==='quota'||fault==='denied'){fail(error(fault==='quota'?'QuotaExceededError':'NotAllowedError','ТЕСТ: запись очереди отклонена; черновик сохранён'));return}
       const create=()=>{
        const m=ms.get('sequence');m.onsuccess=()=>{try{
         let n=m.result?.value||0;const messages=[];
-        if(blocks!==null)messages.push({id:intent+':0',sequence:++n,kind:'rich',text:d.text,blocks});
+        if(blocks!==null)messages.push({id:intent+':0',sequence:++n,kind:'rich',text:d.text,blocks,...(reply?{reply_to:reply}:{})});
         else{
          if(d.text.trim())messages.push({id:intent+':0',sequence:++n,kind:'text',text:d.text});
          for(const f of d.files)messages.push({id:intent+':'+messages.length,sequence:++n,kind:f.kind,assetId:f.id});

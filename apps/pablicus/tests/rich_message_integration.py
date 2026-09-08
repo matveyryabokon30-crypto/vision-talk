@@ -204,7 +204,9 @@ async def one(name, engine):
         assert await page.locator('#canvas .richMessage').count() == 1
         assert await page.evaluate('__mock.sent.length') == 1
         assert await page.evaluate('__mock.richCalls') == 1
-        assert await page.locator('#canvas .richMessage > *').evaluate_all('(nodes)=>nodes.map(n=>n.classList.contains("richText")?"text":n.className.match(/richMedia-(image|video|audio|document)/)[1])') == expected
+        # Gallery wrappers compact neighboring photo/video blocks without
+        # changing their semantic order inside the one message body.
+        assert await page.locator('#canvas .richMessage .richText, #canvas .richMessage .richMedia').evaluate_all('(nodes)=>nodes.map(n=>n.classList.contains("richText")?"text":n.className.match(/richMedia-(image|video|audio|document)/)[1])') == expected
         checks.append('one send stores one ordered server row and one bubble; lost ACK retries without duplicate upload or message')
         await page.locator('#toast').wait_for(state='hidden')
         await page.set_viewport_size({'width': 440, 'height': 1100})

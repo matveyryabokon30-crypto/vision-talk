@@ -14,6 +14,9 @@ test('exact rich-message proposal: isolated PostgreSQL authorization and atomici
  const db=new PGlite();
  await db.exec(await readFile(new URL('./schema-fixture.sql',import.meta.url),'utf8'));
  await db.exec(await readFile(new URL('./SCHEMA_PROPOSAL.sql',import.meta.url),'utf8'));
+ const privileges=async()=> (await db.query("select n.nspname,p.proname,p.proowner,p.prosecdef,p.proconfig,p.proacl::text from pg_proc p join pg_namespace n on n.oid=p.pronamespace where p.proname='send_rich_message' order by n.nspname")).rows;
+ const originalPrivileges=await privileges();
+ await db.exec(await readFile(new URL('./REPLY_SCHEMA_PROPOSAL.sql',import.meta.url),'utf8'));
  const as=async(uid,sql,args=[],role='authenticated')=>{
    await db.query("select set_config('request.jwt.claim.sub',$1,false)",[uid||'']);
    await db.exec(`SET ROLE ${role}`);
@@ -99,6 +102,104 @@ test('exact rich-message proposal: isolated PostgreSQL authorization and atomici
    const rows=(await db.query("select proname,prosecdef from pg_proc join pg_namespace n on n.oid=pronamespace where n.nspname='public' and proname in ('send_rich_message','start_saved_conversation')")).rows;
    assert.equal(rows.length,2);assert.ok(rows.every(x=>!x.prosecdef));
    assert.equal((await db.query("select has_function_privilege('anon','public.send_rich_message(uuid,uuid,jsonb)','execute') as allowed")).rows[0].allowed,false);
+ });
+
+ // Replies add references to the same single rich row; quoted media stays in
+ // the original message and is never reuploaded into the replying message.
+ const newClient=(()=>{let n=20;return()=>`30000000-0000-4000-8000-${String(n++).padStart(12,'0')}`})();
+ const replyContent=reply_to=>({...content([text('answer','Ответ')]),reply_to});
+ const target=(await db.query('select * from public.messages where client_message_id=$1',[CLIENT])).rows[0];
+ await t.test('whole-message and individual rich-block replies preserve the exact reference in one row',async()=>{
+   for(const ref of [{message_id:target.id},...rich.blocks.map(block=>({message_id:target.id,block_id:block.id}))]){
+     const before=await state(),value=replyContent(ref),client=newClient();
+     const row=await send(value,{client});
+     assert.equal(row.type,'rich');assert.equal(row.body,'Ответ');assert.equal(row.attachment_path,null);
+     assert.deepEqual(row.attachment_metadata,value);assert.equal(row.server_seq,before.last_seq+1);
+     assert.equal((await state()).messages,before.messages+1);
+     assert.equal((await as(B,'select attachment_metadata from public.messages where id=$1',[row.id])).rows[0].attachment_metadata.reply_to.message_id,target.id);
+   }
+ });
+ await t.test('multiple voice blocks can be addressed separately inside one mixed body',async()=>{
+   const client=newClient();
+   const first={...audio,id:'first_voice',path:`${CHAT}/${A}/${client}/first_voice/voice.m4a`};
+   const second={...audio,id:'second_voice',path:`${CHAT}/${A}/${client}/second_voice/voice.m4a`};
+   await put(first);await put(second);
+   const message=await send(content([text('t','Две записи'),first,second]),{client});
+   const one=await send(replyContent({message_id:message.id,block_id:first.id}),{client:newClient()});
+   const two=await send(replyContent({message_id:message.id,block_id:second.id}),{client:newClient()});
+   assert.equal(one.attachment_metadata.reply_to.block_id,'first_voice');
+   assert.equal(two.attachment_metadata.reply_to.block_id,'second_voice');
+   assert.equal(one.attachment_metadata.reply_to.message_id,two.attachment_metadata.reply_to.message_id);
+ });
+ await t.test('old plain messages accept whole-message replies but never fabricated block references',async()=>{
+   const seq=(await db.query('update public.conversations set last_seq=last_seq+1 where id=$1 returning last_seq',[CHAT])).rows[0].last_seq;
+   const legacy=(await db.query("insert into public.messages(client_message_id,conversation_id,server_seq,sender_id,type,body) values($1,$2,$3,$4,'text','Старое сообщение') returning id",[newClient(),CHAT,seq,B])).rows[0];
+   assert.equal((await send(replyContent({message_id:legacy.id}),{client:newClient()})).attachment_metadata.reply_to.message_id,legacy.id);
+   const before=await state();
+   await assert.rejects(send(replyContent({message_id:legacy.id,block_id:'t'}),{client:newClient()}),/reply block not found/);
+   assert.deepEqual(await state(),before);
+ });
+ await t.test('reply authorization is rechecked for outsider, suspended, anonymous and removed members',async()=>{
+   const value=replyContent({message_id:target.id,block_id:'voice'}),before=await state();
+   for(const uid of [null,C,D])await assert.rejects(send(value,{uid,client:newClient()}),{code:'42501'});
+   await assert.rejects(send(value,{uid:null,client:newClient(),role:'anon'}),{code:'42501'});
+   await db.query('delete from public.conversation_members where conversation_id=$1 and user_id=$2',[CHAT,B]);
+   try{await assert.rejects(send(value,{uid:B,client:newClient()}),{code:'42501'})}
+   finally{await db.query('insert into public.conversation_members(conversation_id,user_id) values($1,$2)',[CHAT,B])}
+   assert.deepEqual(await state(),before);
+ });
+ await t.test('nonexistent, cross-conversation and nonexistent-block targets cannot publish or consume a sequence',async()=>{
+   const other=await send(content([text('t','Другой разговор')]),{chat:OTHER,client:newClient()});
+   const before=await state();
+   // A belongs to BOTH conversations: membership in the target chat is not enough.
+   for(const id of [other.id,'40000000-0000-4000-8000-000000000099']){
+     await assert.rejects(send(replyContent({message_id:id}),{client:newClient()}),/reply target not found in conversation/);
+   }
+   for(const block_id of ['missing','answer']){
+     await assert.rejects(send(replyContent({message_id:target.id,block_id}),{client:newClient()}),/reply block not found/);
+   }
+   assert.deepEqual(await state(),before);
+ });
+ await t.test('strict reference shape rejects forged quotes, invalid UUIDs and malformed block IDs',async()=>{
+   const before=await state();
+   const invalid=[false,1,'target',[],{}, {message_id:null},{message_id:1},{message_id:'invalid'},
+     {message_id:target.id,quote:'Чужая цитата'},{message_id:target.id,sender_id:B},
+     ...[null,false,[],{},'', '../voice','x'.repeat(129)].map(block_id=>({message_id:target.id,block_id}))];
+   for(const reference of invalid)await assert.rejects(send(replyContent(reference),{client:newClient()}),{code:'22023'});
+   const client=newClient(),missing={...audio,path:`${CHAT}/${A}/${client}/voice/missing.m4a`};
+   await assert.rejects(send({...content([missing]),reply_to:{message_id:target.id}},{client}),/uploaded object not found/);
+   assert.deepEqual(await state(),before);
+ });
+ await t.test('reply retry preserves row and sequence; changing only the reference conflicts',async()=>{
+   const client=newClient(),value=replyContent({message_id:target.id,block_id:'voice'});
+   const one=await send(value,{client}),before=await state(),two=await send(value,{client});
+   assert.equal(one.id,two.id);
+   await assert.rejects(send(replyContent({message_id:target.id,block_id:'pic'}),{client}),{code:'23505'});
+   await assert.rejects(send(content([text('answer','Ответ')]),{client}),{code:'23505'});
+   assert.deepEqual(await state(),before);
+ });
+ await t.test('absent and explicit-null references remain compatible while dedup keeps exact content',async()=>{
+   const client=newClient(),value=replyContent(null),one=await send(value,{client});
+   assert.equal(one.attachment_metadata.reply_to,null);
+   assert.equal((await send(value,{client})).id,one.id);
+   await assert.rejects(send(content([text('answer','Ответ')]),{client}),{code:'23505'});
+ });
+ await t.test('acknowledged reply retries still work after the target was removed',async()=>{
+   const disposable=await send(content([text('t','Удаляемый оригинал')]),{client:newClient()});
+   const client=newClient(),value=replyContent({message_id:disposable.id,block_id:'t'});
+   const reply=await send(value,{client});
+   await db.query('delete from public.messages where id=$1',[disposable.id]);
+   const before=await state();
+   assert.equal((await send(value,{client})).id,reply.id);
+   await assert.rejects(send(value,{client:newClient()}),/reply target not found in conversation/);
+   assert.deepEqual(await state(),before);
+ });
+ await t.test('reply replacement preserves original public/private function owner, grants and search path',async()=>{
+   assert.deepEqual(await privileges(),originalPrivileges);
+   const before=await state();
+   await db.exec(await readFile(new URL('./REPLY_SCHEMA_PROPOSAL.sql',import.meta.url),'utf8'));
+   assert.deepEqual(await privileges(),originalPrivileges);
+   assert.deepEqual(await state(),before);
  });
  await db.close();
 });
