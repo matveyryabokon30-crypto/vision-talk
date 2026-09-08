@@ -1,18 +1,21 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090b0e"><title>Pablicus</title><link rel="stylesheet" href="style.css"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="assets/icon-180.png"><link rel="icon" href="assets/icon-32.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Pablicus"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="stylesheet" href="pablicus.css"></head>
 <body><div id="home">
- <header class="homeHeader"><picture class="wordmark"><source srcset="assets/wordmark-dark.png" media="(prefers-color-scheme: dark)"><img id="logo" src="assets/wordmark-light.png" alt="pablicus"></picture><button id="newChat" class="plain" aria-label="Новый разговор">✎</button></header>
+ <header class="homeHeader"><picture class="wordmark"><source srcset="assets/wordmark-dark.png" media="(prefers-color-scheme: dark)"><img id="logo" src="assets/wordmark-light.png" alt="pablicus"></picture><button id="newChat" class="plain" aria-label="Новый разговор" hidden>✎</button></header>
  <div id="connection" role="status" hidden></div>
  <section id="loginPane" class="loginPane"><h1>Вход в Pablicus</h1>
   <section id="passkeyLogin" class="passkey-login" aria-label="Вход с ключом доступа" hidden><button id="passkeySignIn" class="solid" type="button">Войти с ключом доступа</button><p class="muted">Подтвердите вход через Face ID, отпечаток или код устройства.</p><p id="passkeyLoginStatus" role="status" aria-live="polite"></p></section>
   <section id="oauthLogin" class="oauth-login" aria-label="Вход через почтовый аккаунт" hidden><p>Выберите свою почту. Создавать новый пароль не нужно.</p><div id="oauthProviders"></div><p class="muted">Аккаунт подтвердит выбранный сервис.</p></section>
+  <p id="loginError" role="alert"></p>
+  <div id="legacyLogin" hidden>
   <form id="loginForm"><label for="email">Почта<input id="email" name="email" type="email" autocomplete="username" autocapitalize="none" spellcheck="false" required></label><label for="password">Пароль Pablicus<input id="password" name="password" type="password" autocomplete="current-password" minlength="6" required></label><label class="passwordVisibility"><input id="showLoginPassword" type="checkbox">Показать пароль</label><button class="solid" id="loginSubmit">Войти</button></form>
-  <p id="loginError" role="alert"></p><p id="loginNotice" class="muted" role="status"></p>
+  <p id="loginNotice" class="muted" role="status"></p>
   <button class="textBtn recoveryButton" id="recoverPassword" type="button">Забыли пароль?</button>
   <details id="emailLogin" class="emailLogin"><summary>Другой способ: письмо для входа</summary>
   <form id="magicForm"><button class="secondary" id="magicSubmit">Получить письмо для входа</button></form>
   <section id="proofSection" hidden><p>В письме <strong>удерживайте кнопку входа</strong> → «Скопировать ссылку». Не открывайте её. Вернитесь в Pablicus через иконку.</p><form id="proofForm"><label>Код или ссылка из письма<input id="emailProof" type="text" autocomplete="one-time-code" autocapitalize="none" spellcheck="false" placeholder="Вставьте скопированную ссылку" maxlength="4096" required></label><button id="pasteProof" class="textBtn" type="button">Вставить из буфера</button><button id="proofSubmit" class="solid">Войти в приложении</button></form></section>
   </details>
+  </div>
   <p class="muted" id="accessModeNote">Вход для участников с одобренным аккаунтом.</p><button class="textBtn" id="installLogin">Добавить на iPhone</button><p class="muted" id="releaseLabel">0.1.0-rc5</p>
  </section>
  <section id="workspace" hidden><div class="workspaceTop"><h1 id="sectionTitle">Чаты</h1><input id="searchChats" type="search" placeholder="Люди и разговоры" aria-label="Поиск разговоров"><div id="chatFilters"><button data-filter="all" class="selected">Все</button><button data-filter="focus">Фокус</button></div></div><div id="screenContent"></div></section>
