@@ -176,7 +176,13 @@ async def one(engine, engine_name):
             await page.goto(SITE, wait_until="domcontentloaded")
             await expect(page.locator("#passkeySignIn")).to_be_visible()
             await expect(page.locator("#passkeySignIn")).to_be_enabled()
+            for selector in ("#legacyLogin", "#email", "#password", "#showLoginPassword",
+                             "#loginSubmit", "#recoverPassword", "#emailLogin", "#magicSubmit",
+                             "#newChat"):
+                await expect(page.locator(selector)).to_be_hidden()
             await expect(page.locator("#oauthLogin")).to_be_hidden()
+            assert await page.locator("#loginPane button:visible:not(#installLogin)").evaluate_all(
+                "buttons => buttons.map(button => button.id)") == ["passkeySignIn"]
             assert state["authorize"] == [] and state["exchanges"] == 0
             assert await page.evaluate("window.__unexpectedCeremonyCalls") == 0
             return page, state
