@@ -1,7 +1,7 @@
-/* Pablicus 0.1.0-rc3. Existing Auth, server sequence, RPCs, Realtime + polling.
+/* Pablicus 0.1.0-rc4. Existing Auth, server sequence, RPCs, Realtime + polling.
    Feed/tasks/AI/video-processing/push are explicitly not enabled in this release. */
 (() => {'use strict';
- const URL='https://ctcoqgsztdtsazdiwcmd.supabase.co',KEY='sb_publishable_kMGqZAM2vadfXbBr8r5uzw_l9EiBtIw',BUCKET='message-media',VERSION='0.1.0-rc3';
+ const URL='https://ctcoqgsztdtsazdiwcmd.supabase.co',KEY='sb_publishable_kMGqZAM2vadfXbBr8r5uzw_l9EiBtIw',BUCKET='message-media',VERSION='0.1.0-rc4';
  const $=x=>document.getElementById(x),el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n};
  const safeGet=k=>{try{return JSON.parse(localStorage.getItem(k))}catch{return null}},safeSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
  const timeoutFetch=async(u,opts={},ms=25000)=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);const abort=()=>c.abort();opts.signal?.addEventListener('abort',abort,{once:true});try{return await fetch(u,{...opts,signal:c.signal})}finally{clearTimeout(t);opts.signal?.removeEventListener('abort',abort)}};
@@ -26,9 +26,8 @@
   if(!profile.is_approved){profile=null;user=null;throw Error('Аккаунт ещё не одобрен. Свяжитесь с владельцем Pablicus.')}
   safeSet('pablicus:'+uid+':profile',profile);$('loginPane').hidden=true;$('workspace').hidden=false;$('mainNav').hidden=false;dialogs=safeGet(cacheKey())||[];renderHome();await loadDialogs();pump();
  }
-
- $('magicForm').onsubmit=async e=>{e.preventDefault();const button=$('magicSubmit'),email=$('email').value.trim();button.disabled=true;$('loginError').textContent='';$('loginNotice').textContent='';try{const redirect=location.origin+location.pathname;const r=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:false,emailRedirectTo:redirect}});if(r.error)throw r.error;$('loginNotice').textContent='Ссылка отправлена. Откройте письмо на этом iPhone и нажмите «Войти в Pablicus». Пароль не нужен.'}catch(e){$('loginError').textContent=e.message||'Не удалось отправить ссылку'}finally{button.disabled=false}};
  $('loginForm').onsubmit=async e=>{e.preventDefault();$('loginSubmit').disabled=true;$('loginError').textContent='';try{const r=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(r.error)throw r.error;$('password').value='';await authenticate(r.data.session)}catch(e){$('loginError').textContent=e.message}finally{$('loginSubmit').disabled=false}};
+ PablicusLogin.mount({client:sb,projectUrl:URL,authenticate});
  sb.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>{if(session?.user.id===user?.id&&profile)return;authenticate(session).catch(e=>{$('loginError').textContent=e.message})},0)});
  sb.auth.getSession().then(r=>authenticate(r.data.session)).catch(e=>{$('loginError').textContent=e.message});
  async function loadDialogs(){if(!user||refreshing||!navigator.onLine)return;refreshing=true;const uid=user.id;try{let r=await sb.rpc('my_conversations_v3');if(r.error)r=await sb.rpc('my_conversations_v2');if(r.error)throw r.error;if(user?.id!==uid)return;dialogs=r.data||[];safeSet(cacheKey(),dialogs);if(!current&&page==='chats')renderHome()}catch(e){if(!dialogs.length)toast('Не удалось обновить список разговоров')}finally{refreshing=false}}

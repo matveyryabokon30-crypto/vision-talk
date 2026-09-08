@@ -1,1 +1,7 @@
-{"version":"0.1.0-rc4","product":"Pablicus","stage":"RELEASE_CANDIDATE_IPHONE_AUTH_HANDOFF_PENDING_DEVICE_ACCEPTANCE"}
+{
+  "product": "Pablicus",
+  "version": "0.1.0-rc4",
+  "commit": "360b5d66a8dc5df25d0e5379d4a8bd352af2ecbd",
+  "asset_revision": "bfbbdbe9cb0d3121",
+  "stage": "CANDIDATE_PENDING_LIVE_TWO_ACCOUNT_AND_DEVICE_ACCEPTANCE"
+}
