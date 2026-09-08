@@ -11,14 +11,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - name: Read existing Pages configuration without changing it
+      - name: Resolve existing publication and backend without mutations
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p audit
-          gh api --include repos/${{ github.repository }}/pages > audit/pages.txt 2>&1 || true
-          gh api repos/${{ github.repository }}/actions/workflows > audit/workflows.json
-          cat audit/pages.txt
+          gh api repos/${{ github.repository }}/pages > audit/pages.json 2> audit/pages-error.txt || true
+          if jq -e '.html_url' audit/pages.json >/dev/null 2>&1; then
+            jq '{html_url,build_type,source,status,https_enforced,cname}' audit/pages.json
+            URL=$(jq -r '.html_url' audit/pages.json)
+            curl --max-time 20 -fsS -o audit/existing-index.html -w 'EXISTING_SITE_HTTP=%{http_code}\n' "$URL" || true
+          else
+            cat audit/pages-error.txt
+          fi
+          gh api repos/${{ github.repository }}/actions/workflows --jq '[.workflows[]|{id,name,path}]' > audit/workflows.json
+          curl --max-time 20 -sS -H 'apikey: sb_publishable_kMGqZAM2vadfXbBr8r5uzw_l9EiBtIw' 'https://ctcoqgsztdtsazdiwcmd.supabase.co/auth/v1/settings' -o audit/auth-settings.json -w 'SUPABASE_AUTH_HTTP=%{http_code}\n'
       - uses: actions/upload-artifact@v4
         with:
           name: pablicus-pages-configuration
