@@ -89,6 +89,10 @@ async def one(name, engine):
 
     async def route(request):
         parsed = urlparse(request.request.url)
+        # WebKit routes same-origin object URLs through Playwright too. These
+        # are the original in-memory preview Blobs, not external HTTP traffic.
+        if request.request.url.startswith('blob:http://127.0.0.1:8765/'):
+            return await request.continue_()
         if parsed.netloc != '127.0.0.1:8765':
             unexpected.append(request.request.url)
             return await request.abort()
