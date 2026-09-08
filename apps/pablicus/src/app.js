@@ -25,11 +25,13 @@
  $('dialogClose').onclick=()=>$('productDialog').close();$('installLogin').onclick=install;
  function theme(value){safeSet('pablicus:theme',value);document.documentElement.dataset.theme=value;const dark=value==='dark'||value==='system'&&matchMedia('(prefers-color-scheme:dark)').matches;$('logo').src='assets/wordmark-'+(dark?'dark':'light')+'.png';$('logo').parentElement.querySelector('source')?.remove();document.querySelector('meta[name="theme-color"]').content=dark?'#111218':'#FAF9FC';window.PablicusChat?.list?.refreshFont()}
  theme(safeGet('pablicus:theme')||'system');matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>theme(safeGet('pablicus:theme')||'system'));
+ function clearSessionView(){$('productDialog').close();$('dialogContent').replaceChildren();user=null;profile=null;dialogs=[];rows=[];current=null;epoch++;signed.clear();if(channel)sb.removeChannel(channel);channel=null;$('app').hidden=true;$('home').hidden=false;$('workspace').hidden=true;$('mainNav').hidden=true;$('loginPane').hidden=false;}
  async function authenticate(session){
   const attempt=++authVersion;
-  if(!session){$('productDialog').close();$('dialogContent').replaceChildren();user=null;profile=null;dialogs=[];rows=[];current=null;epoch++;signed.clear();if(channel)sb.removeChannel(channel);channel=null;$('app').hidden=true;$('home').hidden=false;$('workspace').hidden=true;$('mainNav').hidden=true;$('loginPane').hidden=false;return}
+  if(!session){clearSessionView();return}
   if(user?.id===session.user.id&&profile)return;
-  user=session.user;const uid=user.id;
+  if(user&&user.id!==session.user.id)clearSessionView();
+  user=session.user;profile=null;const uid=user.id;
   const r=await sb.from('profiles').select('id,username,display_name,avatar_url,is_approved').eq('id',uid).single();
   if(attempt!==authVersion)return;
   if(r.error){const cached=safeGet('pablicus:'+uid+':profile');if(!navigator.onLine&&cached)profile=cached;else{user=null;throw Error('Не удалось проверить доступ к аккаунту. '+r.error.message)}}else profile=r.data;

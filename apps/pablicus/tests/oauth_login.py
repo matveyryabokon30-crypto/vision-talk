@@ -40,10 +40,10 @@ def b64url(value):
     return base64.urlsafe_b64encode(value).decode().rstrip("=")
 
 
-def fixture_session(provider="google"):
+def fixture_session(provider="google", user_id=USER_ID):
     now = int(time.time())
     user = {
-        "id": USER_ID,
+        "id": user_id,
         "email": "oauth-qa@example.invalid",
         "email_confirmed_at": "2026-09-08T00:00:00Z",
         "aud": "authenticated",
@@ -58,7 +58,7 @@ def fixture_session(provider="google"):
     token = ".".join([
         b64url(json.dumps({"alg": "HS256", "typ": "JWT"}).encode()),
         b64url(json.dumps({
-            "sub": USER_ID, "exp": now + 3600, "iat": now,
+            "sub": user_id, "exp": now + 3600, "iat": now,
             "aud": "authenticated", "role": "authenticated",
         }).encode()),
         "MOCK_SIGNATURE_NOT_A_CREDENTIAL",
@@ -78,7 +78,8 @@ async def one(engine, name):
     result = {"engine": name, "pass": False, "checks": checks, "error": "Execution interrupted"}
 
     async def make(*, enabled=True, ready=True, approved=True,
-                   identity_matches=True, deny=False, initial_url=SITE):
+                   identity_matches=True, deny=False, initial_url=SITE,
+                   defer_other_profile=False, other_approved=False):
         directory = tempfile.TemporaryDirectory(prefix="pablicus-oauth-")
         directories.append(directory)
         context = await engine.launch_persistent_context(
@@ -91,6 +92,11 @@ async def one(engine, name):
             "authorize": [], "exchanges": 0, "get_user": 0,
             "profiles": 0, "events": [], "faults": [], "challenge": None,
             "provider": "google",
+            "other_profile_requests": 0,
+            "other_profile_started": asyncio.Event(),
+            "other_profile_repeated": asyncio.Event(),
+            "other_profile_release": asyncio.Event(),
+            "other_profile_finished": asyncio.Event(),
         }
         states.append(state)
 
@@ -186,11 +192,18 @@ async def one(engine, name):
                     state["profiles"] += 1
                     state["events"].append("profile")
                     assert state["get_user"] > 0, "Profile read preceded server identity validation"
-                    assert query.get("id") == ["eq." + USER_ID], query
+                    profile_id = query.get("id", [""])[0].removeprefix("eq.")
+                    assert profile_id == USER_ID or (defer_other_profile and profile_id == OTHER_ID), query
+                    if profile_id == OTHER_ID:
+                        state["other_profile_requests"] += 1
+                        state["other_profile_started"].set()
+                        if state["other_profile_requests"] >= 2:
+                            state["other_profile_repeated"].set()
+                        await state["other_profile_release"].wait()
                     payload = {
-                        "id": USER_ID, "username": "oauth_qa",
-                        "display_name": "OAuth QA", "avatar_url": None,
-                        "is_approved": approved,
+                        "id": profile_id, "username": "oauth_qa" if profile_id == USER_ID else "other_qa",
+                        "display_name": "OAuth QA" if profile_id == USER_ID else "Other QA", "avatar_url": None,
+                        "is_approved": approved if profile_id == USER_ID else other_approved,
                     }
                 elif parsed.path.startswith("/rest/v1/rpc/my_conversations"):
                     payload = []
@@ -200,6 +213,8 @@ async def one(engine, name):
                     status=status, headers=headers, content_type="application/json",
                     body=json.dumps(payload),
                 )
+                if parsed.path == "/rest/v1/profiles" and payload.get("id") == OTHER_ID:
+                    state["other_profile_finished"].set()
             except Exception:
                 state["faults"].append(traceback.format_exc())
                 # A failed fulfill can already consume the route. Never try to
@@ -233,6 +248,39 @@ async def one(engine, name):
         assert not urlparse(page.url).fragment
         assert CODE not in await page.evaluate("Object.values(localStorage).join(' ')")
         assert UNTRUSTED_ERROR not in await page.locator("body").inner_text()
+
+    async def broadcast_auth(page, event, session):
+        # The pinned SDK creates BroadcastChannel(storageKey), posts
+        # {event, session}, and forwards received values to onAuthStateChange.
+        # Model another tab persisting its SDK session and emitting that event.
+        await page.evaluate("""({event, session}) => {
+            const key = 'sb-ctcoqgsztdtsazdiwcmd-auth-token';
+            if (session) localStorage.setItem(key, JSON.stringify(session));
+            else localStorage.removeItem(key);
+            const channel = new BroadcastChannel(key);
+            channel.postMessage({event, session});
+            channel.close();
+        }""", {"event": event, "session": session})
+
+    async def start_identity_change(*, next_approved=False):
+        page, state = await make(defer_other_profile=True, other_approved=next_approved)
+        await page.get_by_role("button", name=PROVIDERS["google"], exact=True).click()
+        await page.wait_for_selector("#workspace", state="visible")
+        await page.locator('#mainNav [data-page="profile"]').click()
+        await page.wait_for_selector("#screenContent .profileCard", state="visible")
+        assert await page.locator("#screenContent .profileCard h2").inner_text() == "OAuth QA"
+        await broadcast_auth(page, "SIGNED_IN", fixture_session(user_id=OTHER_ID))
+        await asyncio.wait_for(state["other_profile_started"].wait(), timeout=12)
+        await page.wait_for_selector("#workspace", state="hidden")
+        assert not await page.locator("#screenContent .profileCard").is_visible()
+        await page.evaluate("""() => {
+            window.oauthRaceExposedWorkspace = false;
+            const workspace = document.getElementById('workspace');
+            new MutationObserver(() => {
+                if (!workspace.hidden) window.oauthRaceExposedWorkspace = true;
+            }).observe(workspace, {attributes: true, attributeFilter: ['hidden']});
+        }""")
+        return page, state
 
     try:
         disabled, state = await make(enabled=False)
@@ -320,6 +368,37 @@ async def one(engine, name):
         ) is None
         checks.append("Server identity mismatch fails closed before any profile or conversation fetch")
 
+        changed, state = await start_identity_change()
+        await broadcast_auth(changed, "SIGNED_IN", fixture_session(user_id=OTHER_ID))
+        await asyncio.wait_for(state["other_profile_repeated"].wait(), timeout=12)
+        state["other_profile_release"].set()
+        await assert_error(changed)
+        assert state["other_profile_requests"] == 2
+        assert not await changed.evaluate("window.oauthRaceExposedWorkspace")
+        assert not await changed.locator("#screenContent .profileCard").is_visible()
+        checks.append(
+            "A to unapproved B with duplicate SDK broadcast hides A immediately and never admits B "
+            "while two delayed profile responses settle"
+        )
+
+        signed_out, state = await start_identity_change(next_approved=True)
+        await broadcast_auth(signed_out, "SIGNED_OUT", None)
+        await signed_out.wait_for_function("PablicusDebug.user == null")
+        await assert_closed(signed_out)
+        async with signed_out.expect_response(
+            lambda response: urlparse(response.url).path == "/rest/v1/profiles"
+            and parse_qs(urlparse(response.url).query).get("id") == ["eq." + OTHER_ID]
+        ) as response_info:
+            state["other_profile_release"].set()
+        await (await response_info.value).finished()
+        # Allow the delayed fetch continuation and queued auth callback to run;
+        # no production operation or arbitrary long wait is involved.
+        await signed_out.wait_for_timeout(100)
+        await assert_closed(signed_out)
+        assert not await signed_out.evaluate("window.oauthRaceExposedWorkspace")
+        assert not await signed_out.locator("#screenContent .profileCard").is_visible()
+        checks.append("SIGNED_OUT invalidates a pending approved B profile response and prevents stale workspace restoration")
+
         faults = [fault for state in states for fault in state["faults"]]
         assert not faults, faults
         assert not errors, errors
@@ -340,13 +419,15 @@ async def one(engine, name):
         }
     finally:
         result["mock_states"] = [{
-            key: state[key] for key in ("authorize", "exchanges", "get_user", "profiles", "events", "faults")
+            key: state[key] for key in ("authorize", "exchanges", "get_user", "profiles", "events", "faults", "other_profile_requests")
         } for state in states]
         result["last_urls"] = [page.url for context in contexts for page in context.pages]
         checkpoint = EVIDENCE / (name + "-oauth-login.json")
         # Preserve the test outcome before cleanup can fail or hang.
         checkpoint.write_text(json.dumps(result, ensure_ascii=False, indent=2))
         cleanup_errors = []
+        for state in states:
+            state["other_profile_release"].set()
         for context in contexts:
             try:
                 await context.close()
