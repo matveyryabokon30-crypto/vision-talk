@@ -44,7 +44,7 @@
   }catch(e){say('');$('error').textContent=failure(e);if(e?.message==='session_changed'){wipe();identity=null;$('passwordSetup').hidden=true;$('needsSession').hidden=false;$('error').textContent='Аккаунт в этом браузере изменился. Проверьте вход заново.'}}
   finally{lock(false)}
  };
- $('requestNonce').onclick=async()=>{if(busy||!identity)return;if(Date.now()<nonceAfter){$('error').textContent='Подождите минуту перед повторным запросом кода.';return}lock(true);$('error').textContent='';try{const r=await client.auth.reauthenticate();if(r.error)throw r.error;nonceAfter=Date.now()+60000;say('Код подтверждения запрошен. Введите код из письма в поле ниже.')}catch(e){$('error').textContent=failure(e))}finally{lock(false)}};
+ $('requestNonce').onclick=async()=>{if(busy||!identity)return;if(Date.now()<nonceAfter){$('error').textContent='Подождите минуту перед повторным запросом кода.';return}lock(true);$('error').textContent='';try{const r=await client.auth.reauthenticate();if(r.error)throw r.error;nonceAfter=Date.now()+60000;say('Код подтверждения запрошен. Введите код из письма в поле ниже.')}catch(e){$('error').textContent=failure(e)}finally{lock(false)}};
  $('showPassword').onchange=()=>{for(const id of ['newPassword','repeatPassword'])$(id).type=$('showPassword').checked?'text':'password'};
  $('recheck').onclick=check;
  client.auth.onAuthStateChange((event,session)=>{if(identity&&(event==='SIGNED_OUT'||session&&session.user.id!==identity.id)){identity=null;wipe();$('passwordSetup').hidden=true;$('needsSession').hidden=false;say('Сессия изменилась. Проверьте вход снова.')}});

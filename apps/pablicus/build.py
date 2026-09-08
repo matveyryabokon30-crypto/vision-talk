@@ -87,4 +87,5 @@ vendor=ROOT/'vendor'/'supabase.js'
 if not vendor.exists():vendor=ROOT.parents[1]/'vendor'/'supabase-2.45.3.js'
 shutil.copy2(vendor,OUT/'vendor'/'supabase.js')
 (OUT/'version.json').write_text(json.dumps({'version':'0.1.0-rc4','product':'Pablicus','stage':'RELEASE_CANDIDATE_NOT_DEVICE_ACCEPTED'}))
+for n in ['access.html','access.js','access.css']:shutil.copy2(ROOT/'src'/n,OUT/n)
 print('Built',len(list(OUT.rglob('*'))),'paths')
