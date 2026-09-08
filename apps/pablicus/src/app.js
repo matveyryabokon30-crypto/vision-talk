@@ -6,14 +6,22 @@
  const safeGet=k=>{try{return JSON.parse(localStorage.getItem(k))}catch{return null}},safeSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
  const timeoutFetch=async(u,opts={},ms=25000)=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);const abort=()=>c.abort();opts.signal?.addEventListener('abort',abort,{once:true});try{return await fetch(u,{...opts,signal:c.signal})}finally{clearTimeout(t);opts.signal?.removeEventListener('abort',abort)}};
  const authStorageKey='sb-ctcoqgsztdtsazdiwcmd-auth-token';
+ const passkeyGuardKey='pablicus:passkey-unvalidated';
+ let passkeyUnvalidated=safeGet(passkeyGuardKey)===true;
+ // The SDK can retain a failed candidate when its logout request is offline.
+ // Never restore that candidate after a refresh or an interrupted browser flow.
+ if(passkeyUnvalidated){try{localStorage.removeItem(authStorageKey)}catch{}}
+ function trustExplicitSignIn(){passkeyUnvalidated=false;safeSet(passkeyGuardKey,false)}
  // The bundled SDK can auto-detect PKCE despite detectSessionInUrl:false.
  // Capture and clean the callback before constructing any Auth client.
  const authCallbackHref=PablicusOAuthSession.capture();
- const sb=supabase.createClient(URL,KEY,{auth:{storageKey:authStorageKey,persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,flowType:'pkce'},global:{fetch:timeoutFetch}});
+ const sb=supabase.createClient(URL,KEY,{auth:{storageKey:authStorageKey,persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,flowType:'pkce',experimental:{passkey:true}},global:{fetch:timeoutFetch}});
  // Recovery requests do not bind an email link to the PWA's PKCE store.
  // This client cannot read or persist the signed-in application's session.
  const recoveryClient=supabase.createClient(URL,KEY,{auth:{storageKey:'pablicus-recovery-request',persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,flowType:'implicit'},global:{fetch:timeoutFetch}});
- let authVersion=0;
+ // A candidate key login cannot write or broadcast the application's session.
+ const passkeySignInClient=supabase.createClient(URL,KEY,{auth:{storageKey:'pablicus-passkey-candidate',persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,flowType:'pkce',experimental:{passkey:true}},global:{fetch:timeoutFetch}});
+ let authVersion=0,passkeys=null,passwordLogin=null,passkeySigninActive=false,passkeyAuthEvent=null;
  let user=null,profile=null,dialogs=[],current=null,rows=[],page='chats',filter='all',opening=false,syncing=false,olderBusy=false,refreshing=false,worker=false,channel=null,epoch=0,toastTimer=0,peersRead=0;
  const signed=new Map(),cacheKey=()=>`pablicus:${user?.id}:dialogs`,focusKey=()=>`pablicus:${user?.id}:focus`;
  function toast(text){$('toast').textContent=text;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,5000)}
@@ -25,21 +33,78 @@
  $('dialogClose').onclick=()=>$('productDialog').close();$('installLogin').onclick=install;
  function theme(value){safeSet('pablicus:theme',value);document.documentElement.dataset.theme=value;const dark=value==='dark'||value==='system'&&matchMedia('(prefers-color-scheme:dark)').matches;$('logo').src='assets/wordmark-'+(dark?'dark':'light')+'.png';$('logo').parentElement.querySelector('source')?.remove();document.querySelector('meta[name="theme-color"]').content=dark?'#111218':'#FAF9FC';window.PablicusChat?.list?.refreshFont()}
  theme(safeGet('pablicus:theme')||'system');matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>theme(safeGet('pablicus:theme')||'system'));
- function clearSessionView(){$('productDialog').close();$('dialogContent').replaceChildren();user=null;profile=null;dialogs=[];rows=[];current=null;epoch++;signed.clear();if(channel)sb.removeChannel(channel);channel=null;$('app').hidden=true;$('home').hidden=false;$('workspace').hidden=true;$('mainNav').hidden=true;$('loginPane').hidden=false;}
- async function authenticate(session){
+ function clearSessionView(){if(passkeys?.snapshot().busy&&passkeys.snapshot().operation!=='signIn')passkeys.cancel();$('productDialog').close();$('dialogContent').replaceChildren();user=null;profile=null;dialogs=[];rows=[];current=null;epoch++;signed.clear();if(channel)sb.removeChannel(channel);channel=null;$('app').hidden=true;$('home').hidden=false;$('workspace').hidden=true;$('mainNav').hidden=true;$('loginPane').hidden=false;}
+ async function authenticate(session,{signal,verifiedPasskey=false}={}){
+  if(signal?.aborted)return;
   const attempt=++authVersion;
   if(!session){clearSessionView();return}
+  if(!verifiedPasskey&&(passkeyUnvalidated||safeGet(passkeyGuardKey)===true)){clearSessionView();return}
   if(user?.id===session.user.id&&profile)return;
   if(user&&user.id!==session.user.id)clearSessionView();
   user=session.user;profile=null;const uid=user.id;
   const r=await sb.from('profiles').select('id,username,display_name,avatar_url,is_approved').eq('id',uid).single();
-  if(attempt!==authVersion)return;
-  if(r.error){const cached=safeGet('pablicus:'+uid+':profile');if(!navigator.onLine&&cached)profile=cached;else{user=null;throw Error('Не удалось проверить доступ к аккаунту. '+r.error.message)}}else profile=r.data;
+  if(attempt!==authVersion||signal?.aborted)return;
+  if(r.error){const cached=safeGet('pablicus:'+uid+':profile');if(!verifiedPasskey&&!navigator.onLine&&cached)profile=cached;else{user=null;throw Error('Не удалось проверить доступ к аккаунту. '+r.error.message)}}else profile=r.data;
   if(!profile.is_approved){profile=null;user=null;throw Error('Аккаунт ещё не одобрен. Свяжитесь с владельцем Pablicus.')}
   safeSet('pablicus:'+uid+':profile',profile);$('loginPane').hidden=true;$('workspace').hidden=false;$('mainNav').hidden=false;dialogs=safeGet(cacheKey())||[];renderHome();await loadDialogs();pump();
  }
- $('loginForm').onsubmit=async e=>{e.preventDefault();$('loginSubmit').disabled=true;$('loginError').textContent='';try{const r=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(r.error)throw r.error;$('password').value='';await authenticate(r.data.session)}catch(e){$('loginError').textContent=e.message}finally{$('loginSubmit').disabled=false}};
+ $('loginForm').onsubmit=async e=>{e.preventDefault();if(passkeySigninActive)return;$('loginSubmit').disabled=true;$('loginError').textContent='';try{const r=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(r.error)throw r.error;$('password').value='';trustExplicitSignIn();await authenticate(r.data.session)}catch(e){$('loginError').textContent=e.message}finally{$('loginSubmit').disabled=false}};
  const authConfig=globalThis.PablicusAuthConfig;
+ const passkeyConfig=authConfig?.passkeys;
+ const passkeyEnabled=passkeyConfig?.enabled===true&&passkeyConfig.origin===location.origin&&passkeyConfig.rpId===location.hostname;
+ function paintPasskeys(state){
+  $('passkeyLogin').hidden=!(state.enabled&&state.supported);
+  $('passkeySignIn').disabled=state.busy;
+  $('passkeyLoginStatus').textContent=state.operation==='signIn'?state.message:'';
+  const button=$('passkeyRegister'),status=$('passkeySettingsStatus'),list=$('passkeyList');
+  if(button)button.disabled=state.busy;
+  if(status)status.textContent=state.operation==='signIn'?'':state.message;
+  if(list){list.replaceChildren();for(const item of state.credentials||[]){list.append(el('li','',item.friendly_name||'Сохранённый ключ доступа'))}}
+ }
+ passkeys=PablicusPasskeys.create({
+  client:sb,signInClient:passkeySignInClient,enabled:passkeyEnabled,
+  getAccount:async({userId})=>{
+   const registering=passkeys?.snapshot().operation!=='signIn';
+   if(registering&&user?.id!==userId)return null;
+   const result=await sb.from('profiles').select('id,is_approved').eq('id',userId).single();
+   if(result.error||result.data?.id!==userId||result.data.is_approved!==true)return null;
+   if(registering&&user?.id!==userId)return null;
+   return{id:userId,approved:true};
+  },
+  authenticate:async(session,{signal}={})=>{
+   if(signal?.aborted)return false;
+   if(passkeyAuthEvent&&passkeyAuthEvent.session?.user.id!==session.user.id)return false;
+   const allowed=await passkeySignInClient.from('profiles').select('id,is_approved').eq('id',session.user.id).single();
+   if(signal?.aborted||allowed.error||allowed.data?.id!==session.user.id||allowed.data.is_approved!==true)return false;
+   const imported=await sb.auth.setSession({access_token:session.access_token,refresh_token:session.refresh_token});
+   if(signal?.aborted||imported.error||imported.data?.session?.user.id!==session.user.id)return false;
+   await authenticate(session,{signal,verifiedPasskey:true});
+   return !signal?.aborted&&(!passkeyAuthEvent||passkeyAuthEvent.session?.user.id===session.user.id)&&user?.id===session.user.id&&profile?.is_approved===true;
+  },
+  onChange:paintPasskeys,
+ });
+ paintPasskeys(passkeys.snapshot());
+ $('passkeySignIn').onclick=async()=>{
+  if(passkeys.snapshot().busy||passwordLogin?.isBusy())return;
+  passkeyUnvalidated=true;safeSet(passkeyGuardKey,true);
+  if(safeGet(passkeyGuardKey)!==true){$('passkeyLoginStatus').textContent='Разрешите сохранение данных сайта, чтобы безопасно войти с ключом доступа.';return}
+  passkeySigninActive=true;passkeyAuthEvent=null;
+  try{await passkeys.signIn()}
+  finally{
+   const pending=passkeyAuthEvent;passkeySigninActive=false;passkeyAuthEvent=null;
+   if(!passkeys.snapshot().validated)await authenticate(null);
+   else{trustExplicitSignIn();if(pending&&pending.session?.user.id!==user?.id)authenticate(pending.session).catch(problem)}
+  }
+ };
+ function passkeySettings(container){
+  const state=passkeys.snapshot();if(!state.enabled||!state.supported)return;
+  const section=el('section','passkey-settings');section.id='passkeySettings';
+  section.append(el('h3','','Ключ доступа'),el('p','muted','Вход через Face ID, отпечаток или код устройства. Сохраните ключ в менеджере паролей, чтобы использовать его и на других устройствах.'));
+  const button=el('button','setting','Создать ключ доступа');button.id='passkeyRegister';button.type='button';button.onclick=()=>passkeys.register();
+  const status=el('p');status.id='passkeySettingsStatus';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
+  const list=el('ul');list.id='passkeyList';section.append(button,status,list);container.append(section);paintPasskeys(state);passkeys.list();
+ }
+
  const oauthReady=authConfig?.publicSignupReady===true&&Object.values(authConfig.providers||{}).some(value=>value===true);
  $('oauthLogin').hidden=!oauthReady;
  if(oauthReady){
@@ -51,11 +116,18 @@
  }
  let authBooting=true,pendingAuthEvent=null;
  sb.auth.onAuthStateChange((_event,session)=>{
+  if(passkeySigninActive){
+   const previous=passkeyAuthEvent?.session?.user.id;
+   passkeyAuthEvent={event:_event,session};
+   if(!session||(previous&&previous!==session.user.id)){++authVersion;passkeys.cancel();clearSessionView()}
+   return;
+  }
   if(authBooting){pendingAuthEvent={session};return}
   const observed=++authVersion;
-  setTimeout(()=>{if(observed!==authVersion)return;if(session?.user.id===user?.id&&profile)return;authenticate(session).catch(e=>{$('loginError').textContent=e.message})},0);
+  setTimeout(()=>{if(observed!==authVersion)return;if(passkeyUnvalidated||safeGet(passkeyGuardKey)===true){clearSessionView();return}if(session?.user.id===user?.id&&profile)return;authenticate(session).catch(e=>{$('loginError').textContent=e.message})},0);
  });
  PablicusOAuthSession.restore({client:sb,storageKey:authStorageKey,href:authCallbackHref}).then(session=>{
+  if(session&&new window.URL(authCallbackHref).searchParams.has('code'))trustExplicitSignIn();
   authBooting=false;const next=pendingAuthEvent?pendingAuthEvent.session:session;pendingAuthEvent=null;return authenticate(next);
  }).catch(e=>{authBooting=false;pendingAuthEvent=null;authenticate(null);$('loginError').textContent=e.message});
  async function loadDialogs(){if(!user||refreshing||!navigator.onLine)return;refreshing=true;const uid=user.id;try{let r=await sb.rpc('my_conversations_v3');if(r.error)r=await sb.rpc('my_conversations_v2');if(r.error)throw r.error;if(user?.id!==uid)return;dialogs=r.data||[];safeSet(cacheKey(),dialogs);if(!current&&page==='chats')renderHome()}catch(e){if(!dialogs.length)toast('Не удалось обновить список разговоров')}finally{refreshing=false}}
@@ -70,7 +142,7 @@
    const p=el('section','profileCard');p.append(el('div','profileAvatar',(profile.display_name||profile.username).slice(0,1).toUpperCase()),el('h2','',profile.display_name||profile.username),el('p','muted','@'+profile.username));
    const label=el('label','','Тема'),select=el('select');for(const[v,t]of [['system','Системная'],['light','Светлая'],['dark','Тёмная']]){const o=el('option','',t);o.value=v;select.append(o)}select.value=safeGet('pablicus:theme')||'system';select.onchange=()=>theme(select.value);label.append(select);p.append(label);
    const installB=el('button','setting','Добавить на главный экран');installB.onclick=install;const logout=el('button','setting danger','Выйти');logout.onclick=async()=>{try{await PablicusChat.flush();if(worker){toast('Дождитесь завершения текущей отправки');return}await sb.auth.signOut();await authenticate(null)}catch(e){problem(e)}};
-   const info=el('p','muted','Pablicus '+VERSION+' · Кандидат выпуска. Черновики и исходящие сохраняются отдельно для каждого аккаунта и разговора.');p.append(installB,logout,info);c.append(p);
+   const info=el('p','muted','Pablicus '+VERSION+' · Кандидат выпуска. Черновики и исходящие сохраняются отдельно для каждого аккаунта и разговора.');p.append(installB,logout,info);c.append(p);passkeySettings(p);
   }else{c.append(el('p','empty',page==='feed'?'Публикации, подписки и сторис появятся в следующем обновлении. Раздел пока не включён.':'Личные и общие задачи появятся в следующем обновлении. Раздел пока не включён.'))}
  }
  document.querySelectorAll('#mainNav button').forEach(b=>b.onclick=()=>{page=b.dataset.page;renderHome()});document.querySelectorAll('#chatFilters button').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll('#chatFilters button').forEach(x=>x.classList.toggle('selected',x===b));renderHome()});$('searchChats').oninput=renderHome;

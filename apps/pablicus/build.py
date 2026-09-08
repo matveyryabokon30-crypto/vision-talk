@@ -1,6 +1,7 @@
 from pathlib import Path
-import re,shutil,json,hashlib
+import re,shutil,json,hashlib,subprocess,sys
 ROOT=Path(__file__).parent
+subprocess.run([sys.executable,str(ROOT/'vendor'/'verify-supabase.py')],check=True)
 BASE=ROOT/'inherited'/'gate015'
 OUT=ROOT/'dist'; OUT.mkdir(exist_ok=True)
 for n in ('vault.js','outbox.js','style.css'):shutil.copy2(BASE/n,OUT/n)
@@ -64,18 +65,18 @@ h=re.sub(r'<header>.*?</header>', '<header><button id="chatBack" aria-label="К 
 h=h.replace('<div id="app">','<div id="app" hidden>')
 h=h.replace('<body>','<body>'+ (ROOT/'src'/'home.html').read_text())
 h=re.sub(r'<script src="[^"]+"[^>]*></script>','',h)
-h=h.replace('</body>', '<script src="vendor/supabase.js"></script><script src="vault.js"></script><script src="outbox.js"></script><script src="transport-store.js"></script><script src="chat.js"></script><script src="auth-local.js"></script><script src="auth-config.js"></script><script src="oauth-login.js"></script><script src="oauth-session.js"></script><script src="app.js"></script></body>')
+h=h.replace('</body>', '<script src="vendor/supabase.js"></script><script src="vault.js"></script><script src="outbox.js"></script><script src="transport-store.js"></script><script src="chat.js"></script><script src="auth-local.js"></script><script src="auth-config.js"></script><script src="oauth-login.js"></script><script src="oauth-session.js"></script><script src="passkey-login.js"></script><script src="app.js"></script></body>')
 h=h.replace('VISION TALK','Pablicus').replace('Vision Talk','Pablicus')
 (OUT/'index.html').write_text(h)
 (OUT/'chat.js').write_text(s)
-for n in ['transport-store.js','app.js','auth-local.js','auth-config.js','oauth-login.js','oauth-session.js','pablicus.css','sw.js','manifest.webmanifest']:shutil.copy2(ROOT/'src'/n,OUT/n)
+for n in ['transport-store.js','app.js','auth-local.js','auth-config.js','oauth-login.js','oauth-session.js','passkey-login.js','pablicus.css','sw.js','manifest.webmanifest']:shutil.copy2(ROOT/'src'/n,OUT/n)
 # Pablicus app transport and authentication adaptations.
 app=(OUT/'app.js').read_text()
 app=app.replace('0.1.0-rc2','0.1.0-rc5')
 # OAuth callback exchange completes explicitly in the requesting browser.
 needle=" sb.auth.onAuthStateChange("
 assert app.count(needle)==1,'Auth event binding changed; review required'
-app=app.replace(needle," PablicusLogin.mount({client:sb,recoveryClient,projectUrl:URL,authenticate});\n"+needle,1)
+app=app.replace(needle," passwordLogin=PablicusLogin.mount({client:sb,recoveryClient,projectUrl:URL,canSignIn:()=>!passkeySigninActive,authenticate:session=>{trustExplicitSignIn();return authenticate(session)}});\n"+needle,1)
 app=app.replace('refreshing=false,worker=false,channel=null', 'refreshing=false,worker=false,pumpPending=false,channel=null',1)
 app=app.replace("async function pump(){if(worker||!user||!navigator.onLine||document.hidden)return;worker=true;", "async function pump(){if(worker){pumpPending=true;return}if(!user||!navigator.onLine||document.hidden)return;worker=true;",1)
 app=app.replace("}catch(e){problem(e)}finally{worker=false}}\n async function showOutbox()", "}catch(e){problem(e)}finally{worker=false;if(pumpPending){pumpPending=false;setTimeout(()=>pump(),0)}}}\n async function showOutbox()",1)
@@ -83,8 +84,8 @@ app=app.replace("}catch(e){problem(e)}finally{worker=false}}\n async function sh
 shutil.copytree(ROOT/'assets',OUT/'assets',dirs_exist_ok=True)
 (OUT/'vendor').mkdir(exist_ok=True)
 vendor=ROOT/'vendor'/'supabase.js'
-if not vendor.exists():vendor=ROOT.parents[1]/'vendor'/'supabase-2.45.3.js'
 shutil.copy2(vendor,OUT/'vendor'/'supabase.js')
+shutil.copy2(ROOT/'vendor'/'LICENSE.supabase',OUT/'vendor'/'LICENSE.supabase')
 (OUT/'version.json').write_text(json.dumps({'version':'0.1.0-rc5','product':'Pablicus','stage':'RELEASE_CANDIDATE_NOT_DEVICE_ACCEPTED'}))
 for n in ['access.html','access.js','access.css']:shutil.copy2(ROOT/'src'/n,OUT/n)
 print('Built',len(list(OUT.rglob('*'))),'paths')

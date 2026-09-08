@@ -1,4 +1,4 @@
-name: Pablicus OAuth candidate checks
+name: Pablicus authentication candidate checks
 on:
   push:
     branches: [pablicus-public-access]
@@ -27,11 +27,15 @@ jobs:
           python apps/pablicus/build.py
           python apps/pablicus/finalize.py
       - name: Verify provider requests and subject adapter
-        run: node --test apps/pablicus/tests/oauth_module.test.js apps/pablicus/public-access/yandex-userinfo/handler.test.mjs
+        run: node --test apps/pablicus/tests/oauth_module.test.js apps/pablicus/tests/passkey_module.test.js apps/pablicus/public-access/yandex-userinfo/handler.test.mjs
       - name: Install test browsers
         id: browsers
         run: python -m playwright install --with-deps chromium webkit
+      - name: Passkey enrollment and sign-in
+        if: ${{ !cancelled() && steps.browsers.outcome == 'success' }}
+        run: python apps/pablicus/tests/passkey_login.py
       - name: OAuth callback and browser isolation
+        if: ${{ !cancelled() && steps.browsers.outcome == 'success' }}
         run: python apps/pablicus/tests/oauth_login.py
       - name: Existing sign-in and password recovery
         if: ${{ !cancelled() && steps.browsers.outcome == 'success' }}

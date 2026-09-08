@@ -5,10 +5,10 @@ const assert=require('node:assert/strict');
 const vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
 // The browser UMD bundle needs its normal worker globals to load in Node.
 // Execute the exact checked-in SDK bytes; no Auth methods are replaced.
-const runtime={module:{exports:{}},exports:{},URL,URLSearchParams,Headers,Request,Response,AbortController,TextEncoder,TextDecoder,crypto:require('node:crypto').webcrypto,console,setTimeout,clearTimeout,setInterval,clearInterval,location:'https://sms-fixture.invalid/vendor/supabase.js',importScripts(){throw Error('Unexpected script import')},fetch(){throw Error('Unexpected real network request')}};
+const runtime={module:{exports:{}},exports:{},WebSocket,URL,URLSearchParams,Headers,Request,Response,AbortController,TextEncoder,TextDecoder,crypto:require('node:crypto').webcrypto,console,setTimeout,clearTimeout,setInterval,clearInterval,location:'https://sms-fixture.invalid/vendor/supabase.js',importScripts(){throw Error('Unexpected script import')},fetch(){throw Error('Unexpected real network request')}};
 runtime.self=runtime;
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../vendor/supabase.js'),'utf8'),runtime,{filename:'supabase-browser-bundle',timeout:3000});
-const {createClient}=runtime.module.exports;
+const {createClient}=runtime.supabase || runtime.module.exports;
 const {create}=require('./sms-login.js');
 const PHONE='+15555550123',OTHER='+15555550456',OTP='246810';
 const ID='11111111-1111-4111-8111-111111111111';

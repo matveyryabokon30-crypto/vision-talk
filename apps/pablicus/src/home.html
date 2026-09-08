@@ -2,6 +2,7 @@
  <header class="homeHeader"><picture class="wordmark"><source srcset="assets/wordmark-dark.png" media="(prefers-color-scheme: dark)"><img id="logo" src="assets/wordmark-light.png" alt="pablicus"></picture><button id="newChat" class="plain" aria-label="Новый разговор">✎</button></header>
  <div id="connection" role="status" hidden></div>
  <section id="loginPane" class="loginPane"><h1>Вход в Pablicus</h1>
+  <section id="passkeyLogin" class="passkey-login" aria-label="Вход с ключом доступа" hidden><button id="passkeySignIn" class="solid" type="button">Войти с ключом доступа</button><p class="muted">Подтвердите вход через Face ID, отпечаток или код устройства.</p><p id="passkeyLoginStatus" role="status" aria-live="polite"></p></section>
   <section id="oauthLogin" class="oauth-login" aria-label="Вход через почтовый аккаунт" hidden><p>Выберите свою почту. Создавать новый пароль не нужно.</p><div id="oauthProviders"></div><p class="muted">Аккаунт подтвердит выбранный сервис.</p></section>
   <form id="loginForm"><label for="email">Почта<input id="email" name="email" type="email" autocomplete="username" autocapitalize="none" spellcheck="false" required></label><label for="password">Пароль Pablicus<input id="password" name="password" type="password" autocomplete="current-password" minlength="6" required></label><label class="passwordVisibility"><input id="showLoginPassword" type="checkbox">Показать пароль</label><button class="solid" id="loginSubmit">Войти</button></form>
   <p id="loginError" role="alert"></p><p id="loginNotice" class="muted" role="status"></p>

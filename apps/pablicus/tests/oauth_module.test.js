@@ -14,7 +14,7 @@ function sdkFixture({flowType = 'pkce'} = {}) {
   const calls = [], values = new Map();
   const runtime = {
     module: {exports: {}}, exports: {}, URL, URLSearchParams, Headers, Request, Response,
-    AbortController, TextEncoder, TextDecoder, crypto: webcrypto, btoa, atob, console,
+    AbortController, TextEncoder, TextDecoder, crypto: webcrypto, btoa, atob, console, WebSocket,
     setTimeout, clearTimeout, setInterval, clearInterval,
     location: PROJECT + '/vendor/supabase.js',
     importScripts() { throw Error('Unexpected import'); },
@@ -28,7 +28,7 @@ function sdkFixture({flowType = 'pkce'} = {}) {
     setItem: (key, value) => { values.set(key, value); },
     removeItem: key => { values.delete(key); }
   };
-  const client = runtime.module.exports.createClient(PROJECT, 'PUBLIC_FIXTURE_KEY', {
+  const client = (runtime.supabase || runtime.module.exports).createClient(PROJECT, 'PUBLIC_FIXTURE_KEY', {
     auth: {flowType, storage, storageKey: 'oauth-test', persistSession: true,
       autoRefreshToken: false, detectSessionInUrl: false}, global: {fetch: runtime.fetch}
   });

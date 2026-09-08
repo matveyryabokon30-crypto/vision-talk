@@ -1,0 +1,2 @@
+# Preserve byte-identical upstream output, including whitespace inside literals.
+supabase.js -whitespace

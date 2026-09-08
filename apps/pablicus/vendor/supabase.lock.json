@@ -1,0 +1,24 @@
+{
+  "package": "@supabase/supabase-js",
+  "version": "2.105.0",
+  "registryMetadataUrl": "https://registry.npmjs.org/@supabase/supabase-js/2.105.0",
+  "tarballUrl": "https://registry.npmjs.org/@supabase/supabase-js/-/supabase-js-2.105.0.tgz",
+  "distIntegrity": "sha512-UUmh6KpStf2RdKpRUmzj0cPl6OXlo1hkRTNHdFHozbiJv2MIxR/7eWGKHAO8OgnaZt0gv52k7NL/bZXgPQbw/A==",
+  "tarballSha256": "ab0c52d34b139b1018d0269676baec157bff52e83a86af065bf930a4dee3d720",
+  "upstreamPath": "package/dist/umd/supabase.js",
+  "output": "supabase.js",
+  "bundleSha256": "24e8c00dc25da420ee741068b60bcdb5f62cb3598d8834058acf37ec6ee1a724",
+  "bundleBytes": 195958,
+  "license": "MIT",
+  "upstreamRelease": "https://github.com/supabase/supabase-js/releases/tag/v2.105.0",
+  "upstreamCommit": "9ac8a92bebd3a550906e5d00a27c7d4888899eab",
+  "directDependencies": {
+    "@supabase/auth-js": "2.105.0",
+    "@supabase/storage-js": "2.105.0",
+    "@supabase/realtime-js": "2.105.0",
+    "@supabase/functions-js": "2.105.0",
+    "@supabase/postgrest-js": "2.105.0"
+  },
+  "packageNodeEngine": ">=20.0.0",
+  "verifiedDate": "2026-09-08"
+}
