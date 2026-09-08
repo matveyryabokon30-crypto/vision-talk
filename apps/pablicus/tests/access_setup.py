@@ -19,7 +19,7 @@ async def one(engine,name):
   c=await engine.launch_persistent_context(t.name,headless=True,viewport={'width':440,'height':766},service_workers='block');contexts.append(c)
   if primed:await c.add_init_script('if(!localStorage.getItem("sb-ctcoqgsztdtsazdiwcmd-auth-token"))localStorage.setItem("sb-ctcoqgsztdtsazdiwcmd-auth-token",'+json.dumps(json.dumps(session))+');')
   async def route(rt):
-   u=urlparse(rt.request.url);headers={'access-control-allow-origin':'*','access-control-allow-headers':'*','access-control-allow-methods':'GET,POST,PUT,OPTIONS'}
+   u=urlparse(rt.request.url);headers={'access-control-allow-origin':'*','access-control-allow-headers':'*','access-control-allow-methods':'GET,POST,PUT,OPTIONS','x-supabase-api-version':'2024-01-01'}
    if u.netloc=='127.0.0.1:8765':
     f=D/(u.path.lstrip('/') or 'index.html')
     return await rt.fulfill(status=200 if f.is_file() else 404,content_type=mimetypes.guess_type(str(f))[0] or 'application/octet-stream',body=f.read_bytes() if f.is_file() else b'not found')
@@ -63,7 +63,7 @@ async def one(engine,name):
   checks.append('Actual SDK getUser and own profile checked before showing form; no automatic change')
   await fill(safari);await safari.locator('#repeatPassword').fill(PASS+'different');await safari.locator('#savePassword').click();assert state['puts']==0
   checks.append('Mismatch rejected before network update')
-  await fill(safari);state['reject']=True;await safari.locator('#savePassword').click();await safari.wait_for_function('document.getElementById("error").textContent.includes("отклонил")');assert not await safari.locator('#done').is_visible();state['reject']=False
+  await fill(safari);state['reject']=True;await safari.locator('#savePassword').click();await safari.locator('#error').filter(has_text='отклонил').wait_for();assert not await safari.locator('#done').is_visible();state['reject']=False
   checks.append('Server rejection never displays success')
   await safari.locator('#savePassword').click();await safari.locator('#done').wait_for();assert state['saved']==PASS
   assert await safari.locator('#newPassword').input_value()=='' and await safari.locator('#repeatPassword').input_value()==''
@@ -79,7 +79,7 @@ async def one(engine,name):
   stale=await make(True);await stale.locator('#passwordSetup').wait_for();await fill(stale);state['switched']=True;before=state['puts'];await stale.locator('#savePassword').click();await stale.locator('#needsSession').wait_for();assert state['puts']==before;state['switched']=False
   checks.append('Changed session identity aborts before update')
   reauth=await make(True);await reauth.locator('#passwordSetup').wait_for();await fill(reauth,'new');state['nonce']=True;await reauth.locator('#savePassword').click();await reauth.locator('#reauth').wait_for();assert not await reauth.locator('#done').is_visible()
-  await reauth.locator('#requestNonce').click();await reauth.wait_for_function('document.getElementById("status").textContent.includes("запрошен")');await reauth.locator('#nonce').fill('123456');await reauth.locator('#savePassword').click();await reauth.locator('#done').wait_for();state['nonce']=False
+  await reauth.locator('#requestNonce').click();await reauth.locator('#status').filter(has_text='запрошен').wait_for();await reauth.locator('#nonce').fill('123456');await reauth.locator('#savePassword').click();await reauth.locator('#done').wait_for();state['nonce']=False
   checks.append('Server-requested reauthentication handled; no policy bypass')
   assert not errors,errors;assert not violations,violations;assert state['forbidden']==0
   await safari.screenshot(path=str(E/(name+'-access-success.png')))
