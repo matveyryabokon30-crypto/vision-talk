@@ -246,6 +246,7 @@ window.first=mount('one','voice.wav');mount('two','voice.wav');mount('measure','
         assert (await first.bounding_box())['height'] <= 70
         snapshot = await first.locator('audio').evaluate('a=>({paused:a.paused,ended:a.ended,time:a.currentTime,duration:a.duration})')
         print(f'VOICE_CORE_STATE engine={name} snapshot={snapshot}', flush=True)
+        assert snapshot['duration'] is not None and abs(snapshot['duration'] - 12) < .05, 'The player must retain the actual 12-second native timeline'
         assert not snapshot['paused'] and not snapshot['ended'], 'Voice should still be playing'
         assert await first.locator('button').count() == 2, 'Only play and reply are offered'
         checks.append('compact 68px voice strip with play and separate reply controls')
