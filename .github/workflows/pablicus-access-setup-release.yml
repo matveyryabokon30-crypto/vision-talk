@@ -1,10 +1,6 @@
 name: Pablicus checked account access setup
 on:
-  push:
-    branches: [pablicus-rc2-release]
-    paths:
-      - .github/workflows/pablicus-access-setup-release.yml
-      - apps/pablicus/tests/access_setup.py
+  workflow_dispatch:
 permissions:
   contents: write
   pages: write

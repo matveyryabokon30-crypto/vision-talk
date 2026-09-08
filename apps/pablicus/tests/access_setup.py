@@ -78,7 +78,7 @@ async def one(engine,name):
   checks.append('Recovery server rejection does not claim an email was sent')
   callback=await make(False,path='access.html#access_token='+JWT+'&refresh_token=MOCK_REFRESH_ONLY&expires_in=3600&token_type=bearer&type=recovery')
   await callback.locator('#passwordSetup').wait_for();assert await callback.locator('#account').inner_text()==EMAIL and state['puts']==0
-  assert '#' not in callback.url
+  assert await callback.evaluate('location.hash')=='' and JWT not in callback.url and 'MOCK_REFRESH_ONLY' not in callback.url
   checks.append('Fresh browser accepts recovery callback through actual SDK, verifies own approved account, clears URL; no automatic password update')
   safari=await make(True);await safari.locator('#passwordSetup').wait_for();assert await safari.locator('#account').inner_text()==EMAIL and state['puts']==0
   checks.append('Actual SDK getUser and own profile checked before showing form; no automatic change')
