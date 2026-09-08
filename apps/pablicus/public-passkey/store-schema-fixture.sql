@@ -1,8 +1,14 @@
 -- DISPOSABLE LOCAL/CI DATABASE ONLY. Minimal observed Supabase schema contract.
 -- This file has no deployment path and is never run against the live project.
-CREATE ROLE anon NOLOGIN;
-CREATE ROLE authenticated NOLOGIN;
-CREATE ROLE service_role NOLOGIN BYPASSRLS;
+-- Roles are cluster-wide; the supplied-hash test uses a second clean database
+-- on this same disposable cluster. It reuses the initial fixture's roles.
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='anon') THEN CREATE ROLE anon NOLOGIN; END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='authenticated') THEN CREATE ROLE authenticated NOLOGIN; END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='service_role') THEN CREATE ROLE service_role NOLOGIN BYPASSRLS; END IF;
+END;
+$$;
 CREATE SCHEMA auth;
 CREATE SCHEMA extensions;
 CREATE EXTENSION pgcrypto WITH SCHEMA extensions;

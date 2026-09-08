@@ -2,14 +2,26 @@
 -- Apply only through the existing project's authorized migration connection.
 -- Integration tests target PostgreSQL 16 and the observed production profile schema.
 -- This installation intentionally fails on schema drift / a repeated installation.
--- The final SELECT emits a newly generated OAuth secret ONCE. Keep that result
--- in the provider's server configuration; never commit it or put it in the app.
+-- Two installation modes (both persist ONLY a SHA256 hash):
+-- 1. SQL Editor default: the final SELECT emits a generated 32-byte OAuth
+--    secret ONCE. Save it in the provider's server configuration, never Git/app.
+-- 2. Migration API: generate a random 32-byte secret securely BEFORE invoking
+--    the migration, retain that secret for the provider, and prepend:
+--      SET pablicus.oauth_client_secret_sha256 = '<lowercase SHA256 hex64>';
+--    Only its digest enters migration history. No plaintext is generated or
+--    returned in this mode; oauth_client_secret in the final SELECT is NULL.
+-- A malformed supplied digest aborts before installing anything. A repeated
+-- installation aborts without changing the existing credential in either mode.
 BEGIN;
 SET LOCAL lock_timeout = '5s';
 SET LOCAL statement_timeout = '30s';
 
 DO $preflight$
+DECLARE supplied_hash text := nullif(current_setting('pablicus.oauth_client_secret_sha256', true), '');
 BEGIN
+  IF supplied_hash IS NOT NULL AND supplied_hash !~ '^[a-f0-9]{64}$' THEN
+    RAISE EXCEPTION 'invalid supplied OAuth client secret hash';
+  END IF;
   IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles'
     AND column_name IN ('activation_pending','passkey_activation_pending')) THEN
     RAISE EXCEPTION 'profile provisioning changed; review migration before installation';
@@ -40,9 +52,9 @@ CREATE TABLE pablicus_passkey_private.subjects (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE TABLE pablicus_passkey_private.credentials (
-  credential_id text PRIMARY KEY CHECK (credential_id ~ '^[A-Za-z0-9_-]{1,2048}$'),
+  credential_id text PRIMARY KEY CHECK (char_length(credential_id) BETWEEN 1 AND 2048 AND credential_id ~ '^[A-Za-z0-9_-]+$'),
   subject_id uuid NOT NULL REFERENCES pablicus_passkey_private.subjects(id) ON DELETE CASCADE,
-  public_key text NOT NULL CHECK (public_key ~ '^[A-Za-z0-9_-]{1,8192}$'),
+  public_key text NOT NULL CHECK (char_length(public_key) BETWEEN 1 AND 8192 AND public_key ~ '^[A-Za-z0-9_-]+$'),
   counter bigint NOT NULL CHECK (counter BETWEEN 0 AND 4294967295),
   transports jsonb NOT NULL DEFAULT '[]'::jsonb CHECK (jsonb_typeof(transports) = 'array' AND jsonb_array_length(transports) <= 8),
   created_at timestamptz NOT NULL DEFAULT now()
@@ -55,7 +67,7 @@ CREATE TABLE pablicus_passkey_private.flows (
   redirect_uri text NOT NULL CHECK (redirect_uri = 'https://ctcoqgsztdtsazdiwcmd.supabase.co/auth/v1/callback'),
   expires_at timestamptz NOT NULL,
   kind text CHECK (kind IN ('registration','authentication')),
-  challenge text CHECK (challenge ~ '^[A-Za-z0-9_-]{16,2048}$'),
+  challenge text CHECK (char_length(challenge) BETWEEN 16 AND 2048 AND challenge ~ '^[A-Za-z0-9_-]+$'),
   native_challenge_id text CHECK (char_length(native_challenge_id) BETWEEN 1 AND 256),
   subject_id uuid,
   display_name text CHECK (char_length(display_name) BETWEEN 1 AND 80),
@@ -385,11 +397,15 @@ EXECUTE FUNCTION pablicus_passkey_private.activate_passkey_identity();
 -- No auth.users/auth.identities writes, no auth credential-table reads, no
 -- conversation/message/storage policy or membership changes occur here.
 -- pgcrypto is already available under extensions on the observed project.
-WITH fresh AS MATERIALIZED (
-  SELECT rtrim(translate(encode(extensions.gen_random_bytes(32),'base64'),'+/','-_'),'=') AS secret
+WITH supplied AS MATERIALIZED (
+  SELECT nullif(current_setting('pablicus.oauth_client_secret_sha256', true), '') AS secret_hash
+), fresh AS MATERIALIZED (
+  SELECT secret_hash, CASE WHEN secret_hash IS NULL THEN
+    rtrim(translate(encode(extensions.gen_random_bytes(32),'base64'),'+/','-_'),'=')
+    ELSE NULL END AS secret FROM supplied
 ), installed AS (
   INSERT INTO pablicus_passkey_private.configuration(singleton,client_id,secret_hash,enabled)
-    SELECT true,'pablicus-web',encode(extensions.digest(secret,'sha256'),'hex'),true FROM fresh
+    SELECT true,'pablicus-web',coalesce(secret_hash,encode(extensions.digest(secret,'sha256'),'hex')),true FROM fresh
     RETURNING client_id
 )
 SELECT installed.client_id AS oauth_client_id, fresh.secret AS oauth_client_secret

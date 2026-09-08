@@ -71,29 +71,36 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
       - name: Install pinned verifier and test dependencies
+        if: ${{ !cancelled() }}
+        id: dependencies
         run: |
           npm ci --ignore-scripts --prefix apps/pablicus/public-passkey
           python -m pip install playwright==1.55.0 pillow==11.3.0
           command -v psql || (sudo apt-get update && sudo apt-get install -y postgresql-client)
       - name: Backend WebAuthn, OAuth and native-bridge contracts
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
         run: node --test apps/pablicus/public-passkey/handler.test.mjs apps/pablicus/public-passkey/native.test.mjs
       - name: PostgreSQL atomicity, provisioning and role isolation
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
         env:
           DATABASE_URL: postgresql://postgres:isolated-fixture-only@127.0.0.1:5432/pablicus_fixture
         run: node --test apps/pablicus/public-passkey/store-postgres.test.mjs
       - name: Build and client Auth contracts
+        if: ${{ !cancelled() }}
+        id: build
         run: |
           python apps/pablicus/build.py
           python apps/pablicus/finalize.py
           node --test apps/pablicus/tests/public_passkey_module.test.js apps/pablicus/tests/passkey_module.test.js apps/pablicus/tests/oauth_module.test.js
       - name: Install browser engines
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
         id: browsers
         run: python -m playwright install --with-deps chromium webkit
       - name: Public first-key page
-        if: ${{ !cancelled() && steps.browsers.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.browsers.outcome == 'success' && steps.build.outcome == 'success' }}
         run: python apps/pablicus/tests/public_passkey_page.py
       - name: Existing native keys, Auth, recovery and chat
-        if: ${{ !cancelled() && steps.browsers.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.browsers.outcome == 'success' && steps.build.outcome == 'success' }}
         run: |
           python apps/pablicus/tests/passkey_login.py
           python apps/pablicus/tests/oauth_login.py

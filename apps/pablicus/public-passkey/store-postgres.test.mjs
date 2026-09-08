@@ -21,9 +21,9 @@ const blockedUser = '00000000-0000-4000-8000-000000000012';
 const bannedUser = '00000000-0000-4000-8000-000000000013';
 const conversation = '00000000-0000-4000-8000-000000000099';
 
-function sql(statement) {
+function sql(statement, targetUrl = databaseUrl) {
   return new Promise((resolve, reject) => {
-    const child = spawn('psql', ['--no-psqlrc','--set','ON_ERROR_STOP=1','--tuples-only','--no-align','--quiet',databaseUrl], { stdio: ['pipe','pipe','pipe'] });
+    const child = spawn('psql', ['--no-psqlrc','--set','ON_ERROR_STOP=1','--tuples-only','--no-align','--quiet',targetUrl], { stdio: ['pipe','pipe','pipe'] });
     let stdout = '', stderr = '';
     child.stdout.setEncoding('utf8'); child.stderr.setEncoding('utf8');
     child.stdout.on('data', chunk => { stdout += chunk; });
@@ -41,11 +41,24 @@ const call = async (operation, payload = {}) => {
   const output = await asRole('service_role', `SELECT public.pablicus_passkey_store(${quote(operation)},${quote(JSON.stringify(payload))}::jsonb);`);
   return output ? JSON.parse(output) : null;
 };
-const store = createStore({ client: { async rpc(name, args) {
-  assert.equal(name,'pablicus_passkey_store');
-  try { return { data: await call(args.operation,args.payload), error: null }; }
-  catch (error) { return { data: null, error: { message: error.message } }; }
-} } });
+// Only this disposable-fixture wrapper attaches SQL diagnostics. Production
+// createStore keeps its safe error unchanged. Each invocation has its own
+// cause variable so concurrent calls cannot leak another operation's error.
+const storeMethods = ['config','createFlow','readFlow','setChallenge','claimChallenge',
+  'findCredential','completeRegistration','completeAuthentication','exchangeCode','userinfo','rateLimit'];
+const store = Object.fromEntries(storeMethods.map(operation => [operation, async payload => {
+  let databaseCause;
+  const adapter = createStore({ client: { async rpc(name, args) {
+    assert.equal(name,'pablicus_passkey_store');
+    try { return { data: await call(args.operation,args.payload), error: null }; }
+    catch (error) { databaseCause = error; return { data: null, error: { message: error.message } }; }
+  } } });
+  try { return await adapter[operation](payload); }
+  catch (error) {
+    if (databaseCause) Object.defineProperty(error,'cause',{value:databaseCause,enumerable:false});
+    throw error;
+  }
+}]));
 async function flow() {
   const value = { id: randomUUID(), secretHash: hash(random()), state: 'preserved-state', codeChallenge: random(), redirectUri: callback, expiresAt: future(240) };
   assert.equal(await store.createFlow(value), true);
@@ -121,6 +134,31 @@ test('flow secret, exact redirect, TTL and completion checks are enforced in Pos
   await sql(`UPDATE pablicus_passkey_private.flows SET expires_at=now()-interval '1 second' WHERE id=${quote(value.id)};`);
   assert.equal(await store.readFlow({id:value.id,secretHash:value.secretHash}),null);
   assert.equal(await store.setChallenge({id:value.id,secretHash:value.secretHash,kind:'registration',challenge:random(),subjectId:randomUUID(),name:'Expired',expiresAt:future(50)}),false);
+});
+
+test('PostgreSQL byte-string constraints accept boundaries and reject invalid lengths or characters',async () => {
+  const subject = randomUUID();
+  const insertCredential = (credentialId, publicKey) => sql(`BEGIN;
+    INSERT INTO pablicus_passkey_private.subjects(id,display_name) VALUES (${quote(subject)},'Boundary fixture');
+    INSERT INTO pablicus_passkey_private.credentials(credential_id,subject_id,public_key,counter)
+      VALUES (${quote(credentialId)},${quote(subject)},${quote(publicKey)},0);
+    ROLLBACK;`);
+  await insertCredential('A','A');
+  await insertCredential('A'.repeat(2048),'A'.repeat(8192));
+  await insertCredential('aZ09_-','aZ09_-');
+  for (const invalid of ['', 'A'.repeat(2049), 'invalid=', 'invalid+', 'invalid/', 'invalid space', 'ключ']) {
+    await assert.rejects(insertCredential(invalid,'A'),/credentials_credential_id_check/);
+  }
+  for (const invalid of ['', 'A'.repeat(8193), 'invalid=', 'invalid+', 'invalid/', 'invalid space', 'ключ']) {
+    await assert.rejects(insertCredential('A',invalid),/credentials_public_key_check/);
+  }
+  const value = await flow();
+  const entry = await challenge(value,'registration',{challenge:'A'.repeat(16)});
+  assert.equal(await store.setChallenge({...entry,challenge:'A'.repeat(2048)}),true);
+  assert.equal(await store.setChallenge({...entry,challenge:'aZ09_-'.repeat(3)}),true);
+  for (const invalid of ['', 'A'.repeat(15), 'A'.repeat(2049), 'A'.repeat(16)+'=', 'A'.repeat(16)+'+', 'A'.repeat(16)+'/', 'A'.repeat(16)+' ', 'ключ'.repeat(4)]) {
+    await assert.rejects(call('setChallenge',{...entry,challenge:invalid}),/flows_challenge_check/);
+  }
 });
 
 test('challenge replacement before claiming, concurrent claim once, and no replacement after claim',async () => {
@@ -268,6 +306,28 @@ test('new third account approval does not grant historical membership, and revoc
   assert.equal(await asRole('authenticated',`SELECT count(*) FROM public.messages;`,knownUser),'0');
   await sql(`UPDATE public.profiles SET is_approved=true WHERE id=${quote(knownUser)};`);
   assert.equal(await sql("SELECT pg_get_functiondef('public.is_member(uuid,uuid)'::regprocedure);"),initialMembershipDefinition);
+});
+
+test('migration API supplied-hash mode installs without generating or returning plaintext',async () => {
+  const fixtureDatabase = `pablicus_hash_${randomBytes(6).toString('hex')}`;
+  const targetUrl = new URL(databaseUrl); targetUrl.pathname = `/${fixtureDatabase}`;
+  const secret = random(), secretHash = hash(secret);
+  const proposal = await readFile(new URL('./SCHEMA_PROPOSAL.sql',import.meta.url),'utf8');
+  await sql(`CREATE DATABASE ${fixtureDatabase};`);
+  try {
+    await sql(await readFile(new URL('./store-schema-fixture.sql',import.meta.url),'utf8'),targetUrl.href);
+    await assert.rejects(sql(`SET pablicus.oauth_client_secret_sha256='not-a-digest';${proposal}`,targetUrl.href),/invalid supplied OAuth client secret hash/);
+    assert.equal(await sql("SELECT count(*) FROM pg_namespace WHERE nspname='pablicus_passkey_private';",targetUrl.href),'0','invalid digest leaves no partial schema');
+    const installation = await sql(`SET pablicus.oauth_client_secret_sha256=${quote(secretHash)};${proposal}`,targetUrl.href);
+    assert.equal(installation,'pablicus-web|','supplied-hash mode returns SQL NULL for plaintext secret');
+    const config = JSON.parse(await sql("SET ROLE service_role; SELECT public.pablicus_passkey_store('config','{}');",targetUrl.href));
+    assert.deepEqual(config,{clientId:'pablicus-web',secretHash,enabled:true});
+    await assert.rejects(sql(`SET pablicus.oauth_client_secret_sha256=${quote(hash(random()))};${proposal}`,targetUrl.href),/profile provisioning changed/);
+    const unchanged = JSON.parse(await sql("SET ROLE service_role; SELECT public.pablicus_passkey_store('config','{}');",targetUrl.href));
+    assert.deepEqual(unchanged,config,'reinstallation does not rotate supplied hash');
+  } finally {
+    await sql(`DROP DATABASE ${fixtureDatabase};`);
+  }
 });
 
 test('installation cannot silently rotate the working secret and adapter never exposes SQL diagnostics',async () => {
