@@ -13,7 +13,7 @@ now=int(time.time());JWT=b64({'alg':'HS256','typ':'JWT'})+'.'+b64({'sub':UID,'ex
 user={'id':UID,'email':EMAIL,'aud':'authenticated','role':'authenticated','app_metadata':{'provider':'email','providers':['email']},'user_metadata':{},'created_at':'2026-09-01T00:00:00Z'}
 session={'access_token':JWT,'refresh_token':'MOCK_REFRESH_ONLY','expires_in':3600,'expires_at':now+3600,'token_type':'bearer','user':user}
 async def one(engine,name):
- state={'puts':0,'saved':None,'reject':False,'nonce':False,'approved':True,'switched':False,'logins':0,'forbidden':0};checks=[];errors=[];contexts=[];dirs=[]
+ state={'puts':0,'saved':None,'reject':False,'nonce':False,'approved':True,'switched':False,'logins':0,'forbidden':0};checks=[];errors=[];violations=[];contexts=[];dirs=[]
  async def make(primed=False,path='access.html'):
   t=tempfile.TemporaryDirectory(prefix='pablicus-access-');dirs.append(t)
   c=await engine.launch_persistent_context(t.name,headless=True,viewport={'width':440,'height':766},service_workers='block');contexts.append(c)
@@ -29,9 +29,14 @@ async def one(engine,name):
    if u.path=='/auth/v1/user' and rt.request.method=='GET':payload={**user,**({'id':'22222222-2222-4222-8222-222222222222'} if state['switched'] else {})}
    elif u.path=='/auth/v1/user' and rt.request.method=='PUT':
     state['puts']+=1
-    assert rt.request.headers.get('authorization')=='Bearer '+JWT
-    assert set(body).issubset({'password','nonce','current_password','data'})
-    if state['reject']:status=422;payload={'code':'weak_password','msg':'Password should be stronger'}
+    # Inspected bundled gotrue-js 2.65.0 _updateUser adds these two null
+    # PKCE properties to every update. Identity/data mutation remains forbidden.
+    allowed={'password','nonce','current_password','code_challenge','code_challenge_method'}
+    valid=(rt.request.headers.get('authorization')=='Bearer '+JWT and isinstance(body,dict) and set(body).issubset(allowed) and isinstance(body.get('password'),str) and body.get('code_challenge') is None and body.get('code_challenge_method') is None)
+    if not valid:
+     violations.append({'path':'/auth/v1/user','field_names':sorted(body) if isinstance(body,dict) else []})
+     status=400;payload={'code':'bad_json','msg':'Unexpected password-update request shape'}
+    elif state['reject']:status=422;payload={'code':'weak_password','msg':'Password should be stronger'}
     elif state['nonce'] and body.get('nonce')!='123456':status=403;payload={'code':'reauthentication_needed','msg':'Reauthentication required'}
     else:state['saved']=body['password'];payload=user
    elif u.path=='/auth/v1/reauthenticate':payload={}
@@ -76,15 +81,20 @@ async def one(engine,name):
   reauth=await make(True);await reauth.locator('#passwordSetup').wait_for();await fill(reauth,'new');state['nonce']=True;await reauth.locator('#savePassword').click();await reauth.locator('#reauth').wait_for();assert not await reauth.locator('#done').is_visible()
   await reauth.locator('#requestNonce').click();await reauth.wait_for_function('document.getElementById("status").textContent.includes("запрошен")');await reauth.locator('#nonce').fill('123456');await reauth.locator('#savePassword').click();await reauth.locator('#done').wait_for();state['nonce']=False
   checks.append('Server-requested reauthentication handled; no policy bypass')
-  assert not errors,errors;assert state['forbidden']==0
+  assert not errors,errors;assert not violations,violations;assert state['forbidden']==0
   await safari.screenshot(path=str(E/(name+'-access-success.png')))
   checks.append('No signup/admin/OTP recovery endpoint called; no JavaScript errors')
   return {'engine':name,'pass':True,'checks':checks,'scope':'REAL_SDK_MOCK_AUTH_HTTP_EXISTING_SESSION_SELF_SERVICE_AND_SEPARATE_APP_LOGIN','physical_iPhone':False,'real_user_password_changed':False}
- except Exception:return {'engine':name,'pass':False,'checks':checks,'error':traceback.format_exc(),'js_errors':errors}
+ except Exception:return {'engine':name,'pass':False,'checks':checks,'error':traceback.format_exc(),'js_errors':errors,'request_shape_violations':violations}
  finally:
-  for c in contexts:await c.close()
+  for c in contexts:
+   try:await c.close()
+   except Exception:pass
   for t in dirs:t.cleanup()
 async def main():
- async with async_playwright() as p:out=[await one(getattr(p,n),n) for n in ['chromium','webkit']]
- (E/'access-setup.json').write_text(json.dumps(out,ensure_ascii=False,indent=2));print(json.dumps(out,ensure_ascii=False));assert all(x['pass'] for x in out)
+ out=[]
+ async with async_playwright() as p:
+  for n in ['chromium','webkit']:
+   out.append(await one(getattr(p,n),n));(E/'access-setup.json').write_text(json.dumps(out,ensure_ascii=False,indent=2))
+ print(json.dumps(out,ensure_ascii=False));assert all(x['pass'] for x in out)
 asyncio.run(main())
