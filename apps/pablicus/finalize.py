@@ -1,0 +1,27 @@
+from pathlib import Path
+from html.parser import HTMLParser
+from urllib.parse import urlsplit
+import hashlib,json,subprocess
+R=Path(__file__).resolve().parent;D=R/'dist'
+class References(HTMLParser):
+ def __init__(self):super().__init__();self.refs=[]
+ def handle_starttag(self,tag,attrs):
+  a=dict(attrs)
+  if tag in ('script','link'):self.refs.append(a.get('src') or a.get('href'))
+p=References();p.feed((D/'index.html').read_text())
+for ref in filter(None,p.refs):
+ if not urlsplit(ref).scheme:assert (D/ref).is_file(),f'Missing required asset: {ref}'
+for n in (180,192,512):
+ from PIL import Image
+ assert Image.open(D/f'assets/icon-{n}.png').size==(n,n)
+manifest=json.loads((D/'manifest.webmanifest').read_text())
+assert manifest['id']=='./' and manifest['scope']=='./' and manifest['display']=='standalone'
+sha=hashlib.sha256()
+for f in sorted(D.rglob('*')):
+ if f.is_file() and f.name not in ('sw.js','version.json'):sha.update(str(f.relative_to(D)).encode()+f.read_bytes())
+rev=sha.hexdigest()[:16]
+sw=(D/'sw.js').read_text().replace('__ASSET_REVISION__',rev);(D/'sw.js').write_text(sw)
+try:commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip()
+except subprocess.CalledProcessError:commit='local-uncommitted'
+(D/'version.json').write_text(json.dumps({'product':'Pablicus','version':'0.1.0-rc2','commit':commit,'asset_revision':rev,'stage':'CANDIDATE_PENDING_LIVE_TWO_ACCOUNT_AND_DEVICE_ACCEPTANCE'},indent=2))
+print('PWA artifact complete; asset revision',rev,'commit',commit)
