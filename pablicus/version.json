@@ -1,7 +1,7 @@
 {
   "product": "Pablicus",
   "version": "0.1.0-rc5",
-  "commit": "e702441838ca83c78eac9db8a8409d06ca66ac60",
-  "asset_revision": "ca9607d309484896",
+  "commit": "bfdb99286d318e7cc3fbaab0cbd5a730fb9098ec",
+  "asset_revision": "ba7f3b927a955f28",
   "stage": "CANDIDATE_PENDING_LIVE_TWO_ACCOUNT_AND_DEVICE_ACCEPTANCE"
 }

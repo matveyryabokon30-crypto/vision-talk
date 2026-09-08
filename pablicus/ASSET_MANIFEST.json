@@ -10,7 +10,7 @@
   "assets/icon-512.png": "7be39d062cafb3cf3de41814391834459d6a2da2d383dfcd63972fcb8e355581",
   "assets/wordmark-dark.png": "fd04f676a7cbfecb2b8aef1b3da0aeb05715e48184a302f9d93000381ea5a212",
   "assets/wordmark-light.png": "b2b4356783dcf2f67c39673d0905ae96cc8f4f7db1e022aea4d3b51724276368",
-  "auth-config.js": "172993b09aaa51b57979be8db3812a26d8b4ba3ae3a0d224ec8d5a9cca8653a6",
+  "auth-config.js": "65439fbbfd11d32ecc2151d78c2081dd4eaa105566a1d66d4fae9af65767e0f2",
   "auth-local.js": "bb9ce69cdc097856b1b0ce6f9466b4abb34de63942ffcabfa953aa0dd811df97",
   "chat.js": "1828243ae2905b7cdbd2d213a4db2b9d60815ed3cf571429eeb4b1be67c01ca1",
   "index.html": "d3dae5e47c733a7aebaf5030ef560216a29bfa44f634ca4885b9628803370bb1",
@@ -25,10 +25,10 @@
   "passkey-start.js": "9bef2f987154d6258ff2e76c5be996d444a1e22dc8f0597d4a30143749a10d3a",
   "public-passkey.js": "5bd310e0433e7b34bfecf726e332f15499ba4a8d478d3ddd88885d9bc42af238",
   "style.css": "7b6e0d71818e1f29de4a809bfee4de0870ead07d7bb9760d949a7340c9bf366c",
-  "sw.js": "458d5bf18c39f95c42970433ee97e50e2cd07b2e686adeba7c2b5a8678552487",
+  "sw.js": "8e4922d3caf059e5e581e3df0b4d99033c436be479b7167f76fc17974c23beab",
   "transport-store.js": "b6bea9398fe01a30b30771ce7d9c160bbb59856cc9f5f733e2e43f9369e938a6",
   "vault.js": "b4b41f7006175ad2d751ada7d31787790a2115f9ecd50d7ba23a252e944ec58b",
   "vendor/LICENSE.supabase": "334dd6820e2eaeab2064e7c59001b810566728a28a41a7c1dbf69bbee17d0936",
   "vendor/supabase.js": "24e8c00dc25da420ee741068b60bcdb5f62cb3598d8834058acf37ec6ee1a724",
-  "version.json": "6511b62c53cb49c13cca045786f2402cde7a5c6556f4e66997f39d85afac3762"
+  "version.json": "0be118a94f42703f85c7314025a3329eb9cf55ff93417fbd7fc73293777dcab3"
 }
