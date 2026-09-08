@@ -1,0 +1,39 @@
+name: Inspect Pablicus RC2 payload
+on:
+  push:
+    branches: [pablicus-rc2-release]
+    paths: [.github/workflows/pablicus-rc2-recover.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve prior uploaded binary without executing it
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p evidence/payload
+          gh api repos/${{ github.repository }}/git/blobs/efbbfbc73629705b95a79f24c20af97299719715 > /tmp/blob.json
+          python - <<'PY'
+          import json,base64,hashlib,zipfile,gzip,zlib,io
+          from pathlib import Path
+          j=json.loads(Path('/tmp/blob.json').read_text())
+          b=base64.b64decode(j['content']);p=Path('evidence/payload')
+          (p/'payload.bin').write_bytes(b)
+          result={'size':len(b),'sha256':hashlib.sha256(b).hexdigest(),'magic':b[:20].hex()}
+          if zipfile.is_zipfile(io.BytesIO(b)):
+            result['files']=[{'path':x.filename,'size':x.file_size} for x in zipfile.ZipFile(io.BytesIO(b)).infolist()]
+          for name,fn in [('gzip',gzip.decompress),('zlib',zlib.decompress)]:
+            try:
+              t=fn(b);result[name]={'size':len(t),'prefix':t[:100].decode('utf-8','replace')};(p/(name+'.bin')).write_bytes(t)
+            except Exception:pass
+          (p/'inspection.json').write_text(json.dumps(result,indent=2));print(json.dumps(result,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pablicus-rc2-payload-inspection
+          path: evidence/payload/
+          retention-days: 14
