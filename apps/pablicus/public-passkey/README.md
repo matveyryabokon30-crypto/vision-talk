@@ -18,7 +18,7 @@ The provider's new subject UUID is distinct from the Supabase account UUID. A ve
 Project: `ctcoqgsztdtsazdiwcmd` (Vision talk). Do not create a replacement project.
 
 1. Require a green **Pablicus public first-key candidate** run for this exact source revision. This checks actual signatures, PostgreSQL roles and concurrent operations, Chromium virtual credentials and existing Auth/chat regressions.
-2. Apply `SCHEMA_PROPOSAL.sql` once through an authorized migration connection or the owner's SQL Editor. Its final result contains `oauth_client_id` and a randomly generated `oauth_client_secret`. Put that secret only in the server provider configuration in step 4; never commit it, put it in frontend code, or print it in CI logs. Installation is transactional and deliberately refuses conflicting provisioning/schema or an existing installation.
+2. Apply `SCHEMA_PROPOSAL.sql` once through an authorized migration connection or the owner's SQL Editor. In the default SQL Editor mode its final result contains `oauth_client_id` and a randomly generated `oauth_client_secret`. For a migration API that cannot return SELECT results, generate and retain a secure random 32-byte secret first, and prepend `SET pablicus.oauth_client_secret_sha256 = '<lowercase SHA256 hex64>';` with only its digest. This mode generates/returns no plaintext. Put the corresponding secret only in the server provider configuration in step 4; never commit it, put it in frontend code, or print it in CI logs. Installation is transactional and deliberately refuses conflicting provisioning/schema or an existing installation. `BASELINE.md` preserves the observed original provisioning function.
 3. Deploy the `pablicus-passkey` Edge Function with `index.ts`, `handler.mjs`, `webauthn.mjs`, `native.mjs`, `store.mjs` and the committed Deno dependency configuration/lock, if present. `verify_jwt=false` is intentional: this is the pre-login provider. Its browser routes authenticate a short-lived flow bearer and exact Origin, token exchange authenticates the confidential OAuth client and PKCE, and UserInfo authenticates a short-lived opaque bearer. Public `/authorize` is rate-limited. Runtime uses the normal project `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY`; no new admin key is embedded in the function.
 4. In [Auth Providers](https://supabase.com/dashboard/project/ctcoqgsztdtsazdiwcmd/auth/providers), create a **Manual configuration / OAuth2** provider with these exact values:
 
@@ -27,7 +27,7 @@ Project: `ctcoqgsztdtsazdiwcmd` (Vision talk). Do not create a replacement proje
 | Identifier | `custom:pablicus-passkey` |
 | Name | `Pablicus` |
 | Client ID | `pablicus-web` |
-| Client Secret | One-time result from step 2 |
+| Client Secret | Secret generated or retained in step 2 |
 | Authorization URL | `https://ctcoqgsztdtsazdiwcmd.supabase.co/functions/v1/pablicus-passkey/authorize` |
 | Token URL | `https://ctcoqgsztdtsazdiwcmd.supabase.co/functions/v1/pablicus-passkey/token` |
 | UserInfo URL | `https://ctcoqgsztdtsazdiwcmd.supabase.co/functions/v1/pablicus-passkey/userinfo` |

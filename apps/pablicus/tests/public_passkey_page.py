@@ -16,7 +16,7 @@ import uuid
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
-from playwright.async_api import async_playwright
+from playwright.async_api import async_playwright, expect
 from passkey_login import b64url, unb64, cbor_item
 
 
@@ -278,7 +278,10 @@ async def one(engine, engine_name):
             assert await page.evaluate("localStorage.length") == 0
 
         async def settled(page):
-            await page.wait_for_function("document.getElementById('passkeyStart').getAttribute('aria-busy') === 'false'")
+            # wait_for_function internally evals its predicate, which this
+            # page's intentional script-src 'self' forbids. Locator assertions
+            # wait for the same observable state without relaxing its CSP.
+            await expect(page.locator("#passkeyStart")).to_have_attribute("aria-busy", "false")
             assert "MOCK_PRIVATE_UPSTREAM_TEXT" not in await page.locator("body").inner_text()
 
         for fragment in ("missing", "duplicate"):
@@ -314,8 +317,8 @@ async def one(engine, engine_name):
         await page.locator("#displayName").fill("   Тестовый собеседник   ")
         for attempt in (1, 2):
             await page.locator("#createKey").click()
-            await page.wait_for_function("window.__keyCalls.create === " + str(attempt))
             await settled(page)
+            assert await page.evaluate("window.__keyCalls.create") == attempt
             assert len(state["events"]) == attempt and not state["claimed"]
             assert not await page.locator("#createKey").is_disabled()
         assert state["registration_names"] == ["Тестовый собеседник", "Тестовый собеседник"]
@@ -324,8 +327,8 @@ async def one(engine, engine_name):
         checks.append("Name-only mobile page survives reload; trimmed name validation and cancelled creation can retry without verification")
 
         await page.locator("#useKey").click()
-        await page.wait_for_function("window.__keyCalls.get === 1")
         await settled(page)
+        assert await page.evaluate("window.__keyCalls.get") == 1
         assert state["events"][-1] == "/authentication/options" and not state["claimed"]
         checks.append("Existing-key login is an explicit separate action without name, password or email")
 
@@ -403,7 +406,8 @@ async def one(engine, engine_name):
             await state["cdp"].send("WebAuthn.setAutomaticPresenceSimulation", {"authenticatorId": state["authenticator_id"], "enabled": False})
             await page.locator("#displayName").fill("Тестовый собеседник")
             await page.locator("#createKey").click()
-            await page.wait_for_function("window.__keyCalls.create === 1")
+            await expect(page.locator("#passkeyStatus")).to_contain_text("Создайте ключ доступа")
+            assert await page.evaluate("window.__keyCalls.create") == 1
             await page.evaluate("document.getElementById('createAccount').dispatchEvent(new Event('submit', {cancelable:true}))")
             await page.evaluate("document.getElementById('useKey').dispatchEvent(new MouseEvent('click'))")
             assert state["events"] == ["/registration/options"]
