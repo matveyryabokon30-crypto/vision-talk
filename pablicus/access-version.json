@@ -1,0 +1,6 @@
+{
+  "feature": "existing-session-self-service-password",
+  "version": "access-v1",
+  "source_commit": "3928ca2be1c2eeac1d0860b7606a47a21786d050",
+  "live_user_password_changed": false
+}
