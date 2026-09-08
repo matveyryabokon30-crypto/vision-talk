@@ -1,10 +1,13 @@
 from pathlib import Path
 import re,shutil,json,hashlib,subprocess,sys
+from rich_bridge import adapt_chat, adapt_vault
 ROOT=Path(__file__).parent
 subprocess.run([sys.executable,str(ROOT/'vendor'/'verify-supabase.py')],check=True)
 BASE=ROOT/'inherited'/'gate015'
 OUT=ROOT/'dist'; OUT.mkdir(exist_ok=True)
 for n in ('vault.js','outbox.js','style.css'):shutil.copy2(BASE/n,OUT/n)
+(OUT/'vault.js').write_text(adapt_vault((OUT/'vault.js').read_text()))
+(OUT/'outbox.js').write_text((OUT/'outbox.js').read_text().replace('kind:m.kind,assetId:m.assetId||null,text:', 'kind:m.kind,blocks:m.blocks,assetId:m.assetId||null,text:'))
 s=(BASE/'app.js').read_text()
 s=re.sub(r"const BUILD='[^']+'", "const BUILD='pablicus-0.1.0-rc5'",s,count=1)
 s=s.replace('COUNT=300','COUNT=0')
@@ -65,11 +68,13 @@ h=re.sub(r'<header>.*?</header>', '<header><button id="chatBack" aria-label="К 
 h=h.replace('<div id="app">','<div id="app" hidden>')
 h=h.replace('<body>','<body>'+ (ROOT/'src'/'home.html').read_text())
 h=re.sub(r'<script src="[^"]+"[^>]*></script>','',h)
-h=h.replace('</body>', '<script src="vendor/supabase.js"></script><script src="vault.js"></script><script src="outbox.js"></script><script src="transport-store.js"></script><script src="chat.js"></script><script src="auth-local.js"></script><script src="auth-config.js"></script><script src="oauth-login.js"></script><script src="oauth-session.js"></script><script src="passkey-login.js"></script><script src="public-passkey.js"></script><script src="app.js"></script></body>')
+h=h.replace('</body>', '<script src="vendor/supabase.js"></script><script src="vault.js"></script><script src="outbox.js"></script><script src="transport-store.js"></script><script src="rich-store.js"></script><script src="rich-composer.js"></script><script src="rich-message.js"></script><script src="chat.js"></script><script src="auth-local.js"></script><script src="auth-config.js"></script><script src="oauth-login.js"></script><script src="oauth-session.js"></script><script src="passkey-login.js"></script><script src="public-passkey.js"></script><script src="app.js"></script></body>')
+h=h.replace('</head>', '<link rel="stylesheet" href="rich-composer.css"><link rel="stylesheet" href="rich-message.css"></head>')
 h=h.replace('VISION TALK','Pablicus').replace('Vision Talk','Pablicus')
 (OUT/'index.html').write_text(h)
-(OUT/'chat.js').write_text(s)
+(OUT/'chat.js').write_text(adapt_chat(s))
 for n in ['transport-store.js','app.js','auth-local.js','auth-config.js','oauth-login.js','oauth-session.js','passkey-login.js','public-passkey.js','passkey-start.html','passkey-start.js','passkey-start.css','pablicus.css','sw.js','manifest.webmanifest']:shutil.copy2(ROOT/'src'/n,OUT/n)
+for n in ['rich-store.js','rich-composer.js','rich-composer.css','rich-message.js','rich-message.css']:shutil.copy2(ROOT/'src'/n,OUT/n)
 # Pablicus app transport and authentication adaptations.
 app=(OUT/'app.js').read_text()
 app=app.replace('0.1.0-rc2','0.1.0-rc5')

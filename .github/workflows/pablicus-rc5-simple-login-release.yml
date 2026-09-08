@@ -59,12 +59,18 @@ jobs:
           JS
       - name: Install pinned public passkey verifier and test dependencies
         working-directory: source
-        run: npm ci --ignore-scripts --prefix apps/pablicus/public-passkey
+        run: |
+          npm ci --ignore-scripts --prefix apps/pablicus/public-passkey
+          npm ci --ignore-scripts --prefix apps/pablicus/chat-workspace
+      - name: Rich message database authorization and atomic publication
+        working-directory: source
+        run: npm test --prefix apps/pablicus/chat-workspace
       - name: Verify vendored SDK and authentication module contracts
         working-directory: source
         run: |
           python apps/pablicus/vendor/verify-supabase.py
           node --test apps/pablicus/tests/oauth_module.test.js apps/pablicus/tests/passkey_module.test.js apps/pablicus/tests/public_passkey_module.test.js apps/pablicus/public-access/yandex-userinfo/handler.test.mjs
+          node --test apps/pablicus/tests/rich_message_module.test.js
       - name: Install browser engines
         run: python -m playwright install --with-deps chromium webkit
       - name: Public first-key page with virtual WebAuthn and mocked provider HTTP
@@ -88,6 +94,11 @@ jobs:
       - name: Affected initialization and existing chat outbox regression with mock backend
         working-directory: source
         run: python apps/pablicus/tests/run_isolated.py
+      - name: Ordered rich draft durability and one-message delivery with mock transport and microphone
+        working-directory: source
+        run: |
+          python apps/pablicus/tests/rich_store.py
+          python apps/pablicus/tests/rich_message_integration.py
       - uses: actions/checkout@v4
         with:
           ref: main
