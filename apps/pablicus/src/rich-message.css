@@ -3,7 +3,7 @@
 .richMessage.richMessageHasMedia{width:min(320px,64vw)}
 .richMessage .richText{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45;min-width:0}
 .richMessage .richText:empty{display:none}
-.richMessage .richMedia{position:relative;width:100%;max-width:100%;display:flex;align-items:center;gap:12px;min-height:76px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--text);text-align:left;overflow:hidden;font-weight:400}
+.richMessage .richMedia{position:relative;width:100%;max-width:100%;display:flex;align-items:center;gap:12px;min-height:76px;padding:12px;border:1px solid var(--bubble-edge,var(--line));border-radius:14px;background:transparent;color:var(--text);text-align:left;overflow:hidden;font-weight:400}
 .richMessage .richMedia:disabled{cursor:progress;opacity:.7}
 .richMessage .richMedia:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .richMessage .richMediaIcon{flex:0 0 38px;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--soft);color:var(--accent);font-size:21px;line-height:1}
@@ -33,7 +33,7 @@
 .richMessage .richMedia-audio{height:68px;min-height:68px;gap:10px;padding:4px 0;border:0;border-radius:0;background:transparent;overflow:visible;--voice-progress:0%}
 .richMessage .richAudioElement{display:none}
 .richMessage .richAudioPlay,.richMessage .richAudioReply{flex:0 0 auto;border:0;display:grid;place-items:center;padding:0;cursor:pointer;touch-action:manipulation;box-shadow:none}
-.richMessage .richAudioPlay{position:relative;width:44px;height:44px;min-height:44px;border-radius:50%;color:#fff;background:var(--accent);transition:transform .15s ease,background .15s ease}
+.richMessage .richAudioPlay{position:relative;width:44px;height:44px;min-height:44px;border-radius:50%;color:var(--control-text);background:var(--control);transition:transform .15s ease,background .15s ease}
 .richMessage .richAudioPlay:active{transform:scale(.94)}
 .richMessage .richAudioPlay svg{width:19px;height:19px;fill:currentColor;stroke-width:1.4}
 .richMessage .richAudioPlayIcon{margin-left:2px}

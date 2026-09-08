@@ -65,6 +65,9 @@ jobs:
       - name: Rich message database authorization and atomic publication
         working-directory: source
         run: npm test --prefix apps/pablicus/chat-workspace
+      - name: Push encryption, account ownership and durable notification delivery contracts
+        working-directory: source
+        run: node --test apps/pablicus/push/webpush.test.mjs apps/pablicus/push/schema.test.mjs apps/pablicus/push/index.test.mjs apps/pablicus/tests/push_notifications.test.js
       - name: Verify vendored SDK and authentication module contracts
         working-directory: source
         run: |
@@ -114,6 +117,23 @@ jobs:
           python apps/pablicus/tests/rich_message_integration.py
           python apps/pablicus/tests/message_interactions.py
           python apps/pablicus/tests/inbox_monitor.py
+      - name: Verify live push and private network API boundaries without a user session
+        run: |
+          python - <<'PY'
+          import urllib.request,urllib.error
+          base='https://ctcoqgsztdtsazdiwcmd.supabase.co'
+          key='sb_publishable_kMGqZAM2vadfXbBr8r5uzw_l9EiBtIw'
+          checks=[('/functions/v1/pablicus-push',{},401),
+                  ('/rest/v1/http_request_queue?select=id&limit=0',{'Accept-Profile':'net'},406),
+                  ('/rest/v1/config?select=singleton&limit=0',{'Accept-Profile':'pablicus_push_private'},406)]
+          for path,headers,expected in checks:
+            request=urllib.request.Request(base+path,headers={'apikey':key,**headers})
+            try:
+              with urllib.request.urlopen(request,timeout=20) as response:status=response.status
+            except urllib.error.HTTPError as error:status=error.code
+            assert status==expected,(path,status)
+          print('Live unauthenticated push denied; private/network schemas unavailable through REST')
+          PY
       - uses: actions/checkout@v4
         with:
           ref: main
