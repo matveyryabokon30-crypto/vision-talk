@@ -17,71 +17,108 @@ jobs:
         run: |
           python -m pip install playwright==1.55.0 pillow==11.3.0
           python -m playwright install --with-deps chromium webkit
-      - name: Read-only checks against published site and backend
+      - name: Read-only independent checks against published site and backend
         run: |
           mkdir -p live-evidence
           cat > /tmp/live.py <<'PY'
-          import asyncio,io,json,urllib.request,urllib.error
+          import asyncio,io,json,tempfile,traceback,urllib.request,urllib.error
           from pathlib import Path
           from PIL import Image
           from playwright.async_api import async_playwright
           SITE='https://matveyryabokon30-crypto.github.io/vision-talk/pablicus/'
           E=Path('live-evidence');out=[]
-          async def main():
-            async with async_playwright() as p:
-              for engine in ['chromium','webkit']:
-                checks=[];errors=[];b=await getattr(p,engine).launch()
-                c=await b.new_context(viewport={'width':440,'height':766})
-                page=await c.new_page();page.on('pageerror',lambda e:errors.append(str(e)))
-                r=await page.goto(SITE,wait_until='networkidle',timeout=40000)
-                assert r.status==200
-                await page.wait_for_function('window.PablicusDebug?.version==="0.1.0-rc2"',timeout=15000)
+          EXPECTED='4fcf34507ecb56bca3590f864ae56d46354b831d'
+          def dump(name,value):E.joinpath(name).write_text(json.dumps(value,ensure_ascii=False,indent=2))
+          public={'pass':False}
+          try:
+            version=json.load(urllib.request.urlopen(SITE+'version.json',timeout=20))
+            assert version['commit']==EXPECTED,version
+            manifest=json.load(urllib.request.urlopen(SITE+'manifest.webmanifest',timeout=20))
+            assert manifest['name']=='Pablicus' and manifest['display']=='standalone' and manifest['id']=='./' and manifest['scope']=='./'
+            sizes={}
+            for n in [180,192,512]:
+              data=urllib.request.urlopen(SITE+f'assets/icon-{n}.png',timeout=20).read();size=Image.open(io.BytesIO(data)).size
+              assert size==(n,n);sizes[str(n)]=size
+            anonymous={}
+            for table in ['messages','conversations','conversation_members']:
+              req=urllib.request.Request('https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/'+table+'?select=*&limit=1',headers={'apikey':'sb_publishable_kMGqZAM2vadfXbBr8r5uzw_l9EiBtIw'})
+              try:
+                response=urllib.request.urlopen(req,timeout=20);data=json.load(response);assert data==[],'Private rows exposed';anonymous[table]='NO_ROWS'
+              except urllib.error.HTTPError as e:
+                assert e.code in [401,403];anonymous[table]='DENIED_'+str(e.code)
+            public={'pass':True,'version':version,'manifest':manifest,'icon_sizes':sizes,'anonymous_private_data':anonymous}
+          except Exception:public['error']=traceback.format_exc()
+          dump('manifest-and-privacy.json',public)
+          async def reload_from_page(page):
+            marker=await page.evaluate('performance.timeOrigin')
+            # A real document navigation, not merely checking the pre-existing window.
+            await page.evaluate('setTimeout(()=>location.reload(),50)')
+            deadline=asyncio.get_running_loop().time()+20
+            while asyncio.get_running_loop().time()<deadline:
+              try:
+                ok=await page.evaluate('(old)=>performance.timeOrigin!==old && window.PablicusDebug?.version==="0.1.0-rc2"',marker)
+                if ok:return
+              except Exception:pass
+              await asyncio.sleep(.2)
+            raise RuntimeError('Reload did not produce a new initialized document within 20 seconds')
+          async def one(p,engine):
+            result={'engine':engine,'pass':False,'online':'NOT_RUN','offline_reload':'NOT_RUN','checks':[],'physical_iPhone':False,'two_account_exchange':'NOT_TESTED','profile':'temporary normal persistent profile','navigation':'page-initiated location.reload, actual new timeOrigin required'}
+            errors=[];c=None
+            with tempfile.TemporaryDirectory(prefix='pablicus-'+engine+'-') as profile:
+              try:
+                c=await getattr(p,engine).launch_persistent_context(profile,headless=True,viewport={'width':440,'height':766})
+                c.set_default_timeout(15000);page=c.pages[0] if c.pages else await c.new_page()
+                page.on('pageerror',lambda e:errors.append(str(e)))
+                r=await page.goto(SITE,wait_until='networkidle',timeout=40000);assert r.status==200
+                await page.wait_for_function('window.PablicusDebug?.version==="0.1.0-rc2"')
                 assert await page.locator('#loginPane').is_visible()
-                checks.append('Published application loads, JS starts, existing-account login displayed')
                 assert await page.locator('#email').is_visible() and await page.locator('#password').is_visible()
                 assert not await page.locator('#mainNav').is_visible()
-                checks.append('Unauthenticated session shows no private workspace')
-                await page.locator('#installLogin').click()
-                assert await page.locator('#productDialog').is_visible()
+                result['checks'].append('Online launch shows existing-account login and no private workspace')
+                await page.locator('#installLogin').click();assert await page.locator('#productDialog').is_visible()
                 assert 'Safari' in await page.locator('#dialogContent').inner_text()
                 await page.locator('#dialogClose').click()
-                checks.append('Installation guidance opens inside app')
-                await page.evaluate('navigator.serviceWorker.ready.then(()=>true)')
-                await page.reload(wait_until='networkidle')
-                scope=await page.evaluate('navigator.serviceWorker.getRegistration().then(r=>r.scope)')
-                assert scope==SITE
-                cache_urls=await page.evaluate('(async()=>{let u=[];for(const k of await caches.keys())for(const r of await(await caches.open(k)).keys())u.push(r.url);return u})()')
-                assert all(u.startswith(SITE) for u in cache_urls)
-                checks.append('Scoped service worker contains public static resources only')
-                await c.set_offline(True);await page.reload(wait_until='domcontentloaded')
-                await page.wait_for_function('window.PablicusDebug?.version==="0.1.0-rc2"',timeout=15000)
-                assert await page.locator('#loginPane').is_visible()
-                assert await page.locator('#connection').is_visible()
-                checks.append('Public shell restarts offline with explicit no-network status')
-                await c.set_offline(False)
+                result['checks'].append('Install instructions open inside the app')
+                await asyncio.wait_for(page.evaluate('navigator.serviceWorker.ready.then(()=>true)'),timeout=20)
+                await reload_from_page(page)
+                await page.wait_for_function('!!navigator.serviceWorker.controller')
+                scope=await page.evaluate('navigator.serviceWorker.getRegistration().then(r=>r.scope)');assert scope==SITE
+                cache_urls=await page.evaluate('(async()=>{let u=[];for(const k of await caches.keys())if(k.startsWith("pablicus-shell-"))for(const r of await(await caches.open(k)).keys())u.push(r.url);return u})()')
+                assert cache_urls and all(u.startswith(SITE) for u in cache_urls)
+                result['checks'].append('Active worker scope and static caches restricted to the application subpath')
+                result['scope']=scope;result['cached_resources']=cache_urls
                 await page.screenshot(path=str(E/(engine+'-live-login.png')))
                 await page.set_viewport_size({'width':1280,'height':800})
                 assert await page.evaluate('document.documentElement.scrollWidth<=innerWidth+1')
-                checks.append('Desktop viewport has no horizontal page overflow')
+                await page.screenshot(path=str(E/(engine+'-desktop-login.png')))
+                result['checks'].append('Desktop page fits viewport')
+                assert not errors,errors;result['online']='PASS'
+                await page.set_viewport_size({'width':440,'height':766})
+                await c.set_offline(True);await reload_from_page(page)
+                assert await page.locator('#loginPane').is_visible()
+                assert await page.locator('#connection').is_visible()
+                assert not await page.evaluate('navigator.onLine')
+                result['offline_reload']='PASS';result['checks'].append('New document restarts without network and displays offline status')
+                await c.set_offline(False);await page.wait_for_function('navigator.onLine')
                 assert not errors,errors
-                checks.append('No JavaScript errors')
-                out.append({'engine':engine,'pass':True,'checks':checks,'physical_iPhone':False,'two_account_exchange':'NOT_TESTED','scope':scope})
-                await b.close()
-          try:asyncio.run(main())
-          finally:E.joinpath('browser-smoke.json').write_text(json.dumps(out,indent=2))
-          manifest=json.load(urllib.request.urlopen(SITE+'manifest.webmanifest'))
-          assert manifest['name']=='Pablicus' and manifest['display']=='standalone' and manifest['id']=='./' and manifest['scope']=='./'
-          sizes={}
-          for n in [180,192,512]:
-            data=urllib.request.urlopen(SITE+f'assets/icon-{n}.png').read();size=Image.open(io.BytesIO(data)).size
-            assert size==(n,n);sizes[str(n)]=size
-          req=urllib.request.Request('https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/messages?select=id&limit=1',headers={'apikey':'sb_publishable_kMGqZAM2vadfXbBr8r5uzw_l9EiBtIw'})
-          try:
-            response=urllib.request.urlopen(req);data=json.load(response);assert data==[];anonymous='NO_ROWS'
-          except urllib.error.HTTPError as e:
-            assert e.code in [401,403];anonymous='DENIED_'+str(e.code)
-          E.joinpath('manifest-and-privacy.json').write_text(json.dumps({'manifest':manifest,'icon_sizes':sizes,'anonymous_private_messages':anonymous,'pass':True},indent=2))
-          print('PUBLISHED_READ_ONLY_BROWSER_SMOKE_PASS',json.dumps(out))
+                result['checks'].append('No JavaScript errors');result['pass']=True
+              except Exception:
+                result['error']=traceback.format_exc()
+                if result['online']=='PASS':result['offline_reload']='FAIL'
+                else:result['online']='FAIL'
+              finally:
+                result['js_errors']=errors;dump(engine+'-smoke.json',result)
+                if c:
+                  try:await asyncio.wait_for(c.close(),timeout=10)
+                  except Exception:pass
+            return result
+          async def main():
+            async with async_playwright() as p:
+              for engine in ['chromium','webkit']:
+                out.append(await one(p,engine));dump('browser-smoke.json',out)
+          asyncio.run(main())
+          print(json.dumps({'public':public,'browsers':out},ensure_ascii=False))
+          assert public['pass'] and all(r['pass'] for r in out),'Evidence retained; failed subscenarios remain FAIL, never silently skipped'
           PY
           python /tmp/live.py
       - uses: actions/upload-artifact@v4
