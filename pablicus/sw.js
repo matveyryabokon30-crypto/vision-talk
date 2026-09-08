@@ -1,6 +1,6 @@
 /* Public-shell allowlist only. Auth, API, messages, signed media and local drafts are NEVER cached here. */
-const VERSION='pablicus-shell-fdcb127d4b1d3dd8';
-const FILES=['./','index.html','style.css','pablicus.css','vault.js','outbox.js','transport-store.js','chat.js','app.js','auth-local.js','auth-config.js','oauth-login.js','oauth-session.js','passkey-login.js','vendor/supabase.js','manifest.webmanifest','assets/icon-32.png','assets/icon-180.png','assets/icon-192.png','assets/icon-512.png','assets/wordmark-light.png','assets/wordmark-dark.png'];
+const VERSION='pablicus-shell-ca9607d309484896';
+const FILES=['./','index.html','style.css','pablicus.css','vault.js','outbox.js','transport-store.js','chat.js','app.js','auth-local.js','auth-config.js','oauth-login.js','oauth-session.js','passkey-login.js','public-passkey.js','passkey-start.html','passkey-start.js','passkey-start.css','vendor/supabase.js','manifest.webmanifest','assets/icon-32.png','assets/icon-180.png','assets/icon-192.png','assets/icon-512.png','assets/wordmark-light.png','assets/wordmark-dark.png'];
 const urls=FILES.map(p=>new URL(p,self.registration.scope).href);
 self.addEventListener('install',e=>e.waitUntil((async()=>{const c=await caches.open(VERSION);for(const url of urls){const r=await fetch(new Request(url,{cache:'reload'}));if(!r.ok)throw Error('Shell asset unavailable');await c.put(url,r)}})()));
 self.addEventListener('message',e=>{if(e.data==='ACTIVATE')self.skipWaiting()});
