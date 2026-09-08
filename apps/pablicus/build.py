@@ -5,7 +5,7 @@ BASE=ROOT/'inherited'/'gate015'
 OUT=ROOT/'dist'; OUT.mkdir(exist_ok=True)
 for n in ('vault.js','outbox.js','style.css'):shutil.copy2(BASE/n,OUT/n)
 s=(BASE/'app.js').read_text()
-s=re.sub(r"const BUILD='[^']+'", "const BUILD='pablicus-0.1.0-rc2'",s,count=1)
+s=re.sub(r"const BUILD='[^']+'", "const BUILD='pablicus-0.1.0-rc3'",s,count=1)
 s=s.replace('COUNT=300','COUNT=0')
 s=s.replace("let list=null", "let sourceMessages=[],scopeUser=null,scopeChat=null,vaultBound=false;let list=null",1)
 s=s.replace("function nodeFor(m){", "function nodeFor(m){if(m.remote)return window.PablicusHost.renderMessage(m);",1)
@@ -69,8 +69,16 @@ h=h.replace('VISION TALK','Pablicus').replace('Vision Talk','Pablicus')
 (OUT/'index.html').write_text(h)
 (OUT/'chat.js').write_text(s)
 for n in ['transport-store.js','app.js','pablicus.css','sw.js','manifest.webmanifest']:shutil.copy2(ROOT/'src'/n,OUT/n)
-# Pablicus app transport: do not lose an enqueue wake-up while another pump is active.
+# Pablicus app transport and authentication adaptations.
 app=(OUT/'app.js').read_text()
+app=app.replace('0.1.0-rc2','0.1.0-rc3')
+app=app.replace('detectSessionInUrl:false','detectSessionInUrl:true',1)
+magic=r'''
+ $('magicForm').onsubmit=async e=>{e.preventDefault();const button=$('magicSubmit'),email=$('email').value.trim();button.disabled=true;$('loginError').textContent='';$('loginNotice').textContent='';try{const redirect=location.origin+location.pathname;const r=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:false,emailRedirectTo:redirect}});if(r.error)throw r.error;$('loginNotice').textContent='Ссылка отправлена. Откройте письмо на этом iPhone и нажмите «Войти в Pablicus». Пароль не нужен.'}catch(e){$('loginError').textContent=e.message||'Не удалось отправить ссылку'}finally{button.disabled=false}};
+'''
+needle=" $('loginForm').onsubmit=async e=>"
+if magic.strip() not in app:
+    app=app.replace(needle,magic+needle,1)
 app=app.replace('refreshing=false,worker=false,channel=null', 'refreshing=false,worker=false,pumpPending=false,channel=null',1)
 app=app.replace("async function pump(){if(worker||!user||!navigator.onLine||document.hidden)return;worker=true;", "async function pump(){if(worker){pumpPending=true;return}if(!user||!navigator.onLine||document.hidden)return;worker=true;",1)
 app=app.replace("}catch(e){problem(e)}finally{worker=false}}\n async function showOutbox()", "}catch(e){problem(e)}finally{worker=false;if(pumpPending){pumpPending=false;setTimeout(()=>pump(),0)}}}\n async function showOutbox()",1)
@@ -80,5 +88,5 @@ shutil.copytree(ROOT/'assets',OUT/'assets',dirs_exist_ok=True)
 vendor=ROOT/'vendor'/'supabase.js'
 if not vendor.exists():vendor=ROOT.parents[1]/'vendor'/'supabase-2.45.3.js'
 shutil.copy2(vendor,OUT/'vendor'/'supabase.js')
-(OUT/'version.json').write_text(json.dumps({'version':'0.1.0-rc2','product':'Pablicus','stage':'RELEASE_CANDIDATE_NOT_DEVICE_ACCEPTED'}))
+(OUT/'version.json').write_text(json.dumps({'version':'0.1.0-rc3','product':'Pablicus','stage':'RELEASE_CANDIDATE_NOT_DEVICE_ACCEPTED'}))
 print('Built',len(list(OUT.rglob('*'))),'paths')
