@@ -256,7 +256,7 @@ export function createHandler({ store, webauthn, native, config = productionConf
         if (!info || typeof info.sub !== 'string') fail('invalid_token', 401);
         return response(request, info);
       }
-      fail('not_found', 404);
+      throw new BoundaryError('not_found', 404);
     } catch (error) {
       const code = error instanceof BoundaryError ? error.code : 'unavailable';
       const status = error instanceof BoundaryError ? error.status : 503;
