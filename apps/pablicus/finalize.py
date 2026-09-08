@@ -3,6 +3,13 @@ from html.parser import HTMLParser
 from urllib.parse import urlsplit
 import hashlib,json,subprocess
 R=Path(__file__).resolve().parent;D=R/'dist'
+# The accepted Gate owns its list for its entire lifetime. The product has
+# multiple screens: disconnect that list BEFORE the host hides its container.
+p=D/'chat.js';s=p.read_text()
+old='async leave(){await this.flush();input.blur();closeMenu(false);},'
+new='async leave(){await this.flush();input.blur();closeMenu(false);list?.destroy();list=null;},'
+assert s.count(old)==1,'Chat lifecycle bridge changed; review required'
+p.write_text(s.replace(old,new))
 class References(HTMLParser):
  def __init__(self):super().__init__();self.refs=[]
  def handle_starttag(self,tag,attrs):
