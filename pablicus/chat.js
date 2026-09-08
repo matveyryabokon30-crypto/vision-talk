@@ -164,15 +164,16 @@ function topOf(a){const n=list?.nodes.get(a?.id);return n?n.getBoundingClientRec
 function anchorDelta(a){const t=topOf(a);return t===null?Infinity:Math.abs(t-a.offset)}
 const frames=(n=3)=>new Promise(resolve=>{const next=()=>--n<=0?resolve():requestAnimationFrame(next);requestAnimationFrame(next)});
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-function audit(){let maxOverlap=0,maxGap=0,maxModel=0,clipped=0,widthErrors=0;const nodes=[...canvas.querySelectorAll('.row')].sort((a,b)=>list.index.get(a.dataset.id)-list.index.get(b.dataset.id));for(let i=0;i<nodes.length;i++){const n=nodes[i],r=n.getBoundingClientRect(),t=n.querySelector('.text'),b=n.querySelector('.bubble'),c=b.getBoundingClientRect(),nr=vp.getBoundingClientRect();maxModel=Math.max(maxModel,Math.abs(r.height-(list.heights.get(n.dataset.id)||0)));if(t.scrollWidth>t.clientWidth+2||b.scrollWidth>b.clientWidth+2||c.bottom>r.bottom+1||c.top<r.top-1)clipped++;if(r.left<nr.left-1||r.right>nr.right+1||vp.scrollWidth>vp.clientWidth+1)widthErrors++;if(i&&list.index.get(n.dataset.id)===list.index.get(nodes[i-1].dataset.id)+1){const diff=nodes[i-1].getBoundingClientRect().bottom-r.top;maxOverlap=Math.max(maxOverlap,diff);maxGap=Math.max(maxGap,-diff)}}return{rows:nodes.length,max_overlap_px:round(maxOverlap),max_gap_px:round(maxGap),model_error_px:round(maxModel),clipped,width_errors:widthErrors,active:counters.active_lists}}
+function audit(){let maxOverlap=0,maxGap=0,maxModel=0,clipped=0,widthErrors=0;const nodes=[...canvas.querySelectorAll('.row')].sort((a,b)=>list.index.get(a.dataset.id)-list.index.get(b.dataset.id));for(let i=0;i<nodes.length;i++){const n=nodes[i],r=n.getBoundingClientRect(),t=n.querySelector('.text,.richMessage'),b=n.querySelector('.bubble'),c=b.getBoundingClientRect(),nr=vp.getBoundingClientRect();maxModel=Math.max(maxModel,Math.abs(r.height-(list.heights.get(n.dataset.id)||0)));if((t&&t.scrollWidth>t.clientWidth+2)||b.scrollWidth>b.clientWidth+2||c.bottom>r.bottom+1||c.top<r.top-1)clipped++;if(r.left<nr.left-1||r.right>nr.right+1||vp.scrollWidth>vp.clientWidth+1)widthErrors++;if(i&&list.index.get(n.dataset.id)===list.index.get(nodes[i-1].dataset.id)+1){const diff=nodes[i-1].getBoundingClientRect().bottom-r.top;maxOverlap=Math.max(maxOverlap,diff);maxGap=Math.max(maxGap,-diff)}}return{rows:nodes.length,max_overlap_px:round(maxOverlap),max_gap_px:round(maxGap),model_error_px:round(maxModel),clipped,width_errors:widthErrors,active:counters.active_lists}}
 function okGeometry(g){return g.max_overlap_px<=1.5&&g.max_gap_px<=1.5&&g.model_error_px<=1.5&&!g.clipped&&!g.width_errors}
 const draft={expanded:false,mode:'message',attachments:[],task:null,composing:false};
+let richComposer=null;
 const assets=new Map(),liveUrls=new Set();
 const cm={inputs:0,layout_updates:0,metadata_reads:0,metadata_active:0,max_metadata_active:0,urls_created:0,urls_revoked:0,local_sends:0,task_events:0,selection_failures:0};
 let aid=0,menuOrigin=null,savedSelection=null,menuWasTyping=false,metadataQueue=Promise.resolve(),generation=0,keyStart=null,lastOrientation=null,composerFrame=0,composerPendingAnchor=null;
 function urlCreate(blob){const u=URL.createObjectURL(blob);liveUrls.add(u);cm.urls_created++;return u}
 function urlRevoke(u){if(!u||!liveUrls.has(u))return;URL.revokeObjectURL(u);liveUrls.delete(u);cm.urls_revoked++}
-function nodeFor(m){if(m.remote)return window.PablicusHost.renderMessage(m);
+function nodeFor(m){if(m.richBlocks)return window.PablicusHost.renderPendingMessage(m);if(m.remote)return window.PablicusHost.renderMessage(m);
 if(!m.attachmentId)return decorateQueueRow(baseNodeFor(m),m);
 const a=assets.get(m.attachmentId),row=document.createElement('article');row.className='row mine';row.dataset.id=m.id;row.dataset.rev=m.revision;
 const bubble=document.createElement('div');bubble.className='bubble localAttachment';
@@ -181,13 +182,13 @@ if(a?.preview){const im=new Image();im.src=a.preview;im.alt=a.kind==='image'?'Ф
 const text=document.createElement('div');text.className='text';text.textContent=a?.name||'Локальный файл';
 const meta=document.createElement('div');meta.className='meta';meta.textContent='#'+m.number+' · только здесь'+(a?.kind==='video'?' · без воспроизведения':'');bubble.append(slot,text,meta);row.append(bubble);return decorateQueueRow(row,m);
 }
-function selection(){return{start:input.selectionStart,end:input.selectionEnd,direction:input.selectionDirection,scroll:input.scrollTop}}
-function restoreSelection(s,focus=false){if(!s)return;if(focus)input.focus({preventScroll:true});input.setSelectionRange(s.start,s.end,s.direction);input.scrollTop=s.scroll}
+function selection(){if(richComposer)return richComposer.capture().selection;return{start:input.selectionStart,end:input.selectionEnd,direction:input.selectionDirection,scroll:input.scrollTop}}
+function restoreSelection(s,focus=false){if(!s)return;if(richComposer){richComposer.restoreSelection(s,focus);return;}if(focus)input.focus({preventScroll:true});input.setSelectionRange(s.start,s.end,s.direction);input.scrollTop=s.scroll}
 function metrics(){const v=window.visualViewport;return{width:round(v?.width||innerWidth),height:round(v?.height||innerHeight),offsetTop:round(v?.offsetTop||0),pageTop:round(v?.pageTop||0),scale:round(v?.scale||1),list_width:vp.clientWidth,list_height:vp.clientHeight,orientation:screen.orientation?.type||String(window.orientation??'unknown')}}
 function controlsGeometry(){const a=app.getBoundingClientRect(),c=$('composer').getBoundingClientRect(),r=$('send').getBoundingClientRect(),i=input.getBoundingClientRect();return{composer_height:round(c.height),input_height:round(i.height),input_scroll_height:input.scrollHeight,send_inside_shell:r.width>=32&&r.height>=32&&r.top>=a.top-1&&r.bottom<=a.bottom+1&&r.right<=a.right+1&&r.left>=a.left-1,send_inside_composer:r.width>=32&&r.height>=32&&r.top>=c.top-1&&r.bottom<=c.bottom+1,list_height:vp.clientHeight,shell_top:round(a.top),shell_bottom:round(a.bottom),composer_top:round(c.top),composer_bottom:round(c.bottom),send_top:round(r.top),send_bottom:round(r.bottom)}}
 let fullEntry=null,viewWasFull=false;
 let mirror=null,mirrorText=null,mirrorWidth=0,mirrorHeight=40;
-function naturalInputHeight(){
+function naturalInputHeight(){if(richComposer)return Math.max(40,richComposer.height);
 if(!mirror){mirror=document.createElement('textarea');mirror.id='inputMeasure';mirror.readOnly=true;mirror.tabIndex=-1;mirror.setAttribute('aria-hidden','true');app.append(mirror)}
 const width=input.clientWidth;
 if(mirrorText!==input.value||Math.abs(mirrorWidth-width)>.25){mirror.style.width=width+'px';mirror.value=input.value;mirrorText=input.value;mirrorWidth=width;mirrorHeight=Math.max(40,mirror.scrollHeight);}
@@ -195,9 +196,9 @@ return mirrorHeight;
 }
 function syncComposer(a=list?.capture(),f=list?.follow??true){
 const box=$('composeBox'),composer=$('composer');
-const typing=document.activeElement===input;
+const typing=document.activeElement===input||!!richComposer&&$('editor').contains(document.activeElement);
 app.classList.toggle('typing',typing);
-const rich=draft.expanded||draft.attachments.length>0||draft.task||draft.mode!=='message'||input.value.length>50||input.value.includes('\n');
+const rich=!!richComposer?.capture().files.length||draft.expanded||draft.attachments.length>0||draft.task||draft.mode!=='message'||input.value.length>50||input.value.includes('\n');
 if(draft.expanded&&!viewWasFull){fullEntry={a,f};app.style.setProperty('--dock-height',composer.offsetHeight+'px');}
 const returning=!draft.expanded&&viewWasFull;
 app.classList.toggle('composer-fullscreen',draft.expanded);
@@ -208,21 +209,21 @@ $('tray').hidden=!draft.attachments.length;
 $('tray').style.height=app.clientHeight<500?'58px':'90px';
 $('draftNote').hidden=!(draft.attachments.length||draft.mode!=='message');
 $('expand').textContent=draft.expanded?'↙':'⛶';$('expand').setAttribute('aria-expanded',String(draft.expanded));$('expand').setAttribute('aria-label',draft.expanded?'Вернуться в чат':'Редактор на весь экран');
-$('fullTitle').textContent='Сообщение'+(draft.attachments.length?' · вложений: '+draft.attachments.length:'');
+const attachmentCount=richComposer?.capture().files.length??draft.attachments.length;$('fullTitle').textContent='Сообщение'+(attachmentCount?' · вложений: '+attachmentCount:'');
 $('mode').textContent=draft.mode==='message'?'Сообщение':draft.mode==='assistant'?'Помощник · демо':'Задача · демо';
 $('send').textContent=draft.mode==='message'?'↑':'▷';$('send').setAttribute('aria-label',draft.mode==='message'?'Отправить сообщение':'Запустить демонстрацию, без ИИ');
-$('send').disabled=!list||draft.composing||(!input.value.trim()&&!draft.attachments.length);
+$('send').disabled=!list||draft.composing||richComposer?.composing||(!richComposer?.recording&&!hasComposerContent());
 if(draft.expanded){
-input.style.height='100%';
+if(richComposer)$('editor').style.height='100%';else input.style.height='100%';
 }else{
-if(returning)input.style.height='40px';
+if(returning&&!richComposer)input.style.height='40px';
 const needed=naturalInputHeight();
 const chromeHeight=app.querySelector('header').offsetHeight+app.querySelector('.tools').offsetHeight+$('status').offsetHeight;
-const overhead=composer.offsetHeight-input.offsetHeight;
+const overhead=composer.offsetHeight-(richComposer?$('editor').offsetHeight:input.offsetHeight);
 const maxComposer=Math.max(overhead+40,Math.min(Math.floor(app.clientHeight*.78),app.clientHeight-chromeHeight-64));
 const cap=Math.max(40,maxComposer-overhead);
 const target=Math.min(needed,cap);
-if(Math.abs(input.offsetHeight-target)>.5)input.style.height=target+'px';
+const measuredEditor=richComposer?$('editor'):input;if(Math.abs(measuredEditor.offsetHeight-target)>.5)measuredEditor.style.height=target+'px';
 box.dataset.autoCap=String(cap);
 }
 cm.layout_updates++;
@@ -253,7 +254,7 @@ n.querySelector('.label').textContent=assetLabel(a)+(a.state==='error'?' · бе
 }
 function canvasBlob(c){return new Promise(resolve=>c.toBlob(resolve,'image/jpeg',.72))}
 async function makePreview(a){
-if(!assets.has(a.id)||a.kind==='document')return;
+if(!assets.has(a.id)||a.kind!=='image')return;
 cm.metadata_reads++;cm.metadata_active++;cm.max_metadata_active=Math.max(cm.max_metadata_active,cm.metadata_active);
 const source=urlCreate(a.file),isVideo=a.kind==='video',el=isVideo?document.createElement('video'):new Image();let timer,settled=false;
 try{
@@ -269,14 +270,14 @@ const c=document.createElement('canvas'),scale=Math.min(1,240/Math.max(info.w,in
 if(blob&&assets.has(a.id)){a.preview=urlCreate(blob);a.width=info.w;a.height=info.h;a.state='ready'}
 }catch{if(assets.has(a.id))a.state='error'}finally{clearTimeout(timer);el.onload=el.onerror=null;if(isVideo){el.onloadedmetadata=el.onseeked=null;el.pause();el.removeAttribute('src');el.load()}else el.src='';urlRevoke(source);cm.metadata_active--;if(assets.has(a.id)){updateAssetNode(a);const m=list?.messages.find(m=>m.attachmentId===a.id);if(m){const anchor=list.capture(),follow=list.follow;m.revision++;list.sync(anchor,follow,'poster-ready')}}}
 }
-function addFiles(files,forceDocument=false){
+function addFiles(files,forceDocument=false){if(richComposer)return richComposer.addFiles(files);
 const selected=Array.from(files||[]).filter(f=>window.PablicusHost.acceptFile(f)),s=selection();
 changeUI(()=>{for(const file of selected){if(draft.attachments.length>=12){status('В этом стенде максимум 12 вложений в черновике');break}const kind=forceDocument?'document':file.type.startsWith('image/')?'image':file.type.startsWith('video/')?'video':'document';
 const a={id:'a'+DraftVault.uid(),name:file.name,file,kind,preview:null,state:kind==='document'?'ready':'pending',duration:0};assets.set(a.id,a);draft.attachments.push(a.id);addAssetNode(a);
 metadataQueue=metadataQueue.then(()=>makePreview(a)).catch(fatal);}});restoreSelection(s);draftChanged();return metadataQueue;
 }
 function removeAsset(id){const i=draft.attachments.indexOf(id);if(i<0)return;const s=selection();changeUI(()=>{draft.attachments.splice(i,1);$('tray').querySelector('[data-asset="'+id+'"]')?.remove();const a=assets.get(id);urlRevoke(a?.preview);assets.delete(id)});restoreSelection(s);draftChanged()}
-function clearDraft(){const s=selection();changeUI(()=>{for(const id of draft.attachments){urlRevoke(assets.get(id)?.preview);assets.delete(id)}draft.attachments=[];$('tray').replaceChildren();input.value='';draft.expanded=false;draft.mode='message';draft.task=null;renderTask()});restoreSelection({start:0,end:0,direction:'none',scroll:0});draftChanged()}
+function clearDraft(){richComposer?.clear();const s=selection();changeUI(()=>{for(const id of draft.attachments){urlRevoke(assets.get(id)?.preview);assets.delete(id)}draft.attachments=[];$('tray').replaceChildren();input.value='';draft.expanded=false;draft.mode='message';draft.task=null;renderTask()});restoreSelection({start:0,end:0,direction:'none',scroll:0});draftChanged()}
 async function demoPhoto(){const c=document.createElement('canvas');c.width=320;c.height=240;const ctx=c.getContext('2d');ctx.fillStyle='#263c52';ctx.fillRect(0,0,320,240);ctx.fillStyle='#acf4c4';ctx.fillRect(45,45,230,150);ctx.fillStyle='#263c52';ctx.font='bold 24px sans-serif';ctx.fillText('LOCAL TEST',78,128);const blob=await canvasBlob(c);return addFiles([new File([blob],'test-photo.jpg',{type:'image/jpeg'})])}
 function renderTask(){const t=draft.task;$('taskBar').hidden=!t;$('taskText').textContent=t?'ДЕМО · '+(t.kind==='assistant'?'Помощник':'Задача')+' · '+t.state:'';$('taskNext').hidden=!t||['Готово','Отменено'].includes(t.state)}
 function startTask(){if(!input.value.trim()&&!draft.attachments.length)return;changeUI(()=>{draft.task={kind:draft.mode==='assistant'?'assistant':'task',state:'В очереди',input_chars:input.value.length,attachments:draft.attachments.length};draft.mode='message';cm.task_events++;renderTask()});status('Демонстрация. Никакой агент не запущен; черновик сохранён.')}
@@ -339,7 +340,7 @@ function menuAction(action){
 if(['documents','back'].includes(action)){openMenu(action==='back'?'attach':action,menuOrigin);return}
 if(['gallery','camera','file','scan'].includes(action)){closeMenu(false);const id={gallery:'galleryInput',camera:'cameraInput',file:'documentInput',scan:'scanInput'}[action];$(id).click();return}
 if(action==='clear'){closeMenu(false);if(confirm('Удалить текст и выбранные вложения этого черновика?'))clearDraft();return}
-if(action==='keyboard'){closeMenu(false);input.blur();return}
+if(action==='keyboard'){closeMenu(false);richComposer?richComposer.blur():input.blur();return}
 if(['assistant','task','modes','tasks'].includes(action)){closeMenu(true);window.PablicusHost.unavailable('Помощник');return}if(['message'].includes(action)){closeMenu(false);changeUI(()=>draft.mode=action);restoreSelection(savedSelection,menuWasTyping);return}
 closeMenu(false);if(action==='startTask')startTask();if(action==='nextTask')advanceTask();if(action==='cancelTask')advanceTask(true);
 }
@@ -351,10 +352,10 @@ function initComposer(){
 window.addEventListener('resize',queueLayout);window.visualViewport?.addEventListener('resize',queueLayout);window.visualViewport?.addEventListener('scroll',queueLayout);
 input.addEventListener('input',()=>{cm.inputs++;queueComposer();draftChanged()});input.addEventListener('compositionstart',()=>{draft.composing=true;$('send').disabled=true});input.addEventListener('compositionend',()=>{draft.composing=false;queueComposer()});
 input.addEventListener('focus',()=>{keyStart=metrics();queueComposer();queueLayout()});input.addEventListener('blur',()=>{setTimeout(()=>{if(document.activeElement!==input){if(keyStart&&!running)observations.keyboard.push({phase:'blur',viewport:metrics(),controls:controlsGeometry()});keyStart=null;queueComposer();queueLayout()}},400)});
-input.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('menuLayer').hidden){e.preventDefault();closeMenu(true)}else if(draft.expanded){e.preventDefault();toggleExpand()}}});
+$('editor').addEventListener('keydown',e=>{if(e.key==='Escape'&&!e.isComposing&&!richComposer?.composing){if(!$('menuLayer').hidden){e.preventDefault();closeMenu(true)}else if(draft.expanded){e.preventDefault();toggleExpand()}}});
 $('composeBox').addEventListener('pointerdown',e=>{if(e.target.closest('button')&&document.activeElement===input)e.preventDefault()});
 $('attach').onclick=e=>openMenu('attach',$('attach'),e.detail===0);$('mode').onclick=e=>openMenu('modes',$('mode'),e.detail===0);$('taskMenu').onclick=()=>window.PablicusHost.unavailable('Помощник');
-$('expand').onclick=toggleExpand;$('hideKey').onclick=()=>input.blur();$('send').onclick=localSend;$('taskNext').onclick=()=>advanceTask();$('taskCancel').onclick=()=>advanceTask(true);$('outside').onpointerdown=e=>{if(menuWasTyping)e.preventDefault()};$('outside').onclick=()=>closeMenu(true);document.addEventListener('keydown',menuKeys);
+$('expand').onclick=toggleExpand;$('hideKey').onclick=()=>richComposer?richComposer.blur():input.blur();$('send').onclick=localSend;$('taskNext').onclick=()=>advanceTask();$('taskCancel').onclick=()=>advanceTask(true);$('outside').onpointerdown=e=>{if(menuWasTyping)e.preventDefault()};$('outside').onclick=()=>closeMenu(true);document.addEventListener('keydown',menuKeys);
 for(const id of ['galleryInput','cameraInput','documentInput','scanInput'])$(id).onchange=e=>{addFiles(e.target.files,id==='documentInput'||id==='scanInput');e.target.value=''};
 input.addEventListener('paste',e=>{const fs=Array.from(e.clipboardData?.files||[]);if(fs.length){e.preventDefault();addFiles(fs)}});
 $('new').onpointerdown=e=>{if(document.activeElement===input)e.preventDefault()};$('new').onclick=() =>list?.bottom();$('bottom').onclick=()=>list?.bottom();$('history').onclick=()=>list?.go(130);$('incoming').onclick=()=>{if(list){list.append(makeMessage(++seq));status('Входящее добавлено только локально')}};
@@ -367,9 +368,10 @@ applyLayout();syncComposer();
 }
 async function fillDraft(value){input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));await frames(3)}
 let vault=null,storeTests=null,storeTesting=false;
-function captureDraft(){return {text:input.value,expanded:draft.expanded,selection:{start:input.selectionStart,end:input.selectionEnd,direction:input.selectionDirection},files:draft.attachments.map(id=>{const a=assets.get(id);if(!a?.file)throw Error('Missing local file');return{id:a.id,name:a.name,type:a.file.type,size:a.file.size,lastModified:a.file.lastModified,kind:a.kind,file:a.file}})}}
+function captureDraft(){if(richComposer)return {...richComposer.capture(),expanded:draft.expanded};return {text:input.value,expanded:draft.expanded,selection:{start:input.selectionStart,end:input.selectionEnd,direction:input.selectionDirection},files:draft.attachments.map(id=>{const a=assets.get(id);if(!a?.file)throw Error('Missing local file');return{id:a.id,name:a.name,type:a.file.type,size:a.file.size,lastModified:a.file.lastModified,kind:a.kind,file:a.file}})}}
 function draftChanged(){vault?.changed()}
 async function restoreDraft(s){
+ if(richComposer){if(!list)await openChat();await richComposer.restore(s);draft.expanded=!!s.expanded;syncComposer();return;}
  if(!list)await openChat();
  clearDraft();
  input.value=s.text;draft.expanded=!!s.expanded;draft.mode='message';draft.task=null;renderTask();
@@ -389,7 +391,7 @@ function showStorageReport(){closeMenu(false);const r=publicSnapshot();$('verdic
 async function runStorageTests(){if(storeTesting)return publicSnapshot();storeTesting=true;const before=captureDraft(),beforeSig=DraftVault.signature(before);$('auto').disabled=true;status('Автотест в отдельной базе. Твой черновик не очищается.');try{storeTests=await DraftVault.tests();const same=DraftVault.signature(captureDraft())===beforeSig;storeTests.results.push({name:'Автотест не меняет пользовательский черновик',pass:same,measured:{unchanged:same}});storeTests.overall=storeTests.results.every(r=>r.pass)?'PASS':'FAIL';storeTests.summary={checks:storeTests.results.length,passed:storeTests.results.filter(r=>r.pass).length};status('ХРАНИЛИЩЕ: '+storeTests.overall+' · обновление страницы проверяется отдельно');}catch(e){storeTests={overall:'FAIL',results:[{name:'Тест хранилища',pass:false,measured:e.name}],generated_at:new Date().toISOString()};status('Автотест: '+e.name)}finally{$('auto').disabled=false;storeTesting=false}return publicSnapshot()}
 function notifyError(e){status('Сохранение: '+e.message);return null}
 async function initializeVault(){
- vault=new DraftVault.Controller({capture:captureDraft,restore:restoreDraft,paint:paintVault,lock:lockDraft});vault.store=new PablicusStore(scopeUser,scopeChat);
+ vault=new DraftVault.Controller({capture:captureDraft,restore:restoreDraft,paint:paintVault,lock:lockDraft});vault.store=new PablicusRichStore(scopeUser,scopeChat);
  window.vault=vault;
  $('auto').onclick=runQueueTests;
  $('saveRetry').onclick=()=>{if(!vault.ready&&(input.value||draft.attachments.length)&&!confirm('Повторное восстановление может заменить текущий несохранённый текст. Продолжить?'))return;vault.retry().catch(notifyError)};
@@ -415,7 +417,7 @@ async function initializeVault(){
 }
 let queueRows=[],queueLoaded=false,queueError=null,submitBusy=false,queueAudit=null,queueReloadCheck=null,queueTests=null,queueTestsBusy=false,submitToken=null;
 const queueStats={enqueued_here:0,restored_groups:0,retried_here:0,cancelled_here:0,commit_failures:0};
-function queueMessages(){return queueRows.filter(r=>!['sent','cancelled'].includes(r.state)).flatMap(r=>r.messages.map(m=>({id:'out-'+m.id,number:COUNT+m.sequence,mine:true,text:m.text||'',image:false,revision:r.version||1,attachmentId:m.assetId||null,outboxId:r.id,queueState:r.state,queueSequence:m.sequence})))}
+function queueMessages(){return queueRows.filter(r=>!['sent','cancelled'].includes(r.state)).flatMap(r=>r.messages.map(m=>({id:'out-'+m.id,number:COUNT+m.sequence,mine:true,text:m.text||'',richBlocks:m.kind==='rich'?m.blocks:null,image:false,revision:r.version||1,attachmentId:m.assetId||null,outboxId:r.id,queueState:r.state,queueSequence:m.sequence})))}
 function decorateQueueRow(node,m){if(!m.outboxId)return node;node.classList.add('outgoing-pending');const meta=node.querySelector('.meta');meta.textContent=({queued:'◷ В очереди',sending:'Отправляется…',error:'Ошибка · открыть очередь'})[m.queueState]||'В очереди';node.dataset.outboxId=m.outboxId;return node;}
 function queueSummary(){const active=queueRows.filter(OutboxVault.active);return{transport:'NOT_CONNECTED',state:queueError?'error':queueLoaded?'ready':'loading',error:queueError?{name:queueError.name,message:queueError.message}:null,groups:active.length,messages:active.reduce((n,x)=>n+x.messages.length,0),files:active.reduce((n,x)=>n+x.files.length,0),cancelled:queueRows.filter(x=>!OutboxVault.active(x)).length,entries:active.map(r=>({client_message_id:r.id,first_sequence:r.first_sequence,messages:r.messages.length,files:r.files.length,state:r.state,retries:r.retries,server_ack:r.server_ack})),...queueStats,submit_in_progress:submitBusy,audit:queueAudit,reload_check:queueReloadCheck,network_observed_online:navigator.onLine,background_delivery:false}}
 function paintQueue(){const q=queueSummary();$('queueBtn').textContent=q.groups?'Очередь · '+q.groups:'Очередь';$('queueError').hidden=!queueError;$('queueError').textContent=queueError?(queueError.committed?'Очередь уже записана. Обнови страницу.':'Не добавлено в очередь: '+queueError.message+' · черновик не очищен'):'';if(!$('queueDialog').open)return;renderQueueDialog();}
@@ -424,7 +426,8 @@ function ingestQueue(rows){queueRows=rows;for(const r of rows.filter(OutboxVault
  if(list){const a=list.capture(),f=list.follow;list.messages=list.messages.filter(m=>!m.outboxId).concat(queueMessages());list.sync(a,f,'queue-update');}paintQueue();}
 async function refreshQueue(){const rows=await vault.store.readQueue();ingestQueue(rows);return rows;}
 async function localSend(){
- if(!list||submitBusy||!window.PablicusHost?.canSend()||draft.composing||(!input.value.trim()&&!draft.attachments.length))return;
+ if(submitBusy||draft.composing||richComposer?.composing)return;try{await richComposer?.stopRecording()}catch(e){status(e.message);return;}
+ if(!list||submitBusy||!window.PablicusHost?.canSend()||draft.composing||richComposer?.composing||!hasComposerContent())return;
  if(draft.mode!=='message'){startTask();return}
  if(!queueLoaded||!vault.ready){status('Очередь ещё не восстановлена');return}
  let committed=false;submitBusy=true;queueError=null;closeMenu(false);const focused=document.activeElement===input;
@@ -436,7 +439,7 @@ async function localSend(){
   status('Сохраняю исходящее в очередь…');const result=await vault.store.enqueue(submitToken.intent,submitToken.revision);committed=true;
   if(window.gate.crashAfterCommit){location.reload();return}
   const latest=await vault.store.read();vault.pending=null;vault.rev=latest.revision;
-  if(!result.deduplicated){input.value='';draft.attachments=[];$('tray').replaceChildren();draft.expanded=false;draft.mode='message';draft.task=null;renderTask();}
+  if(!result.deduplicated){richComposer?.clear();input.value='';draft.attachments=[];$('tray').replaceChildren();draft.expanded=false;draft.mode='message';draft.task=null;renderTask();}
   else await restoreDraft(latest);
   vault.lastSignature=DraftVault.signature(captureDraft());vault.restoring=false;vault.set('saved');
   await refreshQueue();syncComposer();list.bottom();queueStats.enqueued_here+=result.deduplicated?0:1;cm.local_sends++;
@@ -461,16 +464,24 @@ async function runQueueTests(){if(queueTestsBusy||submitBusy)return publicSnapsh
 initComposer();
 window.gate={build:BUILD,open:openChat,run:runStorageTests,report:snapshot,audit,get list(){return list},draft,cm,assets,liveUrls,scrollEvidence,fillDraft,toggleExpand,addFiles,removeAsset,demoPhoto,clearDraft,openMenu,closeMenu,localSend,startTask,advanceTask,resetAll,selection,syncComposer,controlsGeometry,applyLayout,positionMenu,get previewsSettled(){return metadataQueue}};
 
+
+function hasComposerContent(){const c=richComposer?.capture();return c?!!c.text.trim()||c.files.length>0:!!input.value.trim()||draft.attachments.length>0;}
+function ensureRichComposer(){if(richComposer)return;richComposer=PablicusRichComposer.create({
+ container:$('editor'),input,
+ onChange:()=>{draftChanged();queueComposer()},onGeometry:queueComposer,
+ onError:message=>window.PablicusHost?.notify(message),acceptFile:file=>window.PablicusHost.acceptFile(file)
+});$('composeBox').append(richComposer.voiceButton);$('composeBox').classList.add('rich-composer');}
 window.PablicusChat={
  async open(user,chat,messages){
+  ensureRichComposer();await richComposer.stopRecording();
   if(submitBusy)throw Error('Дождитесь сохранения отправки');
   if(vault){draftChanged();await vault.flush();vault.restoring=true;vault.ready=false;clearTimeout(vault.timer);vault.store.close();}
   closeMenu(false);input.blur();list?.destroy();list=null;
   for(const u of [...liveUrls])urlRevoke(u);assets.clear();queueRows=[];queueLoaded=false;queueError=null;
   input.value='';draft.attachments=[];draft.expanded=false;draft.mode='message';draft.task=null;$('tray').replaceChildren();renderTask();
-  sourceMessages=messages;scopeUser=user;scopeChat=chat;
+  richComposer.clear();sourceMessages=messages;scopeUser=user;scopeChat=chat;
   if(!vaultBound){vaultBound=true;await initializeVault()}
-  else{vault=new DraftVault.Controller({capture:captureDraft,restore:restoreDraft,paint:paintVault,lock:lockDraft});vault.store=new PablicusStore(user,chat);window.vault=vault;queueRows=await vault.store.readQueue();queueLoaded=true;ingestQueue(queueRows);await vault.init();}
+  else{vault=new DraftVault.Controller({capture:captureDraft,restore:restoreDraft,paint:paintVault,lock:lockDraft});vault.store=new PablicusRichStore(user,chat);window.vault=vault;queueRows=await vault.store.readQueue();queueLoaded=true;ingestQueue(queueRows);await vault.init();}
   if(!list)await openChat();if(!vault.ready)throw Error('Локальное хранилище недоступно: черновик не будет потерян молча');
   $('reportBtn').onclick=()=>window.PablicusHost.showOutbox();
   syncComposer();return publicSnapshot();
@@ -481,11 +492,13 @@ window.PablicusChat={
   list.messages=sourceMessages.concat(queueMessages());if(!f)list.pendingBelow+=incoming;
   list.sync(a,f,'server-update');
  },
- async flush(){if(vault){draftChanged();await vault.flush()}},
+ async flush(){await richComposer?.stopRecording();if(vault){draftChanged();await vault.flush()}},
  async refreshQueue(){if(vault)return refreshQueue()},
  get scope(){return{user:scopeUser,chat:scopeChat}},
  get store(){return vault?.store},get snapshot(){return publicSnapshot()},
  async leave(){await this.flush();input.blur();closeMenu(false);list?.destroy();list=null;},
+ get rich(){return richComposer},
+ localAssetUrl(id){const a=assets.get(id);if(!a?.file)throw Error('Вложение не найдено на устройстве');return a.richUrl||(a.richUrl=urlCreate(a.file));},
  addFiles,fillDraft,get list(){return list},get draft(){return draft},get assets(){return assets},
 };
 

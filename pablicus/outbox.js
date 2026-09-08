@@ -88,7 +88,7 @@ class OutboxStore extends DraftStore {
 async function queueFingerprint(rows){
  const result=[];for(const r of rows.filter(active)){
   const entry={id:r.id,sequence:r.first_sequence,state:r.state,messages:[],files:[]};
-  for(const m of r.messages)entry.messages.push({id:m.id,sequence:m.sequence,kind:m.kind,assetId:m.assetId||null,text:m.kind==='text'?await digest(new Blob([m.text])):null});
+  for(const m of r.messages)entry.messages.push({id:m.id,sequence:m.sequence,kind:m.kind,blocks:m.blocks,assetId:m.assetId||null,text:m.kind==='text'?await digest(new Blob([m.text])):null});
   for(const f of r.files)entry.files.push({id:f.id,size:f.size,kind:f.kind,hash:await digest(f.file)});
   result.push(entry);
  }return result;
