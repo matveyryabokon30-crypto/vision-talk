@@ -1,0 +1,17 @@
+<section aria-label="Вход по номеру телефона">
+  <form data-sms="requestForm">
+    <label>Номер телефона
+      <input data-sms="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7 900 000-00-00" required>
+    </label>
+    <button data-sms="request" type="submit">Получить код SMS</button>
+  </form>
+  <p data-sms="notice" role="status"></p>
+  <p data-sms="error" role="alert"></p>
+  <form data-sms="codeForm" hidden>
+    <label>Код из SMS
+      <input data-sms="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required>
+    </label>
+    <button data-sms="verify" type="submit">Войти</button>
+    <button data-sms="change" type="button">Изменить номер</button>
+  </form>
+</section>
