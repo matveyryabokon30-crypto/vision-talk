@@ -1,0 +1,139 @@
+name: Pablicus RC4 checked in-app login
+on:
+  push:
+    branches: [pablicus-rc2-release]
+    paths: [.github/workflows/pablicus-rc4-local-login-release.yml]
+permissions:
+  contents: write
+  pages: write
+concurrency:
+  group: pablicus-publication
+  cancel-in-progress: false
+jobs:
+  checked-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: source
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Commit precise migration to actual source without changing production
+        working-directory: source
+        run: |
+          python apps/pablicus/migrate_rc4_login.py
+          git config user.name 'Pablicus release automation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/pablicus/build.py apps/pablicus/finalize.py apps/pablicus/src/sw.js
+          if ! git diff --cached --quiet; then git commit -m 'Finalize RC4 direct proof login source and versioned worker cache'; fi
+          git push origin HEAD:pablicus-rc2-release
+      - name: Build and verify required assets and syntax
+        working-directory: source
+        run: |
+          python -m pip install playwright==1.55.0 pillow==11.3.0
+          python apps/pablicus/build.py
+          python apps/pablicus/finalize.py
+          for f in apps/pablicus/dist/*.js; do node --check "$f"; done
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=Path('apps/pablicus/dist');a=(d/'app.js').read_text();h=(d/'index.html').read_text()
+          assert json.loads((d/'version.json').read_text())['version']=='0.1.0-rc4'
+          assert 'PablicusLogin.mount' in a and 'auth-local.js' in h
+          assert 'shouldCreateUser:false' in (d/'auth-local.js').read_text()
+          assert 'pablicus-auth-handoff' not in a and 'Ссылка отправлена.' not in a
+          assert '__ASSET_REVISION__' not in (d/'sw.js').read_text()
+          PY
+      - name: Install browser engines
+        run: python -m playwright install --with-deps chromium webkit
+      - name: Isolated stores and Auth proof checks with explicit mocked Auth HTTP
+        working-directory: source
+        run: python apps/pablicus/tests/auth_local.py
+      - name: Affected initialization and existing chat outbox regression with mock backend
+        working-directory: source
+        run: python apps/pablicus/tests/integration.py
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: publication
+      - name: Promote only tested static Pablicus subdirectory, preserve root and data
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p evidence
+          gh api repos/${{ github.repository }}/pages > evidence/pages-before.json
+          python - <<'PY'
+          import json,hashlib,shutil
+          from pathlib import Path
+          cfg=json.loads(Path('evidence/pages-before.json').read_text())
+          assert cfg['build_type']=='legacy' and cfg['source']=={'branch':'main','path':'/'}
+          root=Path('publication')
+          before={str(f.relative_to(root)):hashlib.sha256(f.read_bytes()).hexdigest() for f in root.rglob('*') if f.is_file() and '.git' not in f.parts and not str(f.relative_to(root)).startswith('pablicus/')}
+          shutil.rmtree(root/'pablicus',ignore_errors=True);shutil.copytree('source/apps/pablicus/dist',root/'pablicus')
+          for n,h in before.items():assert hashlib.sha256((root/n).read_bytes()).hexdigest()==h,n
+          Path('evidence/root-preserved.json').write_text(json.dumps({'files':len(before),'pass':True}))
+          PY
+          cd publication
+          git config user.name 'Pablicus release automation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- pablicus
+          if ! git diff --cached --quiet; then git commit -m 'Publish checked Pablicus RC4 direct installed-app login'; git push origin HEAD:main; fi
+          git rev-parse HEAD > ../evidence/publication-commit.txt
+          gh api -X POST repos/${{ github.repository }}/pages/builds > ../evidence/pages-build.json
+      - name: Confirm all published bytes over stable HTTPS and live unauthenticated launch
+        run: |
+          python - <<'PY'
+          import asyncio,hashlib,json,time,urllib.request
+          from pathlib import Path
+          from playwright.async_api import async_playwright
+          url='https://matveyryabokon30-crypto.github.io/vision-talk/pablicus/';d=Path('source/apps/pablicus/dist');expected=json.loads((d/'version.json').read_text())
+          for _ in range(36):
+            try:
+              actual=json.load(urllib.request.urlopen(url+'version.json?verify='+str(time.time()),timeout=10))
+              if actual.get('asset_revision')==expected['asset_revision']:break
+            except Exception:pass
+            time.sleep(5)
+          else:raise RuntimeError('Checked RC4 not reachable within bounded publication wait')
+          files=[]
+          for f in sorted(d.rglob('*')):
+            if not f.is_file():continue
+            n=str(f.relative_to(d));data=urllib.request.urlopen(url+n+'?verify='+expected['asset_revision'],timeout=20).read()
+            ok=hashlib.sha256(data).digest()==hashlib.sha256(f.read_bytes()).digest();assert ok,n
+            files.append({'path':n,'sha256':hashlib.sha256(data).hexdigest(),'match':True})
+          Path('evidence/live-bytes.json').write_text(json.dumps({'url':url,'version':expected,'files':files},indent=2))
+          async def live():
+            out=[]
+            async with async_playwright() as p:
+              for name in ['chromium','webkit']:
+                b=await getattr(p,name).launch();c=await b.new_context(viewport={'width':440,'height':766},service_workers='block');page=await c.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+                await page.goto(url+'?release='+expected['asset_revision'],wait_until='domcontentloaded',timeout=40000)
+                await page.wait_for_function('window.PablicusDebug?.version==="0.1.0-rc4"')
+                assert await page.locator('#magicSubmit').inner_text()=='Получить письмо для входа'
+                assert await page.locator('#loginPane').is_visible()
+                assert not await page.locator('#workspace').is_visible()
+                assert not errors,errors
+                await page.screenshot(path='evidence/'+name+'-rc4-live.png')
+                out.append({'engine':name,'online_login_screen':'PASS','real_email_verification':'NOT_TESTED','physical_iPhone':False});await b.close()
+            Path('evidence/live-launch.json').write_text(json.dumps(out,indent=2))
+          asyncio.run(live())
+          print('PABLICUS_RC4_LIVE_CHECKED',url,expected)
+          PY
+      - name: Preserve candidate source and scoped evidence
+        if: always()
+        run: |
+          mkdir -p evidence
+          cd source
+          git rev-parse HEAD > ../evidence/source-commit.txt
+          git archive HEAD > ../evidence/source.tar
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pablicus-rc4-auth-checked
+          path: |
+            evidence/
+            source/apps/pablicus/evidence/
+            source/apps/pablicus/dist/
+          retention-days: 14
