@@ -8,6 +8,7 @@ import asyncio
 import io
 import json
 import math
+import re
 import struct
 import wave
 from pathlib import Path
@@ -28,6 +29,51 @@ def wav():
             (0 if i < 16000 else 3000 * (i - 16000) / 48000) * math.sin(i * math.tau * 240 / 16000)
         )) for i in range(16000 * 4)))
     return stream.getvalue()
+
+
+def media_response(data, range_header=None):
+    """HTTP single-range semantics used by actual audio servers.
+
+    A WebKit rate change can seek to a new byte offset. Returning the entire
+    file with an invented Content-Range can stall its media pipeline.
+    """
+    total = len(data)
+    headers = {'Accept-Ranges': 'bytes', 'Content-Length': str(total)}
+    if not range_header:
+        return 200, headers, data
+    match = re.fullmatch(r'bytes=(\d*)-(\d*)', range_header.strip())
+    if not match or not any(match.groups()):
+        return 416, {'Content-Range': f'bytes */{total}'}, b''
+    first, last = match.groups()
+    if first:
+        start, end = int(first), min(int(last), total - 1) if last else total - 1
+    else:
+        start, end = max(0, total - int(last)), total - 1
+    if start >= total or start > end:
+        return 416, {'Content-Range': f'bytes */{total}'}, b''
+    body = data[start:end + 1]
+    headers['Content-Length'] = str(len(body))
+    headers['Content-Range'] = f'bytes {start}-{end}/{total}'
+    return 206, headers, body
+
+
+def verify_media_ranges():
+    data = b'0123456789'
+    assert media_response(data)[::2] == (200, data)
+    for request, expected_body, expected_range in [
+        ('bytes=0-1', b'01', 'bytes 0-1/10'),
+        ('bytes=4-', b'456789', 'bytes 4-9/10'),
+        ('bytes=3-5', b'345', 'bytes 3-5/10'),
+        ('bytes=7-100', b'789', 'bytes 7-9/10'),
+        ('bytes=-3', b'789', 'bytes 7-9/10'),
+    ]:
+        status, headers, body = media_response(data, request)
+        assert status == 206 and body == expected_body
+        assert headers['Content-Range'] == expected_range
+        assert headers['Content-Length'] == str(len(body))
+    for request in ['bytes=20-', 'bytes=5-2', 'bytes=-0', 'bytes=-', 'bytes=0-1,3-4']:
+        status, headers, body = media_response(data, request)
+        assert status == 416 and not body and headers['Content-Range'] == 'bytes */10'
 
 
 async def run(name, browser_type):
@@ -57,18 +103,14 @@ window.first=mount('one','voice.wav');mount('two','voice.wav');mount('measure','
             await route.fulfill(status=200, content_type='text/html', body=html)
         elif path in ['/rich-message.js', '/message-menu.js']:
             await route.fulfill(status=200, content_type='text/javascript', body=(ROOT / 'src' / path.removeprefix('/')).read_bytes())
-        elif path == '/voice.wav':
-            data = wav()
-            headers = {'Accept-Ranges': 'bytes', 'Content-Length': str(len(data))}
-            if route.request.headers.get('range'):
-                headers['Content-Range'] = f'bytes 0-{len(data)-1}/{len(data)}'
-            await route.fulfill(status=206 if route.request.headers.get('range') else 200, content_type='audio/wav', headers=headers, body=data)
-        elif path == '/fallback.wav':
-            # Media playback succeeds; optional waveform download does not.
-            if route.request.resource_type == 'fetch':
+        elif path in ['/voice.wav', '/fallback.wav']:
+            # Playback (including rate/seek Range requests) always receives valid
+            # bytes. Only the optional waveform fetch fails for this fixture.
+            if path == '/fallback.wav' and route.request.resource_type == 'fetch':
                 await route.fulfill(status=403, body='Optional waveform unavailable')
             else:
-                await route.fulfill(status=200, content_type='audio/wav', body=wav())
+                status, headers, body = media_response(wav(), route.request.headers.get('range'))
+                await route.fulfill(status=status, content_type='audio/wav', headers=headers, body=body)
         else:
             raise AssertionError('Unexpected network request: ' + route.request.url)
     await page.route('**/*', route)
@@ -134,6 +176,7 @@ window.first=mount('one','voice.wav');mount('two','voice.wav');mount('measure','
 
 
 async def main(names):
+    verify_media_ranges()
     async with async_playwright() as playwright:
         output = [await run(name, getattr(playwright, name)) for name in names]
     (ROOT / 'evidence/voice-design.json').write_text(json.dumps(output, ensure_ascii=False, indent=2))
