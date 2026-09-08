@@ -101,6 +101,9 @@ jobs:
           python apps/pablicus/tests/rich_message_integration.py
           python apps/pablicus/tests/message_interactions.py
           python apps/pablicus/tests/inbox_monitor.py
+          python apps/pablicus/tests/voice_design.py chromium
+          python apps/pablicus/tests/voice_design.py webkit
+          python apps/pablicus/tests/chat_polish.py
       - uses: actions/checkout@v4
         with:
           ref: main

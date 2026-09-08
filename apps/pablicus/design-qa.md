@@ -45,3 +45,31 @@ transport against the full build at 390×844. It checks audio decoding/play/paus
 only-one voice playback, album geometry, fullscreen bounds, downloads, durable
 reply references and actual Realtime callback delivery into the side monitor.
 The test does not establish physical-device autoplay or keyboard behavior.
+
+
+## Minimal chat and contextual message actions
+
+Reference: user-supplied Telegram action-menu image, Telegram voice recording,
+and the airy light messenger mockup. The app retains Pablicus purple tones and
+real account data. The compact menu replaces the broad central dialog with
+220px anchored action rows and a reaction strip; editing uses a 300px contextual
+form. Official Lucide icons carry license notices in message-menu.js.
+
+The voice strip shows real decoded waveform samples, elapsed/total time, speed
+and inline reply. No synthetic waveform is presented as recorded sound. A plain
+progress line remains before decoding or when decoding is unavailable.
+
+The inherited 73px of empty toolbar/status grid tracks are removed. Mobile
+header/list spacing, surfaces and composer controls are simplified. Functional
+QA uses the full generated app and isolated Supabase fixtures in chat_polish.py;
+voice_design.py uses a real PCM fixture for waveform/seek/rate checks. Physical
+iPhone contact-book access is not offered as a working feature.
+
+The final local Chromium build (3f4762ef38b6a88d) passed all 11 integrated
+chat-polish checks, including original-byte forwarding into a destination
+draft, retained source draft, soft-delete revision, duplicate-name discovery,
+profile links and shared direct-conversation reuse. The existing 9 interaction
+checks and 6 focused voice checks also passed. Final 390×844 menu, home, dark
+chat and people-picker screenshots were inspected. Headless emoji glyph gaps
+reflect the test font environment; physical iPhone rendering remains untested.
+Both Chromium and WebKit are required by the release workflow before promotion.
