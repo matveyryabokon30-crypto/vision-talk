@@ -52,16 +52,27 @@ jobs:
           assert.equal(config.passkeys.enabled, true);
           assert.equal(config.passkeys.rpId, 'matveyryabokon30-crypto.github.io');
           assert.equal(config.passkeys.origin, 'https://matveyryabokon30-crypto.github.io');
+          assert.equal(config.publicPasskey.enabled, true);
+          assert.equal(config.publicPasskey.origin, 'https://matveyryabokon30-crypto.github.io');
           assert.equal(config.publicSignupReady, false);
           assert.ok(Object.values(config.providers).every(enabled => enabled === false));
           JS
+      - name: Install pinned public passkey verifier and test dependencies
+        working-directory: source
+        run: npm ci --ignore-scripts --prefix apps/pablicus/public-passkey
       - name: Verify vendored SDK and authentication module contracts
         working-directory: source
         run: |
           python apps/pablicus/vendor/verify-supabase.py
-          node --test apps/pablicus/tests/oauth_module.test.js apps/pablicus/tests/passkey_module.test.js apps/pablicus/public-access/yandex-userinfo/handler.test.mjs
+          node --test apps/pablicus/tests/oauth_module.test.js apps/pablicus/tests/passkey_module.test.js apps/pablicus/tests/public_passkey_module.test.js apps/pablicus/public-access/yandex-userinfo/handler.test.mjs
       - name: Install browser engines
         run: python -m playwright install --with-deps chromium webkit
+      - name: Public first-key page with virtual WebAuthn and mocked provider HTTP
+        working-directory: source
+        run: python apps/pablicus/tests/public_passkey_page.py
+      - name: Public passkey full-app admission and existing-account identity preservation with mocked Auth HTTP
+        working-directory: source
+        run: python apps/pablicus/tests/public_passkey_app.py
       - name: Native WebAuthn enrollment and sign-in with virtual authenticator and mocked Auth HTTP
         working-directory: source
         run: python apps/pablicus/tests/passkey_login.py
@@ -138,6 +149,7 @@ jobs:
                 assert await page.locator('#loginSubmit').inner_text()=='Войти'
                 assert not await page.locator('#magicSubmit').is_visible()
                 assert await page.evaluate('PablicusAuthConfig.passkeys.enabled === true')
+                assert await page.evaluate('PablicusAuthConfig.publicPasskey.enabled === true && PablicusAuthConfig.publicPasskey.origin === location.origin')
                 supported=await page.evaluate('PablicusPasskeys.support().supported')
                 assert await page.locator('#passkeySignIn').is_visible()==supported
                 if supported:

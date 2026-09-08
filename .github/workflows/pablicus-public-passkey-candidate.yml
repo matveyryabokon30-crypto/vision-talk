@@ -99,6 +99,9 @@ jobs:
       - name: Public first-key page
         if: ${{ !cancelled() && steps.browsers.outcome == 'success' && steps.build.outcome == 'success' }}
         run: python apps/pablicus/tests/public_passkey_page.py
+      - name: Public passkey full-app routing and identity admission with mocked Auth HTTP
+        if: ${{ !cancelled() && steps.browsers.outcome == 'success' && steps.build.outcome == 'success' }}
+        run: python apps/pablicus/tests/public_passkey_app.py
       - name: Existing native keys, Auth, recovery and chat
         if: ${{ !cancelled() && steps.browsers.outcome == 'success' && steps.build.outcome == 'success' }}
         run: |
