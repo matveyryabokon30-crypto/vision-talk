@@ -380,8 +380,8 @@ async function restoreDraft(s){
  status('Черновик восстановлен локально. Ничего не отправлено.');
 }
 function paintVault(s){
- const labels={loading:'Открываю хранилище…',empty:'Черновик пуст · только этот браузер',dirty:'Изменения ещё не сохранены…',saving:'Сохраняется…',saved:'Сохранено в этом браузере',restored:'Восстановлено · файлов: '+s.restored_files,error:'Не сохранено · '+(s.error?.name||'ошибка'),'load-error':'Восстановление недоступно',conflict:'Изменено в другой вкладке'};
- const n=$('saveState');n.textContent=labels[s.state]||s.state;n.dataset.state=s.state;n.title=s.error?.message||'Локальное хранилище, не отправка и не облачная резервная копия';
+ const labels={loading:'Открываю хранилище…',empty:'',dirty:'Изменения ещё не сохранены…',saving:'Сохраняется…',saved:'Черновик сохранён',restored:'Черновик восстановлен',error:'Не сохранено · '+(s.error?.name||'ошибка'),'load-error':'Восстановление недоступно',conflict:'Изменено в другой вкладке'};
+ const n=$('saveState');n.textContent=labels[s.state]??'';n.dataset.state=s.state;n.title=s.error?.message||'Локальное хранилище, не отправка и не облачная резервная копия';
  $('saveRetry').hidden=!['error','load-error'].includes(s.state);
  $('loadSaved').hidden=s.state!=='conflict';
 }
@@ -468,6 +468,7 @@ window.gate={build:BUILD,open:openChat,run:runStorageTests,report:snapshot,audit
 function hasComposerContent(){const c=richComposer?.capture();return c?!!c.text.trim()||c.files.length>0:!!input.value.trim()||draft.attachments.length>0;}
 function paintReply(){app.classList.toggle('has-reply',!!replyTarget);window.PablicusHost?.paintReplyDraft(replyTarget);}
 function setReply(ref){if(submitBusy||vault?.restoring){window.PablicusHost?.notify('Дождитесь сохранения сообщения');return;}if(!list||!vault?.ready)throw Error('Сначала откройте разговор');replyTarget=ref?structuredClone(ref):null;paintReply();draftChanged();queueComposer();richComposer?.focus();}
+async function appendContent(content){if(!list||!vault?.ready||submitBusy||vault.restoring||!window.PablicusHost?.canSend())throw Error('Дождитесь сохранения черновика');const targetVault=vault,targetUser=scopeUser,targetChat=scopeChat;await richComposer.stopRecording();if(vault!==targetVault||scopeUser!==targetUser||scopeChat!==targetChat||!window.PablicusHost?.canSend())throw Error('Разговор изменился. Пересылка отменена');const previous=richComposer.capture(),blocks=[...previous.blocks,...content.blocks],files=[...previous.files,...content.files];if(blocks[0]?.type!=='text')blocks.unshift({id:crypto.randomUUID(),type:'text',text:''});if(blocks.at(-1)?.type!=='text')blocks.push({id:crypto.randomUUID(),type:'text',text:''});if(blocks.length>100||blocks.filter(b=>b.type==='text').reduce((n,b)=>n+b.text.length,0)>5000||files.reduce((n,f)=>n+f.size,0)>104857600)throw Error('Вместе с черновиком превышен размер сообщения. Отправьте черновик и повторите пересылку.');richComposer.restore({...previous,blocks,files});draftChanged();queueComposer();await targetVault.flush();if(vault===targetVault&&scopeUser===targetUser&&scopeChat===targetChat&&window.PablicusHost?.canSend())richComposer.focus();}
 function ensureRichComposer(){if(richComposer)return;richComposer=PablicusRichComposer.create({
  container:$('editor'),input,
  onChange:()=>{draftChanged();queueComposer()},onGeometry:queueComposer,
@@ -499,7 +500,7 @@ window.PablicusChat={
  get scope(){return{user:scopeUser,chat:scopeChat}},
  get store(){return vault?.store},get snapshot(){return publicSnapshot()},
  async leave(){await this.flush();input.blur();closeMenu(false);list?.destroy();list=null;},
- setReply,get reply(){return replyTarget},get rich(){return richComposer},
+ appendContent,setReply,get reply(){return replyTarget},get rich(){return richComposer},
  localAssetUrl(id){const a=assets.get(id);if(!a?.file)throw Error('Вложение не найдено на устройстве');return a.richUrl||(a.richUrl=urlCreate(a.file));},
  addFiles,fillDraft,get list(){return list},get draft(){return draft},get assets(){return assets},
 };

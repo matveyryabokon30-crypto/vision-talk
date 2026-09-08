@@ -215,9 +215,29 @@
       const audio = element('audio', 'richAudioElement');
       audio.preload = 'none';
       audio.setAttribute('playsinline', '');
-      const play = element('button', 'richAudioPlay', '▶');
+      // Lucide play/pause/corner-up-left paths (ISC); keep one consistent 24px grid.
+      const audioIcon = (name) => {
+        if (scope.PablicusMessageMenu?.icon) return scope.PablicusMessageMenu.icon(name);
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('aria-hidden', 'true');
+        svg.setAttribute('fill', 'none'); svg.setAttribute('stroke', 'currentColor');
+        svg.setAttribute('stroke-width', '1.8'); svg.setAttribute('stroke-linecap', 'round'); svg.setAttribute('stroke-linejoin', 'round');
+        const paths = name === 'pause' ? ['M9 4H5v16h4z', 'M19 4h-4v16h4z'] : name === 'reply' ? ['m9 14-5-5 5-5', 'M4 9h10a6 6 0 0 1 6 6v5'] : ['m6 3 14 9-14 9V3Z'];
+        for (const d of paths) { const path = document.createElementNS(svg.namespaceURI, 'path'); path.setAttribute('d', d); svg.append(path); }
+        return svg;
+      };
+      const play = element('button', 'richAudioPlay');
+      const playIcon = audioIcon('play'), pauseIcon = audioIcon('pause');
+      playIcon.classList.add('richAudioPlayIcon'); pauseIcon.classList.add('richAudioPauseIcon');
+      play.append(playIcon, pauseIcon);
       play.type = 'button';
       const info = element('div', 'richAudioInfo');
+      const timeline = element('div', 'richAudioTimeline');
+      const track = element('div', 'richAudioTrack');
+      const wave = element('div', 'richAudioWave');
+      const progress = element('div', 'richAudioWaveProgress');
+      const cursor = element('span', 'richAudioCursor');
+      for (const node of [track, wave, progress, cursor]) node.setAttribute('aria-hidden', 'true');
       const seek = element('input', 'richAudioSeek');
       seek.type = 'range'; seek.min = '0'; seek.max = '1000'; seek.step = '1'; seek.value = '0';
       seek.disabled = true;
@@ -226,10 +246,13 @@
       const time = element('span', 'richAudioTime');
       const status = element('span', 'richAudioStatus');
       status.setAttribute('role', 'status');
-      footer.append(time, status); info.append(seek, footer);
+      footer.append(time);
+      timeline.append(track, wave, progress, cursor, seek);
+      info.append(timeline, footer, status);
       container.append(play, info, audio);
       if (typeof options.onReply === 'function') {
-        const reply = element('button', 'richAudioReply', '↩');
+        const reply = element('button', 'richAudioReply');
+        reply.append(audioIcon('reply'));
         reply.type = 'button';
         reply.setAttribute('aria-label', 'Ответить на голосовое сообщение');
         reply.title = 'Ответить на голосовое сообщение';
@@ -240,21 +263,94 @@
         container.append(reply);
       }
       let epoch = 0, loading = false, resolvedUrl = null;
+      let waveformAbort = null, waveformDone = false, decodedDuration = 0;
+      // Never invent a signal. Until actual PCM samples are decoded, show a slim
+      // progress line. Bound this optional visual work; playback never waits for it.
+      async function loadWaveform(url) {
+        const Decoder = scope.OfflineAudioContext || scope.webkitOfflineAudioContext;
+        const maxBytes = 8 * 1024 * 1024;
+        if (waveformDone || waveformAbort || !Decoder || !scope.fetch || block.size > maxBytes || block.duration > 180) return;
+        const controller = new scope.AbortController();
+        waveformAbort = controller;
+        const stillCurrent = () => !disposed && isLiveRow() && waveformAbort === controller && !controller.signal.aborted;
+        try {
+          const response = await scope.fetch(url, { signal: controller.signal });
+          if (!response.ok || Number(response.headers.get('content-length')) > maxBytes) return;
+          let bytes;
+          if (response.body?.getReader) {
+            const reader = response.body.getReader(), chunks = [];
+            let size = 0;
+            while (true) {
+              const part = await reader.read();
+              if (part.done) break;
+              size += part.value.byteLength;
+              if (size > maxBytes || !stillCurrent()) { await reader.cancel(); return; }
+              chunks.push(part.value);
+            }
+            bytes = new Uint8Array(size); let offset = 0;
+            for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
+          } else {
+            bytes = new Uint8Array(await response.arrayBuffer());
+            if (bytes.byteLength > maxBytes) return;
+          }
+          if (!stillCurrent()) return;
+          const decoder = new Decoder(1, 1, 16000);
+          const decoded = await decoder.decodeAudioData(bytes.buffer);
+          if (!stillCurrent() || !decoded.length || decoded.duration > 180) return;
+          decodedDuration = decoded.duration;
+          const count = 40, values = [], samples = decoded.getChannelData(0);
+          for (let bar = 0; bar < count; bar++) {
+            const from = Math.floor(bar * samples.length / count), to = Math.floor((bar + 1) * samples.length / count);
+            let square = 0;
+            for (let i = from; i < to; i++) square += samples[i] * samples[i];
+            values.push(Math.sqrt(square / Math.max(1, to - from)));
+          }
+          const max = Math.max(...values);
+          const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          svg.setAttribute('viewBox', '0 0 160 28'); svg.setAttribute('preserveAspectRatio', 'none');
+          for (let index = 0; index < values.length; index++) {
+            const height = max > 0 ? Math.max(1.5, Math.sqrt(values[index] / max) * 26) : 1.5;
+            const bar = document.createElementNS(svg.namespaceURI, 'rect');
+            bar.setAttribute('x', String(index * 4 + 0.8)); bar.setAttribute('width', '2.4');
+            bar.setAttribute('y', String((28 - height) / 2)); bar.setAttribute('height', String(height)); bar.setAttribute('rx', '1.2');
+            svg.append(bar);
+          }
+          wave.replaceChildren(svg); progress.replaceChildren(svg.cloneNode(true));
+          container.classList.add('richAudioHasWave'); waveformDone = true; sync();
+        } catch (_) {
+          // Unsupported audio codecs/CORS/offline: the real seek track remains usable.
+        } finally { if (waveformAbort === controller) waveformAbort = null; }
+      }
       const duration = () => {
-        if (Number.isFinite(audio.duration) && audio.duration > 0) return audio.duration;
+        // Do not query a native timeline before metadata exists. Some media
+        // engines recalculate an unknown stream's duration when seekable is
+        // read; asking during initial loading can turn its length into zero.
+        if (audio.readyState >= 1) {
+          const nativeDuration = audio.duration;
+          if (Number.isFinite(nativeDuration) && nativeDuration > 0) return nativeDuration;
+        }
+        if (decodedDuration > 0) return decodedDuration;
         if (block.duration > 0) return block.duration;
-        const end = audio.seekable?.length ? audio.seekable.end(audio.seekable.length - 1) : 0;
-        return Number.isFinite(end) && end > 0 ? end : 0;
+        return 0;
       };
       const clock = seconds => readableDuration(Math.max(0, seconds)) || '0:00';
+      // Decoded PCM can describe the waveform even when the native player is
+      // an unseekable stream. Only its own timeline permits changing position.
+      const canSeek = () => {
+        if (!resolvedUrl || audio.readyState < 1) return false;
+        const nativeDuration = audio.duration;
+        if (!Number.isFinite(nativeDuration) || nativeDuration <= 0) return false;
+        const ranges = audio.seekable;
+        return ranges.length > 0 && ranges.end(ranges.length - 1) > ranges.start(ranges.length - 1);
+      };
       function sync() {
         const length = duration();
         const position = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
-        seek.disabled = !resolvedUrl || length <= 0;
+        seek.disabled = !canSeek();
         seek.value = String(length > 0 ? Math.min(1000, Math.round(position / length * 1000)) : 0);
         seek.setAttribute('aria-valuetext', clock(position) + (length ? ' из ' + clock(length) : ''));
         time.textContent = clock(position) + (length ? ' / ' + clock(length) : '');
-        play.textContent = loading ? '…' : audio.paused ? '▶' : 'Ⅱ';
+        container.style.setProperty('--voice-progress', seek.value / 10 + '%');
         play.setAttribute('aria-label', loading ? 'Отменить загрузку голосового сообщения' : audio.paused ? 'Воспроизвести голосовое сообщение' : 'Приостановить голосовое сообщение');
         play.setAttribute('aria-pressed', String(!audio.paused));
         container.classList.toggle('richAudioPlaying', !audio.paused);
@@ -267,6 +363,7 @@
         if (activeAudio === player) activeAudio = null;
         if (release) {
           resolvedUrl = null;
+          waveformAbort?.abort(); waveformAbort = null;
           audio.removeAttribute('src');
           audio.load();
           status.textContent = '';
@@ -285,10 +382,14 @@
       function start(operation) {
         if (disposed || !isLiveRow() || operation !== epoch || activeAudio !== player) return;
         loading = false;
-        if (audio.ended) audio.currentTime = 0;
         let result;
-        try { result = audio.play(); } catch (error) { failed(error, operation); return; }
+        try {
+          // A completed voice starts from its beginning on the next explicit tap.
+          if (audio.ended) audio.currentTime = 0;
+          result = audio.play();
+        } catch (error) { failed(error, operation); return; }
         if (result && typeof result.catch === 'function') result.catch(error => failed(error, operation));
+        if (resolvedUrl) loadWaveform(resolvedUrl);
         sync();
       }
       function toggle(event) {
@@ -325,7 +426,7 @@
       seek.addEventListener('input', event => {
         event.stopPropagation();
         const length = duration();
-        if (!disposed && isLiveRow() && length > 0) {
+        if (!disposed && isLiveRow() && canSeek() && length > 0) {
           audio.currentTime = Number(seek.value) / 1000 * length;
           sync();
         }
