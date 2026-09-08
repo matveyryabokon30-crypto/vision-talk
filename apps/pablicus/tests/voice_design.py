@@ -202,7 +202,7 @@ window.first=mount('one','voice.wav');mount('two','voice.wav');mount('measure','
         await first.locator('.richAudioPlay').click()
         assert await first.locator('audio').evaluate('(a)=>a.paused')
         native_timeline = await first.locator('audio').evaluate('a=>({duration:a.duration,ranges:Array.from({length:a.seekable.length},(_,i)=>[a.seekable.start(i),a.seekable.end(i)])})')
-        seekable = native_timeline['duration'] is not None and native_timeline['duration'] > 0 and any(end > start for start, end in native_timeline['ranges'])
+        seekable = native_timeline['duration'] is not None and math.isfinite(native_timeline['duration']) and native_timeline['duration'] > 0 and any(end > start for start, end in native_timeline['ranges'])
         before_seek = await first.locator('audio').evaluate('(a)=>a.currentTime')
         assert await first.locator('.richAudioSeek').is_disabled() == (not seekable)
         await first.locator('.richAudioSeek').evaluate("s=>{s.value='500';s.dispatchEvent(new Event('input',{bubbles:true}))}")

@@ -73,6 +73,13 @@ jobs:
           node --test apps/pablicus/tests/rich_message_module.test.js
       - name: Install browser engines
         run: python -m playwright install --with-deps chromium webkit
+      - name: Start a clocked local audio sink for native browser playback
+        run: |
+          sudo apt-get install -y --no-install-recommends pulseaudio
+          pulseaudio --start --exit-idle-time=-1
+          pactl load-module module-null-sink sink_name=pablicus_test rate=48000 channels=2
+          pactl set-default-sink pablicus_test
+          pactl list short sinks
       - name: Focused voice playback and integrated chat actions in both browser engines
         working-directory: source
         run: |
