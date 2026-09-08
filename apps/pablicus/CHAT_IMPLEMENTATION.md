@@ -135,3 +135,9 @@ Native seek capability is separate from decoded waveform duration. If a browser
 reports an unseekable stream, its waveform and time display continue, but the
 seek control is disabled and forced input cannot change native position. A
 positive native duration and a non-empty seekable range enable actual scrubbing.
+
+Native timeline queries wait until media metadata is available. Querying
+`seekable` during initialization made WebKit/GStreamer cache the current position
+as an unknown duration, producing premature end-of-stream. The real HTTP fixture
+now checks that the compact player retains the same 12-second native timeline as
+a plain audio element, alongside pause, actual six-second seeking and replay.

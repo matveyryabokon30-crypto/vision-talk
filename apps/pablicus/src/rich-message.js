@@ -322,16 +322,27 @@
         } finally { if (waveformAbort === controller) waveformAbort = null; }
       }
       const duration = () => {
-        if (Number.isFinite(audio.duration) && audio.duration > 0) return audio.duration;
+        // Do not query a native timeline before metadata exists. Some media
+        // engines recalculate an unknown stream's duration when seekable is
+        // read; asking during initial loading can turn its length into zero.
+        if (audio.readyState >= 1) {
+          const nativeDuration = audio.duration;
+          if (Number.isFinite(nativeDuration) && nativeDuration > 0) return nativeDuration;
+        }
         if (decodedDuration > 0) return decodedDuration;
         if (block.duration > 0) return block.duration;
-        const end = audio.seekable?.length ? audio.seekable.end(audio.seekable.length - 1) : 0;
-        return Number.isFinite(end) && end > 0 ? end : 0;
+        return 0;
       };
       const clock = seconds => readableDuration(Math.max(0, seconds)) || '0:00';
       // Decoded PCM can describe the waveform even when the native player is
       // an unseekable stream. Only its own timeline permits changing position.
-      const canSeek = () => { const ranges = audio.seekable; return !!resolvedUrl && Number.isFinite(audio.duration) && audio.duration > 0 && ranges.length > 0 && ranges.end(ranges.length - 1) > ranges.start(ranges.length - 1); };
+      const canSeek = () => {
+        if (!resolvedUrl || audio.readyState < 1) return false;
+        const nativeDuration = audio.duration;
+        if (!Number.isFinite(nativeDuration) || nativeDuration <= 0) return false;
+        const ranges = audio.seekable;
+        return ranges.length > 0 && ranges.end(ranges.length - 1) > ranges.start(ranges.length - 1);
+      };
       function sync() {
         const length = duration();
         const position = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
