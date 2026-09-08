@@ -82,7 +82,7 @@ jobs:
       - name: Isolated stores and Auth proof checks with explicit mocked Auth HTTP
         working-directory: source
         run: python apps/pablicus/tests/auth_local.py
-      - name: Visible password login, recovery callback and self-service password checks
+      - name: Legacy-mode password login, recovery callback and self-service password checks
         working-directory: source
         run: python apps/pablicus/tests/access_setup.py
       - name: Affected initialization and existing chat outbox regression with mock backend
@@ -145,23 +145,22 @@ jobs:
                 page.on('request',lambda request:passkey_requests.append(request.method) if '/auth/v1/passkeys' in request.url else None)
                 await page.goto(url+'?release='+expected['asset_revision'],wait_until='domcontentloaded',timeout=40000)
                 await page.wait_for_function('window.PablicusDebug?.version==="0.1.0-rc5"')
-                for selector in ['#email','#password','#loginSubmit','#recoverPassword']:assert await page.locator(selector).is_visible()
-                assert await page.locator('#loginSubmit').inner_text()=='Войти'
-                assert not await page.locator('#magicSubmit').is_visible()
+                for selector in ['#legacyLogin','#email','#password','#showLoginPassword','#loginSubmit','#recoverPassword','#emailLogin','#magicSubmit','#oauthLogin','#newChat']:assert not await page.locator(selector).is_visible(),selector
+                assert await page.locator('#loginPane button:visible:not(#installLogin)').evaluate_all('buttons => buttons.map(button => button.id)')==['passkeySignIn']
                 assert await page.evaluate('PablicusAuthConfig.passkeys.enabled === true')
                 assert await page.evaluate('PablicusAuthConfig.publicPasskey.enabled === true && PablicusAuthConfig.publicPasskey.origin === location.origin')
                 supported=await page.evaluate('PablicusPasskeys.support().supported')
-                assert await page.locator('#passkeySignIn').is_visible()==supported
-                if supported:
-                  assert await page.locator('#passkeySignIn').is_enabled()
-                  assert await page.locator('#passkeySignIn').inner_text()=='Войти с ключом доступа'
+                assert await page.locator('#passkeySignIn').is_visible()
+                assert await page.locator('#passkeySignIn').is_enabled()==supported
+                assert await page.locator('#passkeySignIn').inner_text()=='Войти с ключом доступа'
+                if not supported:assert 'Safari' in await page.locator('#passkeyLoginStatus').inner_text()
                 assert await page.evaluate('document.documentElement.scrollWidth<=innerWidth')
                 assert await page.locator('#loginPane').is_visible()
                 assert not await page.locator('#workspace').is_visible()
                 assert not errors,errors
                 assert not passkey_requests,passkey_requests
                 await page.screenshot(path='evidence/'+name+'-rc5-live.png')
-                out.append({'engine':name,'online_login_screen':'PASS','passkey_button_visible':supported,'automatic_passkey_requests':0,'real_passkey_ceremony':'NOT_TESTED','real_email_verification':'NOT_TESTED','physical_iPhone':False});await b.close()
+                out.append({'engine':name,'online_login_screen':'PASS','key_only_login':True,'legacy_login_fields_visible':False,'passkey_button_visible':True,'passkey_button_enabled':supported,'automatic_passkey_requests':0,'real_passkey_ceremony':'NOT_TESTED','real_email_verification':'NOT_TESTED','physical_iPhone':False});await b.close()
             Path('evidence/live-launch.json').write_text(json.dumps(out,indent=2))
           asyncio.run(live())
           print('PABLICUS_RC5_LIVE_CHECKED',url,expected)

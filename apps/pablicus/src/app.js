@@ -33,7 +33,7 @@
  $('dialogClose').onclick=()=>$('productDialog').close();$('installLogin').onclick=install;
  function theme(value){safeSet('pablicus:theme',value);document.documentElement.dataset.theme=value;const dark=value==='dark'||value==='system'&&matchMedia('(prefers-color-scheme:dark)').matches;$('logo').src='assets/wordmark-'+(dark?'dark':'light')+'.png';$('logo').parentElement.querySelector('source')?.remove();document.querySelector('meta[name="theme-color"]').content=dark?'#111218':'#FAF9FC';window.PablicusChat?.list?.refreshFont()}
  theme(safeGet('pablicus:theme')||'system');matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>theme(safeGet('pablicus:theme')||'system'));
- function clearSessionView(){if(passkeys?.snapshot().busy&&passkeys.snapshot().operation!=='signIn')passkeys.cancel();$('productDialog').close();$('dialogContent').replaceChildren();user=null;profile=null;dialogs=[];rows=[];current=null;epoch++;signed.clear();if(channel)sb.removeChannel(channel);channel=null;$('app').hidden=true;$('home').hidden=false;$('workspace').hidden=true;$('mainNav').hidden=true;$('loginPane').hidden=false;}
+ function clearSessionView(){$('newChat').hidden=true;if(passkeys?.snapshot().busy&&passkeys.snapshot().operation!=='signIn')passkeys.cancel();$('productDialog').close();$('dialogContent').replaceChildren();user=null;profile=null;dialogs=[];rows=[];current=null;epoch++;signed.clear();if(channel)sb.removeChannel(channel);channel=null;$('app').hidden=true;$('home').hidden=false;$('workspace').hidden=true;$('mainNav').hidden=true;$('loginPane').hidden=false;}
  async function authenticate(session,{signal,verifiedPasskey=false}={}){
   if(signal?.aborted)return;
   const attempt=++authVersion;
@@ -54,10 +54,11 @@
  const passkeyConfig=authConfig?.passkeys;
  const publicKeyEnabled=authConfig?.publicPasskey?.enabled===true&&authConfig.publicPasskey.origin===location.origin;
  const passkeyEnabled=passkeyConfig?.enabled===true&&passkeyConfig.origin===location.origin&&passkeyConfig.rpId===location.hostname;
+ $('legacyLogin').hidden=publicKeyEnabled;
  function paintPasskeys(state){
-  $('passkeyLogin').hidden=!((state.enabled||publicKeyEnabled)&&state.supported);
-  $('passkeySignIn').disabled=state.busy;
-  $('passkeyLoginStatus').textContent=state.operation==='signIn'?state.message:'';
+  $('passkeyLogin').hidden=!publicKeyEnabled&&!(state.enabled&&state.supported);
+  $('passkeySignIn').disabled=state.busy||(publicKeyEnabled&&!state.supported);
+  $('passkeyLoginStatus').textContent=publicKeyEnabled&&!state.supported?'Откройте Pablicus в Safari или Chrome на устройстве с поддержкой ключей доступа.':state.operation==='signIn'?state.message:'';
   const button=$('passkeyRegister'),status=$('passkeySettingsStatus'),list=$('passkeyList');
   if(button)button.disabled=state.busy;
   if(status)status.textContent=state.operation==='signIn'?'':state.message;
@@ -91,9 +92,9 @@
   $('passkeyLoginStatus').textContent=state.phase==='error'?'Не удалось открыть вход. Попробуйте ещё раз.':state.busy?'Открываем вход с ключом доступа…':'';
  }});
  window.addEventListener('pageshow',()=>publicKeyFlow.resume());
- if(publicKeyEnabled){$('accessModeNote').textContent='Первый вход: имя и ключ доступа. Пароль и SMS не нужны.'}
+ if(publicKeyEnabled){$('accessModeNote').textContent='При первом входе укажите имя и создайте ключ доступа.'}
  $('passkeySignIn').onclick=async()=>{
-  if(passkeys.snapshot().busy||passwordLogin?.isBusy())return;
+  if(!passkeys.snapshot().supported||passkeys.snapshot().busy||passwordLogin?.isBusy())return;
   if(publicKeyEnabled){await publicKeyFlow.start();return}
   passkeyUnvalidated=true;safeSet(passkeyGuardKey,true);
   if(safeGet(passkeyGuardKey)!==true){$('passkeyLoginStatus').textContent='Разрешите сохранение данных сайта, чтобы безопасно войти с ключом доступа.';return}
@@ -115,7 +116,7 @@
   const list=el('ul');list.id='passkeyList';section.append(button,status,list);container.append(section);paintPasskeys(state);passkeys.list();
  }
 
- const oauthReady=authConfig?.publicSignupReady===true&&Object.values(authConfig.providers||{}).some(value=>value===true);
+ const oauthReady=!publicKeyEnabled&&authConfig?.publicSignupReady===true&&Object.values(authConfig.providers||{}).some(value=>value===true);
  $('oauthLogin').hidden=!oauthReady;
  if(oauthReady){
   $('accessModeNote').textContent='При первом входе аккаунт создаётся автоматически.';
