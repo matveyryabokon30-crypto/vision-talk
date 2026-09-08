@@ -201,25 +201,35 @@ window.first=mount('one','voice.wav');mount('two','voice.wav');mount('measure','
         checks.append('compact 68px voice strip with play and separate reply controls')
         await first.locator('.richAudioPlay').click()
         assert await first.locator('audio').evaluate('(a)=>a.paused')
+        native_timeline = await first.locator('audio').evaluate('a=>({duration:a.duration,ranges:Array.from({length:a.seekable.length},(_,i)=>[a.seekable.start(i),a.seekable.end(i)])})')
+        seekable = native_timeline['duration'] is not None and native_timeline['duration'] > 0 and any(end > start for start, end in native_timeline['ranges'])
+        before_seek = await first.locator('audio').evaluate('(a)=>a.currentTime')
+        assert await first.locator('.richAudioSeek').is_disabled() == (not seekable)
         await first.locator('.richAudioSeek').evaluate("s=>{s.value='500';s.dispatchEvent(new Event('input',{bubbles:true}))}")
-        assert 5.9 <= await first.locator('audio').evaluate('(a)=>a.currentTime') <= 6.1
+        if seekable:
+            assert 5.9 <= await first.locator('audio').evaluate('(a)=>a.currentTime') <= 6.1
+            checks.append('a native seekable timeline actually moves to six seconds')
+        else:
+            assert abs(await first.locator('audio').evaluate('(a)=>a.currentTime') - before_seek) < .1
+            checks.append('an unseekable native stream disables scrubbing and ignores forced seek input while retaining playback')
         paused_at = await first.locator('audio').evaluate('(a)=>a.currentTime')
         await page.wait_for_timeout(120)
         assert await first.locator('audio').evaluate('(a)=>a.paused')
         assert abs(await first.locator('audio').evaluate('(a)=>a.currentTime') - paused_at) < .1
         print(f'VOICE_SEEK_RESUME_START engine={name}', flush=True)
         await first.locator('.richAudioPlay').click()
-        await page.wait_for_function("(()=>{const a=document.querySelector('[data-block-id=one] audio');return !a.paused&&a.currentTime>6.05})()")
+        await page.wait_for_function("position=>{const a=document.querySelector('[data-block-id=one] audio');return !a.paused&&a.currentTime>position+.05}", arg=paused_at)
         # Reach a real end-of-stream, then explicitly play again. This protects
         # the basic voice lifecycle independently from optional future features.
-        await first.locator('.richAudioSeek').evaluate("s=>{s.value='980';s.dispatchEvent(new Event('input',{bubbles:true}))}")
+        if seekable:
+            await first.locator('.richAudioSeek').evaluate("s=>{s.value='980';s.dispatchEvent(new Event('input',{bubbles:true}))}")
         await page.wait_for_function("document.querySelector('[data-block-id=one] audio').ended")
         assert await first.locator('audio').evaluate('(a)=>a.ended && a.paused')
         print(f'VOICE_ENDED_REPLAY_START engine={name}', flush=True)
         await first.locator('.richAudioPlay').click()
         await page.wait_for_function("(()=>{const a=document.querySelector('[data-block-id=one] audio');return !a.paused&&!a.ended&&a.currentTime>.1&&a.currentTime<3})()")
         print(f'VOICE_ENDED_REPLAY_DONE engine={name}', flush=True)
-        checks.append('paused seek preserves position; real end-of-stream stays stopped until an explicit replay from the beginning')
+        checks.append('pause preserves position; real end-of-stream stays stopped until an explicit replay from the beginning')
         await second.locator('.richAudioPlay').click()
         await page.wait_for_function("document.querySelector('[data-block-id=two] audio').currentTime > .1")
         assert await first.locator('audio').evaluate('(a)=>a.paused')
@@ -227,14 +237,15 @@ window.first=mount('one','voice.wav');mount('two','voice.wav');mount('measure','
         assert await page.evaluate('replies') == ['two']
         assert await page.evaluate('opens') == 0
         await second.locator('.richAudioPlay').click()
-        checks.append('seek changes position; second voice pauses first; separate reply does not open or toggle media')
+        checks.append('second voice pauses first; separate reply does not open or toggle media')
         await page.evaluate("mount('fallback','fallback.wav')")
         fallback = page.locator('[data-block-id="fallback"]')
         await fallback.locator('.richAudioPlay').click()
         await page.wait_for_function("document.querySelector('[data-block-id=fallback] audio').currentTime > .1")
         await page.wait_for_timeout(150)
         assert await fallback.locator('.richAudioWave rect').count() == 0
-        assert not await fallback.locator('.richAudioSeek').is_disabled()
+        fallback_seekable = await fallback.locator('audio').evaluate('a=>Number.isFinite(a.duration)&&a.duration>0&&a.seekable.length>0&&a.seekable.end(a.seekable.length-1)>a.seekable.start(a.seekable.length-1)')
+        assert await fallback.locator('.richAudioSeek').is_disabled() == (not fallback_seekable)
         await fallback.locator('.richAudioPlay').click()
         checks.append('optional waveform failure preserves playback and the clean seek track')
         await page.locator('[data-block-id="measure"] .richAudioPlay').dispatch_event('click')

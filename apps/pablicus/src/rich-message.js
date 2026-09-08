@@ -329,10 +329,13 @@
         return Number.isFinite(end) && end > 0 ? end : 0;
       };
       const clock = seconds => readableDuration(Math.max(0, seconds)) || '0:00';
+      // Decoded PCM can describe the waveform even when the native player is
+      // an unseekable stream. Only its own timeline permits changing position.
+      const canSeek = () => { const ranges = audio.seekable; return !!resolvedUrl && Number.isFinite(audio.duration) && audio.duration > 0 && ranges.length > 0 && ranges.end(ranges.length - 1) > ranges.start(ranges.length - 1); };
       function sync() {
         const length = duration();
         const position = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
-        seek.disabled = !resolvedUrl || length <= 0;
+        seek.disabled = !canSeek();
         seek.value = String(length > 0 ? Math.min(1000, Math.round(position / length * 1000)) : 0);
         seek.setAttribute('aria-valuetext', clock(position) + (length ? ' из ' + clock(length) : ''));
         time.textContent = clock(position) + (length ? ' / ' + clock(length) : '');
@@ -412,7 +415,7 @@
       seek.addEventListener('input', event => {
         event.stopPropagation();
         const length = duration();
-        if (!disposed && isLiveRow() && length > 0) {
+        if (!disposed && isLiveRow() && canSeek() && length > 0) {
           audio.currentTime = Number(seek.value) / 1000 * length;
           sync();
         }
