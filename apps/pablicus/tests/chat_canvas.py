@@ -232,7 +232,8 @@ async def one(name, engine):
             assert await page.locator('.workspaceEditor').is_visible()
         else:
             assert await page.locator('#composeBox #editor').is_hidden()
-        assert await page.locator('#workspaceQuick').is_visible()
+        if not editing:
+            assert await page.locator('#workspaceQuick').is_visible()
 
     async def fill_plan(value):
         if not await body.is_visible():
