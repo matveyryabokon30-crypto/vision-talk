@@ -512,6 +512,7 @@ window.PablicusChat={
   list.sync(a,f,'server-update');
  },
  async flush(){await richComposer?.stopRecording();if(vault){draftChanged();await vault.flush()}},
+ collapseEditor(){if(draft.expanded)toggleExpand();},
  async persistDraft(){if(vault){draftChanged();await vault.flush()}},
  async refreshQueue(){if(vault)return refreshQueue()},
  get scope(){return{user:scopeUser,chat:scopeChat}},

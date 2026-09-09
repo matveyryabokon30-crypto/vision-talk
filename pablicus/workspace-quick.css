@@ -1,12 +1,13 @@
-/* Quiet, functional shortcuts; the popover never changes composer geometry. */
-#workspaceQuick { min-width: 0; }
+/* Shortcuts share the message body's toolbar; nothing is added below it. */
+#workspaceQuick { min-width: 0; max-width: 100%; }
 .pablicusWorkspaceQuick {
   display: flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  gap: 2px;
   min-width: 0;
   min-height: 28px;
-  padding: 0 12px;
+  padding: 0;
   box-sizing: border-box;
 }
 .pablicusWorkspaceQuick[hidden], .pwqPopover[hidden], .pwqPopover [hidden] { display: none !important; }
@@ -21,7 +22,7 @@
   min-width: 0;
   min-height: 28px;
   margin: 0;
-  padding: 3px 5px;
+  padding: 3px 2px;
   border: 0;
   border-radius: 9px;
   background: transparent;
@@ -35,7 +36,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 .pwqChipLabel { overflow: hidden; text-overflow: ellipsis; }
-#composer .pwqChip svg { width: 12px; height: 12px; flex: 0 0 auto; }
+#composer .pwqChip svg { width: 10px; height: 10px; flex: 0 0 auto; }
 #composer .pwqChip[aria-expanded='true'] { color: var(--text, #24272b); background: var(--soft, #f2f3f4); }
 .pwqPopover {
   position: fixed;
@@ -73,4 +74,10 @@
 .pwqPopover button:focus-visible, #composer .pwqChip:focus-visible { outline: 2px solid var(--muted, #73777c); outline-offset: -2px; }
 @media (hover: hover) {
   .pwqRow:hover, .pwqClose:hover, #composer .pwqChip:hover { background: var(--soft, #f2f3f4); }
+}
+
+@media (max-width: 360px) {
+  .pablicusWorkspaceQuick { gap: 6px; }
+  #composer .pwqChip { padding-inline: 0; gap: 0; }
+  #composer .pwqChip svg { display: none; }
 }
