@@ -96,10 +96,7 @@
     let loadedDay = '', loadedTimezone = '', keyboardOpened = false;
     const composer = options.host.closest('#composer');
 
-    function measure() {
-      if (composer) composer.style.setProperty('--workspace-quick-height', (bar.hidden ? 0 : Math.ceil(options.host.getBoundingClientRect().height)) + 'px');
-    }
-    const sizeObserver = typeof scope.ResizeObserver === 'function' ? new scope.ResizeObserver(() => { measure(); queuePosition(); }) : null;
+    const sizeObserver = typeof scope.ResizeObserver === 'function' ? new scope.ResizeObserver(queuePosition) : null;
     sizeObserver?.observe(options.host);
     if (composer && composer !== options.host) sizeObserver?.observe(composer);
 
@@ -121,7 +118,6 @@
         context = { ...next };
       }
       bar.hidden = false;
-      measure();
       return true;
     }
     function abortReads() {
@@ -129,11 +125,12 @@
     }
     function updateChips() {
       const taskCount = states.tasks.total;
-      chips.tasks.querySelector('.pwqChipLabel').textContent = taskCount === null ? 'Сегодня' : taskCount === 0 ? 'Сегодня · нет дел' : 'Сегодня · ' + taskCount + ' ' + taskWord(taskCount);
+      chips.tasks.querySelector('.pwqChipLabel').textContent = taskCount === null ? 'Сегодня' : 'Сегодня ' + taskCount;
+      chips.tasks.setAttribute('aria-label', taskCount === null ? 'Дела на сегодня' : 'Сегодня: ' + taskCount + ' ' + taskWord(taskCount));
       const projectCount = states.projects.total;
-      chips.projects.querySelector('.pwqChipLabel').textContent = projectCount === null ? 'Проекты' : 'Проекты · ' + projectCount;
+      chips.projects.querySelector('.pwqChipLabel').textContent = projectCount === null ? 'Проекты' : 'Проекты ' + projectCount;
+      chips.projects.setAttribute('aria-label', projectCount === null ? 'Все проекты' : 'Все проекты: ' + projectCount);
       for (const kind of KINDS) chips[kind].setAttribute('aria-expanded', String(opened === kind));
-      measure();
     }
     function timeLabel(task) {
       if (!task.due_at) return 'Сегодня';
@@ -331,7 +328,7 @@
       context = null; loadedDay = ''; loadedTimezone = '';
       list.replaceChildren(); status.textContent = ''; heading.textContent = '';
       bar.hidden = true;
-      updateChips(); measure();
+      updateChips();
     }
     function outside(event) {
       if (opened && !popover.contains(event.target) && !bar.contains(event.target)) close(false);
@@ -367,7 +364,6 @@
       scope.visualViewport?.removeEventListener('resize', queuePosition);
       scope.visualViewport?.removeEventListener('scroll', queuePosition);
       bar.remove(); popover.remove();
-      composer?.style.setProperty('--workspace-quick-height', '0px');
     }
     updateChips();
     return { refresh, reset, destroy, close };

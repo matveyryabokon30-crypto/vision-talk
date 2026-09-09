@@ -282,7 +282,7 @@
   display: none !important;
 }
 #app.composer-fullscreen #composeBox {
-  height: calc(100% - var(--save-feedback-height, 0px) - var(--workspace-quick-height, 0px));
+  height: calc(100% - var(--save-feedback-height, 0px));
 }
 
 @media (hover: hover) {

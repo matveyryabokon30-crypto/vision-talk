@@ -102,6 +102,7 @@ window.PablicusChat={
   list.sync(a,f,'server-update');
  },
  async flush(){if(vault){draftChanged();await vault.flush()}},
+ collapseEditor(){if(draft.expanded)toggleExpand();},
  async persistDraft(){if(vault){draftChanged();await vault.flush()}},
  async refreshQueue(){if(vault)return refreshQueue()},
  get scope(){return{user:scopeUser,chat:scopeChat}},
@@ -123,7 +124,7 @@ h=h.replace('<footer id="composer">','<footer id="composer"><div id="replyDraft"
 h=h.replace('<div id="vaultLine">','<div id="vaultLine" hidden>')
 h=h.replace('aria-live="polite">Открываю хранилище…</span>','aria-live="polite"></span>')
 h=h.replace('<button id="storageInfo" aria-label="Информация о хранении">ⓘ</button>','')
-h=h.replace('</footer>', '<div id="workspaceQuick"></div></footer>',1)
+h=h.replace('<div id="editor">', '<div id="workspaceQuick"></div><div id="editor">',1)
 h=h.replace('<body>','<body>'+ (ROOT/'src'/'home.html').read_text())
 h=re.sub(r'<script src="[^"]+"[^>]*></script>','',h)
 h=h.replace('</body>', '<script src="vendor/supabase.js"></script><script src="vault.js"></script><script src="outbox.js"></script><script src="transport-store.js"></script><script src="rich-store.js"></script><script src="rich-composer.js"></script><script src="message-menu.js"></script><script src="rich-message.js"></script><script src="chat.js"></script><script src="auth-local.js"></script><script src="auth-config.js"></script><script src="oauth-login.js"></script><script src="oauth-session.js"></script><script src="passkey-login.js"></script><script src="public-passkey.js"></script><script src="app.js"></script></body>')

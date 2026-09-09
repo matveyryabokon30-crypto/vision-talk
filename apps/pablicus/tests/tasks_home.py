@@ -269,6 +269,7 @@ async def one(name, engine):
         await page.locator('#chatCanvasPanel .pablicusChatCanvas[data-state="ready"]').wait_for()
         assert await page.locator('#canvasTab').get_attribute('aria-selected') == 'true'
         assert 'Катя уже уточнила задачу' in await page.locator('#chatCanvasPanel').inner_text()
+        await page.locator('.pccTaskCancel').click()
         await page.locator('#chatBack').click()
         await panel.wait_for()
         await wait_ids((await expected_ids())[:40])
@@ -277,6 +278,7 @@ async def one(name, engine):
         await card(58).locator('.pthOpen').click()
         task_form = page.locator(f'.pccTaskForm[data-task-id="{task_id(58)}"]')
         await task_form.wait_for()
+        await task_form.locator('.pccTaskMoreToggle').click()
         await task_form.locator('.pccTaskArchive').click()
         await task_form.wait_for(state='hidden')
         await page.locator('#chatBack').click()
@@ -286,6 +288,7 @@ async def one(name, engine):
         assert await visible_ids() == [task_id(58)]
         await card(58).locator('.pthOpen').click()
         await task_form.wait_for()
+        await task_form.locator('.pccTaskMoreToggle').click()
         await task_form.locator('.pccTaskRestore').click()
         await task_form.wait_for(state='hidden')
         await page.locator('#chatBack').click()
