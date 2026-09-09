@@ -36,12 +36,14 @@ def workspace_sdk():
       task.completed=false;task.archived_at=null;task.assignee_id=user.id;task.due_date=__mock.taskToday;
     }
     const qaTask=n=>Object.values(__mock.canvasState).flatMap(state=>state.tasks).find(task=>task.id===taskId(n));
-    qaTask(60).completed=true;qaTask(59).assignee_id=peer;qaTask(58).archived_at=new Date().toISOString();
+    qaTask(60).completed=true;qaTask(59).assignee_id=peer;qaTask(59).due_at=null;qaTask(58).archived_at=new Date().toISOString();
     qaTask(57).due_date=relativeDay(1);qaTask(56).assignee_id=null;
     // 22:00 UTC falls on the NEXT local day in the Moscow browser, even when
     // the legacy date column still contains today.
     qaTask(55).due_at=__mock.taskToday+'T22:00:00.000Z';qaTask(55).due_timezone='Europe/Moscow';
     qaTask(54).due_at=__mock.taskToday+'T06:30:00.000Z';qaTask(54).due_timezone='Europe/Moscow';
+    qaTask(53).due_date=null;qaTask(53).created_at=__mock.taskToday+'T07:30:00.123456+00:00';
+    qaTask(52).due_date=null;qaTask(52).created_at=relativeDay(-1)+'T07:30:00.123456+00:00';
     for(let n=1;n<=43;n++){
       const id='66666666-1111-4111-8111-'+String(n).padStart(12,'0');
       const state=seedCanvas(id,'Проект QA '+String(n).padStart(2,'0')+'\nСинтетическое описание проекта');
@@ -50,8 +52,8 @@ def workspace_sdk():
     }
     const baseAllTasks=__mock.allTasks;
     __mock.allTasks=()=>baseAllTasks().filter(task=>__mock.canvasState[task.conversation_id].participants.some(person=>person.id===user.id));
-    __mock.todayTasks=()=>__mock.allTasks().filter(task=>!task.completed&&!task.archived_at&&(!task.assignee_id||task.assignee_id===user.id)
-      &&(task.due_at?new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Moscow',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(task.due_at)):task.due_date)===__mock.taskToday);
+    __mock.todayTasks=()=>__mock.allTasks().filter(task=>!task.completed&&!task.archived_at
+      &&(task.due_at?new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Moscow',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(task.due_at)):task.due_date||new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Moscow',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(task.created_at)))===__mock.taskToday);
     __mock.allProjects=()=>Object.values(__mock.canvasState).filter(state=>state.participants.some(person=>person.id===user.id)&&state.canvas.body.trim())
       .map(state=>({conversation_id:state.conversation_id,title:state.canvas.body.split('\n')[0],
         conversation_title:state.conversation_id===chat?'@qa_peer':state.conversation_id==='__OTHER_CHAT__'?'Соседний QA чат':'QA разговор',
@@ -72,6 +74,7 @@ def workspace_sdk():
     '''.replace('__SECOND_USER__', SECOND_USER).replace('__OTHER_CHAT__', OTHER_CHAT)
     replace('const result=(data,error=null)=>Promise.resolve({data,error});', setup + '\nconst result=(data,error=null)=>Promise.resolve({data,error});')
     replace("if(name==='pablicus_list_tasks_v2')return listTasks(args);", "if(name==='pablicus_list_projects')return listProjects(args);\n      if(name==='pablicus_list_tasks_v2')return listTasks(args);")
+    replace("      if(args.p_view==='today')rows=rows.filter(task=>(!task.assignee_id||task.assignee_id===user.id)&&(task.due_at?new Intl.DateTimeFormat('en-CA',{timeZone:args.p_timezone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(task.due_at)):task.due_date)===args.p_today);", "      if(args.p_view==='today')rows=rows.filter(task=>(task.due_at?new Intl.DateTimeFormat('en-CA',{timeZone:args.p_timezone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(task.due_at)):task.due_date||new Intl.DateTimeFormat('en-CA',{timeZone:args.p_timezone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(task.created_at)))===args.p_today);")
     return source
 
 
@@ -171,11 +174,13 @@ async def one(name, engine):
         await wait_count('tasks', 55)
         await wait_rows(today[:40])
         assert task_id(55) not in today and task_id(54) in today and task_id(56) in today
-        assert task_id(59) not in today and task_id(60) not in today and task_id(58) not in today
+        assert task_id(59) in today and task_id(60) not in today and task_id(58) not in today
+        assert task_id(53) in today and task_id(52) not in today
+        assert 'Добавлено сегодня' in await popover.locator(f'.pwqRow[data-task-id="{task_id(53)}"]').inner_text()
         assert '09:30' in await popover.locator(f'.pwqRow[data-task-id="{task_id(54)}"]').inner_text()
         calls = await page.evaluate('__mock.taskListCalls')
         assert calls[-1]['args']['p_view'] == 'today' and calls[-1]['args']['p_timezone'] == 'Europe/Moscow'
-        checks.append('Today recovers from a denied read without claiming zero; its total is 55 across both chats, excluding completed/archived/other-assignee/future work and using local day for UTC-timed tasks')
+        checks.append('Today recovers from a denied read without claiming zero; its total is 55 across both chats, including peer-assigned work and undated items added today, excluding completed/archived/future work and undated items from earlier days, and using local day for UTC-timed tasks')
 
         await popover.locator('.pwqMore').click()
         await wait_rows(today)
@@ -222,7 +227,8 @@ async def one(name, engine):
         await popover.locator(f'.pwqRow[data-conversation-id="{MAIN_CHAT}"]').click()
         await page.locator('#chatCanvasPanel .pablicusChatCanvas[data-state="ready"]').wait_for()
         assert not await page.evaluate('document.getElementById("app").classList.contains("composer-fullscreen")')
-        assert await page.locator('.pccPlanBody').is_visible()
+        assert await page.locator('.pccProjectCard').is_visible()
+        assert await page.locator('.pccProjectView').is_hidden()
         assert await page.locator('#canvasTab').get_attribute('aria-selected') == 'true'
         assert await page.locator('#input').input_value() == 'Черновик QA до перехода между проектами'
         await page.locator('#conversationTab').click()
@@ -281,7 +287,8 @@ async def one(name, engine):
         await page.wait_for_function('id=>PablicusChat?.scope?.chat===id', arg=OTHER_CHAT)
         await page.locator('#chatCanvasPanel .pablicusChatCanvas[data-state="ready"]').wait_for()
         assert await page.locator('#canvasTab').get_attribute('aria-selected') == 'true'
-        assert await page.locator('.pccPlanBody').input_value() == OTHER_PLAN
+        await page.locator('.pccProjectCard').click()
+        assert (await page.locator('.pccProjectViewContent').inner_text()).strip() == OTHER_PLAN
         await page.locator('#chatBack').click()
         await open_chat(MAIN_CHAT)
         assert await page.locator('#input').input_value() == 'Черновик QA до перехода между проектами'
@@ -321,16 +328,18 @@ async def one(name, engine):
         await page.locator('.chatMain').first.wait_for()
         await open_chat(MAIN_CHAT)
         await page.evaluate('__mock.releaseTaskLists();__mock.releaseProjects()')
-        await wait_count('tasks', 1)
+        await wait_count('tasks', 55)
         await wait_count('projects', 2)
         await chip('projects').click()
         await wait_rows([MAIN_CHAT, OTHER_CHAT])
         assert not any(identifier.startswith('66666666-1111') for identifier in await row_ids())
         await popover.locator('.pwqClose').click()
         await chip('tasks').click()
-        await wait_rows([task_id(56)])
+        second_today=await page.evaluate('__mock.todayTasks().map(task=>task.id)')
+        assert second_today==today
+        await wait_rows(second_today[:40])
         assert await page.locator('#input').input_value() == ''
-        checks.append('logout invalidates pending task/project pages; the next account sees only its one unassigned shared task and two authorized canvases, with no first-account private projects or draft')
+        checks.append('logout invalidates pending task/project pages; the next account sees all 55 tasks in its shared chats and two authorized canvases, with no first-account private projects or draft')
 
         assert not errors, errors
         assert not unexpected, unexpected

@@ -53,8 +53,7 @@
     pane.setAttribute('aria-label', 'Общее полотно чата');
     pane.hidden = true;
     const head = el('div', 'pccProjectsHead');
-    const planLabel = el('label', 'pccLabel', 'Проекты');
-    planLabel.htmlFor = uid + '-plan';
+    const planLabel = el('h3', 'pccLabel', 'Проекты');
     const refresh = button('pccIcon pccRefresh', 'Обновить полотно', 'refresh');
     head.append(planLabel, refresh);
     const status = el('p', 'pccStatus');
@@ -64,26 +63,39 @@
     retry.hidden = true;
     const content = el('div', 'pccContent');
     const planSection = el('section', 'pccPlan');
-    const planBody = el('textarea', 'pccPlanBody');
-    planBody.id = uid + '-plan';
-    planBody.maxLength = 20000;
-    planBody.rows = 4;
-    planBody.placeholder = 'О чём договорились, что важно, что дальше…';
+    const planCard = button('pccProjectCard', 'Открыть проект');
+    planCard.setAttribute('aria-expanded', 'false');
+    const planTitle = el('span', 'pccProjectTitle');
+    const planExcerpt = el('span', 'pccProjectExcerpt');
+    const planAttachments = el('span', 'pccAttachmentSummary');
+    planCard.replaceChildren(planTitle, planExcerpt, planAttachments, icon('next'));
+    const planView = el('div', 'pccProjectView');
+    planView.hidden = true;
+    const planViewContent = el('div', 'pccProjectViewContent');
+    const planEdit = button('pccTextButton pccPlanEdit', 'Изменить проект');
+    planEdit.prepend(icon('edit'));
+    planView.append(planViewContent, planEdit);
+    const planNew = button('pccButton pccPlanNew', 'Добавить проект');
+    planNew.prepend(icon('plus'));
+    const planEditorHost = el('div', 'pccPlanEditor');
+    planEditorHost.hidden = true;
     const planFoot = el('div', 'pccFormFoot');
     const planNotice = el('p', 'pccNotice pccPlanNotice');
     planNotice.setAttribute('role', 'status');
-    const planSave = button('pccButton pccPlanSave', 'Сохранить проекты');
-    planFoot.append(planNotice, planSave);
+    const planSave = button('pccButton pccPlanSave', 'Сохранить проект');
+    const planCancel = button('pccTextButton pccPlanCancel', 'Отмена');
+    planCancel.hidden = true;
+    planFoot.append(planNotice, planCancel, planSave);
     const planConflict = el('div', 'pccConflict pccPlanConflict');
     planConflict.hidden = true;
-    const planServerLabel = el('p', 'pccConflictLabel', 'Текущий текст проектов');
+    const planServerLabel = el('p', 'pccConflictLabel', 'Общая версия проекта');
     const planServerBody = el('p', 'pccServerBody pccPlanServerBody');
     const planConflictActions = el('div', 'pccConflictActions');
-    const planUseServer = button('pccTextButton pccPlanUseServer', 'Принять общий текст');
+    const planUseServer = button('pccTextButton pccPlanUseServer', 'Принять общую версию');
     const planReplace = button('pccButton pccPlanReplace', 'Сохранить мою версию');
     planConflictActions.append(planUseServer, planReplace);
     planConflict.append(planServerLabel, planServerBody, planConflictActions);
-    planSection.append(planBody, planFoot, planConflict);
+    planSection.append(planCard, planNew, planView, planEditorHost, planFoot, planConflict);
     const tasksSection = el('section', 'pccTasks');
     const tasksHead = el('div', 'pccTasksHead');
     const tasksHeading = el('h3', 'pccLabel', 'Дела');
@@ -114,12 +126,91 @@
 
     let opened = false, destroyed = false, context = null, generation = 0, snapshot = null;
     let loadController = null, loadTicket = 0, pollTimer = 0, savingPlan = false;
-    let planBaseBody = '', planBaseRevision = 0, planDirty = false, planChanged = false;
+    let planBaseContent = { v: 1, blocks: [] }, planBaseRevision = 0, planDirty = false, planChanged = false;
+    let planEditor = null, planEditing = false, planExpanded = false, planViewCleanup = null, planRenderedContent = '', planInputState = '', taskEditor = null;
     let taskDraft = null, taskForm = null, taskBusy = false, pendingSource = null;
     let taskOperation = null, planError = false;
     let taskView = 'open', pendingTask = null, taskLinkNotice = '';
     let taskSheet = null, taskReturnFocus = null, taskSheetHistory = false, taskSheetBackPending = false;
     const controllers = new Set();
+
+    function richContent(value, fallback) {
+      if (value && Array.isArray(value.blocks)) return { v: 1, blocks: value.blocks };
+      return { v: 1, blocks: fallback ? [{ id: uid + '-legacy-text', type: 'text', text: String(fallback) }] : [] };
+    }
+    function contentText(value) { return (value?.blocks || []).filter(block => block.type === 'text').map(block => block.text || '').join('\n').trim(); }
+    function hasContent(value) { return (value?.blocks || []).some(block => block.type !== 'text' || String(block.text || '').trim()); }
+    function attachmentSummary(value) {
+      const counts = {};
+      for (const block of value?.blocks || []) if (block.type !== 'text') counts[block.type] = (counts[block.type] || 0) + 1;
+      const labels = { image: 'Фото', video: 'Видео', audio: 'Аудио', document: 'Файлы', file: 'Файлы' };
+      const parts = Object.entries(counts).map(([kind, count]) => (labels[kind] || 'Вложения') + '\u00a0' + count);
+      const links = contentText(value).match(/https?:\/\/[^\s]+/gi) || [];
+      if (links.length) parts.push('Ссылки\u00a0' + links.length);
+      return parts.join(' · ');
+    }
+    function editorOptions(host, value, placeholder, onChange, onError) {
+      return { host, content: value, placeholder, onChange, onError, resolveUrl: options.resolveUrl };
+    }
+    function editorState(draft) { return JSON.stringify([draft.content, !!draft.recording, !!draft.pending]); }
+    function ensurePlanEditor() {
+      if (planEditor) return planEditor;
+      planEditor = scope.PablicusWorkspaceEditor.create(editorOptions(planEditorHost, planBaseContent,
+        'Проект…', draft => {
+          const next = editorState(draft);
+          if (next === planInputState) return;
+          planInputState = next;
+          planDirty = planEditor.isDirty();
+          planError = false;
+          if (!planChanged) planState('', planDirty ? 'dirty' : '');
+          updatePlanControls();
+        }, error => planState(error?.message || String(error), 'error')));
+      const input = planEditorHost.querySelector('textarea');
+      if (input) { input.classList.add('pccPlanBody'); input.id = uid + '-plan'; }
+      planInputState = editorState(planEditor.snapshot());
+      return planEditor;
+    }
+    function renderProject() {
+      const value = richContent(snapshot?.canvas.content, snapshot?.canvas.body);
+      const exists = hasContent(value);
+      planCard.hidden = !exists || planEditing;
+      planNew.hidden = exists || planEditing;
+      planEditorHost.hidden = !planEditing;
+      planView.hidden = !exists || planEditing || !planExpanded;
+      planCard.setAttribute('aria-expanded', String(planExpanded && !planEditing));
+      const text = contentText(value), lines = text.split(/\n+/).filter(Boolean);
+      planTitle.textContent = (lines[0] || 'Проект с вложениями').slice(0, 90);
+      planExcerpt.textContent = lines.length > 1 ? lines.slice(1).join(' ') : text.length > 90 ? text.slice(90) : '';
+      planExcerpt.hidden = !planExcerpt.textContent;
+      planAttachments.textContent = attachmentSummary(value);
+      planAttachments.hidden = !planAttachments.textContent;
+      planCard.title = 'Открыть проект';
+      const signature = planView.hidden ? '' : JSON.stringify(value);
+      if (signature === planRenderedContent) return;
+      if (planViewCleanup) { planViewCleanup(); planViewCleanup = null; }
+      planViewContent.replaceChildren();
+      planRenderedContent = signature;
+      if (signature) {
+        if (options.renderContent) planViewCleanup = options.renderContent({ host: planViewContent, content: value, context: { ...context } });
+        else planViewContent.textContent = text;
+      }
+    }
+    function editProject() {
+      if (!snapshot || savingPlan) return;
+      const editor = ensurePlanEditor();
+      planEditing = true;
+      if (!planError && !planChanged) planState('', planDirty ? 'dirty' : '');
+      renderProject(); updatePlanControls(); editor.focus();
+    }
+    async function preparedContent(editor, controller, ticket) {
+      await editor.stopRecording();
+      if (!current(ticket) || controller.signal.aborted) return null;
+      const draft = editor.snapshot();
+      const validation = editor.validate?.();
+      if (validation?.ok === false || draft.errors?.length) throw new Error((validation?.errors || draft.errors).map(error => error.message || String(error)).join(' '));
+      const value = options.uploadContent ? await options.uploadContent({ context: { ...context }, snapshot: draft, signal: controller.signal }) : draft.content;
+      return current(ticket) && !controller.signal.aborted ? value : null;
+    }
 
     function sameIdentity() {
       const now = options.getContext() || {};
@@ -191,35 +282,37 @@
       const row = snapshot?.participants.find(item => item.id === id);
       return row?.display_name || (row?.username ? '@' + row.username : 'Участник');
     }
-    function autosize(field, maxHeight) {
-      field.style.height = 'auto';
-      field.style.height = Math.min(maxHeight, Math.max(field === planBody ? 112 : 68, field.scrollHeight)) + 'px';
-    }
     function planState(text, state) {
       planNotice.textContent = text;
       planNotice.dataset.state = state || '';
-      planFoot.hidden = planSave.hidden && !text;
+      planFoot.hidden = planSave.hidden && !text && !planEditing;
     }
     function updatePlanControls() {
-      planBody.disabled = !snapshot || savingPlan;
-      planSave.disabled = !snapshot || !planDirty || savingPlan;
-      planSave.textContent = savingPlan ? 'Сохраняем…' : 'Сохранить проекты';
-      planSave.hidden = !snapshot || (!planDirty && !savingPlan) || planChanged;
-      planFoot.hidden = planSave.hidden && !planNotice.textContent;
+      planEditor?.setDisabled(!snapshot || savingPlan);
+      planSave.disabled = !snapshot || (!planDirty && !planEditor?.recording && !planEditor?.pending) || savingPlan;
+      planSave.textContent = savingPlan ? 'Сохраняем…' : 'Сохранить проект';
+      planSave.hidden = !snapshot || !planEditing || planChanged;
+      planCancel.hidden = !planEditing;
+      planCancel.disabled = savingPlan;
+      planFoot.hidden = planSave.hidden && !planNotice.textContent && !planEditing;
       planReplace.disabled = !snapshot || savingPlan;
       planUseServer.disabled = savingPlan;
       planConflict.hidden = !planChanged;
-      if (planChanged) planServerBody.textContent = snapshot?.canvas.body || 'Проекты пока не описаны.';
+      if (planChanged) {
+        const value = richContent(snapshot?.canvas.content, snapshot?.canvas.body);
+        planServerBody.textContent = [contentText(value), attachmentSummary(value)].filter(Boolean).join('\n') || 'Проект пока пуст.';
+      }
     }
     function updateTaskControls() {
       add.disabled = !snapshot || taskBusy || !!taskDraft;
       add.hidden = !!taskDraft;
       if (!taskForm) return;
       for (const input of taskForm.querySelectorAll('input,textarea,select,button')) input.disabled = taskBusy;
+      taskEditor?.setDisabled(taskBusy);
       for (const input of taskForm.querySelectorAll('.pccTaskReminder')) input.disabled = taskBusy || !taskDraft.dueDate || !taskDraft.dueTime;
       for (const input of taskForm.querySelectorAll('.pccTaskDone,.pccTaskArchive,.pccTaskRestore')) input.disabled = taskBusy || !!taskDraft.conflict;
       const save = taskForm.querySelector('.pccTaskSave');
-      save.disabled = taskBusy || !taskDraft.title.trim();
+      save.disabled = taskBusy || (!hasContent(taskEditor?.getContent() || taskDraft.content) && !taskEditor?.recording && !taskEditor?.pending);
       save.textContent = taskBusy ? 'Сохраняем…' : (taskDraft.isNew ? 'Добавить' : 'Сохранить');
       save.hidden = !!taskDraft.conflict;
       taskForm.querySelector('.pccTaskConflict').hidden = !taskDraft.conflict;
@@ -237,17 +330,18 @@
       pane.dataset.state = 'ready';
       content.hidden = false;
       if (!planDirty && !savingPlan) {
-        planBody.value = String(data.canvas.body || '');
-        planBaseBody = planBody.value;
+        planBaseContent = richContent(data.canvas.content, data.canvas.body);
+        ensurePlanEditor().setContent(planBaseContent, { clean: true });
+        planInputState = editorState(planEditor.snapshot());
         planBaseRevision = data.canvas.revision;
         planChanged = false;
         if (!planError) planState('', '');
-        autosize(planBody, 360);
       } else if (planDirty && !savingPlan && data.canvas.revision !== planBaseRevision) {
         planChanged = true;
-        planState('Текст проектов изменился у собеседника. Ваш текст сохранён в поле выше.', 'conflict');
+        planState('Проект изменился у собеседника. Ваши изменения остаются в поле выше.', 'conflict');
       }
       updatePlanControls();
+      renderProject();
       renderTasks();
       if (taskDraft && !taskDraft.isNew) {
         const latest = data.tasks.find(item => item.id === taskDraft.id);
@@ -342,9 +436,8 @@
     }
     async function savePlan(replace) {
       const ticket = generation;
-      if (!current(ticket) || !snapshot || savingPlan || !planDirty) return;
+      if (!current(ticket) || !snapshot || savingPlan || (!planDirty && !planEditor?.recording && !planEditor?.pending)) return;
       if (planChanged && !replace) return;
-      const body = planBody.value;
       const expectedRevision = replace ? snapshot.canvas.revision : planBaseRevision;
       const controller = mutationController();
       savingPlan = true;
@@ -352,11 +445,15 @@
       planState('Сохраняем…', 'pending');
       updatePlanControls();
       try {
-        const data = await options.savePlan({ context: { ...context }, body, expectedRevision, signal: controller.signal });
+        const value = await preparedContent(planEditor, controller, ticket);
+        if (!value) return;
+        const data = await options.savePlan({ context: { ...context }, content: value, body: contentText(value), expectedRevision, signal: controller.signal });
         if (!current(ticket) || controller.signal.aborted) return;
         savingPlan = false;
         planDirty = false;
         planChanged = false;
+        planEditing = false;
+        planExpanded = false;
         applySnapshot(snapshot && Number(snapshot.revision) > Number(data.revision) ? snapshot : data);
         planState('Сохранено', 'saved');
         notifyMutation('plan');
@@ -368,7 +465,7 @@
           const data = await recoverConflict(ticket);
           if (!current(ticket)) return;
           planChanged = !!data;
-          planState(data ? 'Текст проектов изменился у собеседника. Ваш текст сохранён в поле выше.' : 'Текст проектов изменился. Обновите полотно, чтобы сравнить версии. Ваш текст сохранён.', 'conflict');
+          planState(data ? 'Проект изменился у собеседника. Ваши изменения остаются в поле выше.' : 'Проект изменился. Обновите полотно, чтобы сравнить версии. Ваши изменения остаются в поле.', 'conflict');
         } else planState(errorMessage(error), 'error');
       } finally {
         controllers.delete(controller);
@@ -405,12 +502,15 @@
         toggle.hidden = !!task.archived_at;
         toggle.onclick = () => toggleTask(task);
         const body = el('div', 'pccTaskBody');
+        const value = richContent(task.content, task.title);
         const edit = button('pccTaskEdit', 'Изменить дело: ' + task.title);
         edit.textContent = '';
         edit.append(el('span', 'pccTaskText', task.title), icon('edit'));
         edit.onclick = () => startTask(task);
         edit.disabled = taskBusy || !!taskOperation;
         body.append(edit);
+        const attachments = attachmentSummary(value);
+        if (attachments) body.append(el('p', 'pccTaskMeta pccAttachmentSummary', attachments));
         const metadata = [task.assignee_id ? person(task.assignee_id) : '', scheduleLabel(task)].filter(Boolean).join(' · ');
         if (metadata) body.append(el('p', 'pccTaskMeta', metadata));
         if (task.source_message_id) {
@@ -431,7 +531,7 @@
       taskOperation = { id: task.id };
       renderTasks();
       try {
-        const data = await options.updateTask({ context: { ...context }, id: task.id, title: task.title,
+        const data = await options.updateTask({ context: { ...context }, id: task.id, title: task.title, content: richContent(task.content, task.title),
           assigneeId: task.assignee_id || null, dueDate: task.due_date || null, completed: !task.completed,
           schedule: scheduleOf(task), archived: false,
           expectedRevision: task.revision, signal: controller.signal });
@@ -466,7 +566,8 @@
     }
     function renderTaskConflict(latest) {
       if (!taskForm) return;
-      const text = [latest.title, latest.assignee_id ? person(latest.assignee_id) : '', scheduleLabel(latest), latest.archived_at ? 'В архиве' : latest.completed ? 'Выполнено' : 'В работе'].filter(Boolean).join('\n');
+      const value = richContent(latest.content, latest.title);
+      const text = [contentText(value), attachmentSummary(value), latest.assignee_id ? person(latest.assignee_id) : '', scheduleLabel(latest), latest.archived_at ? 'В архиве' : latest.completed ? 'Выполнено' : 'В работе'].filter(Boolean).join('\n');
       taskForm.querySelector('.pccTaskServerBody').textContent = text;
     }
     function newId() {
@@ -483,7 +584,7 @@
       if (!snapshot || taskBusy || !current(generation)) return;
       if (taskDraft) {
         taskNotice('Завершите или отмените редактирование открытого дела.', '');
-        taskForm.querySelector('.pccTaskTitle').focus();
+        taskEditor?.focus();
         return;
       }
       if (taskLinkNotice) { taskLinkNotice = ''; status.textContent = ''; }
@@ -494,6 +595,7 @@
       taskDraft = {
         id: task?.id || newId(), isNew: !task,
         title: task?.title || String(source?.text || source?.title || '').slice(0, 500),
+        content: richContent(task?.content || source?.content, task?.title || source?.text || source?.title || ''),
         assigneeId: task ? task.assignee_id || null : context.userId, dueDate: timed.date || task?.due_date || null,
         dueTime: timed.time, baseDueDate: task?.due_date || null, schedule: scheduleOf(task || {}), scheduleChanged: !task, deadlineChanged: !task,
         reminderMinutes: task?.reminder_minutes ?? null, followupMinutes: task?.due_at ? task.followup_minutes ?? null : 180,
@@ -526,7 +628,6 @@
       if (!taskSheet.open) taskSheet.showModal();
       updateSheetViewport();
       ensureSheetHistory();
-      autosize(taskForm.querySelector('.pccTaskTitle'), 180);
       const target = taskDraft.review ? taskForm.querySelector('.pccTaskDone') : taskForm.querySelector('.pccCalendarDay[aria-pressed="true"]');
       (target || taskForm.querySelector('.pccTaskCancel')).focus({ preventScroll: true });
     }
@@ -560,6 +661,13 @@
     function renderTaskForm() {
       const wasOpen = !!taskSheet?.open;
       if (wasOpen) taskSheet.close();
+      if (taskEditor) {
+        const draft = taskEditor.snapshot();
+        taskDraft.content = draft.content;
+        taskDraft.files = draft.files;
+        taskEditor.destroy();
+        taskEditor = null;
+      }
       taskSheet = el('dialog', 'pccTaskSheet');
       taskSheet.setAttribute('aria-modal', 'true');
       taskSheet.setAttribute('aria-labelledby', uid + '-task-heading');
@@ -694,12 +802,8 @@
       };
       details.append(formField('Время', time, 'task-time'), formField('Напомнить', reminder, 'task-reminder'));
       taskForm.append(details);
-      const title = el('textarea', 'pccTaskTitle');
-      title.id = uid + '-task-title'; title.setAttribute('aria-label', 'Что нужно сделать?');
-      title.maxLength = 500; title.rows = 2; title.required = true;
-      title.placeholder = 'Что нужно сделать?'; title.value = taskDraft.title;
-      title.oninput = () => { taskDraft.title = title.value; taskDraft.dirty = true; autosize(title, 180); updateTaskControls(); };
-      taskForm.append(title);
+      const editorHost = el('div', 'pccTaskEditor');
+      taskForm.append(editorHost);
       const notice = el('p', 'pccNotice pccTaskNotice'); notice.setAttribute('role', 'status');
       const conflict = el('div', 'pccConflict pccTaskConflict'); conflict.hidden = true;
       const replace = button('pccButton pccTaskReplace', 'Сохранить мою версию'); replace.onclick = () => saveTask(true);
@@ -741,6 +845,23 @@
       } else taskForm.append(confirm);
       taskForm.onsubmit = event => { event.preventDefault(); void saveTask(false); };
       taskSheet.append(taskForm); taskFormHost.replaceChildren(taskSheet);
+      let inputState = '';
+      taskEditor = scope.PablicusWorkspaceEditor.create(editorOptions(editorHost, taskDraft.content,
+        'Что нужно сделать?', draft => {
+          if (!taskDraft) return;
+          const next = editorState(draft);
+          if (next === inputState) return;
+          inputState = next;
+          taskDraft.title = draft.text;
+          taskDraft.content = draft.content;
+          taskDraft.files = draft.files;
+          taskDraft.dirty = true;
+          updateTaskControls();
+        }, error => taskNotice(error?.message || String(error), 'error')));
+      if (taskDraft.files?.length) taskEditor.setContent(taskDraft.content, { files: taskDraft.files });
+      inputState = editorState(taskEditor.snapshot());
+      const title = editorHost.querySelector('textarea');
+      if (title) { title.classList.add('pccTaskTitle'); title.id = uid + '-task-title'; title.setAttribute('aria-label', 'Что нужно сделать?'); }
       renderCalendar(); updateTaskControls();
       if (wasOpen) showTaskSheet();
     }
@@ -749,6 +870,7 @@
       const previousFocus = taskReturnFocus, previousTaskId = taskDraft?.isNew ? null : taskDraft?.id;
       const ticket = generation;
       hideTaskSheet();
+      taskEditor?.destroy(); taskEditor = null;
       taskDraft = null; taskForm = null; taskSheet = null;
       taskFormHost.replaceChildren();
       renderTasks(); updateTaskControls();
@@ -762,7 +884,7 @@
     }
     async function saveTask(replace, changes) {
       const ticket = generation;
-      if (!current(ticket) || !taskDraft || taskBusy || !taskDraft.title.trim()) return;
+      if (!current(ticket) || !taskDraft || taskBusy || (!hasContent(taskEditor?.getContent() || taskDraft.content) && !taskEditor?.recording && !taskEditor?.pending)) return;
       if (taskDraft.deleted) { taskNotice('Это дело удалено. Скопируйте текст и добавьте новое дело.', 'error'); return; }
       if (taskDraft.conflict && !replace) return;
       if (changes) { taskDraft.pendingState = { ...changes }; taskDraft.postponing = false; taskDraft.dirty = true; }
@@ -781,10 +903,15 @@
       taskNotice('Сохраняем…', 'pending');
       updateTaskControls();
       try {
-        const payload = { context: { ...context }, id: draft.id, title: draft.title.trim(),
+        const value = await preparedContent(taskEditor, controller, ticket);
+        if (!value) return;
+        const inputSignature = JSON.stringify(taskEditor.getContent());
+        draft.title = contentText(value);
+        draft.content = value;
+        const payload = { context: { ...context }, id: draft.id, content: value, title: draft.title.slice(0, 500),
           assigneeId: draft.assigneeId, dueDate, schedule, signal: controller.signal };
         if (draft.isNew && !taskDraft.createAttempt) {
-          taskDraft.createAttempt = { id: draft.id, title: payload.title, assigneeId: draft.assigneeId,
+          taskDraft.createAttempt = { id: draft.id, title: payload.title, content: value, inputSignature, assigneeId: draft.assigneeId,
             dueDate, schedule: { ...schedule }, sourceMessageId: draft.sourceMessageId, sourceBlockId: draft.sourceBlockId };
         }
         const attempt = taskDraft.createAttempt;
@@ -800,7 +927,7 @@
           applySnapshot(data);
           taskDraft.deleted = true;
           taskNotice('Это дело уже удалено. Текст остаётся в форме; его можно скопировать в новое дело.', 'error');
-        } else if (created && (draft.title.trim() !== attempt.title || draft.assigneeId !== attempt.assigneeId || dueDate !== attempt.dueDate || JSON.stringify(schedule) !== JSON.stringify(attempt.schedule))) {
+        } else if (created && (inputSignature !== attempt.inputSignature || draft.assigneeId !== attempt.assigneeId || dueDate !== attempt.dueDate || JSON.stringify(schedule) !== JSON.stringify(attempt.schedule))) {
           // A retry must repeat the original request. Preserve edits made after a lost response.
           applySnapshot(data);
           taskDraft.isNew = false;
@@ -933,6 +1060,9 @@
     }
     function close() {
       hideTaskSheet();
+      if (planViewCleanup) { planViewCleanup(); planViewCleanup = null; }
+      planRenderedContent = '';
+      planViewContent.replaceChildren();
       opened = false;
       pane.hidden = true;
       stopRequests();
@@ -945,8 +1075,13 @@
       pendingTask = null;
       taskLinkNotice = '';
       taskView = 'open';
-      planBody.value = '';
-      planBaseBody = '';
+      planEditor?.destroy(); planEditor = null;
+      taskEditor?.destroy(); taskEditor = null;
+      planBaseContent = { v: 1, blocks: [] };
+      planEditing = false;
+      planExpanded = false;
+      if (planViewCleanup) { planViewCleanup(); planViewCleanup = null; }
+      planViewContent.replaceChildren();
       planBaseRevision = 0;
       planDirty = false;
       planChanged = false;
@@ -969,9 +1104,9 @@
       updateTaskControls();
     }
     function newTask(source) {
-      return open({ sourceMessage: { title: source?.title, source_message_id: source?.source_message_id, source_block_id: source?.source_block_id } });
+      return open({ sourceMessage: { title: source?.title, content: source?.content, source_message_id: source?.source_message_id, source_block_id: source?.source_block_id } });
     }
-    function hasUnsavedChanges() { return sameIdentity() && (planDirty || !!taskDraft?.dirty); }
+    function hasUnsavedChanges() { return sameIdentity() && (planDirty || !!planEditor?.recording || !!planEditor?.pending || !!taskDraft?.dirty || !!taskEditor?.recording || !!taskEditor?.pending); }
     function onFocus() { if (opened && !document.hidden) void load(false); }
     function onBeforeUnload(event) {
       if (!hasUnsavedChanges()) return;
@@ -990,12 +1125,16 @@
       scope.visualViewport?.removeEventListener('resize', updateSheetViewport);
       scope.visualViewport?.removeEventListener('scroll', updateSheetViewport);
     }
-    planBody.oninput = () => {
-      planDirty = planBody.value !== planBaseBody;
-      planError = false;
-      if (!planChanged) planState(planDirty ? 'Есть несохранённые изменения' : '', planDirty ? 'dirty' : '');
-      autosize(planBody, 360);
-      updatePlanControls();
+    planCard.onclick = () => { planExpanded = !planExpanded; renderProject(); };
+    planEdit.onclick = editProject;
+    planNew.onclick = editProject;
+    planCancel.onclick = () => {
+      if (savingPlan) return;
+      planDirty = false; planChanged = false; planError = false;
+      planEditing = false; planExpanded = false;
+      planEditor?.destroy(); planEditor = null;
+      applySnapshot(snapshot);
+      planState('', '');
     };
     planSave.onclick = () => savePlan(false);
     planReplace.onclick = () => savePlan(true);

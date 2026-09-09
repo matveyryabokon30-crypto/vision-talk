@@ -9,6 +9,7 @@ import argparse
 import asyncio
 import json
 import mimetypes
+import os
 import shutil
 import tempfile
 import traceback
@@ -17,8 +18,8 @@ from urllib.parse import urlparse
 from playwright.async_api import async_playwright
 
 from message_interactions import (DIST, EVIDENCE, MAIN_CHAT, OTHER_CHAT, PEER,
-                                  SECOND_USER, TEXT_ID, USER, incoming, mocked_sdk)
-from rich_message_integration import MOCK_MIC
+                                  SECOND_USER, TEXT_ID, USER, WEBM, incoming, mocked_sdk, playable_wav)
+from rich_message_integration import MOCK_MIC, PNG
 
 INITIAL_PLAN = 'План совместной съёмки'
 OTHER_PLAN = 'План соседнего разговора'
@@ -58,6 +59,7 @@ def canvas_sdk():
     __mock.releaseCanvas=()=>{const jobs=__mock.canvasPending.splice(0);jobs.forEach(job=>job());};
     __mock.signOut=()=>__mock.emitAuth('SIGNED_OUT',null);
     const canvasNow=()=>new Date().toISOString();
+    const workspaceText=content=>(content?.blocks||[]).filter(block=>block.type==='text').map(block=>block.text).join('\n').trim();
     const canvasParticipants=[
       {id:user.id,display_name:'Матвей QA',username:'qa_user'},
       {id:peer,display_name:'Катя QA',username:'qa_peer'},
@@ -78,12 +80,12 @@ def canvas_sdk():
       state.canvas={body,revision:state.canvas.revision+1,updated_at:canvasNow(),updated_by:peer};state.revision++;};
     __mock.peerTask=(id,title)=>{const state=__mock.canvasState[chat],task=state.tasks.find(t=>t.id===id);
       if(!task)throw Error('Unknown synthetic peer task');
-      task.title=title;task.updated_by=peer;task.updated_at=canvasNow();task.revision++;state.revision++;};
+      task.title=title;task.content={v:1,blocks:[{id:'peer-task-text',type:'text',text:title}]};task.updated_by=peer;task.updated_at=canvasNow();task.revision++;state.revision++;};
     const canvasKeys={
       pablicus_get_canvas:['p_conversation_id'],
-      pablicus_save_canvas_plan:['p_conversation_id','p_expected_revision','p_body'],
-      pablicus_create_canvas_task_v2:['p_conversation_id','p_task_id','p_title','p_assignee_id','p_due_date','p_source_message_id','p_source_block_id','p_schedule'],
-      pablicus_update_canvas_task_v2:['p_conversation_id','p_task_id','p_expected_revision','p_title','p_assignee_id','p_due_date','p_completed','p_schedule','p_archived'],
+      pablicus_save_canvas_plan_v2:['p_conversation_id','p_expected_revision','p_content'],
+      pablicus_create_canvas_task_v3:['p_conversation_id','p_task_id','p_content','p_assignee_id','p_due_date','p_source_message_id','p_source_block_id','p_schedule'],
+      pablicus_update_canvas_task_v3:['p_conversation_id','p_task_id','p_expected_revision','p_content','p_assignee_id','p_due_date','p_completed','p_schedule','p_archived'],
       pablicus_delete_canvas_task:['p_conversation_id','p_task_id','p_expected_revision']
     };
     const canvasError=(code,message)=>({data:null,error:{code,message}});
@@ -97,6 +99,8 @@ def canvas_sdk():
         return canvasError('22023','Unexpected canvas arguments');
       }
       __mock.canvasCalls.push({name,args:structuredClone(args),actor:user.id});
+      if(args.p_content&&(!Array.isArray(args.p_content.blocks)||args.p_content.blocks.some(block=>block.type==='text'&&!String(block.text||'').trim())))
+        return canvasError('22023','invalid_workspace_content');
       const state=__mock.canvasState[args.p_conversation_id];
       if(!state||__mock.canvasDenied||!state.participants.some(p=>p.id===user.id))
         return canvasError('42501','canvas_access_denied');
@@ -106,10 +110,10 @@ def canvas_sdk():
           return new Promise(resolve=>__mock.canvasPending.push(()=>resolve(response)));}
         return response;
       }
-      if(name==='pablicus_save_canvas_plan'){
+      if(name==='pablicus_save_canvas_plan_v2'){
         if(args.p_expected_revision!==state.canvas.revision)return canvasError('40001','canvas_revision_conflict');
-        state.canvas={body:args.p_body,revision:state.canvas.revision+1,updated_at:canvasNow(),updated_by:user.id};
-      }else if(name==='pablicus_create_canvas_task_v2'){
+        state.canvas={body:workspaceText(args.p_content),content:structuredClone(args.p_content),revision:state.canvas.revision+1,updated_at:canvasNow(),updated_by:user.id};
+      }else if(name==='pablicus_create_canvas_task_v3'){
         if(!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(args.p_task_id))
           return canvasError('22023','task_id_required');
         const receiptKey=user.id+':'+args.p_conversation_id+':'+args.p_task_id;
@@ -120,7 +124,7 @@ def canvas_sdk():
         if(args.p_source_message_id&&!messages.some(m=>m.id===args.p_source_message_id&&m.conversation_id===state.conversation_id))
           return canvasError('22023','source_message_not_in_conversation');
         __mock.canvasReceipts.set(receiptKey,signature);
-        state.tasks.push({id:args.p_task_id,title:args.p_title,assignee_id:args.p_assignee_id,
+        state.tasks.push({id:args.p_task_id,title:workspaceText(args.p_content).slice(0,500)||'Вложения',content:structuredClone(args.p_content),assignee_id:args.p_assignee_id,
           due_date:args.p_due_date,...scheduleFields(args.p_schedule),archived_at:null,completed:false,revision:1,
           source_message_id:args.p_source_message_id,source_block_id:args.p_source_block_id,
           created_at:canvasNow(),created_by:user.id,updated_at:canvasNow(),updated_by:user.id});
@@ -128,11 +132,11 @@ def canvas_sdk():
         const task=state.tasks.find(t=>t.id===args.p_task_id);
         if(!task||task.revision!==args.p_expected_revision)return canvasError('40001','task_revision_conflict');
         if(name==='pablicus_delete_canvas_task')state.tasks=state.tasks.filter(t=>t.id!==task.id);
-        else Object.assign(task,{title:args.p_title,assignee_id:args.p_assignee_id,due_date:args.p_due_date,
+        else Object.assign(task,{title:workspaceText(args.p_content).slice(0,500)||'Вложения',content:structuredClone(args.p_content),assignee_id:args.p_assignee_id,due_date:args.p_due_date,
           completed:args.p_completed,...scheduleFields(args.p_schedule),archived_at:args.p_archived==null?task.archived_at:args.p_archived?(task.archived_at||canvasNow()):null,revision:task.revision+1,updated_at:canvasNow(),updated_by:user.id});
       }
       state.revision++;
-      if(name==='pablicus_create_canvas_task_v2'&&__mock.loseCreateResponse){__mock.loseCreateResponse=false;
+      if(name==='pablicus_create_canvas_task_v3'&&__mock.loseCreateResponse){__mock.loseCreateResponse=false;
         return canvasError('NETWORK_ERROR','network request failed after committed task');}
       return {data:structuredClone(state),error:null};
     };
@@ -177,9 +181,12 @@ def canvas_sdk():
 
 async def one(name, engine):
     directory = tempfile.mkdtemp(prefix='pablicus-chat-canvas-')
+    launch_options = {}
+    if name == 'webkit' and os.environ.get('PABLICUS_WEBKIT_EXECUTABLE'):
+        launch_options['executable_path'] = os.environ['PABLICUS_WEBKIT_EXECUTABLE']
     context = await engine.launch_persistent_context(directory, headless=True,
         viewport={'width': 390, 'height': 844}, timezone_id='Europe/Moscow', has_touch=True,
-        service_workers='block', accept_downloads=True)
+        service_workers='block', accept_downloads=True, **launch_options)
     source = canvas_sdk()
     unexpected, errors, checks = [], [], []
 
@@ -217,6 +224,17 @@ async def one(name, engine):
     async def open_canvas():
         await page.locator('#canvasTab').click()
         await pane.locator('.pablicusChatCanvas[data-state="ready"]').wait_for()
+
+    async def fill_plan(value):
+        if not await body.is_visible():
+            project = pane.locator('.pccProjectCard')
+            if await project.is_visible():
+                if await project.get_attribute('aria-expanded') != 'true':
+                    await project.click()
+                await pane.locator('.pccPlanEdit').click()
+            else:
+                await pane.locator('.pccPlanNew').click()
+        await body.fill(value)
 
     async def choose_date(value):
         # Exercise the visible calendar, never fill its hidden storage input.
@@ -296,7 +314,7 @@ async def one(name, engine):
         assert await body.input_value() == INITIAL_PLAN
         await card(TASK_ID).wait_for()
         assert await page.locator('#canvasTab').get_attribute('aria-selected') == 'true'
-        await body.fill('Общий план: съёмка в пятницу')
+        await fill_plan('Общий план: съёмка в пятницу')
         assert await page.evaluate('id=>__mock.canvasState[id].canvas.body', MAIN_CHAT) == INITIAL_PLAN
         await page.locator('#conversationTab').click()
         await open_canvas()
@@ -449,7 +467,7 @@ async def one(name, engine):
         assert not any(item['id'] == timed['id'] for item in await server_tasks())
         checks.append('Done removes the active card; completed work can be archived and restored without losing completion, while confirmed deletion removes it from all three views')
 
-        await body.fill(LOCAL_PLAN)
+        await fill_plan(LOCAL_PLAN)
         await page.evaluate('(text)=>__mock.peerPlan(text)', PEER_PLAN)
         await pane.locator('.pccPlanSave').click()
         await pane.locator('.pccPlanConflict').wait_for()
@@ -459,7 +477,7 @@ async def one(name, engine):
         await page.screenshot(path=str(EVIDENCE / f'chat-canvas-{name}-plan-conflict.png'))
         await pane.locator('.pccPlanReplace').click()
         await saved_plan(LOCAL_PLAN)
-        plan_calls = await page.evaluate('__mock.canvasCalls.filter(call=>call.name==="pablicus_save_canvas_plan")')
+        plan_calls = await page.evaluate('__mock.canvasCalls.filter(call=>call.name==="pablicus_save_canvas_plan_v2")')
         assert plan_calls[-1]['args']['p_expected_revision'] > plan_calls[-2]['args']['p_expected_revision']
         checks.append('a peer plan commit causes a revision conflict; the local text survives, fresh server text is shown and only explicit replacement writes the new revision')
 
@@ -499,7 +517,7 @@ async def one(name, engine):
         await page.locator(f'.pccTaskForm[data-task-id="{retry_task["id"]}"]').wait_for()
         assert await form.locator('.pccTaskTitle').input_value() == 'Уточнить задачу после потери ответа'
         assert len([item for item in await server_tasks() if item['title'] == 'Создать ровно один раз']) == 1
-        create_calls = await page.evaluate('__mock.canvasCalls.filter(call=>call.name==="pablicus_create_canvas_task_v2"&&call.args.p_title==="Создать ровно один раз")')
+        create_calls = await page.evaluate('__mock.canvasCalls.filter(call=>call.name==="pablicus_create_canvas_task_v3"&&call.args.p_content.blocks.some(block=>block.type==="text"&&block.text==="Создать ровно один раз"))')
         assert len(create_calls) == 2 and create_calls[0]['args'] == create_calls[1]['args'], create_calls
         assert create_calls[0]['args']['p_schedule'] == {'due_at': '2030-09-16T06:40:00.000Z', 'timezone': 'Europe/Moscow', 'reminder_minutes': 60, 'followup_minutes': 180}, create_calls
         await form.locator('.pccTaskSave').click()
@@ -532,7 +550,10 @@ async def one(name, engine):
         await page.wait_for_function('PablicusDebug.messageCount>=3')
         assert not await page.evaluate('seq=>__mock.readCalls.some(call=>call.p_last_read_seq>=seq)', incoming_message['server_seq'])
         await page.locator('#conversationTab').click()
-        await page.locator('#vp').evaluate('(node)=>node.scrollTop=node.scrollHeight')
+        await page.locator(f'#canvas .row[data-id="{incoming_message["id"]}"]').wait_for(state='visible')
+        # The tab's layout/refreshFont runs in an animation frame. Scroll the
+        # visible, laid-out timeline as a person would, not its prior hidden size.
+        await page.locator('#vp').evaluate('async node=>{await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));node.scrollTop=node.scrollHeight;}')
         await page.evaluate('PablicusDebug.syncMessages()')
         await page.wait_for_function('seq=>__mock.readCalls.some(call=>call.p_last_read_seq>=seq)', arg=incoming_message['server_seq'])
         checks.append('incoming text is not marked read while the conversation canvas hides the message timeline; returning to the conversation allows the normal read marker')
@@ -542,7 +563,7 @@ async def one(name, engine):
         await open_chat(MAIN_CHAT)
         assert not await page.locator(f'#canvas .row[data-id="{OLD_ID}"]').count()
         await open_canvas()
-        await body.fill('Не терять этот план при поиске в давней переписке')
+        await fill_plan('Не терять этот план при поиске в давней переписке')
         await page.locator('#conversationTab').click()
         await page.locator('#chatLibraryOpen').click()
         library = page.locator('dialog.pablicusChatLibrary')
@@ -571,7 +592,7 @@ async def one(name, engine):
         await open_canvas()
         assert await body.input_value() == 'Не терять этот план при поиске в давней переписке'
         assert await page.evaluate('id=>__mock.canvasState[id].canvas.body', MAIN_CHAT) == LOCAL_PLAN
-        await body.fill(LOCAL_PLAN)
+        await fill_plan(LOCAL_PLAN)
         checks.append('historical locate issues a bounded 61-row neighborhood request and retains a continuous timeline through live catch-up, while preserving the unsaved canvas plan')
 
         await open_canvas()
@@ -595,7 +616,7 @@ async def one(name, engine):
         await page.locator('#chatBack').click()
         await open_chat(MAIN_CHAT)
         await open_canvas()
-        await body.fill('Личный несохранённый черновик первого аккаунта')
+        await fill_plan('Личный несохранённый черновик первого аккаунта')
         await page.evaluate('__mock.holdNextCanvasRead=true')
         await pane.locator('.pccRefresh').click()
         await page.wait_for_function('__mock.canvasPending.length===1')
@@ -615,8 +636,81 @@ async def one(name, engine):
         await open_canvas()
         checks.append('logout/account switch clears local canvas/form state and late responses; the next approved participant sees shared saved data and its own empty message draft')
 
+        # Use the same native picker and upload transport for every material kind.
+        # Files are synthetic/local fixtures and the storage backend is isolated.
+        materials = [
+            {'name': 'project-photo.png', 'mimeType': 'image/png', 'buffer': PNG},
+            {'name': 'project-video.webm', 'mimeType': 'video/webm', 'buffer': WEBM},
+            {'name': 'project-audio.wav', 'mimeType': 'audio/wav', 'buffer': playable_wav()},
+            {'name': 'project-notes.txt', 'mimeType': 'text/plain', 'buffer': b'WORKSPACE DOCUMENT ORIGINAL'},
+        ]
+        long_project = 'Съёмка сериала\n' + ('Подготовить материалы и обсудить сцену. ' * 35) + '\nhttps://example.com/brief'
+        await fill_plan(long_project)
+        plan_editor = pane.locator('.pccPlanEditor')
+        await plan_editor.locator('input[type="file"]').set_input_files(materials)
+        await plan_editor.locator('.richMedia').nth(3).wait_for()
+        await page.evaluate('__mock.online=false')
+        await pane.locator('.pccPlanSave').click()
+        await pane.locator('.pccPlanNotice[data-state="error"]').wait_for()
+        assert await plan_editor.locator('.richMedia').count() == 4
+        assert 'Съёмка сериала' in await body.input_value()
+        assert await page.evaluate('id=>__mock.canvasState[id].canvas.body', MAIN_CHAT) == LOCAL_PLAN
+        await page.evaluate('__mock.online=true')
+        await pane.locator('.pccPlanSave').click()
+        await saved_plan(long_project)
+        project_content = await page.evaluate('id=>__mock.canvasState[id].canvas.content', MAIN_CHAT)
+        media = [block for block in project_content['blocks'] if block['type'] != 'text']
+        assert {block['type'] for block in media} == {'image', 'video', 'audio', 'document'}, media
+        assert all(block.get('path') and 'assetId' not in block for block in media), media
+        assert all(block['size'] == len(next(file['buffer'] for file in materials if file['name'] == block['name'])) for block in media)
+        assert await plan_editor.is_hidden()
+        project_card = pane.locator('.pccProjectCard')
+        assert await project_card.get_attribute('aria-expanded') == 'false'
+        assert await project_card.evaluate('node=>node.getBoundingClientRect().height') <= 165
+        project_summary = (await project_card.inner_text()).replace('\u00a0', ' ')
+        assert 'Фото 1' in project_summary and 'Файлы 1' in project_summary
+        await project_card.scroll_into_view_if_needed()
+        await page.screenshot(path=str(EVIDENCE / f'chat-canvas-{name}-saved-project.png'))
+        await project_card.click()
+        await pane.locator('.pccProjectViewContent a[href="https://example.com/brief"]').wait_for()
+        await pane.locator('.pccPlanEdit').click()
+        assert await plan_editor.locator('.richMedia').count() == 4
+        await pane.locator('.pccPlanCancel').click()
+        assert await plan_editor.is_hidden()
+        assert await project_card.is_visible()
+        assert await page.evaluate('id=>__mock.canvasState[id].canvas.content', MAIN_CHAT) == project_content
+        checks.append('failed project upload keeps the full draft and four files; retry saves photo, playable video/audio and document plus clickable URL; saved card collapses below 165px and editing/cancel preserves server paths')
+
+        await pane.locator('.pccTaskAdd').click()
+        await form.locator('.pccTaskTitle').fill('Материалы для дела\nhttps://example.com/task')
+        await form.locator('input[type="file"]').set_input_files(materials)
+        await form.locator('.richMedia').nth(3).wait_for()
+        await page.screenshot(path=str(EVIDENCE / f'chat-canvas-{name}-task-attachments.png'))
+        await page.evaluate('__mock.loseCreateResponse=true')
+        await form.locator('.pccTaskSave').click()
+        await form.locator('.pccTaskNotice[data-state="error"]').wait_for()
+        assert await form.locator('.richMedia').count() == 4
+        material_task = next(item for item in await server_tasks() if item['title'].startswith('Материалы для дела'))
+        objects_before = await page.evaluate('__mock.objects.size')
+        await form.locator('.pccTaskSave').click()
+        await form.wait_for(state='hidden')
+        assert await page.evaluate('__mock.objects.size') == objects_before
+        retry_calls = await page.evaluate('id=>__mock.canvasCalls.filter(call=>call.name==="pablicus_create_canvas_task_v3"&&call.args.p_task_id===id)', material_task['id'])
+        assert len(retry_calls) == 2 and retry_calls[0]['args'] == retry_calls[1]['args']
+        material_task = next(item for item in await server_tasks() if item['title'].startswith('Материалы для дела'))
+        assert {block['type'] for block in material_task['content']['blocks'] if block['type'] != 'text'} == {'image', 'video', 'audio', 'document'}
+        assert 'Фото 1' in (await card(material_task['id']).inner_text()).replace('\u00a0', ' ')
+        assert await card(material_task['id']).evaluate('node=>node.getBoundingClientRect().height') < 180
+        await card(material_task['id']).locator('.pccTaskToggle').click()
+        await page.wait_for_function('([id,taskId])=>__mock.canvasState[id].tasks.find(task=>task.id===taskId).completed', arg=[MAIN_CHAT, material_task['id']])
+        preserved = next(item for item in await server_tasks() if item['id'] == material_task['id'])
+        assert preserved['content'] == material_task['content']
+        assert await plan_editor.is_hidden()
+        checks.append('calendar task saves every attachment type and URL; a lost response retries identical UUID/content without extra storage objects, the row stays compact, and completion preserves all rich blocks')
+
         dimensions = await pane.evaluate('(node)=>{const r=node.getBoundingClientRect();return {left:r.left,right:r.right,width:r.width,viewport:innerWidth,overflow:document.documentElement.scrollWidth>innerWidth}}')
         assert dimensions['left'] >= -1 and dimensions['right'] <= dimensions['viewport'] + 1 and not dimensions['overflow'], dimensions
+        await project_card.scroll_into_view_if_needed()
         await page.screenshot(path=str(EVIDENCE / f'chat-canvas-{name}-mobile.png'))
         assert not errors, errors
         assert not unexpected, unexpected

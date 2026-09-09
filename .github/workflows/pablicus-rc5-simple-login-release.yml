@@ -3,11 +3,14 @@ on:
   push:
     branches: [pablicus-rc2-release]
     paths: ['apps/pablicus/**', '.github/workflows/pablicus-rc5-simple-login-release.yml']
+  pull_request:
+    branches: [pablicus-rc2-release]
+    paths: ['apps/pablicus/**', '.github/workflows/pablicus-rc5-simple-login-release.yml']
 permissions:
   contents: write
   pages: write
 concurrency:
-  group: pablicus-publication
+  group: pablicus-publication-${{ github.event.pull_request.number || 'release' }}
   cancel-in-progress: false
 jobs:
   checked-release:
@@ -94,7 +97,9 @@ jobs:
         run: python apps/pablicus/tests/chat_library.py
       - name: Shared conversation canvas, tasks and conflict isolation in both browser engines
         working-directory: source
-        run: python apps/pablicus/tests/chat_canvas.py
+        run: |
+          python apps/pablicus/tests/workspace_editor.py
+          python apps/pablicus/tests/chat_canvas.py
       - name: Aggregated tasks filters, pagination, conflict and account isolation in Chromium and WebKit
         working-directory: source
         run: python apps/pablicus/tests/tasks_home.py
@@ -154,10 +159,12 @@ jobs:
           print('Live unauthenticated push denied; private/network schemas unavailable through REST')
           PY
       - uses: actions/checkout@v4
+        if: github.event_name == 'push'
         with:
           ref: main
           path: publication
       - name: Promote only tested static Pablicus subdirectory, preserve root and data
+        if: github.event_name == 'push'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -182,6 +189,7 @@ jobs:
           git rev-parse HEAD > ../evidence/publication-commit.txt
           gh api -X POST repos/${{ github.repository }}/pages/builds > ../evidence/pages-build.json
       - name: Confirm all published bytes over stable HTTPS and live unauthenticated launch
+        if: github.event_name == 'push'
         run: |
           python - <<'PY'
           import asyncio,hashlib,json,time,urllib.request
