@@ -47,9 +47,11 @@ def tasks_sdk():
       const conversationId=n%2?chat:'__OTHER_CHAT__',assignee=n%3===0?user.id:n%3===1?peer:null;
       const created='2026-09-08T10:'+String(Math.floor(n/4)).padStart(2,'0')+':00.123456+00:00';
       __mock.canvasState[conversationId].tasks.push({id:taskId(n),title:taskTitles[n]||('Материал '+String(n).padStart(2,'0')),
-        assignee_id:assignee,due_date:n%4===0?null:relativeDay(n%4===1?-1:n%4===2?0:1),completed:n%5===0,
+        assignee_id:assignee,due_date:n%4===0?null:relativeDay(n%4===1?-1:n%4===2?0:1),due_at:null,due_timezone:'UTC',reminder_minutes:null,followup_minutes:null,archived_at:null,completed:n%5===0,
         revision:1,source_message_id:null,source_block_id:null,created_at:created,created_by:peer,updated_at:created,updated_by:peer});
     }
+    const timedSample=__mock.canvasState[chat].tasks.find(task=>task.id===taskId(59));
+    Object.assign(timedSample,{due_at:relativeDay(1)+'T09:00:00.000Z',due_timezone:'UTC',reminder_minutes:60,followup_minutes:180});
     __mock.seedTaskActor=user.id;
     __mock.allTasks=()=>Object.values(__mock.canvasState).flatMap(state=>state.tasks.map(task=>({...structuredClone(task),
       conversation_id:state.conversation_id,conversation_title:state.conversation_id===chat?'@qa_peer':'Соседний QA чат',
@@ -57,10 +59,10 @@ def tasks_sdk():
       .sort((a,b)=>b.created_at.localeCompare(a.created_at)||b.id.localeCompare(a.id));
     const taskListError=(code,message)=>({data:null,error:{code,message}});
     const listTasks=args=>{
-      const expected=['p_view','p_query','p_today','p_cursor','p_limit'].sort();
+      const expected=['p_view','p_query','p_today','p_cursor','p_limit','p_timezone'].sort();
       const actual=Object.keys(args).sort();
-      if(JSON.stringify(expected)!==JSON.stringify(actual)||!['open','mine','overdue','completed'].includes(args.p_view)
-        ||typeof args.p_query!=='string'||args.p_query.length>200||args.p_today!==__mock.taskToday||args.p_limit!==40
+      if(JSON.stringify(expected)!==JSON.stringify(actual)||!['open','mine','overdue','completed','archived','today'].includes(args.p_view)
+        ||args.p_timezone!==Intl.DateTimeFormat().resolvedOptions().timeZone||typeof args.p_query!=='string'||args.p_query.length>200||args.p_today!==__mock.taskToday||args.p_limit!==40
         ||(args.p_cursor!==null&&(Object.keys(args.p_cursor).sort().join(',')!=='created_at,id'
           ||typeof args.p_cursor.created_at!=='string'||typeof args.p_cursor.id!=='string'))){
         __mock.taskListUnknown.push({args,reason:'unexpected task list contract'});
@@ -70,14 +72,16 @@ def tasks_sdk():
       if(__mock.taskListDenied)return taskListError('42501','tasks_access_denied');
       if(__mock.failNextTaskList){__mock.failNextTaskList=false;return taskListError('NETWORK_ERROR','Task refresh unavailable');}
       const query=args.p_query.trim().toLocaleLowerCase();
-      let rows=__mock.allTasks().filter(task=>args.p_view==='completed'?task.completed:!task.completed);
+      let rows=__mock.allTasks().filter(task=>args.p_view==='archived'?!!task.archived_at:!task.archived_at&&(args.p_view==='completed'?task.completed:!task.completed));
+      if(args.p_view==='today')rows=rows.filter(task=>(!task.assignee_id||task.assignee_id===user.id)&&(task.due_at?new Intl.DateTimeFormat('en-CA',{timeZone:args.p_timezone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(task.due_at)):task.due_date)===args.p_today);
       if(args.p_view==='mine')rows=rows.filter(task=>task.assignee_id===user.id);
-      if(args.p_view==='overdue')rows=rows.filter(task=>task.due_date&&task.due_date<args.p_today);
+      if(args.p_view==='overdue')rows=rows.filter(task=>task.due_at?new Date(task.due_at)<new Date():task.due_date&&task.due_date<args.p_today);
       if(query)rows=rows.filter(task=>task.title.toLocaleLowerCase().includes(query));
+      const total=rows.length;
       if(args.p_cursor)rows=rows.filter(task=>task.created_at<args.p_cursor.created_at
         ||task.created_at===args.p_cursor.created_at&&task.id<args.p_cursor.id);
       const page=rows.slice(0,args.p_limit),last=page.at(-1);
-      const response={data:{tasks:page,next_cursor:rows.length>page.length?{created_at:last.created_at,id:last.id}:null},error:null};
+      const response={data:{tasks:page,total_count:total,next_cursor:rows.length>page.length?{created_at:last.created_at,id:last.id}:null},error:null};
       if(__mock.holdNextTaskList){__mock.holdNextTaskList=false;
         return new Promise(resolve=>__mock.taskListPending.push(()=>resolve(response)));}
       return response;
@@ -85,8 +89,8 @@ def tasks_sdk():
     '''.replace('__OTHER_CHAT__', OTHER_CHAT)
     replace('const result=(data,error=null)=>Promise.resolve({data,error});', setup + '\nconst result=(data,error=null)=>Promise.resolve({data,error});')
     replace('if(canvasKeys[name])return canvasRpc(name,args);', r'''
-      if(name==='pablicus_list_tasks')return listTasks(args);
-      if(name==='pablicus_update_canvas_task'){
+      if(name==='pablicus_list_tasks_v2')return listTasks(args);
+      if(name==='pablicus_update_canvas_task_v2'){
         __mock.taskUpdateCalls.push({args:structuredClone(args),actor:user.id});
         const response=await canvasRpc(name,args);
         if(!response.error&&__mock.loseToggleResponse){__mock.loseToggleResponse=false;
@@ -140,11 +144,11 @@ async def one(name, engine):
     async def expected_ids(view='open', query=''):
         # Compare whole IDs/order to fixture data independently of its RPC path.
         tasks = await page.evaluate('__mock.allTasks()')
-        today, actor = await page.evaluate('[__mock.taskToday,PablicusDebug.user]')
+        today, actor, now = await page.evaluate('[__mock.taskToday,PablicusDebug.user,new Date().toISOString()]')
         return [task['id'] for task in tasks
-                if task['completed'] == (view == 'completed')
+                if (bool(task['archived_at']) if view == 'archived' else not task['archived_at'] and task['completed'] == (view == 'completed'))
                 and (view != 'mine' or task['assignee_id'] == actor)
-                and (view != 'overdue' or task['due_date'] is not None and task['due_date'] < today)
+                and (view != 'overdue' or (task['due_at'] < now if task['due_at'] else task['due_date'] is not None and task['due_date'] < today))
                 and query.lower() in task['title'].lower()]
 
     async def wait_ids(ids):
@@ -191,7 +195,7 @@ async def one(name, engine):
         assert await panel.locator('.pthMore').is_hidden()
         checks.append('keyset pagination sends the exact last created_at/id pair, including timestamp ties, and appends all 48 tasks once in stable order')
 
-        for view in ['mine', 'overdue', 'completed']:
+        for view in ['mine', 'overdue', 'completed', 'archived']:
             await choose(view)
             assert await visible_ids() == await expected_ids(view)
             last = await page.evaluate('__mock.taskListCalls.at(-1).args')
@@ -206,7 +210,7 @@ async def one(name, engine):
         await wait_ids([])
         await panel.locator('.pthSearchInput').fill('')
         await wait_ids(initial[:40])
-        checks.append('Все/Мне/Просрочено/Готово and text search issue the corresponding server filters, reset pagination and render the filtered or genuinely empty result')
+        checks.append('Все/Мне/Просрочено/Готово/Архив and text search issue the corresponding server filters, reset pagination and render the filtered or genuinely empty result')
 
         before = len(await update_calls())
         await card(59).locator('.pthToggle').click()
@@ -219,6 +223,9 @@ async def one(name, engine):
         assert calls[-1]['args']['p_expected_revision'] == 1
         assert calls[-1]['args']['p_completed'] is True
         assert calls[-1]['args']['p_title'] == 'Свежий план съёмки'
+        assert calls[-1]['args']['p_schedule'] is None and calls[-1]['args']['p_archived'] is None
+        completed = await page.evaluate('id=>__mock.allTasks().find(task=>task.id===id)', task_id(59))
+        assert completed['due_at'] and completed['reminder_minutes'] == 60 and completed['followup_minutes'] == 180
         await choose('completed')
         assert await card(59).locator('.pthToggle').get_attribute('aria-checked') == 'true'
         await card(59).locator('.pthToggle').click()
@@ -267,6 +274,26 @@ async def one(name, engine):
         await wait_ids((await expected_ids())[:40])
         checks.append('opening a task navigates to its own conversation canvas and Back returns to the aggregate Дела section')
 
+        await card(58).locator('.pthOpen').click()
+        task_form = page.locator(f'.pccTaskForm[data-task-id="{task_id(58)}"]')
+        await task_form.wait_for()
+        await task_form.locator('.pccTaskArchive').click()
+        await task_form.wait_for(state='hidden')
+        await page.locator('#chatBack').click()
+        await wait_ids((await expected_ids())[:40])
+        assert not await card(58).count()
+        await choose('archived')
+        assert await visible_ids() == [task_id(58)]
+        await card(58).locator('.pthOpen').click()
+        await task_form.wait_for()
+        await task_form.locator('.pccTaskRestore').click()
+        await task_form.wait_for(state='hidden')
+        await page.locator('#chatBack').click()
+        await panel.wait_for()
+        await choose('open')
+        await card(58).wait_for()
+        checks.append('archiving a task from its canvas removes it from aggregate active work, keeps it in Архив, and restoring it through that archive returns the same unfinished task to active work')
+
         await page.evaluate('__mock.holdNextTaskList=true')
         await panel.locator('.pthSearchInput').fill('Катя')
         await page.wait_for_function('__mock.taskListPending.length===1')
@@ -310,7 +337,7 @@ async def one(name, engine):
         assert await page.evaluate('__mock.taskListCalls.at(-1).actor') == SECOND_USER
         checks.append('account changes clear the old inbox and pending reads; Мне uses the next account identity and exposes no previous-account assignments')
 
-        await page.evaluate('''()=>{const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);const day=date=>date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');for(const state of Object.values(__mock.canvasState))for(const task of state.tasks)if(!task.completed)task.due_date=task.id==='99999999-9999-4999-8999-000000000059'?__mock.taskToday:day(yesterday);}''')
+        await page.evaluate('''()=>{const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);const day=date=>date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');for(const state of Object.values(__mock.canvasState))for(const task of state.tasks)if(!task.completed){task.due_at=null;task.due_date=task.id==='99999999-9999-4999-8999-000000000059'?__mock.taskToday:day(yesterday);}}''')
         await choose('overdue')
         assert not await card(59).count()
         assert len(await expected_ids('overdue')) > 40

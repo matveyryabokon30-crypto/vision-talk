@@ -3,7 +3,7 @@
   'use strict';
 
   let instanceId = 0;
-  const VIEWS = [['open', 'Все'], ['mine', 'Мне'], ['overdue', 'Просрочено'], ['completed', 'Готово']];
+  const VIEWS = [['open', 'Все'], ['mine', 'Мне'], ['overdue', 'Просрочено'], ['completed', 'Готово'], ['archived', 'Архив']];
   const POLL_MS = 15000;
 
   function create(options) {
@@ -125,6 +125,11 @@
       const parsed = new Date(value + 'T12:00:00');
       return Number.isNaN(parsed.getTime()) ? '' : parsed.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: parsed.getFullYear() === new Date().getFullYear() ? undefined : 'numeric' });
     }
+    function taskDateLabel(task) {
+      if (!task.due_at) return dateLabel(task.due_date);
+      const value = new Date(task.due_at);
+      return Number.isNaN(value.getTime()) ? dateLabel(task.due_date) : value.toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    }
     function setNotice(text) {
       notice.textContent = text || '';
       notice.hidden = !text;
@@ -156,6 +161,7 @@
         mine: ['Вам пока ничего не назначено', 'Здесь собраны открытые дела, в которых вы — исполнитель.'],
         overdue: ['Просроченных дел нет', 'Здесь появятся незавершённые дела, срок которых уже прошёл.'],
         completed: ['Завершённых дел пока нет', 'Отмеченные дела из ваших чатов появятся здесь.'],
+        archived: ['Архив пуст', 'Здесь хранятся дела, которые вы убрали из работы. Их можно вернуть или удалить.'],
       }[view];
       emptyTitle.textContent = words[0];
       emptyDetail.textContent = words[1];
@@ -178,10 +184,12 @@
         const row = el('article', 'pthTask');
         row.dataset.taskId = task.id;
         row.dataset.completed = String(task.completed);
+        row.dataset.archived = String(!!task.archived_at);
         row.dataset.conversationId = task.conversation_id;
         const toggle = button('pthIcon pthToggle', (task.completed ? 'Вернуть в работу: ' : 'Завершить: ') + task.title);
         toggle.setAttribute('role', 'checkbox');
         toggle.setAttribute('aria-checked', String(task.completed));
+        toggle.hidden = !!task.archived_at;
         const check = el('span', 'pthCheck');
         if (task.completed) check.append(icon('check'));
         toggle.append(check);
@@ -192,13 +200,17 @@
         const details = el('span', 'pthTaskMeta');
         const assignee = el('span', 'pthAssignee', task.assignee_id === context?.userId ? 'Вам' : task.assignee_name || (task.assignee_id ? 'Участник' : 'Без исполнителя'));
         details.append(assignee);
-        const date = dateLabel(task.due_date);
+        const date = taskDateLabel(task);
         if (date) {
           const due = el('span', 'pthDue');
-          const overdue = !task.completed && task.due_date < today;
+          const overdue = !task.completed && !task.archived_at && (task.due_at ? new Date(task.due_at).getTime() < Date.now() : task.due_date < today);
           due.dataset.overdue = String(overdue);
           due.append(icon('calendar'), el('span', '', (overdue ? 'Просрочено · ' : '') + date));
           details.append(due);
+        }
+        if (task.due_at && task.reminder_minutes != null && !task.completed && !task.archived_at) {
+          const minutes = task.reminder_minutes;
+          details.append(el('span', 'pthReminder', minutes === 0 ? 'Напоминание в срок' : minutes === 1440 ? 'Напомнить за день' : minutes === 60 ? 'Напомнить за час' : 'Напомнить за ' + minutes + ' мин'));
         }
         open.replaceChildren(title, chat, details);
         open.addEventListener('click', () => { void openTask(task); });
@@ -259,7 +271,7 @@
       if (!quiet || !pageCount) status.textContent = append ? 'Загружаем ещё…' : 'Загружаем дела…';
       updateControls();
       try {
-        const result = normalize(await options.load({ context: requestContext, view, query, today, cursor, signal: controller.signal }));
+        const result = normalize(await options.load({ context: requestContext, view, query, today, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', cursor, signal: controller.signal }));
         if (!current(lifecycle) || ticket !== readTicket || filterTicket !== queryEpoch || controller.signal.aborted) return false;
         if (append && result.next_cursor && result.next_cursor.id === cursor.id && result.next_cursor.created_at === cursor.created_at) throw new Error('tasks_cursor_did_not_advance');
         if (append) {
@@ -340,6 +352,7 @@
       finally { controllers.delete(controller); }
       if (!current(lifecycle) || controller.signal.aborted || mutations.get(task.id) !== operation) return;
       mutations.delete(task.id);
+      if (!failure) { try { options.onMutation?.({ kind: 'task', taskId: task.id, context: { ...context } }); } catch (_) { /* The write already succeeded. */ } }
       if (failure) {
         uncertain.add(task.id);
         const conflict = failure.code === '40001' || /task_revision_conflict/.test(failure.message || '');

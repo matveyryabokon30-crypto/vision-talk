@@ -21,7 +21,7 @@
    if(needsInstall()&&!standalone()){button.textContent='Добавить на главный экран';status.textContent='На iPhone откройте приложение с главного экрана, чтобы включить уведомления.';return;}
    if(!supported()){button.disabled=true;status.textContent='Этот браузер не поддерживает уведомления. Откройте приложение в Safari или другом поддерживаемом браузере.';return;}
    if(Notification.permission==='denied'){button.disabled=true;status.textContent='Уведомления запрещены. Разрешите их для Pablicus в настройках уведомлений устройства.';return;}
-   status.textContent=message||(enabled?'Уведомления о новых сообщениях включены на этом устройстве.':'Новые сообщения смогут появляться на экране, даже когда приложение закрыто.');
+   status.textContent=message||(enabled?'Уведомления о сообщениях и напоминания о делах включены на этом устройстве.':'Сообщения и напоминания о делах смогут появляться на экране, даже когда приложение закрыто.');
   }
   async function registration(){const reg=await limited(navigator.serviceWorker.getRegistration(scope).then(r=>r?.active?r:navigator.serviceWorker.ready));if(!reg?.active||reg.scope!==scope)throw Error('Обновление приложения ещё устанавливается. Откройте приложение повторно.');return reg;}
   async function bind(recipientId,reg){
@@ -79,7 +79,7 @@
    const title=element('h2','','Уведомления');button=element('button','setting pushButton');button.type='button';status=element('p','pushStatus');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
    button.onclick=()=>enabled?disable():enable();section.append(title,button,status);container.append(section);view();refresh();return section;
   }
-  function onMessage(event){const data=event.data;if(data?.type!=='PABLICUS_PUSH_OPEN'||!UUID.test(data.conversationId||'')||data.recipientId!==options.getUserId())return;options.onOpenConversation?.(data.conversationId,data.recipientId);}
+  function onMessage(event){const data=event.data;if(data?.type!=='PABLICUS_PUSH_OPEN'||!UUID.test(data.conversationId||'')||data.recipientId!==options.getUserId())return;if(data.taskId&&(!UUID.test(data.taskId)||!['task_reminder','task_followup'].includes(data.kind)))return;options.onOpenConversation?.(data.conversationId,data.recipientId,data.taskId?{taskId:data.taskId,kind:data.kind}:null);}
   navigator.serviceWorker?.addEventListener('message',onMessage);
   function clear(){return signOut({remote:false});}
   function destroy(){destroyed=true;++generation;navigator.serviceWorker?.removeEventListener('message',onMessage);section?.remove();section=button=status=null;}
