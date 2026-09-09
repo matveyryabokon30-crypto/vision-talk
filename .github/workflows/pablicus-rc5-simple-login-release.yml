@@ -81,7 +81,8 @@ jobs:
         run: |
           # The hosted image can expose a stale Google Chrome apt index. Playwright
           # does not need that third-party source for its pinned browser bundles.
-          sudo find /etc/apt/sources.list.d -maxdepth 1 -type f \\( -iname '*chrome*' -o -iname '*google*' \\) -delete
+          sudo find /etc/apt/sources.list.d -maxdepth 1 -type f -iname '*chrome*' -delete
+          sudo find /etc/apt/sources.list.d -maxdepth 1 -type f -iname '*google*' -delete
           python -m playwright install --with-deps chromium webkit
       - name: Start a clocked local audio sink for native browser playback
         run: |
