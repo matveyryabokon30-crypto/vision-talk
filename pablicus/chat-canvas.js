@@ -970,7 +970,6 @@
             archived: state.archived ?? (replace ? !!latest.archived_at : draft.archived), expectedRevision: replace ? latest.revision : draft.baseRevision });
         if (!current(ticket) || controller.signal.aborted) return;
         taskBusy = false;
-        notifyMutation('task', draft.id);
         const created = draft.isNew ? data.tasks.find(item => item.id === draft.id) : null;
         if (draft.isNew && !created) {
           applySnapshot(data);
@@ -991,6 +990,9 @@
           applySnapshot(data);
           status.textContent = draft.isNew ? 'Дело добавлено' : draft.postponing ? 'Дело перенесено' : state.archived === true ? 'Дело в архиве' : state.completed === true ? 'Дело в разделе «Готово»' : 'Дело сохранено';
         }
+        // Refresh only after the committed snapshot is painted, so the quick
+        // row cannot read the pre-mutation count during a fast retry.
+        notifyMutation('task', draft.id);
       } catch (error) {
         if (!current(ticket) || isAbort(error) || controller.signal.aborted) return;
         taskBusy = false;
