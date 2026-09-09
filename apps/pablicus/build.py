@@ -18,6 +18,28 @@ s=s.replace("last_id:list.messages.at(-1).id", "last_id:list.messages.at(-1)?.id
 s=s.replace("this.scheduleRender();\n};", "this.scheduleRender();if(vp.scrollTop<180)window.PablicusHost?.historyTop?.();\n};",1)
 s=s.replace("go(i){i=", "go(i){if(!this.messages.length)return;i=")
 s=s.replace("if(this.destroyed||this.busy)return;\nthis.busy=true;", "if(this.destroyed||this.busy||vp.clientWidth<2||vp.clientHeight<2)return;\nthis.busy=true;",1)
+# ResizeObserver delivery must not synchronously resize its observed viewport.
+# Keep the archived gate unchanged; coalesce the live adapter's work per frame.
+observer_source="""this.observer=new ResizeObserver(()=>{
+if(this.destroyed||this.busy)return;
+if(Math.abs(vp.clientWidth-this.width)>.5||Math.abs(vp.clientHeight-this.height)>.5)
+this.sync(this.lastAnchor,this.follow,'viewport-size');
+});this.observer.observe(vp);"""
+observer_deferred="""this.resizeFrame=0;
+this.observer=new ResizeObserver(()=>{
+if(this.destroyed||this.resizeFrame)return;
+this.resizeFrame=requestAnimationFrame(()=>{
+this.resizeFrame=0;
+if(this.destroyed||this.busy||vp.clientWidth<2||vp.clientHeight<2)return;
+if(Math.abs(vp.clientWidth-this.width)>.5||Math.abs(vp.clientHeight-this.height)>.5)
+this.sync(this.lastAnchor,this.follow,'viewport-size');
+});
+});this.observer.observe(vp);"""
+assert s.count(observer_source)==1,'List resize observer changed; review required'
+s=s.replace(observer_source,observer_deferred,1)
+observer_cleanup='cancelAnimationFrame(this.frame);this.observer.disconnect();'
+assert s.count(observer_cleanup)==1,'List resize cleanup changed; review required'
+s=s.replace(observer_cleanup,'cancelAnimationFrame(this.frame);cancelAnimationFrame(this.resizeFrame);this.observer.disconnect();',1)
 s=s.replace("queueRows.filter(OutboxVault.active).flatMap", "queueRows.filter(r=>!['sent','cancelled'].includes(r.state)).flatMap")
 s=s.replace("meta.textContent='◷ В очереди · не отправлено'", "meta.replaceChildren(...window.PablicusHost.messageMeta({state:m.queueState||'queued'}).childNodes)")
 s=s.replace("vault.store=new OutboxVault.OutboxStore();", "vault.store=new PablicusStore(scopeUser,scopeChat);")

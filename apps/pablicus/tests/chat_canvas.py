@@ -38,7 +38,7 @@ def canvas_sdk():
         source = source.replace(old, new, 1)
 
     initialization = r'''
-    __mock.canvasCalls=[];__mock.canvasUnknown=[];__mock.readCalls=[];
+    __mock.canvasCalls=[];__mock.canvasUnknown=[];__mock.readCalls=[];__mock.messageReads=[];
     __mock.canvasPending=[];__mock.holdNextCanvasRead=false;
     __mock.loseCreateResponse=false;__mock.canvasReceipts=new Map();
     __mock.canvasDenied=false;
@@ -47,12 +47,14 @@ def canvas_sdk():
       messages.push({id:'__OLD_ID__',client_message_id:'canvas-old',conversation_id:chat,
         server_seq:3,sender_id:peer,type:'text',body:'__OLD_TEXT__',
         attachment_path:null,attachment_metadata:null,created_at:'2026-09-08T10:10:00Z'});
-      for(let n=10;n<210;n++)messages.push({id:'aaaaaaaa-aaaa-4aaa-8aaa-'+String(n).padStart(12,'0'),
+      for(let n=10;n<210;n++)if(!messages.some(message=>message.conversation_id===chat&&message.server_seq===n))messages.push({id:'aaaaaaaa-aaaa-4aaa-8aaa-'+String(n).padStart(12,'0'),
         client_message_id:'canvas-history-'+n,conversation_id:chat,server_seq:n,sender_id:peer,
         type:'text',body:'Недавнее сообщение '+n,attachment_path:null,attachment_metadata:null,
         created_at:'2026-09-08T11:00:00Z'});
       messages.sort((a,b)=>a.server_seq-b.server_seq);seq=209;
     };
+    __mock.historyRows=conversationId=>messages.filter(message=>message.conversation_id===conversationId)
+      .sort((a,b)=>a.server_seq-b.server_seq).map(message=>({id:message.id,number:message.server_seq}));
     __mock.releaseCanvas=()=>{const jobs=__mock.canvasPending.splice(0);jobs.forEach(job=>job());};
     __mock.signOut=()=>__mock.emitAuth('SIGNED_OUT',null);
     const canvasNow=()=>new Date().toISOString();
@@ -140,6 +142,7 @@ def canvas_sdk():
     replace('const result=(data,error=null)=>Promise.resolve({data,error});', initialization + '\nconst result=(data,error=null)=>Promise.resolve({data,error});')
     replace("lt(k,v){filters.push([k,'lt',v]);return q}", "lt(k,v){filters.push([k,'lt',v]);return q},gte(k,v){filters.push([k,'gte',v]);return q},lte(k,v){filters.push([k,'lte',v]);return q}")
     replace("op==='gt'?x[k]>v:x[k]<v", "op==='gt'?x[k]>v:op==='gte'?x[k]>=v:op==='lte'?x[k]<=v:x[k]<v")
+    replace('return result(single?(d[0]||null):d)', "if(table==='messages')__mock.messageReads.push({filters:structuredClone(filters),sort:structuredClone(sort),limit:lim,rows:d.map(message=>({id:message.id,number:message.server_seq}))});return result(single?(d[0]||null):d)")
     replace('rpc:async(name,args)=>{', r'''rpc:async(name,args={})=>{
       if(canvasKeys[name])return canvasRpc(name,args);
       if(name==='pablicus_search_messages'){
@@ -391,13 +394,29 @@ async def one(name, engine):
         await library.locator(f'.pclResult[data-message-id="{OLD_ID}"] .pclLocate').click()
         await library.wait_for(state='hidden')
         await page.locator(f'#canvas .row[data-id="{OLD_ID}"]').wait_for(state='visible')
-        history = await page.evaluate('PablicusChat.list.messages.map(message=>message.id)')
-        assert OLD_ID in history and len(history) <= 61, history
+        await page.evaluate('PablicusDebug.syncMessages()')
+        await page.wait_for_function('id=>PablicusChat.list.messages.at(-1)?.number===__mock.historyRows(id).at(-1)?.number', arg=MAIN_CHAT)
+        history = await page.evaluate('PablicusChat.list.messages.map(message=>({id:message.id,number:message.number}))')
+        assert any(message['id'] == OLD_ID for message in history), history
+        reads = await page.evaluate('__mock.messageReads')
+        neighborhoods = [read for read in reads if read['limit'] == 61
+                         and ['conversation_id', 'eq', MAIN_CHAT] in read['filters']
+                         and ['server_seq', 'gte', 1] in read['filters']
+                         and ['server_seq', 'lte', 33] in read['filters']]
+        assert neighborhoods, reads
+        assert all(len(read['rows']) <= 61 and any(message['id'] == OLD_ID for message in read['rows'])
+                   and read['sort'] == ['server_seq', {'ascending': True}] for read in neighborhoods), neighborhoods
+        # A normal live poll may append the later conversation messages before
+        # this assertion. Verify the bounded locate request and the actual
+        # continuous loaded range, rather than timing a transient array length.
+        fixture = await page.evaluate('id=>__mock.historyRows(id)', MAIN_CHAT)
+        expected = [message for message in fixture if history[0]['number'] <= message['number'] <= history[-1]['number']]
+        assert history == expected, {'actual': history, 'expected': expected}
         await open_canvas()
         assert await body.input_value() == 'Не терять этот план при поиске в давней переписке'
         assert await page.evaluate('id=>__mock.canvasState[id].canvas.body', MAIN_CHAT) == LOCAL_PLAN
         await body.fill(LOCAL_PLAN)
-        checks.append('locating an unloaded historical message replaces the timeline window while preserving the unsaved canvas plan under the same account and conversation')
+        checks.append('historical locate issues a bounded 61-row neighborhood request and retains a continuous timeline through live catch-up, while preserving the unsaved canvas plan')
 
         await open_canvas()
         await pane.locator('.pccTaskAdd').click()

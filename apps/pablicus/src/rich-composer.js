@@ -30,7 +30,7 @@
     let files = new Map();
     let selected = {blockId: blocks[0].id, start: input.selectionStart || 0, end: input.selectionEnd || 0, direction: 'none'};
     let destroyed = false, revision = 0, requesting = false, permissionEpoch = 0, recording = null;
-    let geometryFrame = 0, resizeObserver = null;
+    let geometryFrame = 0, resizeFrame = 0, resizeObserver = null;
     const nodes = new Map(), urls = new Map(), cleanups = [], textListeners = new Map(), composing = new Set();
     const originalLabel = input.getAttribute('aria-label');
     const composeBox = container.closest('#composeBox');
@@ -481,13 +481,19 @@
     // Remember the cursor before the host opens a menu or a system file picker.
     listen(container, 'focusout', event => remember(event.target));
     if (typeof ResizeObserver === 'function') {
-      let previousWidth = 0;
+      let previousWidth = 0, observedWidth = 0;
       resizeObserver = new ResizeObserver(entries => {
-        const width = Math.round(entries[0].contentRect.width);
-        if (width === previousWidth) return;
-        previousWidth = width;
-        for (const block of blocks) if (block.type === 'text') sizeText(nodes.get(block.id));
-        geometry();
+        observedWidth = Math.round(entries[0].contentRect.width);
+        if (destroyed || resizeFrame || observedWidth < 1 || observedWidth === previousWidth) return;
+        // Text sizing changes this container's height. Defer those writes until
+        // after observer delivery, using the latest width if callbacks coalesce.
+        resizeFrame = requestAnimationFrame(() => {
+          resizeFrame = 0;
+          if (destroyed || observedWidth < 1 || container.clientWidth < 1 || observedWidth === previousWidth) return;
+          previousWidth = observedWidth;
+          for (const block of blocks) if (block.type === 'text') sizeText(nodes.get(block.id));
+          geometry();
+        });
       });
       resizeObserver.observe(container);
     }
@@ -508,6 +514,7 @@
         cleanups.forEach(cleanup => cleanup());
         for (const remove of [...textListeners.values()]) remove();
         resizeObserver?.disconnect();
+        cancelAnimationFrame(resizeFrame);
         cancelAnimationFrame(geometryFrame);
         for (const url of urls.values()) URL.revokeObjectURL(url);
         urls.clear();
