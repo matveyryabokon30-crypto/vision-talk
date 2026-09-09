@@ -224,7 +224,9 @@ async def one(name, engine):
     async def open_canvas():
         await page.locator('#canvasTab').click()
         await pane.locator('.pablicusChatCanvas[data-state="ready"]').wait_for()
-        assert await page.locator('#composer').is_hidden()
+        assert await page.locator('#composer').is_visible()
+        assert await page.locator('#composeBox #editor').is_hidden()
+        assert await page.locator('#workspaceQuick').is_visible()
 
     async def fill_plan(value):
         if not await body.is_visible():

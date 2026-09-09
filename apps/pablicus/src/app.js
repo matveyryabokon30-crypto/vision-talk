@@ -113,7 +113,7 @@
  function enableTaskNotifications(){const pending=pushNotifications.enable();return Promise.resolve(pending).then(()=>{if(!pushNotifications.enabled)throw Error('Уведомления не включены. Откройте приложение с главного экрана iPhone и разрешите уведомления.');});}
  function canvasNavigationAllowed(){return!chatCanvas.hasUnsavedChanges()||confirm('В полотне есть несохранённые изменения. Выйти без сохранения?');}
  function paintConversationView(){
-  $('app').classList.toggle('canvas-active',canvasVisible);$('chatCanvasPanel').hidden=!canvasVisible;$('vp').inert=canvasVisible;$('composer').hidden=canvasVisible;
+  $('app').classList.toggle('canvas-active',canvasVisible);$('chatCanvasPanel').hidden=!canvasVisible;$('vp').inert=canvasVisible;$('composer').hidden=false;
   for(const [id,selected]of [['conversationTab',!canvasVisible],['canvasTab',canvasVisible]]){$(id).setAttribute('aria-selected',String(selected));$(id).tabIndex=selected?0:-1;}
  }
  function resetConversationView(){++canvasSwitch;++canvasEpoch;chatCanvas.reset();workspaceUploadState.clear();canvasVisible=false;paintConversationView();}
