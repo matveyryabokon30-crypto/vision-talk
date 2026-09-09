@@ -123,13 +123,14 @@
       return node;
     };
     const root = element('div', 'richMessage');
+    if (options.naturalMedia) root.classList.add('richMessageNaturalMedia');
     const checked = validate(value);
     if (!checked.ok) {
       root.append(element('p', 'richMessageUnavailable', 'Не удалось отобразить содержимое сообщения.'));
       return root;
     }
     let disposed = false, initialized = false, observer = null, resizeFrame = null, mountFrame = null;
-    const images = [], audioPlayers = [];
+    const images = [], videos = [], audioPlayers = [];
     // NaturalList renders measurement copies too. They must never resolve media URLs.
     const isLiveRow = () => root.isConnected && !root.closest('.measureBox') &&
       (options.mountRoot ? options.mountRoot.contains(root) && options.isActive?.() !== false : !!root.closest('#canvas'));
@@ -151,7 +152,8 @@
       forgetView(state);
     } };
     const releaseObserverWhenFinished = () => {
-      if (!images.some(item => item.status === 'waiting' || item.status === 'loading')) {
+      if (!images.some(item => item.status === 'waiting' || item.status === 'loading') &&
+          !videos.some(item => item.status === 'waiting' || item.status === 'loading')) {
         if (observer) observer.disconnect();
         if (!audioPlayers.length) forgetView(state);
       }
@@ -180,6 +182,32 @@
         item.image.onerror = () => imageFailed(item);
         item.image.src = url;
       } catch (_) { imageFailed(item); }
+    }
+
+    async function loadVideo(item) {
+      if (disposed || !isLiveRow() || item.status === 'loading' || item.status === 'ready') return;
+      item.status = 'loading';
+      item.statusNode.textContent = 'Загрузка видео…';
+      try {
+        if (typeof options.resolveUrl !== 'function') throw new Error('Media resolver is unavailable');
+        const resolved = await options.resolveUrl(item.block.path || item.block.assetId || item.block.id, item.block);
+        if (disposed || !isLiveRow()) return;
+        const url = safeResolvedUrl(resolved);
+        if (!url) throw new Error('Invalid media URL');
+        item.video.src = url;
+        item.video.load();
+        item.status = 'ready';
+        item.container.classList.add('richVideoReady');
+        item.statusNode.textContent = '';
+        releaseObserverWhenFinished();
+        notifyResize();
+      } catch (_) {
+        if (disposed) return;
+        item.status = 'failed';
+        item.container.classList.add('richMediaError');
+        item.statusNode.textContent = 'Видео не загрузилось. Нажмите, чтобы повторить.';
+        releaseObserverWhenFinished();
+      }
     }
 
     function imageFailed(item) {
@@ -482,6 +510,39 @@
         root.append(renderAudio(block));
         continue;
       }
+      if (block.type === 'video' && options.naturalMedia) {
+        const container = element('div', 'richMedia richMedia-video richNaturalMedia');
+        container.dataset.blockId = block.id;
+        container.setAttribute('role', 'group');
+        container.setAttribute('aria-label', 'Видео');
+        const video = element('video', 'richVideo');
+        video.controls = true;
+        video.playsInline = true;
+        video.preload = 'metadata';
+        if (block.width > 0 && block.height > 0) {
+          video.width = Math.round(block.width);
+          video.height = Math.round(block.height);
+        }
+        const statusNode = element('span', 'richMediaStatus', 'Загрузка видео…');
+        statusNode.setAttribute('role', 'status');
+        container.append(video, statusNode);
+        const item = {block, container, video, statusNode, status: 'waiting'};
+        videos.push(item);
+        video.addEventListener('error', () => {
+          if (disposed || item.status === 'failed') return;
+          item.status = 'failed';
+          container.classList.add('richMediaError');
+          statusNode.textContent = 'Видео не загрузилось. Нажмите, чтобы повторить.';
+          releaseObserverWhenFinished();
+        });
+        video.addEventListener('loadedmetadata', () => notifyResize());
+        container.addEventListener('click', event => {
+          if (event.target === video || event.target.closest('video')) return;
+          if (item.status === 'failed') { item.status = 'waiting'; container.classList.remove('richMediaError'); loadVideo(item); }
+        });
+        parent.append(container);
+        continue;
+      }
       const button = element('button', 'richMedia richMedia-' + block.type);
       button.type = 'button';
       button.dataset.blockId = block.id;
@@ -531,19 +592,23 @@
       if (disposed || initialized || !isLiveRow()) return;
       initialized = true;
       if (audioPlayers.length) rememberView(state);
-      if (images.length) {
+      if (images.length || videos.length) {
         rememberView(state);
         if (scope.IntersectionObserver) {
           observer = new scope.IntersectionObserver(entries => {
             for (const entry of entries) if (entry.isIntersecting) {
               const item = images.find(candidate => candidate.button === entry.target);
-              if (item) loadImage(item);
+              if (item) { loadImage(item); continue; }
+              const video = videos.find(candidate => candidate.container === entry.target);
+              if (video) loadVideo(video);
             }
           }, { rootMargin: '120px' });
           for (const item of images) observer.observe(item.button);
+          for (const item of videos) observer.observe(item.container);
         } else {
           // Native lazy image loading still applies on older browsers.
           for (const item of images) loadImage(item);
+          for (const item of videos) loadVideo(item);
         }
       }
       notifyResize();

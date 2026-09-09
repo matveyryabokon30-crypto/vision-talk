@@ -176,20 +176,16 @@
           audio.setAttribute('aria-label', 'Прослушать голосовое сообщение');
           card.append(audio);
         } else if (block.type === 'video') {
-          const play = button('Предпросмотр видео', '▷ Посмотреть видео', () => {
-            if (card.querySelector('video')) return;
-            const video = document.createElement('video');
-            video.controls = true;
-            video.playsInline = true;
-            video.preload = 'metadata';
-            video.src = objectURL(file);
-            play.replaceWith(video);
-            video.addEventListener('loadedmetadata', geometry);
-            video.play().catch(() => {});
-            geometry();
-          });
-          play.classList.add('richVideoPreview');
-          card.append(play);
+          // Keep the attachment itself visible, like a Telegram media message.
+          // Playback still requires an explicit tap on the native controls.
+          const video = document.createElement('video');
+          video.controls = true;
+          video.playsInline = true;
+          video.preload = 'metadata';
+          video.src = objectURL(file);
+          card.append(video);
+          video.addEventListener('loadedmetadata', geometry);
+          geometry();
         }
         const detail = document.createElement('small');
         detail.className = 'richMediaDetails';

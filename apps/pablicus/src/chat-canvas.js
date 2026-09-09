@@ -24,6 +24,7 @@
         source: 'M9 10 5 6l4-4M5 6h9a6 6 0 0 1 0 12h-2',
         close: 'm6 6 12 12M18 6 6 18',
         check: 'm5 12 4 4 10-10',
+        copy: 'M9 9h10v10H9zM5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1',
         previous: 'm14 6-6 6 6 6',
         next: 'm10 6 6 6-6 6',
       };
@@ -77,9 +78,18 @@
     planView.id = uid + '-project-content';
     planView.hidden = true;
     const planViewContent = el('div', 'pccProjectViewContent');
+    const planActions = el('div', 'pccProjectActions');
+    const planCopy = button('pccTextButton pccPlanCopy', 'Копировать текст');
+    planCopy.textContent = '';
+    const planCopyLabel = el('span', 'pccCopyLabel', 'Копировать');
+    planCopy.append(icon('copy'), planCopyLabel);
+    const planCopyStatus = el('span', 'pccCopyStatus');
+    planCopyStatus.setAttribute('role', 'status');
+    planCopyStatus.setAttribute('aria-live', 'polite');
     const planEdit = button('pccTextButton pccPlanEdit', 'Изменить проект');
     planEdit.prepend(icon('edit'));
-    planView.append(planViewContent, planEdit);
+    planActions.append(planCopy, planEdit, planCopyStatus);
+    planView.append(planViewContent, planActions);
     const planNew = button('pccButton pccPlanNew', 'Добавить проект');
     planNew.prepend(icon('plus'));
     const planEditorHost = el('div', 'pccPlanEditor');
@@ -133,7 +143,7 @@
     let opened = false, destroyed = false, context = null, generation = 0, snapshot = null;
     let loadController = null, loadTicket = 0, pollTimer = 0, savingPlan = false;
     let planBaseContent = { v: 1, blocks: [] }, planBaseRevision = 0, planDirty = false, planChanged = false;
-    let planEditor = null, planEditing = false, planExpanded = false, planViewCleanup = null, planRenderedContent = '', planInputState = '', taskEditor = null;
+    let planEditor = null, planEditing = false, planExpanded = false, planViewCleanup = null, planRenderedContent = '', planInputState = '', planCopyTimer = 0, taskEditor = null;
     let taskDraft = null, taskForm = null, taskBusy = false, pendingSource = null;
     let taskOperation = null, planError = false;
     let taskView = 'open', pendingTask = null, taskLinkNotice = '';
@@ -192,6 +202,7 @@
       planExcerpt.hidden = planExpanded || !planExcerpt.textContent;
       planAttachments.textContent = attachmentSummary(value);
       planAttachments.hidden = planExpanded || !planAttachments.textContent;
+      planCopy.hidden = !text;
       const disclosureLabel = planExpanded ? 'Свернуть проект' : 'Открыть проект';
       planCard.title = disclosureLabel;
       planCard.setAttribute('aria-label', disclosureLabel);
@@ -203,6 +214,34 @@
       if (signature) {
         if (options.renderContent) planViewCleanup = options.renderContent({ host: planViewContent, content: value, context: { ...context } });
         else planViewContent.textContent = text;
+      }
+    }
+    async function copyProjectText() {
+      const text = contentText(richContent(snapshot?.canvas.content, snapshot?.canvas.body));
+      if (!text) return;
+      let temporary = null;
+      try {
+        if (scope.navigator?.clipboard?.writeText) await scope.navigator.clipboard.writeText(text);
+        else {
+          temporary = el('textarea');
+          temporary.value = text;
+          temporary.setAttribute('readonly', '');
+          temporary.style.cssText = 'position:fixed;top:-1000px;left:-1000px;opacity:0;pointer-events:none';
+          document.body.append(temporary);
+          temporary.select();
+          if (!document.execCommand?.('copy')) throw new Error('copy_failed');
+        }
+        temporary?.remove();
+        planCopyLabel.textContent = 'Скопировано';
+        planCopyStatus.textContent = 'Текст проекта скопирован';
+        clearTimeout(planCopyTimer);
+        planCopyTimer = scope.setTimeout(() => {
+          if (!destroyed) { planCopyLabel.textContent = 'Копировать'; planCopyStatus.textContent = ''; }
+        }, 2400);
+      } catch (_) {
+        temporary?.remove();
+        planCopyLabel.textContent = 'Повторить';
+        planCopyStatus.textContent = 'Не удалось скопировать. Нажмите ещё раз.';
       }
     }
     function editProject() {
@@ -1096,6 +1135,10 @@
       planDirty = false;
       planChanged = false;
       planError = false;
+      scope.clearTimeout(planCopyTimer);
+      planCopyTimer = 0;
+      planCopyLabel.textContent = 'Копировать';
+      planCopyStatus.textContent = '';
       planState('', '');
       planServerBody.textContent = '';
       planConflict.hidden = true;
@@ -1136,6 +1179,7 @@
       scope.visualViewport?.removeEventListener('scroll', updateSheetViewport);
     }
     planCard.onclick = () => { planExpanded = !planExpanded; renderProject(); };
+    planCopy.onclick = () => { void copyProjectText(); };
     planEdit.onclick = editProject;
     planNew.onclick = editProject;
     planCancel.onclick = () => {

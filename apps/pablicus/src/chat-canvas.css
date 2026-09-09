@@ -109,3 +109,30 @@
 @media(max-width:360px){.pablicusChatCanvas{padding-inline:10px}.pablicusChatCanvas .pccTaskForm{padding-inline:14px}.pablicusChatCanvas .pccButton{padding-inline:11px}.pablicusChatCanvas .pccCalendarCell{min-height:34px}.pablicusChatCanvas .pccCalendarDay{height:33px;width:33px;min-height:33px}}
 @media(hover:hover){.pablicusChatCanvas button:hover{background:var(--soft,#ebeef0)}.pablicusChatCanvas .pccCalendarDay[aria-pressed=true]:hover,.pablicusChatCanvas .pccTaskSave:hover{background:var(--text,#303438);color:var(--bg,#fff)}}
 @media(prefers-reduced-motion:reduce){.pablicusChatCanvas *{scroll-behavior:auto!important}}
+
+/* Projects are content, not another message card. Keep the collapsed preview
+   light and let the expanded view use the full canvas width. */
+.pablicusChatCanvas .pccProject{background:transparent;box-shadow:none;border-radius:0}
+.pablicusChatCanvas .pccProjectCard{background:transparent;box-shadow:none;border-radius:0;border-bottom:1px solid var(--line,#e5e6e7);padding-left:3px;padding-right:36px}
+.pablicusChatCanvas .pccProjectView{padding:48px 17px 8px;margin:0;border-radius:0;background:transparent}
+.pablicusChatCanvas .pccProjectViewContent{max-height:none;overflow:visible;padding:0 2px}
+.pablicusChatCanvas .pccProjectActions{display:flex;align-items:center;gap:4px;min-height:42px;margin-top:5px}
+.pablicusChatCanvas .pccProjectActions .pccTextButton{min-height:38px;padding:6px 8px;color:var(--muted,#767a7d)}
+.pablicusChatCanvas .pccProjectActions .pccTextButton svg{width:16px;height:16px}
+.pablicusChatCanvas .pccCopyStatus{min-width:0;color:var(--muted,#767a7d);font-size:11px;line-height:1.35;overflow-wrap:anywhere}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia{width:100%;max-width:none;gap:12px}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia{min-height:0;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-image{display:block;aspect-ratio:auto;min-height:0;background:transparent;border-radius:14px;overflow:hidden}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richImage{position:static;display:block;width:auto;max-width:100%;height:auto;max-height:360px;object-fit:contain;border-radius:14px;visibility:visible}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-image:not(.richImageReady){min-height:64px;background:var(--soft,#f0f1f2)}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-image .richMediaStatus{font-size:11px;color:var(--muted,#767a7d)}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMediaGallery{width:100%;background:transparent;border-radius:14px;gap:4px;aspect-ratio:auto}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMediaGallery>.richMedia{min-height:0}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-video{display:block;width:100%;overflow:hidden}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richVideo{display:block;width:100%;max-width:100%;max-height:360px;border-radius:14px;background:var(--soft,#f0f1f2);object-fit:contain}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-video .richMediaStatus{position:static;display:block;padding:5px 0;background:transparent;color:var(--muted,#767a7d);font-size:11px}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-video .richMediaStatus:empty{display:none}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-document{display:flex;align-items:center;gap:10px;min-height:44px;padding:7px 0;border-bottom:1px solid var(--line,#e5e6e7)}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-document .richMediaIcon{width:28px;height:28px;flex-basis:28px;background:transparent;color:var(--muted,#767a7d);font-size:17px}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-document .richMediaTitle{font-size:14px}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-document .richMediaDetails{font-size:11px}
