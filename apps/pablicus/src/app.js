@@ -118,7 +118,7 @@
   for(const [id,selected]of [['conversationTab',!canvasVisible],['canvasTab',canvasVisible]]){$(id).setAttribute('aria-selected',String(selected));$(id).tabIndex=selected?0:-1;}
  }
  function resetConversationView(){++canvasSwitch;++canvasEpoch;chatCanvas.reset();workspaceUploadState.clear();canvasVisible=false;paintConversationView();}
- async function showConversationView(){if(!canvasNavigationAllowed())return false;PablicusChat.rich?.blur?.();++canvasSwitch;chatCanvas.close();canvasVisible=false;paintConversationView();requestAnimationFrame(()=>PablicusChat.list?.refreshFont());return true;}
+ async function showConversationView(){PablicusChat.rich?.blur?.();++canvasSwitch;chatCanvas.close();canvasVisible=false;paintConversationView();requestAnimationFrame(()=>PablicusChat.list?.refreshFont());return true;}
  async function showCanvasView(sourceMessage,options={}){
   if(!user||!current||opening)return;const context=canvasContext(),ticket=++canvasSwitch;
   if(canvasVisible&&!sourceMessage&&!options.taskId&&chatCanvas.element?.dataset.state==='ready')return;
