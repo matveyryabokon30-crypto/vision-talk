@@ -177,3 +177,43 @@ the reusable server secret is never put in the network queue.
 The deployed worker returned HTTP 200 with zero claimed/sent jobs during its
 empty-queue initialization, and a stable VAPID key was created on the server.
 No test notification was sent to either real account.
+
+## Full-history search, materials and storage
+
+The conversation header now opens materials by tapping the recipient name; a
+small search button opens text search. Both share a neutral mobile dialog with
+Search, Media, Files, Voice and Links tabs. Search queries the complete authorized
+conversation, including effective edits, instead of filtering the loaded history.
+Materials preserve individual rich block IDs and use a message/block cursor, so
+multiple attachments from one message cannot disappear at a page boundary.
+Files can be filtered by original filename or source text, downloaded, and traced
+back to their original message. Images/videos use the existing viewer; audio
+plays inline. HTTP(S) links open separately without automatic previews.
+
+Locating an old message loads its contiguous neighborhood and replaces the
+timeline window. Combining a distant old range with the latest range would leave
+an invisible history gap; replacing the window allows normal older-page loading
+and forward catch-up. Drafts and the outgoing queue are preserved. Search and
+media requests are canceled or discarded after tab, conversation or account
+changes; closing the catalog releases audio sources.
+
+Profile → Storage displays actual retained bytes in `message-media`, separately
+showing the app total and the current user's uploads. It does not display a plan
+quota or claim that the stored total is a monthly allowance. Unsent uploads and
+retained files from deleted messages still occupy space. Unknown metadata and
+failed measurements have explicit states rather than an invented zero.
+
+Applied on 2026-09-09: `pablicus_chat_search_materials_storage`, using
+`chat-workspace/SEARCH_SCHEMA_PROPOSAL.sql`. Live catalog readback confirms three
+public invoker wrappers, guarded private implementations and revoked anonymous
+execution. Anonymous HTTP calls to all three public RPCs return 401. The security
+advisor has no new findings compared with the pre-migration baseline. Detailed
+interfaces and storage semantics are in `chat-workspace/SEARCH_CONTRACT.md`.
+
+The SQL suite passes 59 tests. `tests/chat_library.py` exercises a 277-message
+synthetic conversation, text and same-message material pagination, edits, original
+message navigation, download, real inline WAV playback, stale results, account
+isolation and storage error states. The release workflow requires this test in
+Chromium and WebKit before promotion. Local Chromium passes; local WebKit is
+blocked by incompatible native dependencies and is validated by the CI gate.
+These checks do not represent a physical iPhone acceptance test.

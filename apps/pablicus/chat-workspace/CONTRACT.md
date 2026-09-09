@@ -1,5 +1,7 @@
 # Rich messages and saved conversation
 
+Search, paginated materials and aggregate storage usage are specified separately in [SEARCH_CONTRACT.md](SEARCH_CONTRACT.md).
+
 This additive SQL proposal targets the inspected production schema. Deployment status is recorded separately; this document does not assert deployment.
 
 ## `send_rich_message`

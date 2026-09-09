@@ -89,6 +89,9 @@ jobs:
           python apps/pablicus/tests/voice_design.py chromium
           python apps/pablicus/tests/voice_design.py webkit
           python apps/pablicus/tests/chat_polish.py
+      - name: Chat search, materials and storage contracts in both browser engines
+        working-directory: source
+        run: python apps/pablicus/tests/chat_library.py
       - name: Public first-key page with virtual WebAuthn and mocked provider HTTP
         working-directory: source
         run: python apps/pablicus/tests/public_passkey_page.py
@@ -124,6 +127,9 @@ jobs:
           base='https://ctcoqgsztdtsazdiwcmd.supabase.co'
           key='sb_publishable_kMGqZAM2vadfXbBr8r5uzw_l9EiBtIw'
           checks=[('/functions/v1/pablicus-push',{},401),
+                  ('/rest/v1/rpc/pablicus_storage_usage',{},401),
+                  ('/rest/v1/rpc/pablicus_search_messages?p_conversation_id=00000000-0000-0000-0000-000000000000&p_query=test',{},401),
+                  ('/rest/v1/rpc/pablicus_chat_materials?p_conversation_id=00000000-0000-0000-0000-000000000000&p_kind=media',{},401),
                   ('/rest/v1/http_request_queue?select=id&limit=0',{'Accept-Profile':'net'},406),
                   ('/rest/v1/config?select=singleton&limit=0',{'Accept-Profile':'pablicus_push_private'},406)]
           for path,headers,expected in checks:
