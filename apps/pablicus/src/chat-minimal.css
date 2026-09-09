@@ -262,11 +262,6 @@
 #composer button:focus-visible {
   outline-color: var(--accent);
 }
-#composer #saveState,
-#composer #saveState[data-state='dirty'],
-#composer #saveState[data-state='saving'] {
-  color: var(--muted);
-}
 #composer #saveState[data-state='error'],
 #composer #saveState[data-state='load-error'],
 #composer #saveState[data-state='conflict'] {
@@ -277,8 +272,11 @@
   color: var(--muted);
   background: transparent;
 }
-#composer #storageInfo {
-  color: var(--muted);
+#composer #vaultLine[hidden] {
+  display: none !important;
+}
+#app.composer-fullscreen #composeBox {
+  height: calc(100% - var(--save-feedback-height, 0px));
 }
 
 @media (hover: hover) {
