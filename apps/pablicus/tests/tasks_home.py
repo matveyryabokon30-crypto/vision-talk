@@ -8,6 +8,7 @@ import argparse
 import asyncio
 import json
 import mimetypes
+import os
 import shutil
 import tempfile
 import traceback
@@ -51,13 +52,41 @@ def tasks_sdk():
         revision:1,source_message_id:null,source_block_id:null,created_at:created,created_by:peer,updated_at:created,updated_by:peer});
     }
     const timedSample=__mock.canvasState[chat].tasks.find(task=>task.id===taskId(59));
-    Object.assign(timedSample,{due_at:relativeDay(1)+'T09:00:00.000Z',due_timezone:'UTC',reminder_minutes:60,followup_minutes:180});
+    Object.assign(timedSample,{due_at:relativeDay(1)+'T09:00:00.000Z',due_timezone:'UTC',reminder_minutes:60,followup_minutes:180,
+      content:{v:1,blocks:[{id:'task-title',type:'text',text:timedSample.title},
+        {id:'task-brief',type:'document',path:chat+'/'+peer+'/99999999-9999-4999-8999-000000000059/task-brief/brief.pdf',name:'brief.pdf',mime:'application/pdf',size:1234}]}});
     __mock.seedTaskActor=user.id;
     __mock.allTasks=()=>Object.values(__mock.canvasState).flatMap(state=>state.tasks.map(task=>({...structuredClone(task),
       conversation_id:state.conversation_id,conversation_title:state.conversation_id===chat?'@qa_peer':'Соседний QA чат',
       assignee_name:task.assignee_id===__mock.seedTaskActor?'Матвей QA':task.assignee_id===peer?'Катя QA':null})))
       .sort((a,b)=>b.created_at.localeCompare(a.created_at)||b.id.localeCompare(a.id));
     const taskListError=(code,message)=>({data:null,error:{code,message}});
+    // Aggregate-home completion intentionally uses the supported metadata-only v2
+    // API. Keep this fixture independent from canvas's rich-content v3 editor API.
+    const updateTaskV2=args=>{
+      const expected=['p_conversation_id','p_task_id','p_expected_revision','p_title','p_assignee_id','p_due_date','p_completed','p_schedule','p_archived'].sort();
+      if(JSON.stringify(Object.keys(args).sort())!==JSON.stringify(expected)||!Number.isInteger(args.p_expected_revision)
+        ||args.p_expected_revision<0||typeof args.p_completed!=='boolean'||typeof args.p_title!=='string'){
+        __mock.taskListUnknown.push({args,reason:'unexpected legacy metadata update contract'});
+        return taskListError('22023','Unexpected task update arguments');
+      }
+      const state=__mock.canvasState[args.p_conversation_id];
+      if(!state||__mock.canvasDenied||!state.participants.some(p=>p.id===user.id))return taskListError('42501','canvas_access_denied');
+      const task=state.tasks.find(t=>t.id===args.p_task_id);
+      if(!task)return taskListError('42501','task not in conversation');
+      const schedule=scheduleFields(args.p_schedule);
+      const archive=args.p_archived==null?task.archived_at:args.p_archived?(task.archived_at||canvasNow()):null;
+      const unchanged=task.title===args.p_title.trim()&&task.assignee_id===args.p_assignee_id&&task.due_date===args.p_due_date
+        &&task.completed===args.p_completed&&task.archived_at===archive&&Object.entries(schedule).every(([key,value])=>task[key]===value);
+      if(unchanged)return {data:structuredClone(state),error:null};
+      if(task.revision!==args.p_expected_revision)return taskListError('40001','task_revision_conflict');
+      if(task.content&&task.title!==args.p_title.trim())return taskListError('22023','workspace_content_requires_v3');
+      if(args.p_assignee_id&&!state.participants.some(p=>p.id===args.p_assignee_id))return taskListError('22023','assignee not in conversation');
+      Object.assign(task,{title:args.p_title.trim(),assignee_id:args.p_assignee_id,due_date:args.p_due_date,
+        completed:args.p_completed,...schedule,archived_at:archive,revision:task.revision+1,updated_at:canvasNow(),updated_by:user.id});
+      state.revision++;
+      return {data:structuredClone(state),error:null};
+    };
     const listTasks=args=>{
       const expected=['p_view','p_query','p_today','p_cursor','p_limit','p_timezone'].sort();
       const actual=Object.keys(args).sort();
@@ -92,7 +121,7 @@ def tasks_sdk():
       if(name==='pablicus_list_tasks_v2')return listTasks(args);
       if(name==='pablicus_update_canvas_task_v2'){
         __mock.taskUpdateCalls.push({args:structuredClone(args),actor:user.id});
-        const response=await canvasRpc(name,args);
+        const response=updateTaskV2(args);
         if(!response.error&&__mock.loseToggleResponse){__mock.loseToggleResponse=false;
           return {data:null,error:{code:'NETWORK_ERROR',message:'Response lost after task update committed'}};}
         return response;
@@ -106,7 +135,8 @@ async def one(name, engine):
     directory = tempfile.mkdtemp(prefix='pablicus-tasks-home-')
     context = await engine.launch_persistent_context(directory, headless=True,
         viewport={'width': 390, 'height': 844}, has_touch=True,
-        service_workers='block', accept_downloads=True)
+        service_workers='block', accept_downloads=True,
+        **({'executable_path': os.environ['PABLICUS_WEBKIT_EXECUTABLE']} if name == 'webkit' and os.environ.get('PABLICUS_WEBKIT_EXECUTABLE') else {}))
     source = tasks_sdk()
     unexpected, errors, checks = [], [], []
 
@@ -213,6 +243,7 @@ async def one(name, engine):
         checks.append('Все/Мне/Просрочено/Готово/Архив and text search issue the corresponding server filters, reset pagination and render the filtered or genuinely empty result')
 
         before = len(await update_calls())
+        original_content = await page.evaluate('id=>__mock.allTasks().find(task=>task.id===id).content', task_id(59))
         await card(59).locator('.pthToggle').click()
         await page.wait_for_function('id=>__mock.allTasks().find(task=>task.id===id).completed', arg=task_id(59))
         await wait_ids((await expected_ids())[:40])
@@ -226,6 +257,7 @@ async def one(name, engine):
         assert calls[-1]['args']['p_schedule'] is None and calls[-1]['args']['p_archived'] is None
         completed = await page.evaluate('id=>__mock.allTasks().find(task=>task.id===id)', task_id(59))
         assert completed['due_at'] and completed['reminder_minutes'] == 60 and completed['followup_minutes'] == 180
+        assert completed['content'] == original_content, 'Metadata toggle must preserve the full project/task content and attachments'
         await choose('completed')
         assert await card(59).locator('.pthToggle').get_attribute('aria-checked') == 'true'
         await card(59).locator('.pthToggle').click()

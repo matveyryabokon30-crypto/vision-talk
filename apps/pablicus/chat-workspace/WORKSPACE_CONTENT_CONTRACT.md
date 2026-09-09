@@ -2,6 +2,8 @@
 
 Status: additive proposal, verified through executable PGlite SQL tests; not automatically applied. Requires `TASK_LIFECYCLE_SCHEMA_PROPOSAL.sql`. Keep the separately owned `TODAY_SHARED_SCHEMA_PROPOSAL.sql`, which adds rich content to cross-conversation task listings, after this schema.
 
+Apply `WORKSPACE_LEGACY_CONFLICT_SCHEMA_PROPOSAL.sql` after the content schema. It preserves stale-revision conflict recovery for legacy metadata-only completion while continuing to reject plain-title replacement of rich content.
+
 The existing conversation canvas is the project's identity; no multiple-project table is introduced. Project and task content persists ordered text, image, video, audio and document blocks using the existing message format. URLs remain in text blocks and use the existing safe message link renderer.
 
 ## RPCs
