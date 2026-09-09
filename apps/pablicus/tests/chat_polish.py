@@ -157,8 +157,8 @@ async def one(name, engine):
         await page.screenshot(path=str(EVIDENCE / f'chat-polish-{name}-home.png'))
         await open_main()
 
-        layout = await page.evaluate("()=>{const h=document.querySelector('#app>header').getBoundingClientRect(),s=document.querySelector('.stage').getBoundingClientRect();return {headerBottom:h.bottom,stageTop:s.top,width:document.documentElement.scrollWidth,viewport:innerWidth}}")
-        assert abs(layout['headerBottom'] - layout['stageTop']) < 2, layout
+        layout = await page.evaluate("()=>{const h=document.querySelector('#app>header').getBoundingClientRect(),s=document.querySelector('.stage').getBoundingClientRect(),t=document.querySelector('#chatViewTabs').getBoundingClientRect();return {headerBottom:h.bottom,tabsTop:t.top,tabsBottom:t.bottom,tabsHeight:t.height,stageTop:s.top,width:document.documentElement.scrollWidth,viewport:innerWidth}}")
+        assert abs(layout['headerBottom'] - layout['tabsTop']) < 2 and abs(layout['tabsBottom'] - layout['stageTop']) < 2 and layout['tabsHeight'] == 44, layout
         assert layout['width'] <= layout['viewport'], layout
         await page.locator('#vp').evaluate('(node)=>node.scrollTop=node.scrollHeight')
         own = page.locator(f'#canvas .row[data-id="{OWN_ID}"]')
@@ -225,8 +225,8 @@ async def one(name, engine):
         await menu.locator('[data-action="pin"]').click()
         await page.locator(f'#pinnedMessages [data-pinned-message-id="{OWN_ID}"]').wait_for()
         assert await page.evaluate(f'__mock.messageActions.get("{OWN_ID}").pinned') is True
-        pin_layout = await page.evaluate("()=>{const h=document.querySelector('#app>header').getBoundingClientRect(),s=document.querySelector('.stage').getBoundingClientRect(),p=document.querySelector('#pinnedMessages').getBoundingClientRect();return {headerBottom:h.bottom,stageTop:s.top,pinBottom:p.bottom}}")
-        assert pin_layout['pinBottom'] <= pin_layout['headerBottom'] + 1 and abs(pin_layout['stageTop'] - pin_layout['headerBottom']) < 2, pin_layout
+        pin_layout = await page.evaluate("()=>{const h=document.querySelector('#app>header').getBoundingClientRect(),s=document.querySelector('.stage').getBoundingClientRect(),p=document.querySelector('#pinnedMessages').getBoundingClientRect(),t=document.querySelector('#chatViewTabs').getBoundingClientRect();return {headerBottom:h.bottom,tabsTop:t.top,tabsBottom:t.bottom,tabsHeight:t.height,stageTop:s.top,pinBottom:p.bottom}}")
+        assert pin_layout['pinBottom'] <= pin_layout['headerBottom'] + 1 and abs(pin_layout['tabsTop'] - pin_layout['headerBottom']) < 2 and abs(pin_layout['stageTop'] - pin_layout['tabsBottom']) < 2 and pin_layout['tabsHeight'] == 44, pin_layout
         checks.append('reaction selection/toggle and shared pin call their backend operations and repaint the existing message immediately')
 
         await own.locator('.meta').click()

@@ -92,6 +92,9 @@ jobs:
       - name: Chat search, materials and storage contracts in both browser engines
         working-directory: source
         run: python apps/pablicus/tests/chat_library.py
+      - name: Shared conversation canvas, tasks and conflict isolation in both browser engines
+        working-directory: source
+        run: python apps/pablicus/tests/chat_canvas.py
       - name: Public first-key page with virtual WebAuthn and mocked provider HTTP
         working-directory: source
         run: python apps/pablicus/tests/public_passkey_page.py
@@ -130,6 +133,7 @@ jobs:
                   ('/rest/v1/rpc/pablicus_storage_usage',{},401),
                   ('/rest/v1/rpc/pablicus_search_messages?p_conversation_id=00000000-0000-0000-0000-000000000000&p_query=test',{},401),
                   ('/rest/v1/rpc/pablicus_chat_materials?p_conversation_id=00000000-0000-0000-0000-000000000000&p_kind=media',{},401),
+                  ('/rest/v1/rpc/pablicus_get_canvas?p_conversation_id=00000000-0000-0000-0000-000000000000',{},401),
                   ('/rest/v1/http_request_queue?select=id&limit=0',{'Accept-Profile':'net'},406),
                   ('/rest/v1/config?select=singleton&limit=0',{'Accept-Profile':'pablicus_push_private'},406)]
           for path,headers,expected in checks:

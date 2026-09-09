@@ -28,6 +28,8 @@ s=s.replace("if(['message','assistant','task'].includes(action)){", "if(['assist
 s=s.replace("if(['documents','modes','back'].includes(action))", "if(['documents','back'].includes(action))")
 s=s.replace("['modes','Помощник'],", "")
 s=s.replace("$('taskMenu').onclick=e=>openMenu('tasks',$('taskMenu'),e.detail===0);", "$('taskMenu').onclick=()=>window.PablicusHost.unavailable('Помощник');")
+s=s.replace("app.querySelector('.tools'),$('status'),app.querySelector('.stage')", "app.querySelector('.tools'),$('chatViewTabs'),$('status'),app.querySelector('.stage')")
+s=s.replace("app.querySelector('header').offsetHeight+app.querySelector('.tools').offsetHeight", "app.querySelector('header').offsetHeight+$('chatViewTabs').offsetHeight+app.querySelector('.tools').offsetHeight")
 s=s.replace("draft.mode==='message'?'Сохранить в исходящие; не доставка'", "draft.mode==='message'?'Отправить сообщение'")
 s=s.replace("empty:'Черновик пуст · только этот браузер'", "empty:''").replace("saved:'Сохранено в этом браузере'", "saved:'Черновик сохранён'").replace("restored:'Восстановлено · файлов: '+s.restored_files", "restored:'Черновик восстановлен'")
 s=s.replace("labels[s.state]||s.state", "labels[s.state]??''")
@@ -54,6 +56,7 @@ window.PablicusChat={
   list.sync(a,f,'server-update');
  },
  async flush(){if(vault){draftChanged();await vault.flush()}},
+ async persistDraft(){if(vault){draftChanged();await vault.flush()}},
  async refreshQueue(){if(vault)return refreshQueue()},
  get scope(){return{user:scopeUser,chat:scopeChat}},
  get store(){return vault?.store},get snapshot(){return publicSnapshot()},
@@ -67,21 +70,23 @@ h=re.sub(r'<title>.*?</title>','<title>Pablicus</title>',h)
 h=re.sub(r'\?_ship=[^"\s]+','',h)
 h=h.replace('</head>', '<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="assets/icon-180.png"><link rel="icon" href="assets/icon-32.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Pablicus"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="stylesheet" href="pablicus.css"></head>')
 h=re.sub(r'<header>.*?</header>', '<header><button id="chatBack" aria-label="К чатам">‹</button><div class="chatHeading"><span class="chatSectionLabel">Чат</span><button id="chatTitle" type="button" aria-label="Материалы разговора">Разговор</button><small id="chatHint" hidden></small></div><button id="chatLibraryOpen" type="button" aria-label="Поиск по переписке"></button><button id="queueBtn" hidden aria-hidden="true" tabindex="-1"></button><button id="reportBtn" aria-label="Исходящие сообщения"></button></header>',h,flags=re.S)
+h=h.replace('</header>', '</header><nav id="chatViewTabs" role="tablist" aria-label="Раздел разговора"><button id="conversationTab" type="button" role="tab" aria-selected="true" aria-controls="vp">Разговор</button><button id="canvasTab" type="button" role="tab" aria-selected="false" aria-controls="chatCanvasPanel" tabindex="-1">Полотно</button></nav>',1)
+h=h.replace('<main class="stage">', '<main class="stage"><section id="chatCanvasPanel" role="tabpanel" aria-labelledby="canvasTab" hidden></section>')
 h=h.replace('<div id="app">','<div id="app" hidden>')
 h=h.replace('<footer id="composer">','<footer id="composer"><div id="replyDraft" hidden><div id="replyDraftText"></div><button id="cancelReply" type="button" aria-label="Отменить ответ">×</button></div>')
 h=h.replace('<body>','<body>'+ (ROOT/'src'/'home.html').read_text())
 h=re.sub(r'<script src="[^"]+"[^>]*></script>','',h)
 h=h.replace('</body>', '<script src="vendor/supabase.js"></script><script src="vault.js"></script><script src="outbox.js"></script><script src="transport-store.js"></script><script src="rich-store.js"></script><script src="rich-composer.js"></script><script src="message-menu.js"></script><script src="rich-message.js"></script><script src="chat.js"></script><script src="auth-local.js"></script><script src="auth-config.js"></script><script src="oauth-login.js"></script><script src="oauth-session.js"></script><script src="passkey-login.js"></script><script src="public-passkey.js"></script><script src="app.js"></script></body>')
 h=h.replace('</head>', '<link rel="stylesheet" href="rich-composer.css"><link rel="stylesheet" href="rich-message.css"></head>')
-h=h.replace('<script src="app.js">','<script src="media-viewer.js"></script><script src="inbox-monitor.js"></script><script src="people.js"></script><script src="chat-actions.js"></script><script src="push-notifications.js"></script><script src="chat-library.js"></script><script src="app.js">')
-h=h.replace('</head>','<link rel="stylesheet" href="media-viewer.css"><link rel="stylesheet" href="inbox-monitor.css"><link rel="stylesheet" href="message-menu.css"><link rel="stylesheet" href="people.css"><link rel="stylesheet" href="chat-actions.css"><link rel="stylesheet" href="chat-minimal.css"><link rel="stylesheet" href="profile-discovery.css"><link rel="stylesheet" href="chat-library.css"></head>')
+h=h.replace('<script src="app.js">','<script src="media-viewer.js"></script><script src="inbox-monitor.js"></script><script src="people.js"></script><script src="chat-actions.js"></script><script src="push-notifications.js"></script><script src="chat-library.js"></script><script src="chat-canvas.js"></script><script src="app.js">')
+h=h.replace('</head>','<link rel="stylesheet" href="media-viewer.css"><link rel="stylesheet" href="inbox-monitor.css"><link rel="stylesheet" href="message-menu.css"><link rel="stylesheet" href="people.css"><link rel="stylesheet" href="chat-actions.css"><link rel="stylesheet" href="chat-minimal.css"><link rel="stylesheet" href="profile-discovery.css"><link rel="stylesheet" href="chat-library.css"><link rel="stylesheet" href="chat-canvas.css"></head>')
 h=h.replace('VISION TALK','Pablicus').replace('Vision Talk','Pablicus')
 (OUT/'index.html').write_text(h)
 (OUT/'chat.js').write_text(adapt_chat(s))
 for n in ['push-notifications.js','transport-store.js','app.js','auth-local.js','auth-config.js','oauth-login.js','oauth-session.js','passkey-login.js','public-passkey.js','passkey-start.html','passkey-start.js','passkey-start.css','pablicus.css','sw.js','manifest.webmanifest']:shutil.copy2(ROOT/'src'/n,OUT/n)
 for n in ['rich-store.js','rich-composer.js','rich-composer.css','rich-message.js','rich-message.css']:shutil.copy2(ROOT/'src'/n,OUT/n)
 for n in ['media-viewer.js','media-viewer.css','inbox-monitor.js','inbox-monitor.css']:shutil.copy2(ROOT/'src'/n,OUT/n)
-for n in ['chat-library.js','chat-library.css','message-menu.js','message-menu.css','people.js','people.css','chat-actions.js','chat-actions.css','chat-minimal.css','profile-discovery.css']:shutil.copy2(ROOT/'src'/n,OUT/n)
+for n in ['chat-canvas.js','chat-canvas.css','chat-library.js','chat-library.css','message-menu.js','message-menu.css','people.js','people.css','chat-actions.js','chat-actions.css','chat-minimal.css','profile-discovery.css']:shutil.copy2(ROOT/'src'/n,OUT/n)
 # Pablicus app transport and authentication adaptations.
 app=(OUT/'app.js').read_text()
 app=app.replace('0.1.0-rc2','0.1.0-rc5')
