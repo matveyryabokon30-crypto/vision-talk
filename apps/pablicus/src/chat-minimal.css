@@ -1,5 +1,17 @@
 /* White and translucent conversation surfaces. Preserve the measured
    timeline, editor grid and media geometry. Keyboard focus stays visible. */
+#app header .chatHeading #chatTitle {border:0;background:transparent;color:var(--text);font:inherit;font-size:15px;font-weight:400;padding:0 6px;min-height:32px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-radius:8px;}
+#app header #chatLibraryOpen {border:0;background:transparent;color:var(--muted);min-width:44px;min-height:44px;padding:10px;}
+#app header #chatLibraryOpen svg {width:21px;height:21px;display:block;}
+.profileCard .storageUsage {margin-top:26px;padding-top:20px;border-top:1px solid var(--line);}
+.profileCard .storageUsage h2 {font-size:18px;font-weight:500;margin:0 0 16px;}
+.storageUsageRow {display:flex;justify-content:space-between;gap:16px;font-size:15px;margin:12px 0;}
+.storageUsageRow strong {font-weight:500;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.storageUsage .muted {font-size:13px;line-height:1.5;}
+.storageUsage .setting {font-size:14px;min-height:44px;}
+#canvas .row.locatedMessage .bubble {animation:located-message 1.8s ease-out;}
+@keyframes located-message {0%,40%{box-shadow:0 0 0 2px color-mix(in srgb,var(--text) 25%,transparent);}100%{box-shadow:none;}}
+@media (prefers-reduced-motion:reduce){#canvas .row.locatedMessage .bubble {animation:none;outline:1px solid var(--muted);}}
 #home .homeHeader {
   gap: 0;
   padding: 12px 20px 7px;
