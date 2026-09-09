@@ -240,9 +240,16 @@ if(!$('menuLayer').hidden)positionMenu();
 function queueComposer(){if(composerFrame)return;composerPendingAnchor={a:list?.capture(),f:list?.follow??true};composerFrame=requestAnimationFrame(()=>{composerFrame=0;const x=composerPendingAnchor;composerPendingAnchor=null;syncComposer(x?.a,x?.f)})}
 function changeUI(fn){const a=list?.capture(),f=list?.follow??true;fn();syncComposer(a,f);draftChanged()}
 function toggleExpand(){closeMenu(false);const s=selection();changeUI(()=>{draft.expanded=!draft.expanded});restoreSelection(s);if(input.selectionStart!==s.start||input.selectionEnd!==s.end)cm.selection_failures++}
+function keyboardOccludesViewport(v){
+const active=document.activeElement;
+const editable=active&&app.contains(active)&&!active.readOnly&&!active.disabled&&active.inputMode!=='none'&&(active.isContentEditable||active.tagName==='TEXTAREA'||(active.tagName==='INPUT'&&['text','search','email','url','tel','password','number'].includes(active.type)));
+return !!(editable&&v&&Math.abs(v.scale-1)<.02&&Math.max(innerHeight,document.documentElement.clientHeight)-v.height>120);
+}
 function applyLayout(){if(simulating)return;const v=window.visualViewport,w=v?.width||innerWidth,h=v?.height||innerHeight,a=list?.lastAnchor,f=list?.follow??true;
 const width=Math.min(w,800),left=(v?.pageLeft??scrollX)+Math.max(0,(w-800)/2),top=v?.pageTop??scrollY;
-const changed=Math.abs(app.clientWidth-width)>.5||Math.abs(app.clientHeight-h)>.5;
+const keyboardOpen=keyboardOccludesViewport(v),keyboardChanged=app.classList.contains('keyboard-open')!==keyboardOpen;
+app.classList.toggle('keyboard-open',keyboardOpen);
+const changed=keyboardChanged||Math.abs(app.clientWidth-width)>.5||Math.abs(app.clientHeight-h)>.5;
 app.style.transform='translate3d('+left+'px,'+top+'px,0)';app.style.width=width+'px';app.style.height=h+'px';
 if(changed)syncComposer(a,f);
 if(!running){const m=metrics();observations.resizes.push(m);if(observations.resizes.length>40)observations.resizes.shift();
@@ -354,6 +361,7 @@ function snapshot(){return JSON.parse(JSON.stringify({...report,exported_at:new 
 function showReport(){closeMenu(false);const r=snapshot();$('verdict').textContent='Автоматическая часть: '+r.overall+' · интеграция заблокирована';$('reportRows').replaceChildren();for(const x of r.results){const n=document.createElement('div');n.className=x.pass?'pass':'fail';n.textContent=(x.pass?'PASS · ':'FAIL · ')+x.name+' — '+JSON.stringify(x.measured);$('reportRows').append(n)}$('reportView').textContent=JSON.stringify(r,null,2);$('modal').showModal()}
 async function resetAll(){closeMenu(false);clearDraft();generation++;for(const a of assets.values())urlRevoke(a.preview);assets.clear();await openChat()}
 function initComposer(){
+app.addEventListener('focusin',queueLayout);app.addEventListener('focusout',queueLayout);
 window.addEventListener('resize',queueLayout);window.visualViewport?.addEventListener('resize',queueLayout);window.visualViewport?.addEventListener('scroll',queueLayout);
 input.addEventListener('input',()=>{cm.inputs++;queueComposer();draftChanged()});input.addEventListener('compositionstart',()=>{draft.composing=true;$('send').disabled=true});input.addEventListener('compositionend',()=>{draft.composing=false;queueComposer()});
 input.addEventListener('focus',()=>{keyStart=metrics();queueComposer();queueLayout()});input.addEventListener('blur',()=>{setTimeout(()=>{if(document.activeElement!==input){if(keyStart&&!running)observations.keyboard.push({phase:'blur',viewport:metrics(),controls:controlsGeometry()});keyStart=null;queueComposer();queueLayout()}},400)});

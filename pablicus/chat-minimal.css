@@ -238,6 +238,12 @@
 #app #composer {
   border-top-color: transparent;
 }
+/* The visual viewport ends above Safari's keyboard/accessory bar, so the
+   home-indicator inset belongs only to the keyboard-closed layout. */
+#app.keyboard-open:not(.composer-fullscreen) #composer,
+#app.keyboard-open.composer-fullscreen #composeBox {
+  padding-bottom: 2px;
+}
 #app:not(.composer-fullscreen) #composeBox {
   border-color: transparent !important;
   border-radius: 26px;
