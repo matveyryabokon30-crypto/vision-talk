@@ -163,9 +163,24 @@
 
 /* Borderless header and message surfaces; no extra nested cards. */
 #app {
-  --tools: 0px;
+  --tools: 44px;
   --state: 0px;
 }
+#app.typing { --tools: 44px; }
+#chatViewTabs { grid-row: 2; display: flex; justify-content: center; gap: 18px; height: 44px; background: var(--bg); padding: 0 12px; }
+#chatViewTabs button { position: relative; border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 14px; font-weight: 400; min-height: 44px; padding: 0 8px; border-radius: 0; }
+#chatViewTabs button[aria-selected="true"] { color: var(--text); }
+#chatViewTabs button[aria-selected="true"]::after { content: ''; position: absolute; height: 2px; left: 8px; right: 8px; bottom: 4px; border-radius: 2px; background: currentColor; opacity: .6; }
+#chatViewTabs button:focus-visible { outline: 2px solid var(--muted); outline-offset: -4px; border-radius: 8px; }
+#chatCanvasPanel { position: absolute; inset: 0; z-index: 3; min-height: 0; overflow: auto; overscroll-behavior: contain; background: var(--bg); }
+#chatCanvasPanel[hidden] { display: none; }
+#app.canvas-active #vp { visibility: hidden; pointer-events: none; }
+#app.canvas-active #new { display: none; }
+#app.composer-fullscreen #chatViewTabs { visibility: hidden; pointer-events: none; }
+.canvasShortcut { display: flex; align-items: center; gap: 12px; min-height: 58px; width: 100%; border: 0; border-radius: 12px; background: transparent; color: var(--text); font: inherit; text-align: left; padding: 10px 6px; }
+.canvasShortcut svg { width: 22px; height: 22px; flex: none; color: var(--muted); }
+.canvasShortcut span { overflow-wrap: anywhere; min-width: 0; }
+.canvasShortcut:active { background: var(--soft); }
 #app > header {
   display: grid;
   grid-template-columns: 44px 44px minmax(0, 1fr) 44px 44px;

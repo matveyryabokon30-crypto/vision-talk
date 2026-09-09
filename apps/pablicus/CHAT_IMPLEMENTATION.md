@@ -80,12 +80,11 @@ are sent without server transcoding; playback depends on browser codec support.
 
 ## Next chat work
 
-Return to the supplied visual reference after this functional slice: inline
-replies from Focus, additional message actions, and a shared conversation
-canvas. The reference's shared plan, tasks and assistant are not implemented by
-this release. Existing assistant/action placeholders must not be described as
-real AI execution. Feed, tasks, automatic video conversion and a full
-reference-layout redesign are still separate work.
+The shared conversation plan and checklist are now implemented below. Remaining
+reference work includes inline replies from Focus, the assistant, event-specific
+participation controls and a fuller canvas layout. Existing assistant/action
+placeholders must not be described as real AI execution. Feed, automatic video
+conversion and a cross-conversation task aggregation remain separate work.
 
 
 ## Compact actions and people discovery follow-up
@@ -217,3 +216,53 @@ isolation and storage error states. The release workflow requires this test in
 Chromium and WebKit before promotion. Local Chromium passes; local WebKit is
 blocked by incompatible native dependencies and is validated by the CI gate.
 These checks do not represent a physical iPhone acceptance test.
+
+## Shared conversation canvas
+
+The `Разговор / Полотно` tabs sit below the existing centered chat header. The
+canvas contains a shared plain-text plan and tasks with a title, optional current
+participant assignee and due date, completion/reopening, editing and deletion.
+All conversation participants can change the shared plan and tasks. The compact
+message menu offers `Создать задачу`; it opens an editable title and keeps the
+source message/block reference. `Из переписки` locates the original message.
+The `Дела` home tab opens the canvases of the user's existing conversations; it
+does not claim to show an aggregate task list or task counts across chats.
+
+Saving is explicit. Plan revisions and task revisions are independent, so a
+task change does not invalidate a plan edit. Conflicting edits retain local
+fields and show the shared version before explicit replacement. The client
+keeps the original task-creation UUID and payload when a response is lost;
+subsequent field changes become an explicit edit after the creation is resolved.
+The server keeps creation receipts after edits and soft deletion, preventing
+retries from duplicating or resurrecting tasks. Deleting a task is shared and
+requires the task's current revision.
+
+The normal composer remains available under the canvas. Switching tabs persists
+the draft without stopping microphone recording. It preserves pin/reaction
+state, keeps unsaved plan/task edits in memory, and does not mark the hidden
+message timeline read. Canvas request generations are independent of timeline
+history paging. Polling occurs every eight seconds while the canvas is visible,
+plus focus/manual refresh. Chat/account changes cancel pending responses and
+clear canvas content. Explicit navigation warns before discarding unsaved edits;
+unsaved canvas edits are not durable after browser termination. Message drafts
+continue using the existing IndexedDB durability contract.
+
+Applied on 2026-09-09: `pablicus_shared_conversation_canvas`, exactly as recorded
+in `chat-workspace/CANVAS_SCHEMA_PROPOSAL.sql`. Two private RLS-denied tables are
+accessed only through guarded functions and five public invoker RPC wrappers.
+Every call, including retries, checks current approved membership. Assignees
+must belong to the conversation; source messages/blocks are validated within it.
+Live catalog readback confirms the guards' execution grants, no anonymous RPC
+grants and no direct table access. The security advisor adds no new findings.
+No production test tasks or messages were created. Auth, storage limits and the
+existing message transport are unchanged.
+
+`chat-workspace/canvas.test.mjs` tests the exact migration, access boundaries,
+revisions, source/assignee validation, replay after edit/delete and capacity.
+`tests/chat_canvas.py` exercises the built app with a synthetic shared backend:
+plan/task operations, peer conflicts, lost responses, source navigation,
+recording/draft preservation and stale responses after chat/account changes.
+The release workflow requires the browser suite in Chromium and WebKit; physical
+two-iPhone acceptance remains separate. Current canvas bounds: 20,000 plan
+characters, 500 task-title characters and 200 retained nondeleted tasks per
+conversation, with an explicit error instead of silently truncating the list.

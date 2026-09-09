@@ -1,0 +1,69 @@
+/* Shared plan: quiet surfaces, ordinary text and room to work on a phone. */
+.pablicusChatCanvas{max-width:760px;min-height:100%;margin:0 auto;padding:16px 16px 28px;color:var(--text,#25282b);font-family:inherit;box-sizing:border-box;background:transparent}
+.pablicusChatCanvas *{box-sizing:border-box}
+.pablicusChatCanvas[hidden],.pablicusChatCanvas [hidden]{display:none!important}
+.pablicusChatCanvas button,.pablicusChatCanvas input,.pablicusChatCanvas textarea,.pablicusChatCanvas select{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+.pablicusChatCanvas button{border:0;cursor:pointer;touch-action:manipulation}
+.pablicusChatCanvas button:disabled{opacity:.5;cursor:default}
+.pablicusChatCanvas svg{width:20px;height:20px;flex:none;pointer-events:none}
+.pablicusChatCanvas button:focus,.pablicusChatCanvas input:focus,.pablicusChatCanvas textarea:focus,.pablicusChatCanvas select:focus{outline:none}
+.pablicusChatCanvas button:focus-visible,.pablicusChatCanvas input:focus-visible,.pablicusChatCanvas textarea:focus-visible,.pablicusChatCanvas select:focus-visible{outline:2px solid var(--muted,#75797d);outline-offset:2px}
+.pablicusChatCanvas .pccHeader{display:flex;align-items:center;gap:4px;min-height:60px;padding:0;margin:0;background:transparent;box-shadow:none;border:0}
+.pablicusChatCanvas .pccHeading{flex:1;min-width:0;padding-left:3px}
+.pablicusChatCanvas .pccEyebrow{margin:0 0 5px;color:var(--muted,#767a7d);font-size:11px;line-height:1.3;letter-spacing:.05em;text-transform:uppercase}
+.pablicusChatCanvas .pccTitle{margin:0;font-size:25px;font-weight:400;letter-spacing:-.035em;line-height:1.3}
+.pablicusChatCanvas .pccIcon{display:grid;place-items:center;width:44px;min-width:44px;min-height:44px;padding:0;border-radius:50%;background:transparent}
+.pablicusChatCanvas .pccStatus{margin:9px 3px 21px;color:var(--muted,#767a7d);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.pablicusChatCanvas .pccRetry{margin:0 3px 16px}
+.pablicusChatCanvas .pccContent{display:flex;flex-direction:column;gap:30px}
+.pablicusChatCanvas .pccLabel{display:block;margin:0;font-size:16px;font-weight:500;line-height:1.4}
+.pablicusChatCanvas .pccPlan{padding:0 3px}
+.pablicusChatCanvas .pccPlanBody{display:block;resize:vertical;min-height:112px;max-height:360px;width:100%;padding:14px 0 9px;margin:0;border:0;border-radius:0;background:transparent;font-size:16px;line-height:1.65;overflow:auto;overflow-wrap:anywhere;-webkit-appearance:none;appearance:none}
+.pablicusChatCanvas .pccPlanBody::placeholder,.pablicusChatCanvas .pccTaskTitle::placeholder{color:var(--muted,#767a7d);opacity:.75}
+.pablicusChatCanvas .pccFormFoot{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-top:6px;flex-wrap:wrap}
+.pablicusChatCanvas .pccNotice{flex:1;min-width:110px;margin:0;color:var(--muted,#767a7d);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.pablicusChatCanvas .pccNotice[data-state=error],.pablicusChatCanvas .pccNotice[data-state=conflict]{color:var(--text,#35393d)}
+.pablicusChatCanvas .pccButton{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;max-width:100%;padding:10px 14px;border-radius:14px;background:var(--soft,rgba(235,237,239,.68));font-size:14px;line-height:1.4;text-align:center;overflow-wrap:anywhere}
+.pablicusChatCanvas .pccButton svg{width:17px;height:17px}
+.pablicusChatCanvas .pccTextButton{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;max-width:100%;padding:8px 10px;background:transparent;border-radius:10px;font-size:13px;line-height:1.4;overflow-wrap:anywhere}
+.pablicusChatCanvas .pccConflict{margin-top:12px;padding:13px 12px;border-radius:15px;background:var(--soft,rgba(235,237,239,.5))}
+.pablicusChatCanvas .pccConflictLabel{margin:0 0 8px;font-size:12px;line-height:1.4;color:var(--muted,#767a7d)}
+.pablicusChatCanvas .pccServerBody{max-height:180px;margin:0 0 9px;font-size:14px;line-height:1.6;white-space:pre-wrap;overflow:auto;overflow-wrap:anywhere}
+.pablicusChatCanvas .pccConflictActions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px}
+.pablicusChatCanvas .pccPlanSave:disabled{background:transparent}
+.pablicusChatCanvas .pccTasksHead{display:flex;align-items:center;gap:9px;min-height:44px;padding-left:3px}
+.pablicusChatCanvas .pccTaskCount{flex:1;min-width:0;color:var(--muted,#767a7d);font-size:12px;line-height:1.4}
+.pablicusChatCanvas .pccTaskAdd{flex:none;background:transparent;padding-inline:9px}
+.pablicusChatCanvas .pccEmpty{margin:13px 3px;color:var(--muted,#767a7d);font-size:14px;line-height:1.6}
+.pablicusChatCanvas .pccTaskList{margin-top:7px}
+.pablicusChatCanvas .pccTask{display:flex;align-items:flex-start;gap:4px;padding:5px 0 8px;border-bottom:1px solid var(--line,rgba(31,35,39,.07))}
+.pablicusChatCanvas .pccTask:last-child{border-bottom:0}
+.pablicusChatCanvas .pccTaskBody{flex:1;min-width:0;padding-right:3px}
+.pablicusChatCanvas .pccTaskCheck{display:grid;place-items:center;width:21px;height:21px;border:1.25px solid var(--muted,#767a7d);border-radius:50%;color:var(--text,#25282b)}
+.pablicusChatCanvas .pccTaskCheck svg{width:15px;height:15px}
+.pablicusChatCanvas .pccTask[data-completed=true] .pccTaskCheck{background:var(--soft,#ebeef0);border-color:transparent}
+.pablicusChatCanvas .pccTaskEdit{display:flex;align-items:flex-start;gap:12px;width:100%;min-height:44px;padding:11px 4px 8px 0;background:transparent;border-radius:9px;text-align:left}
+.pablicusChatCanvas .pccTaskText{flex:1;min-width:0;font-size:15px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.pablicusChatCanvas .pccTaskEdit>svg{margin-top:2px;width:15px;height:15px;color:var(--muted,#767a7d);opacity:.7}
+.pablicusChatCanvas .pccTask[data-completed=true] .pccTaskText{color:var(--muted,#767a7d);text-decoration:line-through;text-decoration-color:var(--line,#d5d8da)}
+.pablicusChatCanvas .pccTaskMeta{margin:0 0 4px;color:var(--muted,#767a7d);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.pablicusChatCanvas .pccTaskLocate,.pablicusChatCanvas .pccTaskSource{justify-content:flex-start;margin-left:-8px;font-size:12px;color:var(--muted,#767a7d)}
+.pablicusChatCanvas .pccTaskLocate svg,.pablicusChatCanvas .pccTaskSource svg{width:15px;height:15px}
+.pablicusChatCanvas .pccTaskForm{margin:9px 0 15px;padding:17px 13px 12px;border-radius:20px;background:var(--glass,rgba(255,255,255,.65));box-shadow:0 3px 22px rgba(23,29,35,.035),inset 0 0 0 1px var(--line,rgba(31,35,39,.06))}
+.pablicusChatCanvas .pccFormTitle{margin:0 0 15px;font-size:15px;line-height:1.4;font-weight:500}
+.pablicusChatCanvas .pccField{display:flex;flex-direction:column;gap:7px;min-width:0}
+.pablicusChatCanvas .pccFieldLabel{color:var(--muted,#767a7d);font-size:12px;line-height:1.4}
+.pablicusChatCanvas .pccTaskTitle{display:block;resize:vertical;min-height:68px;max-height:220px;width:100%;margin:0;padding:10px 11px;border:0;border-radius:12px;background:var(--soft,rgba(235,237,239,.5));font-size:16px;line-height:1.5;overflow:auto;overflow-wrap:anywhere;-webkit-appearance:none;appearance:none}
+.pablicusChatCanvas .pccTaskFields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:15px;margin-bottom:7px}
+.pablicusChatCanvas .pccTaskAssignee,.pablicusChatCanvas .pccTaskDate{display:block;width:100%;max-width:100%;min-width:0;min-height:44px;margin:0;padding:9px 8px;border:0;border-radius:11px;background:var(--soft,rgba(235,237,239,.5));font-size:16px;line-height:1.5;color-scheme:light dark}
+.pablicusChatCanvas .pccTaskDate{-webkit-appearance:none;appearance:none}
+.pablicusChatCanvas .pccTaskDate::-webkit-date-and-time-value{min-height:24px;text-align:left}
+.pablicusChatCanvas .pccTaskNotice{margin:11px 0 7px;min-width:0}
+.pablicusChatCanvas .pccTaskNotice:empty{display:none}
+.pablicusChatCanvas .pccTaskActions{display:flex;justify-content:flex-end;align-items:center;gap:4px;flex-wrap:wrap;margin-top:10px}
+.pablicusChatCanvas .pccTaskDelete{margin-right:auto;padding-left:2px}
+.pablicusChatCanvas .pccTaskDeleteConfirm{width:100%;margin-top:12px;background:var(--soft,#eceef0);font-weight:500}
+@media(min-width:700px){.pablicusChatCanvas{padding:25px 32px 42px}.pablicusChatCanvas .pccContent{gap:35px}.pablicusChatCanvas .pccTaskForm{padding:21px}.pablicusChatCanvas .pccTaskFields{gap:17px}}
+@media(max-width:360px){.pablicusChatCanvas{padding-inline:10px}.pablicusChatCanvas .pccTaskFields{grid-template-columns:minmax(0,1fr)}.pablicusChatCanvas .pccTaskActions{gap:2px}.pablicusChatCanvas .pccTaskDelete{width:100%;justify-content:flex-start}.pablicusChatCanvas .pccButton{padding-inline:11px}}
+@media(hover:hover){.pablicusChatCanvas button:hover{background:var(--soft,#ebeef0)}}
+@media(prefers-reduced-motion:reduce){.pablicusChatCanvas *{scroll-behavior:auto!important}}
