@@ -257,11 +257,10 @@
         if (destroyed || !planEditing || planEditor !== editor) return;
         const body = editor.element.querySelector('.workspaceEditorBody');
         if (body) body.scrollTop = 0;
-        planEditorHost.scrollIntoView({block: 'start', inline: 'nearest', behavior: 'auto'});
+        planEditorHost.scrollIntoView({block: 'nearest', inline: 'nearest', behavior: 'auto'});
       };
       reveal();
       scope.requestAnimationFrame(reveal);
-      scope.setTimeout(reveal, 120);
     }
     async function preparedContent(editor, controller, ticket) {
       await editor.stopRecording();
