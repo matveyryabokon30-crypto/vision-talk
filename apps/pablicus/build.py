@@ -53,8 +53,12 @@ s=s.replace("$('taskMenu').onclick=e=>openMenu('tasks',$('taskMenu'),e.detail===
 s=s.replace("app.querySelector('.tools'),$('status'),app.querySelector('.stage')", "app.querySelector('.tools'),$('chatViewTabs'),$('status'),app.querySelector('.stage')")
 s=s.replace("app.querySelector('header').offsetHeight+app.querySelector('.tools').offsetHeight", "app.querySelector('header').offsetHeight+$('chatViewTabs').offsetHeight+app.querySelector('.tools').offsetHeight")
 s=s.replace("draft.mode==='message'?'Сохранить в исходящие; не доставка'", "draft.mode==='message'?'Отправить сообщение'")
-s=s.replace("empty:'Черновик пуст · только этот браузер'", "empty:''").replace("saved:'Сохранено в этом браузере'", "saved:'Черновик сохранён'").replace("restored:'Восстановлено · файлов: '+s.restored_files", "restored:'Черновик восстановлен'")
+# Normal draft persistence is silent. Keep recovery actions available only when
+# saving fails or another tab changes the draft; the ordinary dock has no footer.
+s=re.sub(r" const labels=\{loading:.*?\};", " const labels={error:'Не сохранено · '+(s.error?.name||'ошибка'),'load-error':'Восстановление недоступно',conflict:'Изменено в другой вкладке'};",s,count=1)
 s=s.replace("labels[s.state]||s.state", "labels[s.state]??''")
+s=s.replace("function paintVault(s){", "function paintVault(s){\n const needsAttention=['error','load-error','conflict'].includes(s.state);\n $('vaultLine').hidden=!needsAttention;\n $('composer').style.setProperty('--save-feedback-height',needsAttention?'24px':'0px');",1)
+s=s.replace(" $('storageInfo').onclick=()=>{showStorageReport()};", "")
 s=s.replace("status('Черновик сохраняется в этом браузере · без отправки')", "status('')")
 s=s.replace("initializeVault().catch(fatal);", r'''
 window.PablicusChat={
@@ -96,6 +100,9 @@ h=h.replace('</header>', '</header><nav id="chatViewTabs" role="tablist" aria-la
 h=h.replace('<main class="stage">', '<main class="stage"><section id="chatCanvasPanel" role="tabpanel" aria-labelledby="canvasTab" hidden></section>')
 h=h.replace('<div id="app">','<div id="app" hidden>')
 h=h.replace('<footer id="composer">','<footer id="composer"><div id="replyDraft" hidden><div id="replyDraftText"></div><button id="cancelReply" type="button" aria-label="Отменить ответ">×</button></div>')
+h=h.replace('<div id="vaultLine">','<div id="vaultLine" hidden>')
+h=h.replace('aria-live="polite">Открываю хранилище…</span>','aria-live="polite"></span>')
+h=h.replace('<button id="storageInfo" aria-label="Информация о хранении">ⓘ</button>','')
 h=h.replace('<body>','<body>'+ (ROOT/'src'/'home.html').read_text())
 h=re.sub(r'<script src="[^"]+"[^>]*></script>','',h)
 h=h.replace('</body>', '<script src="vendor/supabase.js"></script><script src="vault.js"></script><script src="outbox.js"></script><script src="transport-store.js"></script><script src="rich-store.js"></script><script src="rich-composer.js"></script><script src="message-menu.js"></script><script src="rich-message.js"></script><script src="chat.js"></script><script src="auth-local.js"></script><script src="auth-config.js"></script><script src="oauth-login.js"></script><script src="oauth-session.js"></script><script src="passkey-login.js"></script><script src="public-passkey.js"></script><script src="app.js"></script></body>')
