@@ -32,6 +32,9 @@
 .pablicusChatCanvas .pccPlanSave:disabled{background:transparent}
 .pablicusChatCanvas .pccTasksHead{display:flex;align-items:center;gap:9px;min-height:44px;padding-left:3px}
 .pablicusChatCanvas .pccTaskCount{flex:1;min-width:0;color:var(--muted,#767a7d);font-size:12px;line-height:1.4}
+.pablicusChatCanvas .pccTaskViews{display:flex;gap:4px;margin:3px 0 8px;overflow:auto;scrollbar-width:none}
+.pablicusChatCanvas .pccTaskView{min-height:40px;padding:8px 12px;border-radius:12px;background:transparent;color:var(--muted,#767a7d);font-size:13px;font-weight:400;white-space:nowrap}
+.pablicusChatCanvas .pccTaskView[aria-selected=true]{color:var(--text,#25282b);background:var(--soft,rgba(235,237,239,.55))}
 .pablicusChatCanvas .pccTaskAdd{flex:none;background:transparent;padding-inline:9px}
 .pablicusChatCanvas .pccEmpty{margin:13px 3px;color:var(--muted,#767a7d);font-size:14px;line-height:1.6}
 .pablicusChatCanvas .pccTaskList{margin-top:7px}
@@ -54,9 +57,14 @@
 .pablicusChatCanvas .pccFieldLabel{color:var(--muted,#767a7d);font-size:12px;line-height:1.4}
 .pablicusChatCanvas .pccTaskTitle{display:block;resize:vertical;min-height:68px;max-height:220px;width:100%;margin:0;padding:10px 11px;border:0;border-radius:12px;background:var(--soft,rgba(235,237,239,.5));font-size:16px;line-height:1.5;overflow:auto;overflow-wrap:anywhere;-webkit-appearance:none;appearance:none}
 .pablicusChatCanvas .pccTaskFields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:15px;margin-bottom:7px}
-.pablicusChatCanvas .pccTaskAssignee,.pablicusChatCanvas .pccTaskDate{display:block;width:100%;max-width:100%;min-width:0;min-height:44px;margin:0;padding:9px 8px;border:0;border-radius:11px;background:var(--soft,rgba(235,237,239,.5));font-size:16px;line-height:1.5;color-scheme:light dark}
-.pablicusChatCanvas .pccTaskDate{-webkit-appearance:none;appearance:none}
-.pablicusChatCanvas .pccTaskDate::-webkit-date-and-time-value{min-height:24px;text-align:left}
+.pablicusChatCanvas .pccTaskAssignee,.pablicusChatCanvas .pccTaskDate,.pablicusChatCanvas .pccTaskTime,.pablicusChatCanvas .pccTaskReminder,.pablicusChatCanvas .pccTaskFollowup{display:block;width:100%;max-width:100%;min-width:0;min-height:44px;margin:0;padding:9px 8px;border:0;border-radius:11px;background:var(--soft,rgba(235,237,239,.5));font-size:16px;line-height:1.5;color-scheme:light dark}
+.pablicusChatCanvas .pccTaskAssigneeField{grid-column:1/-1}
+.pablicusChatCanvas .pccTaskDate,.pablicusChatCanvas .pccTaskTime{-webkit-appearance:none;appearance:none}
+.pablicusChatCanvas .pccTaskDate::-webkit-date-and-time-value,.pablicusChatCanvas .pccTaskTime::-webkit-date-and-time-value{min-height:24px;text-align:left}
+.pablicusChatCanvas .pccTaskTimezone,.pablicusChatCanvas .pccTaskNotificationHint{margin:9px 0;color:var(--muted,#767a7d);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.pablicusChatCanvas .pccTaskNotifications{padding-left:0;font-size:12px}
+.pablicusChatCanvas .pccTaskLifecycle{display:flex;gap:4px;flex-wrap:wrap;margin-top:12px;padding-top:6px;border-top:1px solid var(--line,rgba(31,35,39,.06))}
+.pablicusChatCanvas .pccTaskReview{margin:0 0 14px;font-size:16px;line-height:1.5}
 .pablicusChatCanvas .pccTaskNotice{margin:11px 0 7px;min-width:0}
 .pablicusChatCanvas .pccTaskNotice:empty{display:none}
 .pablicusChatCanvas .pccTaskActions{display:flex;justify-content:flex-end;align-items:center;gap:4px;flex-wrap:wrap;margin-top:10px}

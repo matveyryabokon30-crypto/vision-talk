@@ -90,9 +90,23 @@
     add.prepend(icon('plus'));
     tasksHead.append(tasksHeading, taskCount, add);
     const taskFormHost = el('div', 'pccTaskFormHost');
+    const taskViews = el('div', 'pccTaskViews');
+    taskViews.setAttribute('role', 'tablist');
+    taskViews.setAttribute('aria-label', 'Состояние дел');
+    const taskViewButtons = [['open', 'В работе'], ['completed', 'Готово'], ['archived', 'Архив']].map(([value, label]) => {
+      const node = button('pccTaskView', label);
+      node.dataset.view = value;
+      node.id = uid + '-tasks-' + value;
+      node.setAttribute('role', 'tab');
+      node.setAttribute('aria-controls', uid + '-task-list');
+      taskViews.append(node);
+      return node;
+    });
     const taskList = el('div', 'pccTaskList');
+    taskList.id = uid + '-task-list';
+    taskList.setAttribute('role', 'tabpanel');
     const taskEmpty = el('p', 'pccEmpty', 'Здесь будут ваши общие дела.');
-    tasksSection.append(tasksHead, taskFormHost, taskEmpty, taskList);
+    tasksSection.append(tasksHead, taskViews, taskFormHost, taskEmpty, taskList);
     content.append(planSection, tasksSection);
     pane.append(head, status, retry, content);
 
@@ -101,6 +115,7 @@
     let planBaseBody = '', planBaseRevision = 0, planDirty = false, planChanged = false;
     let taskDraft = null, taskForm = null, taskBusy = false, pendingSource = null;
     let taskOperation = null, planError = false;
+    let taskView = 'open', pendingTask = null, taskLinkNotice = '';
     const controllers = new Set();
 
     function sameIdentity() {
@@ -119,7 +134,7 @@
     }
     function errorMessage(error) {
       if (error?.code === '42501' || error?.status === 403) return 'Доступ к этому полотну изменился. Обновите разговор.';
-      if (['task_limit_reached', 'canvas_task_limit'].includes(error?.message)) return 'В полотне уже 200 дел. Удалите ненужные, чтобы добавить новое.';
+      if (['task_limit_reached', 'canvas_task_limit'].includes(error?.message)) return 'В полотне уже 200 активных дел. Завершите дела или перенесите ненужные в архив, чтобы добавить новое.';
       if (['task_not_found', 'task deleted'].includes(error?.message)) return 'Это дело уже удалено другим участником.';
       if (error?.message === 'assignee not in conversation') return 'Исполнитель больше не в чате. Выберите другого участника или уберите исполнителя.';
       if (['source deleted', 'source block not found'].includes(error?.message)) return 'Исходное сообщение или его часть удалены. Добавьте новое дело без ссылки на них.';
@@ -133,6 +148,40 @@
       if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return '';
       const date = new Date(value + 'T12:00:00');
       return Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+    function localZone() { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; }
+    function localFields(value) {
+      const date = new Date(value);
+      if (!value || Number.isNaN(date.getTime())) return { date: '', time: '' };
+      const pad = number => String(number).padStart(2, '0');
+      return { date: date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate()), time: pad(date.getHours()) + ':' + pad(date.getMinutes()) };
+    }
+    function scheduleOf(task) {
+      return task.due_at ? { due_at: task.due_at, timezone: task.due_timezone || 'UTC', reminder_minutes: task.reminder_minutes ?? null, followup_minutes: task.followup_minutes ?? null } : { due_at: null };
+    }
+    function scheduleLabel(task) {
+      if (!task.due_at) return formatDate(task.due_date);
+      const value = new Date(task.due_at);
+      if (Number.isNaN(value.getTime())) return formatDate(task.due_date);
+      return value.toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    }
+    function buildSchedule(draft) {
+      if (!draft.scheduleChanged) return draft.schedule;
+      if (!draft.deadlineChanged && draft.schedule.due_at) return { ...draft.schedule, reminder_minutes: draft.reminderMinutes, followup_minutes: draft.followupMinutes };
+      if (!draft.dueTime) return { due_at: null };
+      if (!draft.dueDate) throw new Error('Укажите дату для выбранного времени.');
+      const value = new Date(draft.dueDate + 'T' + draft.dueTime + ':00');
+      if (Number.isNaN(value.getTime())) throw new Error('Проверьте дату и время дела.');
+      const fields = localFields(value.toISOString());
+      if (fields.date !== draft.dueDate || fields.time !== draft.dueTime) throw new Error('Такого местного времени нет из-за перевода часов. Выберите другое время.');
+      for (const minutes of [-120, -60, -30, 30, 60, 120]) {
+        const other = localFields(new Date(value.getTime() + minutes * 60000).toISOString());
+        if (other.date === fields.date && other.time === fields.time) throw new Error('Это время повторяется при переводе часов. Выберите время вне этого перехода.');
+      }
+      return { due_at: value.toISOString(), timezone: localZone(), reminder_minutes: draft.reminderMinutes, followup_minutes: draft.followupMinutes };
+    }
+    function notifyMutation(kind, taskId) {
+      try { options.onMutation?.({ kind, taskId, context: { ...context } }); } catch (_) { /* Saved data must not depend on another view. */ }
     }
     function person(id) {
       if (!id) return 'Без исполнителя';
@@ -164,6 +213,8 @@
       add.hidden = !!taskDraft;
       if (!taskForm) return;
       for (const input of taskForm.querySelectorAll('input,textarea,select,button')) input.disabled = taskBusy;
+      for (const input of taskForm.querySelectorAll('.pccTaskReminder,.pccTaskFollowup')) input.disabled = taskBusy || !taskDraft.dueDate || !taskDraft.dueTime;
+      for (const input of taskForm.querySelectorAll('.pccTaskDone,.pccTaskArchive,.pccTaskRestore')) input.disabled = taskBusy || !!taskDraft.conflict;
       const save = taskForm.querySelector('.pccTaskSave');
       save.disabled = taskBusy || !taskDraft.title.trim();
       save.textContent = taskBusy ? 'Сохраняем…' : (taskDraft.isNew ? 'Добавить дело' : 'Сохранить дело');
@@ -212,6 +263,19 @@
         pendingSource = null;
         startTask(null, source);
       }
+      if (pendingTask) {
+        const requested = pendingTask;
+        pendingTask = null;
+        const selected = data.tasks.find(task => task.id === requested.id);
+        if (selected) {
+          taskView = selected.archived_at ? 'archived' : selected.completed ? 'completed' : 'open';
+          renderTasks();
+          startTask(selected, null, requested.review);
+        } else {
+          taskLinkNotice = 'Это дело удалено или больше недоступно.';
+          status.textContent = taskLinkNotice;
+        }
+      }
     }
     function schedulePoll() {
       scope.clearTimeout(pollTimer);
@@ -238,8 +302,8 @@
       try {
         const data = await options.load({ context: { ...context }, signal: controller.signal });
         if (!current(ticket) || request !== loadTicket || controller.signal.aborted) return;
+        status.textContent = taskLinkNotice;
         applySnapshot(data);
-        status.textContent = '';
       } catch (error) {
         if (!current(ticket) || request !== loadTicket || isAbort(error) || controller.signal.aborted) return;
         if (!snapshot) pane.dataset.state = 'error';
@@ -292,6 +356,7 @@
         planChanged = false;
         applySnapshot(snapshot && Number(snapshot.revision) > Number(data.revision) ? snapshot : data);
         planState('Сохранено', 'saved');
+        notifyMutation('plan');
       } catch (error) {
         if (!current(ticket) || isAbort(error) || controller.signal.aborted) return;
         savingPlan = false;
@@ -312,15 +377,21 @@
       }
     }
     function renderTasks() {
-      const tasks = snapshot?.tasks || [];
-      const done = tasks.filter(task => task.completed).length;
-      taskCount.textContent = tasks.length ? done + ' из ' + tasks.length : '';
+      const tasks = (snapshot?.tasks || []).filter(task => taskView === 'archived' ? !!task.archived_at : !task.archived_at && (taskView === 'completed' ? task.completed : !task.completed));
+      taskCount.textContent = tasks.length ? 'Всего: ' + tasks.length : '';
+      for (const node of taskViewButtons) {
+        node.setAttribute('aria-selected', String(node.dataset.view === taskView));
+        node.tabIndex = node.dataset.view === taskView ? 0 : -1;
+      }
+      taskList.setAttribute('aria-labelledby', uid + '-tasks-' + taskView);
+      taskEmpty.textContent = { open: 'Здесь будут ваши общие дела.', completed: 'Выполненные дела появятся здесь.', archived: 'В архиве пока ничего нет.' }[taskView];
       taskEmpty.hidden = tasks.length > 0 || !!taskDraft;
       taskList.replaceChildren();
       for (const task of [...tasks].sort((a, b) => Number(!!a.completed) - Number(!!b.completed))) {
         const card = el('article', 'pccTask');
         card.dataset.taskId = task.id;
         card.dataset.completed = String(!!task.completed);
+        card.dataset.archived = String(!!task.archived_at);
         const toggle = button('pccIcon pccTaskToggle', task.completed ? 'Вернуть дело в работу' : 'Отметить дело выполненным');
         toggle.textContent = '';
         toggle.setAttribute('aria-pressed', String(!!task.completed));
@@ -328,6 +399,7 @@
         if (task.completed) circle.append(icon('check'));
         toggle.append(circle);
         toggle.disabled = !!taskOperation;
+        toggle.hidden = !!task.archived_at;
         toggle.onclick = () => toggleTask(task);
         const body = el('div', 'pccTaskBody');
         const edit = button('pccTaskEdit', 'Изменить дело: ' + task.title);
@@ -336,7 +408,7 @@
         edit.onclick = () => startTask(task);
         edit.disabled = taskBusy || !!taskOperation;
         body.append(edit);
-        const metadata = [task.assignee_id ? person(task.assignee_id) : '', formatDate(task.due_date)].filter(Boolean).join(' · ');
+        const metadata = [task.assignee_id ? person(task.assignee_id) : '', scheduleLabel(task)].filter(Boolean).join(' · ');
         if (metadata) body.append(el('p', 'pccTaskMeta', metadata));
         if (task.source_message_id) {
           const locate = button('pccTextButton pccTaskLocate', 'Из переписки');
@@ -358,9 +430,11 @@
       try {
         const data = await options.updateTask({ context: { ...context }, id: task.id, title: task.title,
           assigneeId: task.assignee_id || null, dueDate: task.due_date || null, completed: !task.completed,
+          schedule: scheduleOf(task), archived: false,
           expectedRevision: task.revision, signal: controller.signal });
         if (!current(ticket) || controller.signal.aborted) return;
         applySnapshot(data);
+        notifyMutation('task', task.id);
         status.textContent = task.completed ? 'Дело возвращено в работу' : 'Дело выполнено';
       } catch (error) {
         if (!current(ticket) || isAbort(error) || controller.signal.aborted) return;
@@ -389,7 +463,7 @@
     }
     function renderTaskConflict(latest) {
       if (!taskForm) return;
-      const text = [latest.title, latest.assignee_id ? person(latest.assignee_id) : '', formatDate(latest.due_date), latest.completed ? 'Выполнено' : 'В работе'].filter(Boolean).join('\n');
+      const text = [latest.title, latest.assignee_id ? person(latest.assignee_id) : '', scheduleLabel(latest), latest.archived_at ? 'В архиве' : latest.completed ? 'Выполнено' : 'В работе'].filter(Boolean).join('\n');
       taskForm.querySelector('.pccTaskServerBody').textContent = text;
     }
     function newId() {
@@ -402,17 +476,22 @@
       const hex = Array.from(values, value => value.toString(16).padStart(2, '0')).join('');
       return [hex.slice(0, 8), hex.slice(8, 12), hex.slice(12, 16), hex.slice(16, 20), hex.slice(20)].join('-');
     }
-    function startTask(task, source) {
+    function startTask(task, source, review) {
       if (!snapshot || taskBusy || !current(generation)) return;
       if (taskDraft) {
         taskNotice('Завершите или отмените редактирование открытого дела.', '');
         taskForm.querySelector('.pccTaskTitle').focus();
         return;
       }
+      if (taskLinkNotice) { taskLinkNotice = ''; status.textContent = ''; }
+      const timed = localFields(task?.due_at);
       taskDraft = {
         id: task?.id || newId(), isNew: !task,
         title: task?.title || String(source?.text || source?.title || '').slice(0, 500),
-        assigneeId: task?.assignee_id || null, dueDate: task?.due_date || null,
+        assigneeId: task?.assignee_id || null, dueDate: timed.date || task?.due_date || null,
+        dueTime: timed.time, baseDueDate: task?.due_date || null, schedule: scheduleOf(task || {}), scheduleChanged: false, deadlineChanged: false,
+        reminderMinutes: task?.reminder_minutes ?? null, followupMinutes: task?.due_at ? task.followup_minutes ?? null : 180,
+        archived: !!task?.archived_at, review: !!review,
         completed: !!task?.completed, baseRevision: task?.revision || 0,
         sourceMessageId: task?.source_message_id || source?.id || source?.source_message_id || null,
         sourceBlockId: task?.source_block_id || source?.blockId || source?.source_block_id || null,
@@ -421,14 +500,16 @@
       renderTaskForm();
       taskEmpty.hidden = true;
       updateTaskControls();
-      taskForm.scrollIntoView({ block: 'nearest' });
-      taskForm.querySelector('.pccTaskTitle').focus({ preventScroll: true });
+      taskForm.scrollIntoView({ block: review ? 'start' : 'nearest' });
+      if (review) taskForm.querySelector('.pccTaskDone')?.focus({ preventScroll: true });
+      else taskForm.querySelector('.pccTaskTitle').focus({ preventScroll: true });
     }
     function renderTaskForm() {
       taskForm = el('form', 'pccTaskForm');
       taskForm.dataset.taskId = taskDraft.isNew ? 'new' : taskDraft.id;
       taskForm.setAttribute('aria-label', taskDraft.isNew ? 'Новое дело' : 'Редактирование дела');
-      taskForm.append(el('h4', 'pccFormTitle', taskDraft.isNew ? 'Новое дело' : 'Редактирование дела'));
+      taskForm.append(el('h4', 'pccFormTitle', taskDraft.isNew ? 'Новое дело' : 'Дело'));
+      if (taskDraft.review && !taskDraft.completed && !taskDraft.archived) taskForm.append(el('p', 'pccTaskReview', 'Получилось сделать дело?'));
       const title = el('textarea', 'pccTaskTitle');
       title.maxLength = 500;
       title.rows = 2;
@@ -457,9 +538,57 @@
       const date = el('input', 'pccTaskDate');
       date.type = 'date';
       date.value = taskDraft.dueDate || '';
-      date.onchange = () => { taskDraft.dueDate = date.value || null; taskDraft.dirty = true; };
-      details.append(formField('Кто делает', assignee, 'task-assignee'), formField('Когда', date, 'task-date'));
+      const time = el('input', 'pccTaskTime');
+      time.type = 'time';
+      time.value = taskDraft.dueTime || '';
+      time.step = '60';
+      const reminder = el('select', 'pccTaskReminder');
+      for (const [value, text] of [['', 'Не напоминать'], ['0', 'В указанное время'], ['15', 'За 15 минут'], ['30', 'За 30 минут'], ['60', 'За час'], ['1440', 'За день']]) {
+        const choice = el('option', '', text); choice.value = value; reminder.append(choice);
+      }
+      reminder.value = taskDraft.reminderMinutes == null ? '' : String(taskDraft.reminderMinutes);
+      const followup = el('select', 'pccTaskFollowup');
+      for (const [value, text] of [['180', 'Через 3 часа'], ['', 'Не спрашивать']]) {
+        const choice = el('option', '', text); choice.value = value; followup.append(choice);
+      }
+      followup.value = taskDraft.followupMinutes == null ? '' : String(taskDraft.followupMinutes);
+      const timezone = el('p', 'pccTaskTimezone', 'Время на этом устройстве: ' + localZone());
+      const notificationHint = el('p', 'pccTaskNotificationHint', 'Напоминания приходят на устройства с включёнными уведомлениями.');
+      const enableNotifications = button('pccTextButton pccTaskNotifications', 'Включить уведомления');
+      enableNotifications.onclick = () => {
+        let request;
+        try { request = options.onEnableNotifications?.(); }
+        catch (_) { taskNotice('Не удалось включить уведомления. Проверьте разрешение в настройках устройства.', 'error'); return; }
+        Promise.resolve(request).then(() => { if (taskForm?.contains(enableNotifications)) updateScheduleControls(); }, () => { if (taskForm?.contains(enableNotifications)) taskNotice('Не удалось включить уведомления. Проверьте разрешение в настройках устройства.', 'error'); });
+      };
+      function updateScheduleControls() {
+        const timed = !!(taskDraft.dueDate && taskDraft.dueTime);
+        reminder.disabled = !timed || taskBusy;
+        followup.disabled = !timed || taskBusy;
+        timezone.hidden = !taskDraft.dueTime;
+        const alarms = timed && (taskDraft.reminderMinutes != null || taskDraft.followupMinutes != null);
+        notificationHint.hidden = !alarms;
+        enableNotifications.hidden = !alarms || typeof options.onEnableNotifications !== 'function' || options.notificationsEnabled?.() === true;
+      }
+      date.onchange = () => {
+        taskDraft.dueDate = date.value || null;
+        if (!date.value) { taskDraft.dueTime = ''; time.value = ''; }
+        taskDraft.dirty = true; taskDraft.scheduleChanged = true; taskDraft.deadlineChanged = true;
+        updateScheduleControls();
+      };
+      time.onchange = () => {
+        taskDraft.dueTime = time.value;
+        if (time.value && !date.value) { date.value = localFields(new Date().toISOString()).date; taskDraft.dueDate = date.value; }
+        taskDraft.dirty = true; taskDraft.scheduleChanged = true; taskDraft.deadlineChanged = true;
+        updateScheduleControls();
+      };
+      reminder.onchange = () => { taskDraft.reminderMinutes = reminder.value === '' ? null : Number(reminder.value); taskDraft.scheduleChanged = true; taskDraft.dirty = true; updateScheduleControls(); };
+      followup.onchange = () => { taskDraft.followupMinutes = followup.value === '' ? null : Number(followup.value); taskDraft.scheduleChanged = true; taskDraft.dirty = true; updateScheduleControls(); };
+      const assigneeField = formField('Кто делает', assignee, 'task-assignee');
+      assigneeField.classList.add('pccTaskAssigneeField');
+      details.append(assigneeField, formField('Дата', date, 'task-date'), formField('Время', time, 'task-time'), formField('Напомнить', reminder, 'task-reminder'), formField('Уточнить выполнение', followup, 'task-followup'));
       taskForm.append(details);
+      taskForm.append(timezone, notificationHint, enableNotifications);
       if (taskDraft.sourceMessageId) {
         const source = button('pccTextButton pccTaskSource', 'Из переписки');
         source.prepend(icon('source'));
@@ -479,12 +608,27 @@
       const save = button('pccButton pccTaskSave', taskDraft.isNew ? 'Добавить дело' : 'Сохранить дело');
       save.type = 'submit';
       if (!taskDraft.isNew) {
+        const lifecycle = el('div', 'pccTaskLifecycle');
+        const done = button('pccTextButton pccTaskDone', taskDraft.completed ? 'Вернуть в работу' : 'Сделано');
+        done.onclick = () => { void saveTask(false, { completed: !taskDraft.completed, archived: false }); };
+        const postpone = button('pccTextButton pccTaskPostpone', 'Перенести');
+        postpone.onclick = () => {
+          taskDraft.postponing = true; taskDraft.dirty = true;
+          taskNotice('Выберите новую дату и время, затем сохраните дело.', '');
+          date.focus();
+        };
+        const archive = button('pccTextButton ' + (taskDraft.archived ? 'pccTaskRestore' : 'pccTaskArchive'), taskDraft.archived ? 'Из архива' : 'В архив');
+        archive.onclick = () => { void saveTask(false, { archived: !taskDraft.archived }); };
+        lifecycle.append(done, postpone, archive);
+        const reviewPrompt = taskForm.querySelector('.pccTaskReview');
+        if (reviewPrompt) reviewPrompt.after(lifecycle);
+        else taskForm.append(lifecycle);
         const remove = button('pccTextButton pccTaskDelete', 'Удалить дело');
         remove.onclick = () => { taskDraft.confirmDelete = !taskDraft.confirmDelete; updateTaskControls(); };
         actions.append(remove);
       }
       actions.append(cancel, save);
-      const confirm = button('pccButton pccTaskDeleteConfirm', 'Удалить дело для всех');
+      const confirm = button('pccButton pccTaskDeleteConfirm', 'Удалить дело для всех навсегда');
       confirm.hidden = true;
       confirm.onclick = deleteTask;
       taskForm.append(notice, conflict, actions, confirm);
@@ -492,6 +636,7 @@
       taskFormHost.replaceChildren(taskForm);
       autosize(title, 220);
       updateTaskControls();
+      updateScheduleControls();
     }
     function dismissTask() {
       if (taskBusy) return;
@@ -501,49 +646,60 @@
       taskEmpty.hidden = (snapshot?.tasks.length || 0) > 0;
       updateTaskControls();
     }
-    async function saveTask(replace) {
+    async function saveTask(replace, changes) {
       const ticket = generation;
       if (!current(ticket) || !taskDraft || taskBusy || !taskDraft.title.trim()) return;
       if (taskDraft.deleted) { taskNotice('Это дело удалено. Скопируйте текст и добавьте новое дело.', 'error'); return; }
       if (taskDraft.conflict && !replace) return;
+      if (changes) { taskDraft.pendingState = { ...changes }; taskDraft.postponing = false; taskDraft.dirty = true; }
       const draft = { ...taskDraft };
       const latest = snapshot.tasks.find(item => item.id === draft.id);
       if (!draft.isNew && replace && !latest) return;
+      let schedule;
+      try {
+        schedule = buildSchedule(draft);
+        if (draft.postponing && (!draft.deadlineChanged || !draft.dueDate || (schedule.due_at ? new Date(schedule.due_at).getTime() <= Date.now() : draft.dueDate < localFields(new Date().toISOString()).date))) throw new Error('Укажите новую дату или время в будущем.');
+      } catch (error) { taskNotice(error.message, 'error'); return; }
+      const state = draft.postponing ? { completed: false, archived: false } : draft.pendingState || {};
+      const dueDate = draft.deadlineChanged || !draft.schedule.due_at ? draft.dueDate : draft.baseDueDate;
       const controller = mutationController();
       taskBusy = true;
       taskNotice('Сохраняем…', 'pending');
       updateTaskControls();
       try {
         const payload = { context: { ...context }, id: draft.id, title: draft.title.trim(),
-          assigneeId: draft.assigneeId, dueDate: draft.dueDate, signal: controller.signal };
+          assigneeId: draft.assigneeId, dueDate, schedule, signal: controller.signal };
         if (draft.isNew && !taskDraft.createAttempt) {
           taskDraft.createAttempt = { id: draft.id, title: payload.title, assigneeId: draft.assigneeId,
-            dueDate: draft.dueDate, sourceMessageId: draft.sourceMessageId, sourceBlockId: draft.sourceBlockId };
+            dueDate, schedule: { ...schedule }, sourceMessageId: draft.sourceMessageId, sourceBlockId: draft.sourceBlockId };
         }
         const attempt = taskDraft.createAttempt;
         const data = draft.isNew
           ? await options.createTask({ ...payload, ...attempt })
-          : await options.updateTask({ ...payload, completed: replace ? latest.completed : draft.completed, expectedRevision: replace ? latest.revision : draft.baseRevision });
+          : await options.updateTask({ ...payload, completed: state.completed ?? (replace ? latest.completed : draft.completed),
+            archived: state.archived ?? (replace ? !!latest.archived_at : draft.archived), expectedRevision: replace ? latest.revision : draft.baseRevision });
         if (!current(ticket) || controller.signal.aborted) return;
         taskBusy = false;
+        notifyMutation('task', draft.id);
         const created = draft.isNew ? data.tasks.find(item => item.id === draft.id) : null;
         if (draft.isNew && !created) {
           applySnapshot(data);
           taskDraft.deleted = true;
           taskNotice('Это дело уже удалено. Текст остаётся в форме; его можно скопировать в новое дело.', 'error');
-        } else if (created && (draft.title.trim() !== attempt.title || draft.assigneeId !== attempt.assigneeId || draft.dueDate !== attempt.dueDate)) {
+        } else if (created && (draft.title.trim() !== attempt.title || draft.assigneeId !== attempt.assigneeId || dueDate !== attempt.dueDate || JSON.stringify(schedule) !== JSON.stringify(attempt.schedule))) {
           // A retry must repeat the original request. Preserve edits made after a lost response.
           applySnapshot(data);
           taskDraft.isNew = false;
           taskDraft.baseRevision = created.revision;
           taskDraft.completed = created.completed;
+          taskDraft.archived = !!created.archived_at;
           taskDraft.createAttempt = null;
           renderTaskForm();
           taskNotice('Дело добавлено. Сохраните последующие изменения из этой формы.', '');
         } else {
           dismissTask();
           applySnapshot(data);
-          status.textContent = draft.isNew ? 'Дело добавлено' : 'Дело сохранено';
+          status.textContent = draft.isNew ? 'Дело добавлено' : draft.postponing ? 'Дело перенесено' : state.archived === true ? 'Дело в архиве' : state.completed === true ? 'Дело в разделе «Готово»' : 'Дело сохранено';
         }
       } catch (error) {
         if (!current(ticket) || isAbort(error) || controller.signal.aborted) return;
@@ -576,6 +732,7 @@
         taskBusy = false;
         dismissTask();
         applySnapshot(data);
+        notifyMutation('task', draft.id);
         status.textContent = 'Дело удалено';
       } catch (error) {
         if (!current(ticket) || isAbort(error) || controller.signal.aborted) return;
@@ -639,6 +796,17 @@
       opened = true;
       pane.hidden = false;
       if (settings?.sourceMessage) pendingSource = settings.sourceMessage;
+      if (settings?.taskId) {
+        // Explicit task navigation has already passed the host's unsaved-changes guard.
+        // A previous form must not trap a link to another task in the same chat.
+        if (taskDraft) {
+          if (taskBusy) stopRequests();
+          dismissTask();
+        }
+        pendingSource = null;
+        taskLinkNotice = '';
+        pendingTask = { id: settings.taskId, review: !!settings.taskReview };
+      }
       if (pendingSource && snapshot) {
         const source = pendingSource;
         pendingSource = null;
@@ -658,6 +826,9 @@
       context = null;
       snapshot = null;
       pendingSource = null;
+      pendingTask = null;
+      taskLinkNotice = '';
+      taskView = 'open';
       planBody.value = '';
       planBaseBody = '';
       planBaseRevision = 0;
@@ -715,6 +886,18 @@
       planState('Открыта общая версия', 'saved');
     };
     add.onclick = () => startTask();
+    taskViewButtons.forEach((node, index) => {
+      const choose = () => { taskView = node.dataset.view; renderTasks(); };
+      node.onclick = choose;
+      node.onkeydown = event => {
+        const indexNext = event.key === 'ArrowRight' ? (index + 1) % taskViewButtons.length : event.key === 'ArrowLeft' ? (index + taskViewButtons.length - 1) % taskViewButtons.length : event.key === 'Home' ? 0 : event.key === 'End' ? taskViewButtons.length - 1 : null;
+        if (indexNext == null) return;
+        event.preventDefault();
+        taskView = taskViewButtons[indexNext].dataset.view;
+        renderTasks();
+        taskViewButtons[indexNext].focus();
+      };
+    });
     refresh.onclick = () => load(true);
     retry.onclick = () => load(true);
     scope.addEventListener('focus', onFocus);

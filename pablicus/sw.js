@@ -1,6 +1,6 @@
 /* Public-shell allowlist only. Auth, API, messages, signed media and local drafts are NEVER cached here. */
-const VERSION='pablicus-shell-8b8c016e4c4b933c';
-const FILES=['./','index.html','style.css','pablicus.css','vault.js','outbox.js','transport-store.js','rich-store.js','rich-composer.js','rich-composer.css','rich-message.js','rich-message.css','media-viewer.js','media-viewer.css','inbox-monitor.js','inbox-monitor.css','message-menu.js','message-menu.css','people.js','people.css','chat-actions.js','chat-actions.css','chat-minimal.css','profile-discovery.css','chat-library.js','chat-library.css','chat-canvas.js','chat-canvas.css','tasks-home.js','tasks-home.css','push-notifications.js','chat.js','app.js','auth-local.js','auth-config.js','oauth-login.js','oauth-session.js','passkey-login.js','public-passkey.js','passkey-start.html','passkey-start.js','passkey-start.css','vendor/supabase.js','manifest.webmanifest','assets/icon-32.png','assets/icon-180.png','assets/icon-192.png','assets/icon-512.png','assets/wordmark-light.png','assets/wordmark-dark.png'];
+const VERSION='pablicus-shell-268979c7802b6c21';
+const FILES=['./','index.html','style.css','pablicus.css','vault.js','outbox.js','transport-store.js','rich-store.js','rich-composer.js','rich-composer.css','rich-message.js','rich-message.css','media-viewer.js','media-viewer.css','inbox-monitor.js','inbox-monitor.css','message-menu.js','message-menu.css','people.js','people.css','chat-actions.js','chat-actions.css','chat-minimal.css','profile-discovery.css','chat-library.js','chat-library.css','chat-canvas.js','chat-canvas.css','tasks-home.js','tasks-home.css','workspace-quick.js','workspace-quick.css','push-notifications.js','chat.js','app.js','auth-local.js','auth-config.js','oauth-login.js','oauth-session.js','passkey-login.js','public-passkey.js','passkey-start.html','passkey-start.js','passkey-start.css','vendor/supabase.js','manifest.webmanifest','assets/icon-32.png','assets/icon-180.png','assets/icon-192.png','assets/icon-512.png','assets/wordmark-light.png','assets/wordmark-dark.png'];
 const urls=FILES.map(p=>new URL(p,self.registration.scope).href);
 self.addEventListener('install',e=>e.waitUntil((async()=>{const c=await caches.open(VERSION);for(const url of urls){const r=await fetch(new Request(url,{cache:'reload'}));if(!r.ok)throw Error('Shell asset unavailable');await c.put(url,r)}})()));
 self.addEventListener('message',e=>{if(e.data==='ACTIVATE')self.skipWaiting()});
@@ -31,26 +31,39 @@ self.addEventListener('message',event=>{
 });
 self.addEventListener('push',event=>event.waitUntil(queuePush(async()=>{
  let payload;try{payload=event.data?.json();}catch{return;}
- if(!payload||!PUSH_UUID.test(payload.recipient_id||'')||!PUSH_UUID.test(payload.conversation_id||'')||!PUSH_UUID.test(payload.message_id||''))return;
+ if(!payload||!PUSH_UUID.test(payload.recipient_id||'')||!PUSH_UUID.test(payload.conversation_id||''))return;
+ const taskNotice=['task_reminder','task_followup'].includes(payload.kind);
+ if(payload.kind&&!taskNotice&&payload.kind!=='message')return;
+ const noticeId=taskNotice?payload.notification_id:payload.message_id;
+ if(!PUSH_UUID.test(noticeId||''))return;
+ if(taskNotice&&(!PUSH_UUID.test(payload.task_id||'')||!Number.isFinite(Date.parse(payload.due_at))||!Number.isFinite(Date.parse(payload.expires_at))||Date.parse(payload.expires_at)<=Date.now()))return;
  if(await pushOwner(false)!==payload.recipient_id)return;
  const stored=await pushState(false,null,'recent'),recent=Array.isArray(stored)?stored.filter(id=>PUSH_UUID.test(id)).slice(-128):[];
- if(recent.includes(payload.message_id))return;
- await self.registration.showNotification('Pablicus',{
-  body:'Новое сообщение',lang:'ru',icon:new URL('assets/icon-192.png',self.registration.scope).href,
-  tag:'pablicus-conversation-'+payload.conversation_id,renotify:true,
-  data:{conversationId:payload.conversation_id,messageId:payload.message_id,recipientId:payload.recipient_id}
+ if(recent.includes(noticeId))return;
+ const data={conversationId:payload.conversation_id,recipientId:payload.recipient_id};
+ if(taskNotice){data.taskId=payload.task_id;data.kind=payload.kind;data.notificationId=noticeId;}
+ else data.messageId=payload.message_id;
+ await self.registration.showNotification(taskNotice?(payload.kind==='task_followup'?'Получилось сделать дело?':'Скоро запланировано дело'):'Pablicus',{
+  body:taskNotice?String(payload.body||'Откройте дело, чтобы посмотреть срок.').slice(0,512):'Новое сообщение',lang:'ru',icon:new URL('assets/icon-192.png',self.registration.scope).href,
+  tag:taskNotice?'pablicus-task-'+payload.task_id:'pablicus-conversation-'+payload.conversation_id,renotify:true,
+  data
  });
  // Record only after successful presentation. Bind changes share this queue, so a stale
  // delivery cannot restore history belonging to the account that has just signed out.
- await pushState(true,[...recent,payload.message_id].slice(-128),'recent');
+ await pushState(true,[...recent,noticeId].slice(-128),'recent');
 })));
 self.addEventListener('notificationclick',event=>{
  event.notification.close();const data=event.notification.data;
  event.waitUntil((async()=>{
   if(!data||!PUSH_UUID.test(data.conversationId||'')||!PUSH_UUID.test(data.recipientId||'')||await pushOwner(false)!==data.recipientId)return;
+  if(data.taskId&&(!PUSH_UUID.test(data.taskId)||!['task_reminder','task_followup'].includes(data.kind)))return;
+  const target={type:'PABLICUS_PUSH_OPEN',conversationId:data.conversationId,recipientId:data.recipientId};
+  if(data.taskId){target.taskId=data.taskId;target.kind=data.kind;}
   const list=await self.clients.matchAll({type:'window',includeUncontrolled:true});
   const client=list.filter(c=>pushClientUrl(c.url)).sort((a,b)=>Number(b.focused)-Number(a.focused))[0];
-  if(client){try{await client.focus();client.postMessage({type:'PABLICUS_PUSH_OPEN',conversationId:data.conversationId,recipientId:data.recipientId});return;}catch{}}
-  const url=new URL(self.registration.scope);url.searchParams.set('conversation',data.conversationId);url.searchParams.set('recipient',data.recipientId);await self.clients.openWindow(url.href);
+  if(client){try{await client.focus();client.postMessage(target);return;}catch{}}
+  const url=new URL(self.registration.scope);url.searchParams.set('conversation',data.conversationId);url.searchParams.set('recipient',data.recipientId);
+  if(data.taskId){url.searchParams.set('task',data.taskId);url.searchParams.set('task_notice',data.kind);}
+  await self.clients.openWindow(url.href);
  })());
 });
