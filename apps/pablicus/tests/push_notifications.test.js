@@ -12,7 +12,7 @@ function fixture({ios=false,installed=false,permission='default',failure=false,p
  class Channel{constructor(){this.port1={close(){}};this.port2={peer:this.port1};}}
  const browser={URL,Uint8Array,atob,setTimeout,clearTimeout,AbortController,MessageChannel:Channel,console,isSecureContext:true,PushManager:function(){},location:{href:scope},matchMedia:()=>({matches:installed}),localStorage:{getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)},Notification:{permission,requestPermission(){requestPermissionCount++;return permissionPromise||Promise.resolve(browser.Notification.permission='granted');}},document:{createElement:tag=>new Node(tag)},navigator:{userAgent:ios?'iPhone':'Browser',platform:ios?'iPhone':'Linux',maxTouchPoints:ios?5:0,serviceWorker:{getRegistration:async()=>reg,ready:Promise.resolve(reg),addEventListener:(t,fn)=>events[t]=fn,removeEventListener(){}}},fetch:async(url,options)=>{calls.push({url,method:options.method,headers:options.headers,body:options.body&&JSON.parse(options.body)});return{ok:!failure,status:failure?500:200,json:async()=>options.method==='GET'?{publicKey}:{ok:true}};}};
  browser.window=browser;vm.runInNewContext(source('push-notifications.js'),browser);
- const opened=[];const api=browser.PablicusPush.create({projectUrl:'https://db.fixture.invalid',apiKey:'PUBLISHABLE',getUserId:()=>user,getSession:async()=>({data:{session:{access_token:'TOKEN_'+user,user:{id:user}}}}),onOpenConversation:(id,recipient)=>opened.push({id,recipient})});
+ const opened=[];const api=browser.PablicusPush.create({projectUrl:'https://db.fixture.invalid',apiKey:'PUBLISHABLE',getUserId:()=>user,getSession:async()=>({data:{session:{access_token:'TOKEN_'+user,user:{id:user}}}}),onOpenConversation:(id,recipient,task)=>opened.push(task?{id,recipient,task}:{id,recipient})});
  return{api,browser,calls,values,bindings,reg,events,opened,setUser:id=>user=id,get current(){return current;},get prompts(){return requestPermissionCount;}};
 }
 test('mount/refresh never prompts; enabling requests consent directly and registers under the authenticated account',async()=>{
@@ -73,4 +73,33 @@ test('failed notification display remains retryable and the persisted deduplicat
 });
 test('binding the same account preserves recent IDs; changing account or signing out clears them',async()=>{
  const f=worker(new Map([['recipient',A],['recent',[M]]]));const bind=recipientId=>f.emit('message',{source:{url:scope},data:{type:'PABLICUS_PUSH_BIND',recipientId},ports:[{postMessage(){}}]});await bind(A);assert.equal(f.values.get('recent').length,1);await bind(B);assert.equal(f.values.get('recent').length,0);f.values.set('recent',[C]);await bind(null);assert.equal(f.values.get('recent').length,0);assert.equal(f.values.get('recipient'),null);
+});
+
+test('task reminders carry the requested task and follow-up type into an existing app window',async()=>{
+ const f=worker(new Map([['recipient',A]]));
+ const payload={kind:'task_followup',recipient_id:A,conversation_id:C,task_id:B,notification_id:M,due_at:new Date(Date.now()-3*3600000).toISOString(),expires_at:new Date(Date.now()+3600000).toISOString(),body:'Синтетическое дело · подтвердите выполнение'};
+ await f.emit('push',{data:{json:()=>payload}});
+ assert.equal(f.notifications.length,1);assert.equal(f.notifications[0].title,'Получилось сделать дело?');
+ assert.equal(f.notifications[0].options.body,payload.body);assert.equal(f.notifications[0].options.data.taskId,B);
+ await f.emit('push',{data:{json:()=>payload}});assert.equal(f.notifications.length,1);
+ const restarted=worker(f.values);await restarted.emit('push',{data:{json:()=>payload}});assert.equal(restarted.notifications.length,0);
+ f.setClients([{url:scope,focus:async()=>{},postMessage:data=>f.messages.push(data)}]);
+ await f.emit('notificationclick',{notification:{close(){},data:f.notifications[0].options.data}});
+ assert.equal(f.messages[0].taskId,B);assert.equal(f.messages[0].kind,'task_followup');
+ const client=fixture();client.events.message({data:f.messages[0]});assert.equal(client.opened[0].task.taskId,B);assert.equal(client.opened[0].task.kind,'task_followup');
+ assert.deepEqual([...f.values.keys()].sort(),['recent','recipient']);
+});
+test('expired, malformed, foreign and unknown task notifications never appear',async()=>{
+ const f=worker(new Map([['recipient',A]])),base={kind:'task_reminder',recipient_id:A,conversation_id:C,task_id:B,notification_id:M,due_at:new Date(Date.now()+3600000).toISOString(),expires_at:new Date(Date.now()+3600000).toISOString()};
+ for(const patch of [{expires_at:new Date(Date.now()-1).toISOString()},{expires_at:'bad'},{due_at:null},{notification_id:'bad'},{task_id:'bad'},{recipient_id:B},{kind:'other'}])await f.emit('push',{data:{json:()=>({...base,...patch})}});
+ assert.equal(f.notifications.length,0);
+ await f.emit('push',{data:{json:()=>base}});assert.equal(f.notifications.length,1);
+});
+test('task click opens a scoped URL for a cold launch and rejects malformed task routes',async()=>{
+ const f=worker(new Map([['recipient',A]])),data={recipientId:A,conversationId:C,taskId:B,kind:'task_reminder'};
+ await f.emit('notificationclick',{notification:{close(){},data}});
+ const target=new URL(f.opened[0]);assert.equal(target.searchParams.get('task'),B);assert.equal(target.searchParams.get('task_notice'),'task_reminder');assert.equal(target.pathname,new URL(scope).pathname);
+ await f.emit('notificationclick',{notification:{close(){},data:{...data,taskId:'https://other.invalid'}}});assert.equal(f.opened.length,1);
+ const client=fixture();client.events.message({data:{type:'PABLICUS_PUSH_OPEN',...data,kind:'other'}});assert.equal(client.opened.length,0);
+ client.setUser(B);client.events.message({data:{type:'PABLICUS_PUSH_OPEN',...data}});assert.equal(client.opened.length,0);
 });

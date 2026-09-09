@@ -67,7 +67,7 @@ jobs:
         run: npm test --prefix apps/pablicus/chat-workspace
       - name: Push encryption, account ownership and durable notification delivery contracts
         working-directory: source
-        run: node --test apps/pablicus/push/webpush.test.mjs apps/pablicus/push/schema.test.mjs apps/pablicus/push/index.test.mjs apps/pablicus/tests/push_notifications.test.js
+        run: node --test apps/pablicus/push/webpush.test.mjs apps/pablicus/push/schema.test.mjs apps/pablicus/push/index.test.mjs apps/pablicus/push/task-reminders.test.mjs apps/pablicus/tests/push_notifications.test.js
       - name: Verify vendored SDK and authentication module contracts
         working-directory: source
         run: |
@@ -98,6 +98,9 @@ jobs:
       - name: Aggregated tasks filters, pagination, conflict and account isolation in Chromium and WebKit
         working-directory: source
         run: python apps/pablicus/tests/tasks_home.py
+      - name: Composer today and projects lists, navigation and account isolation
+        working-directory: source
+        run: python apps/pablicus/tests/workspace_quick.py
       - name: Public first-key page with virtual WebAuthn and mocked provider HTTP
         working-directory: source
         run: python apps/pablicus/tests/public_passkey_page.py
@@ -138,6 +141,8 @@ jobs:
                   ('/rest/v1/rpc/pablicus_chat_materials?p_conversation_id=00000000-0000-0000-0000-000000000000&p_kind=media',{},401),
                   ('/rest/v1/rpc/pablicus_get_canvas?p_conversation_id=00000000-0000-0000-0000-000000000000',{},401),
                   ('/rest/v1/rpc/pablicus_list_tasks',{},401),
+                  ('/rest/v1/rpc/pablicus_list_tasks_v2',{},401),
+                  ('/rest/v1/rpc/pablicus_list_projects',{},401),
                   ('/rest/v1/http_request_queue?select=id&limit=0',{'Accept-Profile':'net'},406),
                   ('/rest/v1/config?select=singleton&limit=0',{'Accept-Profile':'pablicus_push_private'},406)]
           for path,headers,expected in checks:

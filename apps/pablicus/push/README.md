@@ -124,3 +124,89 @@ Primary references checked 2026-09-08:
 * [RFC 8291 encryption](https://www.rfc-editor.org/rfc/rfc8291)
 * [RFC 8292 VAPID](https://www.rfc-editor.org/rfc/rfc8292)
 * [WebKit: Web Push on iOS](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/)
+
+## Task reminders and followup
+
+Apply `TASK_REMINDERS_SCHEMA_PROPOSAL.sql` after
+`../chat-workspace/TASK_LIFECYCLE_SCHEMA_PROPOSAL.sql`. The existing Edge worker,
+VAPID keys, subscriptions, and `pablicus-push-retry` minute cron are reused;
+there is no second recurring job or new credential. The cron invokes the replaced
+`maintenance()` function, which queues due task deliveries before kicking the
+same single-use worker capability. The worker still claims at most 25 deliveries,
+reserving up to five places for tasks so message bursts cannot starve reminders.
+
+The task mutation trigger schedules one event per task schedule version,
+recipient, and kind, independently of whether the app is open. The approved
+assigned member is the recipient; an unassigned shared task addresses all current
+approved participants. Each subscribed device present when the due event is
+materialized gets one delivery. If the recipient has no subscribed device yet,
+the event waits until its expiry. New participants do not retrospectively inherit
+notifications from a schedule created before they joined.
+
+* `task_reminder`: runs at `due_at - reminder_minutes`. A late reminder expires
+  at the task time; an explicit at-time reminder has a 15-minute delivery window.
+* `task_followup`: runs at `due_at + 180 minutes`, asking whether the task was
+  completed. The followup has a 24-hour delivery window and sends once. It never
+  marks a task complete, deletes it, or repeatedly prompts without a new schedule.
+* UTC instants determine dispatch; `due_timezone` only formats the task's due
+  time in its notification. Cron resolution is one minute, plus provider/network
+  delivery latency; it is not an exact-time alarm.
+
+Task payloads use the existing encrypted Web Push transport:
+
+```json
+{
+  "kind": "task_reminder or task_followup",
+  "notification_id": "stable event UUID",
+  "task_id": "task UUID",
+  "conversation_id": "conversation UUID",
+  "recipient_id": "recipient UUID",
+  "due_at": "ISO timestamp",
+  "expires_at": "ISO timestamp",
+  "title": "Скоро запланировано дело / Удалось завершить дело?",
+  "body": "Task title and due time / completion prompt"
+}
+```
+
+The task title is included only inside the encrypted payload, limited to 350
+characters. Ordinary message notifications retain their generic body. The service
+worker must check recipient binding and expiry, deduplicate `notification_id`,
+and route a click to the task's conversation. The app's authenticated task UI
+handles completion, archive, postponement, and permanent removal.
+
+Changing due time, reminders, assignee, completion, archive, or deletion advances
+`schedule_version` and cancels pending/leased old jobs. Claim rechecks the current
+task state, schedule, recipient approval, membership, and subscription ownership.
+Late acknowledgements cannot resurrect cancelled deliveries. Leased jobs retry
+with the same event ID and a fresh lease; expired endpoints are removed. A push
+already accepted by the platform cannot be recalled by a subsequent task edit.
+Events expire and are pruned seven days after expiry together with deliveries.
+Private task tables have RLS and no browser grants; task scheduler functions are
+owner-only or worker-only. No client timer is used for background notification.
+
+Additional local verification:
+
+```sh
+node --test apps/pablicus/push/task-reminders.test.mjs
+```
+
+These tests execute both schema proposals and the actual private SQL in the
+pinned PGlite runtime with synthetic tasks, accounts, devices, and a fake pg_net
+transport. They cover due windows, stable retry IDs, cancellation and stale leases,
+completion/archive/delete, approval/membership loss, device rebind, expiry, cron
+capabilities, multiple devices, and bounded fair task/message batches.
+
+To stop only task notifications while preserving chat push and task content:
+
+```sql
+BEGIN;
+DROP TRIGGER IF EXISTS pablicus_task_reminder_schedule ON pablicus_chat_private.canvas_tasks;
+UPDATE pablicus_push_private.task_events SET state='cancelled' WHERE state IN ('pending','ready');
+UPDATE pablicus_push_private.task_deliveries SET state='dead',lease=NULL WHERE state IN ('pending','sending');
+COMMIT;
+```
+
+Primary references rechecked 2026-09-09:
+[Supabase Cron](https://supabase.com/docs/guides/cron) and
+[Supabase changelog](https://supabase.com/changelog). No relevant breaking change
+to the existing hosted pg_cron/pg_net worker integration was identified.
