@@ -266,3 +266,10 @@ The release workflow requires the browser suite in Chromium and WebKit; physical
 two-iPhone acceptance remains separate. Current canvas bounds: 20,000 plan
 characters, 500 task-title characters and 200 retained nondeleted tasks per
 conversation, with an explicit error instead of silently truncating the list.
+
+Observer-driven list and composer size changes run in a coalesced animation
+frame, avoiding synchronous resize feedback during WebKit observer delivery.
+Pending layout callbacks are canceled on destruction. Historical navigation
+tests validate the bounded source query and the complete contiguous interval,
+including normal forward catch-up, rather than assuming the initial 61-row
+window remains unchanged after navigation. Browser errors remain release failures.
