@@ -168,7 +168,7 @@ async def one(engine, name):
             "events": [], "faults": [], "registration_options": 0,
             "registration_verify": 0, "authentication_options": 0,
             "authentication_verify": 0, "successful_assertions": 0,
-            "get_user": 0, "profiles": 0, "conversations": 0,
+            "get_user": 0, "profiles": 0, "conversations": 0, "storage_usage": 0,
             "logout_fail": False, "logout_failures": 0,
             "approved": approved, "confirmed": confirmed, "server_user_id": USER_ID,
             "credentials": {}, "challenges": {}, "verifier_negative_checks": [],
@@ -286,6 +286,15 @@ async def one(engine, name):
                 elif parsed.path.startswith("/rest/v1/rpc/my_conversations"):
                     state["conversations"] += 1
                     payload = []
+                elif parsed.path == "/rest/v1/rpc/pablicus_storage_usage":
+                    require_session()
+                    assert route.request.method == "POST" and body == {}
+                    state["storage_usage"] += 1
+                    # This auth fixture owns no uploaded objects.
+                    payload = [{"total_bytes": 0, "own_bytes": 0,
+                                "object_count": 0, "own_object_count": 0,
+                                "unknown_size_count": 0,
+                                "measured_at": "2026-09-09T00:00:00Z"}]
                 elif path == "/passkeys":
                     require_session()
                     assert route.request.method == "GET"
@@ -601,7 +610,7 @@ async def one(engine, name):
         result["mock_states"] = [{key: state[key] for key in (
             "events", "faults", "registration_options", "registration_verify",
             "authentication_options", "authentication_verify", "successful_assertions",
-            "get_user", "profiles", "conversations", "verifier_negative_checks",
+            "get_user", "profiles", "conversations", "storage_usage", "verifier_negative_checks",
             "logout_failures",
         )} for state in states]
         checkpoint = EVIDENCE / (name + "-passkey-login.json")
