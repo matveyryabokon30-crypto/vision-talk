@@ -109,7 +109,7 @@
   createTask:args=>canvasRpc('pablicus_create_canvas_task_v3',args),updateTask:args=>canvasRpc('pablicus_update_canvas_task_v3',args),deleteTask:args=>canvasRpc('pablicus_delete_canvas_task',args),
   uploadContent:uploadCanvasContent,renderContent:renderCanvasContent,resolveUrl:signedUrl,
   onLocate:async id=>{const message=await libraryMessage(id);if(await showConversationView()===false)return;await locateMessage(message);},onConversation:()=>showConversationView(),
-  onEditing:editing=>{$('app').classList.toggle('canvas-editing',!!editing)},
+  onEditing:editing=>{const active=!!editing;$('app').classList.toggle('canvas-editing',active);$('composer').hidden=active},
   onMutation:()=>workspaceQuick.refresh(),notificationsEnabled:()=>pushNotifications.enabled,onEnableNotifications:enableTaskNotifications});
  function enableTaskNotifications(){const pending=pushNotifications.enable();return Promise.resolve(pending).then(()=>{if(!pushNotifications.enabled)throw Error('Уведомления не включены. Откройте приложение с главного экрана iPhone и разрешите уведомления.');});}
  function canvasNavigationAllowed(){return!chatCanvas.hasUnsavedChanges()||confirm('В полотне есть несохранённые изменения. Выйти без сохранения?');}
