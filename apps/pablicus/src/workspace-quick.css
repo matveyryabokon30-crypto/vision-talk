@@ -77,5 +77,7 @@
 }
 
 @media (max-width: 360px) {
+  .pablicusWorkspaceQuick { gap: 6px; }
+  #composer .pwqChip { padding-inline: 0; gap: 0; }
   #composer .pwqChip svg { display: none; }
 }

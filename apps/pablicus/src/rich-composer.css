@@ -123,3 +123,7 @@
 @media (prefers-reduced-motion: no-preference) {
   #richVoice.is-recording { transition: background-color 120ms ease; }
 }
+
+@media (max-width: 360px) {
+  #app:not(.composer-fullscreen) #composeBox.rich-composer { padding-inline: 5px; }
+}
