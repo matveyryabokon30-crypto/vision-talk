@@ -1,0 +1,98 @@
+name: Prepare in-place project expansion
+on:
+  push:
+    branches: [pablicus-project-expansion-prepare-20260909]
+    paths: ['.github/workflows/pablicus-project-expansion-prepare.yml', 'tools/prepare_project_expansion.py']
+permissions:
+  contents: write
+jobs:
+  prepare-and-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: tools-input
+      - uses: actions/checkout@v4
+        with:
+          ref: e40e2af447ce835cb177f058e90cf2ac698503fa
+          path: source
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Build the current release as a byte-comparison baseline
+        run: |
+          python -m pip install playwright==1.55.0 pillow==11.3.0
+          python source/apps/pablicus/build.py
+          python source/apps/pablicus/finalize.py
+          cp -R source/apps/pablicus/dist "$RUNNER_TEMP/baseline-dist"
+      - name: Apply exactly the reviewed three-file change and commit on detached HEAD
+        run: |
+          python tools-input/tools/prepare_project_expansion.py source
+          python - <<'PY'
+          import hashlib, pathlib, subprocess
+          root=pathlib.Path('source')
+          expected={
+            'apps/pablicus/src/chat-canvas.js':'d681fd3feb98ac4f7a120f9dc9de5f953b0475a084d5e163610ecc0525c94734',
+            'apps/pablicus/src/chat-canvas.css':'762cc617d1e0d01a9167d8b672df5966cb190b031f52cf77574ec43e4e7ba458',
+            'apps/pablicus/tests/chat_canvas.py':'8962b44a8d78c47247dcab6ef848bdd8b1984a411e7fe6f023df1f09776dd4ca',
+          }
+          for path,digest in expected.items():assert hashlib.sha256((root/path).read_bytes()).hexdigest()==digest,path
+          changed=subprocess.check_output(['git','diff','--name-only'],cwd=root,text=True).splitlines()
+          assert set(changed)==set(expected),changed
+          subprocess.run(['git','add','--',*expected],cwd=root,check=True)
+          PY
+          cd source
+          git config user.name 'Pablicus UI update'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Expand project within one card without duplicate summary or nested scroll'
+          python apps/pablicus/build.py
+          python apps/pablicus/finalize.py
+          node --check apps/pablicus/dist/chat-canvas.js
+          python -m py_compile apps/pablicus/tests/chat_canvas.py
+      - name: Verify that icons and all unrelated runtime files are unchanged
+        run: |
+          mkdir -p evidence
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          before=Path(os.environ['RUNNER_TEMP'])/'baseline-dist';after=Path('source/apps/pablicus/dist')
+          old={str(p.relative_to(before)):hashlib.sha256(p.read_bytes()).hexdigest() for p in before.rglob('*') if p.is_file()}
+          new={str(p.relative_to(after)):hashlib.sha256(p.read_bytes()).hexdigest() for p in after.rglob('*') if p.is_file()}
+          assert set(old)==set(new),'No runtime files may be added or removed'
+          changed=sorted(n for n in old if old[n]!=new[n])
+          assert set(changed)=={'chat-canvas.js','chat-canvas.css','sw.js','version.json','ASSET_MANIFEST.json'},changed
+          unchanged=sorted(n for n in old if old[n]==new[n])
+          Path('evidence/project-expansion-byte-diff.json').write_text(json.dumps({'status':'PASS','changed':changed,'unchanged':unchanged,'unchanged_count':len(unchanged),'scope':'Only project rendering/style and generated update metadata. Icons, message draft, auth, backend and SQL unchanged.'},indent=2))
+          PY
+      - name: Install the release-pinned browser engines
+        run: python -m playwright install --with-deps chromium webkit
+      - name: Verify full project and task flow plus single-card acceptance in Chromium and WebKit
+        working-directory: source
+        run: python apps/pablicus/tests/chat_canvas.py
+      - name: Preserve tested source on an isolated branch only
+        working-directory: source
+        run: |
+          git diff --exit-code
+          git push origin HEAD:refs/heads/pablicus-project-expansion-20260909
+      - name: Preserve source identity and evidence
+        if: always()
+        run: |
+          mkdir -p evidence
+          cd source
+          git rev-parse HEAD > ../evidence/source-commit.txt
+          git archive HEAD > ../evidence/source.tar
+          git diff --stat e40e2af447ce835cb177f058e90cf2ac698503fa HEAD > ../evidence/source-files.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pablicus-project-expansion-checked
+          path: |
+            evidence/
+            source/apps/pablicus/evidence/
+            source/apps/pablicus/dist/
+          retention-days: 14
