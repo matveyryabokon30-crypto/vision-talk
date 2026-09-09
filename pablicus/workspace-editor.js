@@ -125,11 +125,12 @@
         const block = remote.get(card.dataset.assetId);
         if (!block || card.dataset.workspaceRemote) continue;
         card.dataset.workspaceRemote = 'true'; card.classList.remove('richMissing');
-        card.querySelector('.richMediaName').textContent = block.name || LABELS[block.type];
+        const name = card.querySelector('.richMediaName');
+        if (name) name.textContent = block.name || LABELS[block.type];
         card.querySelector('.richMissing p')?.remove();
         for (const child of [...card.children]) if (!child.classList.contains('richMediaHead')) child.remove();
         const detail = element('small', 'richMediaDetails', `${LABELS[block.type]}${block.size ? ` · ${(block.size / 1024 / 1024).toFixed(1)} МБ` : ''}`);
-        const open = button(`Открыть ${block.name || LABELS[block.type]}`, 'Открыть', async () => {
+        const open = button(`Повторить загрузку ${block.name || LABELS[block.type]}`, 'Повторить', async () => {
           if (typeof options.resolveUrl !== 'function') { report('Не удалось открыть вложение. Повторите попытку.'); return; }
           open.disabled = true;
           try {
@@ -137,18 +138,36 @@
             if (destroyed || !card.isConnected) return;
             if (!url) throw Error('Не удалось получить файл.');
             if (block.type === 'document') {
-              const link = element('a', 'workspaceEditorFileLink', 'Открыть файл'); link.href = url; link.target = '_blank'; link.rel = 'noopener noreferrer';
-              open.replaceWith(link); link.click();
+              fileLink.href = url; fileLink.hidden = false; open.hidden = true; fileLink.click();
             } else {
-              const player = element(block.type === 'image' ? 'img' : block.type, 'workspaceEditorRemoteMedia');
-              if (block.type === 'image') { player.alt = block.name || 'Фото'; player.loading = 'lazy'; }
-              else { player.controls = true; player.preload = 'metadata'; if (block.type === 'video') player.playsInline = true; }
-              player.src = url; open.replaceWith(player);
+              player.src = url; player.hidden = false; open.hidden = true;
             }
-          } catch (error) { report(error.message || 'Не удалось открыть вложение.'); }
+          } catch (_) { open.hidden = false; }
           finally { if (open.isConnected) open.disabled = disabled; }
         }, 'workspaceEditorOpen');
-        card.append(detail, open);
+        open.hidden = true;
+        const fileLink = element('a', 'workspaceEditorFileLink', 'Открыть файл');
+        fileLink.target = '_blank'; fileLink.rel = 'noopener noreferrer'; fileLink.hidden = true;
+        const player = block.type === 'document' ? null : element(block.type === 'image' ? 'img' : block.type, 'workspaceEditorRemoteMedia');
+        if (player) {
+          player.hidden = true;
+          if (block.type === 'image') { player.alt = block.name || 'Фото'; player.loading = 'lazy'; }
+          else { player.controls = true; player.preload = 'metadata'; if (block.type === 'video') player.playsInline = true; }
+        }
+        card.append(detail, fileLink);
+        if (player) card.append(player);
+        card.append(open);
+        const load = async () => {
+          try {
+            const url = safeUrl(await options.resolveUrl?.(block.path, {...block}));
+            if (!url || destroyed || !card.isConnected) throw Error('media_unavailable');
+            if (fileLink) { fileLink.href = url; fileLink.hidden = block.type !== 'document'; }
+            if (player) { player.src = url; player.hidden = false; }
+          } catch (_) {
+            if (card.isConnected) open.hidden = false;
+          }
+        };
+        void load();
       }
       const textareas = body.querySelectorAll('textarea');
       textareas.forEach((node, index) => {

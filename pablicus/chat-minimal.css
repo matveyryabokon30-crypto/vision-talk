@@ -175,6 +175,11 @@
 #chatCanvasPanel { position: absolute; inset: 0; z-index: 3; min-height: 0; overflow: auto; overscroll-behavior: contain; background: var(--bg); }
 #chatCanvasPanel[hidden] { display: none; }
 #app.canvas-active #vp { visibility: hidden; pointer-events: none; }
+#app.canvas-active #composer { display: block !important; padding: 0; border-top: 0; background: transparent !important; pointer-events: none; }
+#app.canvas-active #composer #composeBox { display: block; min-height: 28px; padding: 0; border: 0; border-radius: 0; background: transparent !important; box-shadow: none; pointer-events: none; }
+#app.canvas-active #composer #composeBox > :not(#workspaceQuick),
+#app.canvas-active #composer #vaultLine { display: none !important; }
+#app.canvas-active #composer #workspaceQuick { display: flex; min-height: 28px; pointer-events: auto; }
 #app.canvas-active #new { display: none; }
 #app.composer-fullscreen #chatViewTabs { visibility: hidden; pointer-events: none; }
 .canvasShortcut { display: flex; align-items: center; gap: 12px; min-height: 58px; width: 100%; border: 0; border-radius: 12px; background: transparent; color: var(--text); font: inherit; text-align: left; padding: 10px 6px; }

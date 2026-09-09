@@ -44,3 +44,15 @@
 .workspaceEditor.is-expanded .workspaceEditorToolbar { flex: 0 0 auto; }
 .workspaceEditor.is-disabled .workspaceEditorToolbar { opacity: .55; }
 @media (max-width: 360px) { .workspaceEditor { padding: 6px; } .workspaceEditorHint { font-size: 11px; } }
+
+/* The editor is the message field itself; attachments do not need nested
+   bordered cards. Native media stays visible and independently controllable. */
+.workspaceEditor{padding:0;border:0;border-radius:25px;background:transparent;box-shadow:none}
+.workspaceEditor .richMedia{margin:8px 0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+.workspaceEditor .richMediaHead{min-height:32px;padding:0 2px}
+.workspaceEditor .richMedia .richAction{background:transparent}
+.workspaceEditor .richImage,.workspaceEditor .workspaceEditorRemoteMedia{width:auto;max-width:100%;height:auto;max-height:260px;border-radius:14px;object-fit:contain}
+.workspaceEditor .richMedia video.workspaceEditorRemoteMedia,.workspaceEditor .richMedia video{display:block;width:100%;max-height:280px;background:var(--soft,#f3f3f5);border-radius:14px}
+.workspaceEditor .richMedia audio.workspaceEditorRemoteMedia{display:block;width:100%;height:44px;margin:5px 0}
+.workspaceEditor .richMediaIcon{background:transparent}
+.workspaceEditor .workspaceEditorFileLink{padding-left:0}
