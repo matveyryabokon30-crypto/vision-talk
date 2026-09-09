@@ -224,7 +224,7 @@ async def one(name, engine):
     async def open_canvas():
         await page.locator('#canvasTab').click()
         await pane.locator('.pablicusChatCanvas[data-state="ready"]').wait_for()
-        editing = await pane.get_attribute('data-editing') == 'true'
+        editing = await pane.locator('.pablicusChatCanvas').get_attribute('data-editing') == 'true'
         # While a project/task editor is open its own composer owns the viewport;
         # the global chat composer is intentionally hidden to prevent accidental sends.
         assert await page.locator('#composer').is_visible() is not editing
