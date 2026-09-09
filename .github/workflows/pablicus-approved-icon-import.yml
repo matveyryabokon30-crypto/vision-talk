@@ -6,32 +6,112 @@ on:
 permissions:
   contents: write
 jobs:
-  import-approved-image:
+  prepare-icon-only-patch:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.sha }}
+          path: tools-input
+      - uses: actions/checkout@v4
+        with:
           ref: 6268053b91b3c9676469e00758b90216c7406b34
-      - name: Preserve exact approved image, with content-address verification
+          path: source
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Pin the production image exporter and preserve baseline compiled bytes
+        run: |
+          python -m pip install pillow==11.3.0
+          python source/apps/pablicus/build.py
+          python source/apps/pablicus/finalize.py
+          cp -R source/apps/pablicus/dist "$RUNNER_TEMP/baseline-dist"
+      - name: Assemble verified runtime artwork from Git blobs
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           python - <<'PY'
-          import hashlib, pathlib, urllib.request
-          url = 'https://sdmntprbrazilsouth.oaiusercontent.com/files/00000000-8c38-820e-8fd5-83c39b86ed08/raw?se=2026-09-09T14%3A46%3A18Z&sp=r&sv=2026-02-06&sr=b&scid=be0d404d-9c49-5329-b3d4-d7af6a6fd8e3&skoid=061609b8-1cdb-4a5b-9e68-c7ab9a523a8f&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-09T02%3A04%3A57Z&ske=2026-09-10T02%3A04%3A57Z&sks=b&skv=2026-02-06&sig=b69NVtS/eraOU%2BBRGzboEWDZHAqSk1nHDSpvmJJDS6E%3D'
-          with urllib.request.urlopen(url, timeout=40) as response:
-              data = response.read(1000000)
-          assert len(data) == 834240, 'Unexpected approved source size'
-          assert hashlib.sha256(data).hexdigest() == 'e410d1c9077a66a33f68b4bb5efbd5d11dea041819607b4991e7057788c81207', 'Approved image checksum mismatch'
-          target = pathlib.Path('apps/pablicus/branding/public-glass-approved-20260909.png')
-          target.parent.mkdir(parents=True, exist_ok=True)
-          target.write_bytes(data)
-          print('Approved original PNG verified: 834240 bytes, SHA-256 match')
+          import base64, hashlib, json, os, pathlib, urllib.request
+          parts = ['f67b83eec09a079e80aa858762a63dacbf1aa1ed',
+                   'b1887298a20f135ff81d16d655e620fb89cab2e5',
+                   '5aaa0dc7bc03186225e3665017f6a420deaa4aed',
+                   'bdb9ac1a1498657fe51279a5d8611633ff024a4c']
+          data = bytearray()
+          for sha in parts:
+              req = urllib.request.Request('https://api.github.com/repos/'+os.environ['GITHUB_REPOSITORY']+'/git/blobs/'+sha,
+                    headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'], 'Accept':'application/vnd.github+json'})
+              with urllib.request.urlopen(req, timeout=30) as response:
+                  blob = json.load(response)
+              assert blob['encoding'] == 'base64'
+              part = base64.b64decode(blob['content'])
+              assert hashlib.sha1(b'blob '+str(len(part)).encode()+b'\0'+part).hexdigest() == sha
+              data.extend(part)
+          assert len(data) == 28986
+          assert hashlib.sha256(data).hexdigest() == '3d1138fc4d4dff99cbdb31674f9a4ba9e54f562474ec947db284b1b660d10419'
+          (pathlib.Path(os.environ['RUNNER_TEMP'])/'glass-icon-master.webp').write_bytes(data)
+          print('Runtime image verified: all Git blob hashes, total size and SHA-256 match')
           PY
-      - name: Commit only original image, without importer workflow or publication
+      - name: Prepare only approved icon exports and PWA integration
         run: |
-          git config user.name 'Pablicus asset import'
+          python tools-input/tools/prepare_public_glass_icon.py --source source --master "$RUNNER_TEMP/glass-icon-master.webp"
+          python source/apps/pablicus/build.py
+          python source/apps/pablicus/finalize.py
+          for f in source/apps/pablicus/dist/*.js; do node --check "$f"; done
+      - name: Prove all non-icon application bytes unchanged
+        run: |
+          mkdir -p evidence
+          python - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          before = Path(os.environ['RUNNER_TEMP'])/'baseline-dist'
+          after = Path('source/apps/pablicus/dist')
+          old = {str(p.relative_to(before)):hashlib.sha256(p.read_bytes()).hexdigest() for p in before.rglob('*') if p.is_file()}
+          new = {str(p.relative_to(after)):hashlib.sha256(p.read_bytes()).hexdigest() for p in after.rglob('*') if p.is_file()}
+          allowed = {'assets/PROVENANCE.json','index.html','access.html','manifest.webmanifest','sw.js','version.json','ASSET_MANIFEST.json'}
+          allowed.update('assets/icon-'+str(s)+'.png' for s in [32,180,192,512])
+          allowed.update('assets/icon-glass-20260909-'+str(s)+'.png' for s in [32,180,192,512])
+          changed = sorted(n for n in set(old)|set(new) if old.get(n)!=new.get(n))
+          assert set(changed)<=allowed, changed
+          assert not (set(old)-set(new)), 'Baseline assets must not be removed'
+          unchanged = sorted(n for n in old if old[n]==new.get(n))
+          assert 'app.js' in unchanged and 'auth-config.js' in unchanged
+          Path('evidence/icon-only-byte-diff.json').write_text(json.dumps({'status':'PASS','changed':changed,'unchanged':unchanged,'unchanged_count':len(unchanged),'removed':[]},indent=2))
+          print('Unchanged application files:',len(unchanged));print('Changed icon and shell metadata only:',changed)
+          PY
+      - name: Commit an explicit 17-file patch on an isolated branch only
+        working-directory: source
+        run: |
+          python - <<'PY'
+          import subprocess
+          paths = ['apps/pablicus/'+p for p in ['assets/PROVENANCE.json','branding/glass-icon-master.webp','branding/export_glass_icons.py','tests/glass_icon_integrity.py','build.py','finalize.py','src/access.html','src/manifest.webmanifest','src/sw.js']]
+          paths += ['apps/pablicus/assets/icon-'+str(s)+'.png' for s in [32,180,192,512]]
+          paths += ['apps/pablicus/assets/icon-glass-20260909-'+str(s)+'.png' for s in [32,180,192,512]]
+          assert len(paths)==17
+          subprocess.run(['git','add','--',*paths],check=True)
+          staged = subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          assert set(staged)==set(paths), staged
+          assert not subprocess.check_output(['git','diff','--name-only'],text=True).strip(), 'Unexpected tracked edits'
+          PY
+          git config user.name 'Pablicus icon update'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- apps/pablicus/branding/public-glass-approved-20260909.png
-          test "$(git diff --cached --name-only | wc -l)" -eq 1
-          git commit -m 'Preserve exact owner-approved glass chat icon source'
+          git diff --cached --stat
+          git commit -m 'Replace app icon with owner-approved glass artwork and versioned PWA assets'
+          python apps/pablicus/build.py
+          python apps/pablicus/finalize.py
+          git archive HEAD > ../evidence/source.tar
+          git rev-parse HEAD > ../evidence/source-commit.txt
+          git diff --name-status 6268053b91b3c9676469e00758b90216c7406b34 HEAD > ../evidence/source-files.txt
           git push origin HEAD:refs/heads/pablicus-glass-icon-20260909
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pablicus-glass-icon-prepared
+          path: |
+            evidence/
+            source/apps/pablicus/evidence/glass-icon-integrity.json
+            source/apps/pablicus/dist/
+          retention-days: 14
