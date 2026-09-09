@@ -120,7 +120,7 @@
  async function showConversationView(){++canvasSwitch;chatCanvas.close();canvasVisible=false;paintConversationView();requestAnimationFrame(()=>PablicusChat.list?.refreshFont());}
  async function showCanvasView(sourceMessage,options={}){
   if(!user||!current||opening)return;const context=canvasContext(),ticket=++canvasSwitch;
-  if(canvasVisible&&!sourceMessage&&!options.taskId)return;
+  if(canvasVisible&&!sourceMessage&&!options.taskId&&chatCanvas.element?.dataset.state==='ready')return;
   PablicusChat.collapseEditor();
   await PablicusChat.persistDraft();if(ticket!==canvasSwitch||!canvasCurrent(context))return;
   mediaViewer.close();chatLibrary.reset();messageTools.dismiss();canvasVisible=true;paintConversationView();await chatCanvas.open(sourceMessage?{sourceMessage,...options}:options);
