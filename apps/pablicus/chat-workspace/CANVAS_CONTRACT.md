@@ -50,7 +50,7 @@ The update RPC is a full replacement of the task's editable fields; explicit nul
 
 Plan text is at most 20,000 characters / 80,000 bytes. Empty text clears the plan. Task title is required, trimmed on storage, 1–500 characters / at most 2,000 input bytes. A due date is an optional finite calendar date from 1900-01-01 through 9999-12-31; no timezone conversion is needed. Source block IDs use the existing `[A-Za-z0-9_-]{1,128}` rich-message contract.
 
-The returned snapshot includes all nondeleted tasks, up to **200 per conversation**, including completed tasks. A 201st task is rejected, never silently omitted. Delete a task to free a slot. The UI must explain the limit if reached. No global task list or paging API is introduced in this release.
+The returned snapshot includes all nondeleted tasks, up to **200 per conversation**, including completed tasks. A 201st task is rejected, never silently omitted. Delete a task to free a slot. The UI must explain the limit if reached. The follow-on [aggregate task list](TASKS_CONTRACT.md) adds a separate paginated read API across the caller's current conversations; this canvas snapshot and its mutation contracts remain unchanged.
 
 ## Concurrency and safe retries
 
