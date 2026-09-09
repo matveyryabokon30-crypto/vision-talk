@@ -17,14 +17,18 @@
 .pablicusChatCanvas .pccContent{display:flex;flex-direction:column;gap:22px;min-width:0}
 .pablicusChatCanvas .pccLabel{display:block;margin:0;font-size:16px;font-weight:500;line-height:1.4}
 .pablicusChatCanvas .pccPlan{padding:6px 0 0;min-width:0}
-.pablicusChatCanvas .pccProjectCard{position:relative;display:flex;flex-direction:column;gap:6px;width:100%;min-width:0;max-height:164px;margin:0;padding:16px 42px 16px 17px;border:0;border-radius:22px;background:var(--surface,#fff);box-shadow:0 3px 20px rgba(30,35,40,.035);text-align:left;overflow:hidden}
+.pablicusChatCanvas .pccProject{position:relative;width:100%;min-width:0;margin:0;border-radius:22px;background:var(--surface,#fff);box-shadow:0 3px 20px rgba(30,35,40,.035)}
+.pablicusChatCanvas .pccProjectCard{position:relative;display:flex;flex-direction:column;gap:6px;width:100%;min-width:0;max-height:164px;margin:0;padding:16px 42px 16px 17px;border:0;border-radius:22px;background:transparent;text-align:left;overflow:hidden}
+.pablicusChatCanvas .pccProjectCard[aria-expanded=true]{position:absolute;top:4px;right:4px;z-index:1;display:grid;place-items:center;width:44px;min-width:44px;height:44px;min-height:44px;margin:0;padding:0;border-radius:50%}
 .pablicusChatCanvas .pccProjectTitle{display:block;width:100%;font-size:16px;font-weight:500;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pablicusChatCanvas .pccProjectExcerpt{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-height:44px;font-size:14px;line-height:1.55;overflow-wrap:anywhere;color:var(--muted,#767a7d)}
 .pablicusChatCanvas .pccProjectCard>svg{position:absolute;right:13px;top:17px;width:18px;height:18px;color:var(--muted,#767a7d);transition:transform .15s}
-.pablicusChatCanvas .pccProjectCard[aria-expanded=true]>svg{transform:rotate(90deg)}
+.pablicusChatCanvas .pccProjectCard[aria-expanded=true]>svg{position:static;transform:rotate(-90deg)}
 .pablicusChatCanvas .pccAttachmentSummary{display:block;font-size:12px;line-height:1.5;color:var(--muted,#767a7d);overflow-wrap:anywhere}
-.pablicusChatCanvas .pccProjectView{padding:13px 14px 2px;margin-top:5px;border-radius:20px;background:var(--surface,#fff);min-width:0}
-.pablicusChatCanvas .pccProjectViewContent{max-height:min(45dvh,380px);overflow:auto;overscroll-behavior:contain;font-size:16px;line-height:1.6;overflow-wrap:anywhere;white-space:pre-wrap}
+.pablicusChatCanvas .pccProjectView{padding:48px 17px 8px;margin:0;border-radius:0;background:transparent;min-width:0}
+/* The project grows in the canvas flow. Only the canvas itself scrolls. */
+.pablicusChatCanvas .pccProjectViewContent{max-height:none;overflow:visible;font-size:16px;line-height:1.6;overflow-wrap:anywhere;white-space:pre-wrap}
+.pablicusChatCanvas .pccProjectViewContent>.richMessage{width:100%;max-width:100%}
 .pablicusChatCanvas .pccProjectViewContent img,.pablicusChatCanvas .pccProjectViewContent video{display:block;max-width:100%;max-height:280px;border-radius:15px;object-fit:contain}
 .pablicusChatCanvas .pccProjectViewContent audio{max-width:100%}
 .pablicusChatCanvas .pccPlanNew{background:transparent;padding-left:5px}

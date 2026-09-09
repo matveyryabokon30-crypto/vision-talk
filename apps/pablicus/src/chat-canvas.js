@@ -63,13 +63,18 @@
     retry.hidden = true;
     const content = el('div', 'pccContent');
     const planSection = el('section', 'pccPlan');
+    // One persistent surface owns the summary and the full project. The native
+    // button toggles disclosure; media/edit controls are siblings, never nested.
+    const planSurface = el('article', 'pccProject');
     const planCard = button('pccProjectCard', 'Открыть проект');
+    planCard.setAttribute('aria-controls', uid + '-project-content');
     planCard.setAttribute('aria-expanded', 'false');
     const planTitle = el('span', 'pccProjectTitle');
     const planExcerpt = el('span', 'pccProjectExcerpt');
     const planAttachments = el('span', 'pccAttachmentSummary');
     planCard.replaceChildren(planTitle, planExcerpt, planAttachments, icon('next'));
     const planView = el('div', 'pccProjectView');
+    planView.id = uid + '-project-content';
     planView.hidden = true;
     const planViewContent = el('div', 'pccProjectViewContent');
     const planEdit = button('pccTextButton pccPlanEdit', 'Изменить проект');
@@ -95,7 +100,8 @@
     const planReplace = button('pccButton pccPlanReplace', 'Сохранить мою версию');
     planConflictActions.append(planUseServer, planReplace);
     planConflict.append(planServerLabel, planServerBody, planConflictActions);
-    planSection.append(planCard, planNew, planView, planEditorHost, planFoot, planConflict);
+    planSurface.append(planCard, planView);
+    planSection.append(planSurface, planNew, planEditorHost, planFoot, planConflict);
     const tasksSection = el('section', 'pccTasks');
     const tasksHead = el('div', 'pccTasksHead');
     const tasksHeading = el('h3', 'pccLabel', 'Дела');
@@ -173,7 +179,8 @@
     function renderProject() {
       const value = richContent(snapshot?.canvas.content, snapshot?.canvas.body);
       const exists = hasContent(value);
-      planCard.hidden = !exists || planEditing;
+      planSurface.hidden = !exists || planEditing;
+      planSurface.dataset.expanded = String(planExpanded && !planEditing);
       planNew.hidden = exists || planEditing;
       planEditorHost.hidden = !planEditing;
       planView.hidden = !exists || planEditing || !planExpanded;
@@ -181,10 +188,13 @@
       const text = contentText(value), lines = text.split(/\n+/).filter(Boolean);
       planTitle.textContent = (lines[0] || 'Проект с вложениями').slice(0, 90);
       planExcerpt.textContent = lines.length > 1 ? lines.slice(1).join(' ') : text.length > 90 ? text.slice(90) : '';
-      planExcerpt.hidden = !planExcerpt.textContent;
+      planTitle.hidden = planExpanded;
+      planExcerpt.hidden = planExpanded || !planExcerpt.textContent;
       planAttachments.textContent = attachmentSummary(value);
-      planAttachments.hidden = !planAttachments.textContent;
-      planCard.title = 'Открыть проект';
+      planAttachments.hidden = planExpanded || !planAttachments.textContent;
+      const disclosureLabel = planExpanded ? 'Свернуть проект' : 'Открыть проект';
+      planCard.title = disclosureLabel;
+      planCard.setAttribute('aria-label', disclosureLabel);
       const signature = planView.hidden ? '' : JSON.stringify(value);
       if (signature === planRenderedContent) return;
       if (planViewCleanup) { planViewCleanup(); planViewCleanup = null; }

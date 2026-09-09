@@ -671,6 +671,74 @@ async def one(name, engine):
         assert 'Фото 1' in project_summary and 'Файлы 1' in project_summary
         await project_card.scroll_into_view_if_needed()
         await page.screenshot(path=str(EVIDENCE / f'chat-canvas-{name}-saved-project.png'))
+        # Owner acceptance: the card itself unfolds; no duplicate preview or
+        # separately scrolling detail surface may remain underneath it.
+        await page.evaluate('window.__projectSurface=document.querySelector(".pccProject")')
+        for width in (390, 320, 768):
+            await page.set_viewport_size({'width': width, 'height': 844})
+            await page.wait_for_timeout(200)
+            await project_card.scroll_into_view_if_needed()
+            before = await pane.locator('.pccProject').evaluate('node=>({height:node.offsetHeight,top:node.offsetTop})')
+            assert before['height'] <= 165
+            if width == 320:
+                await project_card.focus()
+                await project_card.press('Enter')
+            else:
+                await project_card.click()
+            await pane.locator('.pccProjectViewContent a[href="https://example.com/brief"]').wait_for()
+            assert await project_card.get_attribute('aria-expanded') == 'true'
+            assert await project_card.get_attribute('aria-label') == 'Свернуть проект'
+            assert await project_card.inner_text() == ''
+            for selector in ('.pccProjectTitle', '.pccProjectExcerpt', '.pccAttachmentSummary'):
+                assert await project_card.locator(selector).is_hidden()
+            surface = pane.locator('.pccProject')
+            assert await surface.count() == 1
+            assert await surface.locator('.pccProjectView').count() == 1
+            assert await pane.locator('.pccPlan > .pccProjectView').count() == 0
+            assert (await surface.inner_text()).count('Съёмка сериала') == 1
+            texts = await surface.locator('.pccProjectViewContent .richText').all_text_contents()
+            assert texts == [block['text'] for block in project_content['blocks'] if block['type'] == 'text']
+            assert await surface.locator('.pccProjectViewContent .richMedia').count() == 4
+            assert await surface.evaluate('node=>node===window.__projectSurface')
+            assert await project_card.evaluate('node=>document.getElementById(node.getAttribute("aria-controls"))===node.nextElementSibling')
+            layout = await surface.evaluate('''node=>{
+                const view=node.querySelector('.pccProjectView'), body=node.querySelector('.pccProjectViewContent');
+                const r=node.getBoundingClientRect(), style=getComputedStyle(body);
+                const edit=node.querySelector('.pccPlanEdit').getBoundingClientRect();
+                return {height:node.offsetHeight,top:node.offsetTop,left:r.left,right:r.right,viewport:innerWidth,
+                    maxHeight:style.maxHeight,overflowY:style.overflowY,bodyClient:body.clientHeight,bodyScroll:body.scrollHeight,
+                    viewBackground:getComputedStyle(view).backgroundColor,editBottom:edit.bottom,cardBottom:r.bottom,
+                    pageOverflow:document.documentElement.scrollWidth>innerWidth};
+            }''')
+            assert layout['top'] == before['top'], layout
+            assert layout['height'] > 500 and layout['maxHeight'] == 'none', layout
+            assert layout['overflowY'] == 'visible' and layout['bodyScroll'] <= layout['bodyClient'] + 1, layout
+            assert layout['viewBackground'] == 'rgba(0, 0, 0, 0)', layout
+            assert layout['editBottom'] <= layout['cardBottom'] + 1, layout
+            assert layout['left'] >= 0 and layout['right'] <= width + 1 and not layout['pageOverflow'], layout
+            await page.screenshot(path=str(EVIDENCE / f'chat-canvas-{name}-expanded-project-{width}.png'))
+            await pane.locator('.pccPlanEdit').scroll_into_view_if_needed()
+            assert await pane.evaluate('node=>node.scrollTop') > 0
+            assert await pane.locator('.pccProjectViewContent').evaluate('node=>node.scrollTop') == 0
+            # A same-revision refresh must not recreate or collapse the project.
+            await page.evaluate('window.__projectRich=document.querySelector(".pccProjectViewContent").firstElementChild')
+            await pane.locator('.pccRefresh').click()
+            await pane.locator('.pablicusChatCanvas[data-state="ready"]').wait_for()
+            assert await page.evaluate('__projectRich===document.querySelector(".pccProjectViewContent").firstElementChild')
+            await project_card.scroll_into_view_if_needed()
+            if width == 320:
+                await project_card.focus()
+                await project_card.press('Space')
+            else:
+                await project_card.click()
+            assert await project_card.get_attribute('aria-expanded') == 'false'
+            assert await surface.locator('.pccProjectView').is_hidden()
+            assert not await surface.locator('.pccProjectViewContent > *').count()
+            assert await surface.evaluate('node=>node.offsetHeight') <= 165
+            assert await page.evaluate('id=>__mock.canvasState[id].canvas.content', MAIN_CHAT) == project_content
+        await page.set_viewport_size({'width': 390, 'height': 844})
+        await page.wait_for_timeout(200)
+        checks.append('one persistent project card unfolds in place at 320/390/768px; summary is hidden, exact full text appears once, all four attachments remain, body has no height cap or inner scroll, canvas scroll reaches Edit, keyboard disclosure and refresh retain state, collapse disposes rendered media without changing saved data')
         await project_card.click()
         await pane.locator('.pccProjectViewContent a[href="https://example.com/brief"]').wait_for()
         await pane.locator('.pccPlanEdit').click()
