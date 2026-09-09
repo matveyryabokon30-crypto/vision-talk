@@ -2,7 +2,7 @@
   "access.css": "7cc0899c2b7483bf917a60f611db6aa7512242956d65927ac49943ac36b04462",
   "access.html": "1f7dd7271adaafe07f09c12c9fb52cca8a07d3f992cd0ddd550c1a677f4e147a",
   "access.js": "8e051821f89ef3068da75e445144224a9fb302c0fae90b70c975836fa713f56f",
-  "app.js": "79244e2fa4768f5568304a2befca16c4a93a0e9ebca88231b6672a51c98e7a80",
+  "app.js": "37ae165a68f0f43336c3c11d85407f55a66e0baaa4ae7057764cd866a097e32f",
   "assets/PROVENANCE.json": "73cb34f5e00b02d433246005ed9621572f434f29ae7d3f692dfccee5b18d8ffc",
   "assets/icon-180.png": "0937043ce490199f7a7034522f1a626b651fd8e4b461dedd13eda1cfa1e3d0dc",
   "assets/icon-192.png": "0ec7ed23024be6d30a11b9fee61749e04cdaeb1cedda8896cfdde67b0f69ecce",
@@ -22,7 +22,7 @@
   "chat.js": "a1cccf83bb1c49d8c033f2f7dd334f24794611470e5ff8016be10b7a67a8f7f4",
   "inbox-monitor.css": "489e0532490d7b7f0bd09b3ac372945e6de5af70d258fe0cbe613f701926d581",
   "inbox-monitor.js": "0bbeaa2082965d8197c7cc7a3e6304a80a622d83e8b5e57d5bbc79cbb833c6b3",
-  "index.html": "a2de4bcd941719d33c5089858e43fbb40888d0535b5a7e6b7e5721e288ba5dc3",
+  "index.html": "ba036978cbad9682ab563ea834a52888f69306224e1f050228ea33a395d981e1",
   "manifest.webmanifest": "b4fdcd01e76cb51c9133be2f7a31562b90fef92b606779f4b15fa21e7953d7f4",
   "media-viewer.css": "2db998a4a4f716b87abab990d75e58ddc740b9ed34d534dda378375ba8a6782e",
   "media-viewer.js": "97efdc9ac864ae67af82fa723f8ccde724c7f318414c089a8e0cf58adedbf388",
@@ -47,10 +47,12 @@
   "rich-message.js": "60118dd9dd212da05aee0cd0099260b416b1762845a85d1cd19dfc2dcabb7bcf",
   "rich-store.js": "7f5a284a15d064c519afda0d7520a3e27f04c8ba8a06090ea827618be2296da4",
   "style.css": "7b6e0d71818e1f29de4a809bfee4de0870ead07d7bb9760d949a7340c9bf366c",
-  "sw.js": "76bb90a6392aac7567677e37f4708850a824c0ffad8485af1af258c19753a290",
+  "sw.js": "9c460a3d0067e17d5c3056c667d0a9d7f86ff181d1a4ff79bdab2fa82c9289a7",
+  "tasks-home.css": "a4bd13fe05939db8ac6895975fcd7fbe6edf6c651680c84d09914e5dfda76b81",
+  "tasks-home.js": "7cd4767d49ec94927a51e9178b1746e8c0e9f711ea66b6feab2ee3c5cd67187a",
   "transport-store.js": "b6bea9398fe01a30b30771ce7d9c160bbb59856cc9f5f733e2e43f9369e938a6",
   "vault.js": "6d8483b72342f259b1ae468f06eac91303bad70eee6fc83287edeaf40cf6eb73",
   "vendor/LICENSE.supabase": "334dd6820e2eaeab2064e7c59001b810566728a28a41a7c1dbf69bbee17d0936",
   "vendor/supabase.js": "24e8c00dc25da420ee741068b60bcdb5f62cb3598d8834058acf37ec6ee1a724",
-  "version.json": "f8fefccea7e4557c3a7c665a44f195469d83c83ad660dc1c1f40f8cd4d330973"
+  "version.json": "4fd888abd069d8568968ac349205ae9e3a905f75cc55f4074025c74b4000f42e"
 }

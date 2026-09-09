@@ -83,6 +83,35 @@
  }
  $('conversationTab').onclick=()=>showConversationView().catch(problem);$('canvasTab').onclick=()=>showCanvasView().catch(problem);
  $('chatViewTabs').onkeydown=event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();const target=event.key==='Home'?'conversationTab':event.key==='End'?'canvasTab':event.target.id==='conversationTab'?'canvasTab':'conversationTab';$(target).focus();$(target).click();};
+ let tasksEpoch=0;
+ const tasksContext=()=>({userId:user?.id,epoch:tasksEpoch,active:!!user&&!current&&page==='tasks'});
+ const tasksCurrent=context=>!!context?.userId&&user?.id===context.userId&&tasksEpoch===context.epoch&&!current&&page==='tasks';
+ async function tasksRequest(name,params,context,signal){
+  if(!tasksCurrent(context))throw new DOMException('Раздел изменился','AbortError');
+  let request=sb.rpc(name,params);if(signal&&request.abortSignal)request=request.abortSignal(signal);
+  const result=await request;if(!tasksCurrent(context)||signal?.aborted)throw new DOMException('Запрос отменён','AbortError');if(result.error)throw result.error;return result.data;
+ }
+ const tasksHome=PablicusTasksHome.create({getContext:tasksContext,
+  load:async({context,view,query,today,cursor,signal})=>{
+   const data=await tasksRequest('pablicus_list_tasks',{p_view:view,p_query:query,p_today:today,p_cursor:cursor,p_limit:40},context,signal);
+   if(!data||!Array.isArray(data.tasks)||data.tasks.some(t=>!validUuid(t.id)||!validUuid(t.conversation_id)))throw Error('Не удалось прочитать задачи. Повторите попытку.');
+   return data;
+  },
+  onToggle:async({context,task,completed,signal})=>{
+   const data=await tasksRequest('pablicus_update_canvas_task',{p_conversation_id:task.conversation_id,p_task_id:task.id,p_expected_revision:task.revision,p_title:task.title,p_assignee_id:task.assignee_id,p_due_date:task.due_date,p_completed:completed},context,signal);
+   if(!data||data.conversation_id!==task.conversation_id||!Array.isArray(data.tasks))throw Error('Не удалось проверить изменение. Обновите список.');
+   return data;
+  },
+  onOpen:async({context,task})=>{
+   if(!tasksCurrent(context)||opening)return;
+   const uid=user.id;await openConversation(dialogs.find(d=>d.id===task.conversation_id)||{id:task.conversation_id,title:task.conversation_title||'Разговор'});
+   if(user?.id!==uid||current?.id!==task.conversation_id)return;await showCanvasView();
+   if(user?.id!==uid||current?.id!==task.conversation_id||!canvasVisible)return;
+   const target=$('chatCanvasPanel').querySelector('[data-task-id="'+CSS.escape(task.id)+'"]');
+   if(target){target.scrollIntoView({block:'center'});target.querySelector('.pccTaskEdit')?.focus({preventScroll:true});}
+  }
+ });
+ function resetTasksHome(){++tasksEpoch;tasksHome.reset();}
  let pendingPerson=new window.URL(location.href).searchParams.get('person')||'';
  try{if(pendingPerson)sessionStorage.setItem('pablicus:pending-person',pendingPerson);else pendingPerson=sessionStorage.getItem('pablicus:pending-person')||'';}catch{}
  function showPersonLink(){if(!user||!pendingPerson)return;const query=pendingPerson;pendingPerson='';try{sessionStorage.removeItem('pablicus:pending-person')}catch{}people.open(query);}
@@ -135,7 +164,7 @@
  $('dialogClose').onclick=()=>$('productDialog').close();$('installLogin').onclick=install;
  function theme(value){safeSet('pablicus:theme',value);document.documentElement.dataset.theme=value;const dark=value==='dark'||value==='system'&&matchMedia('(prefers-color-scheme:dark)').matches;document.querySelector('meta[name="theme-color"]').content=dark?'#141516':'#fafafa';window.PablicusChat?.list?.refreshFont()}
  theme(safeGet('pablicus:theme')||'system');matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>theme(safeGet('pablicus:theme')||'system'));
- function clearSessionView(){resetConversationView();const pushCleanup=pushNotifications.clear();mediaViewer.close();chatLibrary.reset();people.close();messageTools.clear();stopInbox();PablicusRichMessage.stopAll?.();replyCache.clear();sessionCleanup=sessionCleanup.then(()=>Promise.all([pushCleanup,window.PablicusChat?.leave()])).catch(e=>toast('Не удалось сохранить черновик на устройстве. '+e.message));$('newChat').hidden=true;if(passkeys?.snapshot().busy&&passkeys.snapshot().operation!=='signIn')passkeys.cancel();$('productDialog').close();$('dialogContent').replaceChildren();user=null;profile=null;dialogs=[];rows=[];current=null;epoch++;signed.clear();if(channel)sb.removeChannel(channel);channel=null;$('app').hidden=true;$('home').hidden=false;$('workspace').hidden=true;$('mainNav').hidden=true;$('loginPane').hidden=false;}
+ function clearSessionView(){resetTasksHome();resetConversationView();const pushCleanup=pushNotifications.clear();mediaViewer.close();chatLibrary.reset();people.close();messageTools.clear();stopInbox();PablicusRichMessage.stopAll?.();replyCache.clear();sessionCleanup=sessionCleanup.then(()=>Promise.all([pushCleanup,window.PablicusChat?.leave()])).catch(e=>toast('Не удалось сохранить черновик на устройстве. '+e.message));$('newChat').hidden=true;if(passkeys?.snapshot().busy&&passkeys.snapshot().operation!=='signIn')passkeys.cancel();$('productDialog').close();$('dialogContent').replaceChildren();user=null;profile=null;dialogs=[];rows=[];current=null;epoch++;signed.clear();if(channel)sb.removeChannel(channel);channel=null;$('app').hidden=true;$('home').hidden=false;$('workspace').hidden=true;$('mainNav').hidden=true;$('loginPane').hidden=false;}
  async function authenticate(session,{signal,verifiedPasskey=false}={}){
   if(signal?.aborted)return;
   const attempt=++authVersion;
@@ -263,7 +292,7 @@
   refresh.onclick=measure;measure();
  }
  function renderHome(){
-  if(!user||current)return;const c=$('screenContent');c.replaceChildren();$('sectionTitle').textContent={chats:'Чаты',feed:'Лента',tasks:'Дела',profile:'Профиль'}[page];$('sectionTitle').hidden=page==='chats';$('searchChats').hidden=page!=='chats';$('chatFilters').hidden=page!=='chats';$('newChat').hidden=page!=='chats';
+  if(!user||current)return;resetTasksHome();const c=$('screenContent');c.replaceChildren();$('sectionTitle').textContent={chats:'Чаты',feed:'Лента',tasks:'Дела',profile:'Профиль'}[page];$('sectionTitle').hidden=page==='chats';$('searchChats').hidden=page!=='chats';$('chatFilters').hidden=page!=='chats';$('newChat').hidden=page!=='chats';
   document.querySelectorAll('#mainNav button').forEach(b=>b.classList.toggle('selected',b.dataset.page===page));
   if(page==='chats'){
    const find=el('button','findPeople','Найти человека');find.type='button';find.prepend(PablicusMessageMenu.icon('users'));find.onclick=()=>people.open($('searchChats').value);c.append(find);
@@ -278,15 +307,13 @@
    const installB=el('button','setting','Добавить на главный экран');installB.onclick=install;const logout=el('button','setting danger','Выйти');logout.onclick=async()=>{if(!canvasNavigationAllowed())return;try{await PablicusChat.flush();if(worker){toast('Дождитесь завершения текущей отправки');return}await pushNotifications.signOut();await sb.auth.signOut();await authenticate(null)}catch(e){problem(e)}};
    const info=el('p','muted','Pablicus '+VERSION+' · Кандидат выпуска. Черновики и исходящие сохраняются отдельно для каждого аккаунта и разговора.');p.append(installB,logout,info);c.append(p);mountStorageUsage(p);pushNotifications.mount(p);passkeySettings(p);
   }else if(page==='tasks'){
-   c.append(el('p','muted','Планы и задачи в ваших разговорах. Откройте полотно, чтобы увидеть список.'));
-   if(!dialogs.length)c.append(el('p','empty','Начните разговор — в нём появится общее полотно.'));
-   for(const d of dialogs){const button=el('button','canvasShortcut');button.type='button';button.dataset.conversationId=d.id;button.append(PablicusMessageMenu.icon('tasks'),el('span','',d.title||'Разговор'));button.setAttribute('aria-label','Открыть полотно: '+(d.title||'Разговор'));button.onclick=async()=>{const uid=user?.id;button.disabled=true;try{await openConversation(d);if(user?.id===uid&&current?.id===d.id)await showCanvasView();}catch(e){problem(e)}finally{button.disabled=false}};c.append(button);}
+   tasksHome.mount(c);
   }else{c.append(el('p','empty','Публикации, подписки и сторис появятся в следующем обновлении. Раздел пока не включён.'))}
  }
  document.querySelectorAll('#mainNav button').forEach(b=>b.onclick=()=>{page=b.dataset.page;renderHome()});document.querySelectorAll('#chatFilters button').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll('#chatFilters button').forEach(x=>x.classList.toggle('selected',x===b));renderHome()});$('searchChats').oninput=renderHome;
  $('newChat').onclick=()=>people.open($('searchChats').value);
  function mapped(m){return{id:m.id,number:m.server_seq,mine:m.sender_id===user?.id,text:PablicusChatActions.effective(m).body||'',revision:messageTools.revision(m),remote:m}}
- async function openConversation(d){if(opening||!user||!canvasNavigationAllowed())return;resetConversationView();mediaViewer.close();chatLibrary.reset();messageTools.clear();PablicusRichMessage.stopAll?.();opening=true;const uid=user.id,ep=++epoch;current=d;inboxContext();rows=[];peersRead=0;if(channel){await sb.removeChannel(channel);channel=null}$('home').hidden=true;$('app').style.visibility='hidden';$('app').inert=true;$('app').hidden=false;$('chatTitle').textContent=d.title||'Разговор';connection();try{
+ async function openConversation(d){if(opening||!user||!canvasNavigationAllowed())return;resetTasksHome();resetConversationView();mediaViewer.close();chatLibrary.reset();messageTools.clear();PablicusRichMessage.stopAll?.();opening=true;const uid=user.id,ep=++epoch;current=d;inboxContext();rows=[];peersRead=0;if(channel){await sb.removeChannel(channel);channel=null}$('home').hidden=true;$('app').style.visibility='hidden';$('app').inert=true;$('app').hidden=false;$('chatTitle').textContent=d.title||'Разговор';connection();try{
    let remote=[];const r=navigator.onLine?await sb.from('messages').select('*').eq('conversation_id',d.id).order('server_seq',{ascending:false}).limit(150):{data:[],error:null};if(r.error){if(navigator.onLine)toast('История пока недоступна. Черновик и очередь доступны локально.')}else remote=(r.data||[]).reverse();if(ep!==epoch)return;rows=remote;inboxSeq.set(d.id,Math.max(inboxSeq.get(d.id)||0,+rows.at(-1)?.server_seq||0));await PablicusChat.open(uid,d.id,rows.map(mapped));if(ep!==epoch||user?.id!==uid)return;$('app').style.visibility='';$('app').inert=false;
    messageTools.sync();channel=sb.channel('pablicus-chat-'+d.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'conversation_id=eq.'+d.id},()=>syncMessages()).subscribe(state=>{if(state==='SUBSCRIBED')syncMessages()});pump();
   }catch(e){problem(e);current=null;$('app').hidden=true;$('home').hidden=false;renderHome()}finally{opening=false;inboxContext()}}
