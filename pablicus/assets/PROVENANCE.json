@@ -1,55 +1,97 @@
 {
-  "original_icon_sha256": "82d462b1c7f95b255501c1b0393c253bfe3af1dc88b404a5ade367e52a1f8713",
-  "original_wordmark_sha256": "908faa4f67adb8b811f3c0bcbd2ea58e2b7b142ab3c4b1cfac48d2a1e54eafc9",
-  "process": "Raster-only resizing, preserved aspect ratio. WebP intermediates; no vector tracing or new symbol.",
+  "decision": "Owner-selected glass speech-bubble icon, 2026-09-09",
+  "icon_revision": "glass-20260909",
+  "original_icon_sha256": "e410d1c9077a66a33f68b4bb5efbd5d11dea041819607b4991e7057788c81207",
+  "original_dimensions": [
+    1254,
+    1254
+  ],
+  "presentation_margin_crop_xyxy": [
+    181,
+    166,
+    1073,
+    1058
+  ],
+  "runtime_master": {
+    "path": "../branding/glass-icon-master.webp",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "3d1138fc4d4dff99cbdb31674f9a4ba9e54f562474ec947db284b1b660d10419",
+    "encoding": "WebP quality=100, method=6; not a lossless original"
+  },
+  "process": "Approved raster artwork only. Presentation margin cropped, aspect ratio preserved, Lanczos resizing. No redrawing, new symbol, text, recolouring or generated glass effect.",
   "exports": [
     {
-      "path": "icon-180.png",
-      "dimensions": [
-        180,
-        180
-      ],
-      "sha256": "0937043ce490199f7a7034522f1a626b651fd8e4b461dedd13eda1cfa1e3d0dc"
-    },
-    {
-      "path": "icon-192.png",
-      "dimensions": [
-        192,
-        192
-      ],
-      "sha256": "0ec7ed23024be6d30a11b9fee61749e04cdaeb1cedda8896cfdde67b0f69ecce"
-    },
-    {
-      "path": "icon-32.png",
-      "dimensions": [
+      "path": "icon-glass-20260909-32.png",
+      "size": [
         32,
         32
       ],
-      "sha256": "d2e8cf57014e984068c70e7491cf30908f769e59ce19335047ed5ca957c2b2c0"
+      "sha256": "87d00fd10e8f1b287813b7230827ac541511d30605f15620f4f713a17e1d4be3"
     },
     {
-      "path": "icon-512.png",
-      "dimensions": [
+      "path": "icon-32.png",
+      "size": [
+        32,
+        32
+      ],
+      "sha256": "87d00fd10e8f1b287813b7230827ac541511d30605f15620f4f713a17e1d4be3"
+    },
+    {
+      "path": "icon-glass-20260909-180.png",
+      "size": [
+        180,
+        180
+      ],
+      "sha256": "ae7243f1240cba5157abfec0a77f1c2bff7bd6074bfc584c5eed160fb95bc692"
+    },
+    {
+      "path": "icon-180.png",
+      "size": [
+        180,
+        180
+      ],
+      "sha256": "ae7243f1240cba5157abfec0a77f1c2bff7bd6074bfc584c5eed160fb95bc692"
+    },
+    {
+      "path": "icon-glass-20260909-192.png",
+      "size": [
+        192,
+        192
+      ],
+      "sha256": "19f130f1ac62d6531f158ce14ac5f44ae0396d1de994296c2872fc06b8bf7f99"
+    },
+    {
+      "path": "icon-192.png",
+      "size": [
+        192,
+        192
+      ],
+      "sha256": "19f130f1ac62d6531f158ce14ac5f44ae0396d1de994296c2872fc06b8bf7f99"
+    },
+    {
+      "path": "icon-glass-20260909-512.png",
+      "size": [
         512,
         512
       ],
-      "sha256": "7be39d062cafb3cf3de41814391834459d6a2da2d383dfcd63972fcb8e355581"
+      "sha256": "a6f53200aa9a8f3acba3115206f2105240031475c2123a5053b7947ce32c08ab"
     },
     {
-      "path": "wordmark-dark.png",
-      "dimensions": [
-        360,
-        97
+      "path": "icon-512.png",
+      "size": [
+        512,
+        512
       ],
-      "sha256": "fd04f676a7cbfecb2b8aef1b3da0aeb05715e48184a302f9d93000381ea5a212"
-    },
-    {
-      "path": "wordmark-light.png",
-      "dimensions": [
-        360,
-        97
-      ],
-      "sha256": "b2b4356783dcf2f67c39673d0905ae96cc8f4f7db1e022aea4d3b51724276368"
+      "sha256": "a6f53200aa9a8f3acba3115206f2105240031475c2123a5053b7947ce32c08ab"
     }
-  ]
+  ],
+  "original_wordmark_sha256": "908faa4f67adb8b811f3c0bcbd2ea58e2b7b142ab3c4b1cfac48d2a1e54eafc9",
+  "wordmarks_preserved_byte_for_byte": {
+    "wordmark-dark.png": "fd04f676a7cbfecb2b8aef1b3da0aeb05715e48184a302f9d93000381ea5a212",
+    "wordmark-light.png": "b2b4356783dcf2f67c39673d0905ae96cc8f4f7db1e022aea4d3b51724276368"
+  },
+  "compatibility": "Versioned icon URLs for new shell and manifest; previous filenames contain identical new PNG bytes. PWA id, name, start_url, scope, backend and user storage unchanged."
 }
