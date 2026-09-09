@@ -47,7 +47,7 @@
 
 /* The editor is the message field itself; attachments do not need nested
    bordered cards. Native media stays visible and independently controllable. */
-.workspaceEditor{padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+.workspaceEditor{padding:0;border:0;border-radius:25px;background:transparent;box-shadow:none}
 .workspaceEditor .richMedia{margin:8px 0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
 .workspaceEditor .richMediaHead{min-height:32px;padding:0 2px}
 .workspaceEditor .richMedia .richAction{background:transparent}
