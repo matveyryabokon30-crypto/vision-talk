@@ -14,11 +14,21 @@
 .pablicusChatCanvas .pccStatus{margin:9px 3px 21px;color:var(--muted,#767a7d);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
 .pablicusChatCanvas .pccStatus:empty,.pablicusChatCanvas .pccPlanNotice:empty{display:none}
 .pablicusChatCanvas .pccRetry{margin:0 3px 16px}
-.pablicusChatCanvas .pccContent{display:flex;flex-direction:column;gap:30px}
+.pablicusChatCanvas .pccContent{display:flex;flex-direction:column;gap:22px;min-width:0}
 .pablicusChatCanvas .pccLabel{display:block;margin:0;font-size:16px;font-weight:500;line-height:1.4}
-.pablicusChatCanvas .pccPlan{padding:0 3px}
-.pablicusChatCanvas .pccPlanBody{display:block;resize:vertical;min-height:112px;max-height:360px;width:100%;padding:14px 0 9px;margin:0;border:0;border-radius:0;background:transparent;font-size:16px;line-height:1.65;overflow:auto;overflow-wrap:anywhere;-webkit-appearance:none;appearance:none}
-.pablicusChatCanvas .pccPlanBody::placeholder,.pablicusChatCanvas .pccTaskTitle::placeholder{color:var(--muted,#767a7d);opacity:.75}
+.pablicusChatCanvas .pccPlan{padding:6px 0 0;min-width:0}
+.pablicusChatCanvas .pccProjectCard{position:relative;display:flex;flex-direction:column;gap:6px;width:100%;min-width:0;max-height:164px;margin:0;padding:16px 42px 16px 17px;border:0;border-radius:22px;background:var(--surface,#fff);box-shadow:0 3px 20px rgba(30,35,40,.035);text-align:left;overflow:hidden}
+.pablicusChatCanvas .pccProjectTitle{display:block;width:100%;font-size:16px;font-weight:500;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pablicusChatCanvas .pccProjectExcerpt{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-height:44px;font-size:14px;line-height:1.55;overflow-wrap:anywhere;color:var(--muted,#767a7d)}
+.pablicusChatCanvas .pccProjectCard>svg{position:absolute;right:13px;top:17px;width:18px;height:18px;color:var(--muted,#767a7d);transition:transform .15s}
+.pablicusChatCanvas .pccProjectCard[aria-expanded=true]>svg{transform:rotate(90deg)}
+.pablicusChatCanvas .pccAttachmentSummary{display:block;font-size:12px;line-height:1.5;color:var(--muted,#767a7d);overflow-wrap:anywhere}
+.pablicusChatCanvas .pccProjectView{padding:13px 14px 2px;margin-top:5px;border-radius:20px;background:var(--surface,#fff);min-width:0}
+.pablicusChatCanvas .pccProjectViewContent{max-height:min(45dvh,380px);overflow:auto;overscroll-behavior:contain;font-size:16px;line-height:1.6;overflow-wrap:anywhere;white-space:pre-wrap}
+.pablicusChatCanvas .pccProjectViewContent img,.pablicusChatCanvas .pccProjectViewContent video{display:block;max-width:100%;max-height:280px;border-radius:15px;object-fit:contain}
+.pablicusChatCanvas .pccProjectViewContent audio{max-width:100%}
+.pablicusChatCanvas .pccPlanNew{background:transparent;padding-left:5px}
+.pablicusChatCanvas .pccPlanEditor,.pablicusChatCanvas .pccTaskEditor{width:100%;min-width:0}
 .pablicusChatCanvas .pccFormFoot{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-top:6px;flex-wrap:wrap}
 .pablicusChatCanvas .pccNotice{flex:1;min-width:110px;margin:0;color:var(--muted,#767a7d);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
 .pablicusChatCanvas .pccNotice[data-state=error],.pablicusChatCanvas .pccNotice[data-state=conflict]{color:var(--text,#35393d)}
@@ -45,7 +55,7 @@
 .pablicusChatCanvas .pccTaskCheck svg{width:15px;height:15px}
 .pablicusChatCanvas .pccTask[data-completed=true] .pccTaskCheck{background:var(--soft,#ebeef0);border-color:transparent}
 .pablicusChatCanvas .pccTaskEdit{display:flex;align-items:flex-start;gap:12px;width:100%;min-height:44px;padding:11px 4px 8px 0;background:transparent;border-radius:9px;text-align:left}
-.pablicusChatCanvas .pccTaskText{flex:1;min-width:0;font-size:15px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.pablicusChatCanvas .pccTaskText{flex:1;min-width:0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;max-height:45px;overflow:hidden;font-size:15px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
 .pablicusChatCanvas .pccTaskEdit>svg{margin-top:2px;width:15px;height:15px;color:var(--muted,#767a7d);opacity:.7}
 .pablicusChatCanvas .pccTask[data-completed=true] .pccTaskText{color:var(--muted,#767a7d);text-decoration:line-through;text-decoration-color:var(--line,#d5d8da)}
 .pablicusChatCanvas .pccTaskMeta{margin:0 0 4px;color:var(--muted,#767a7d);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
@@ -77,7 +87,6 @@
 .pablicusChatCanvas .pccTaskTime,.pablicusChatCanvas .pccTaskReminder{display:block;width:auto;max-width:65%;min-width:90px;min-height:36px;margin:0;padding:6px 11px;border:0;border-radius:18px;background:var(--soft,rgba(235,237,239,.55));font-size:16px;line-height:1.4;text-align:right;color:inherit;color-scheme:light dark}
 .pablicusChatCanvas .pccTaskTime{-webkit-appearance:none;appearance:none}
 .pablicusChatCanvas .pccTaskTime::-webkit-date-and-time-value{min-height:22px;text-align:center}
-.pablicusChatCanvas .pccTaskTitle{display:block;resize:none;min-height:68px;max-height:180px;width:100%;margin:0;padding:12px 13px;border:0;border-radius:17px;background:var(--soft,rgba(235,237,239,.45));font-size:16px;line-height:1.5;overflow:auto;overflow-wrap:anywhere;-webkit-appearance:none;appearance:none}
 .pablicusChatCanvas .pccTaskNotice{margin:9px 0 0;min-width:0}
 .pablicusChatCanvas .pccTaskNotice:empty{display:none}
 .pablicusChatCanvas .pccTaskActions{display:flex;margin-top:12px}
@@ -92,7 +101,7 @@
 .pablicusChatCanvas .pccTaskDeleteConfirm{width:100%;margin-top:8px;background:var(--soft,#eceef0);font-weight:500}
 .pablicusChatCanvas .pccTaskReview{margin:6px 0 2px;text-align:center;font-size:16px;line-height:1.5}
 #app.keyboard-open .pccTaskSheet{padding-bottom:8px}
-@media(min-width:700px){.pablicusChatCanvas{padding:25px 32px 42px}.pablicusChatCanvas .pccContent{gap:35px}.pablicusChatCanvas .pccTaskSheet{padding-bottom:24px}}
+@media(min-width:700px){.pablicusChatCanvas{padding:25px 32px 42px}.pablicusChatCanvas .pccContent{gap:25px}.pablicusChatCanvas .pccTaskSheet{padding-bottom:24px}}
 @media(max-width:360px){.pablicusChatCanvas{padding-inline:10px}.pablicusChatCanvas .pccTaskForm{padding-inline:14px}.pablicusChatCanvas .pccButton{padding-inline:11px}.pablicusChatCanvas .pccCalendarCell{min-height:34px}.pablicusChatCanvas .pccCalendarDay{height:33px;width:33px;min-height:33px}}
 @media(hover:hover){.pablicusChatCanvas button:hover{background:var(--soft,#ebeef0)}.pablicusChatCanvas .pccCalendarDay[aria-pressed=true]:hover,.pablicusChatCanvas .pccTaskSave:hover{background:var(--text,#303438);color:var(--bg,#fff)}}
 @media(prefers-reduced-motion:reduce){.pablicusChatCanvas *{scroll-behavior:auto!important}}

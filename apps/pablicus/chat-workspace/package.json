@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test rich-message.test.mjs actions.test.mjs contacts.test.mjs search.test.mjs canvas.test.mjs tasks.test.mjs task-lifecycle.test.mjs"
+    "test": "node --test rich-message.test.mjs actions.test.mjs contacts.test.mjs search.test.mjs canvas.test.mjs tasks.test.mjs task-lifecycle.test.mjs workspace-content.test.mjs",
+    "test:workspace-content": "node --test workspace-content.test.mjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.8"

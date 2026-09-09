@@ -1,6 +1,6 @@
 # Task time, lifecycle, and project navigation
 
-Additive extension of the existing conversation canvas and aggregate tasks API. Install `TASK_LIFECYCLE_SCHEMA_PROPOSAL.sql` after `CANVAS_SCHEMA_PROPOSAL.sql` and `TASKS_SCHEMA_PROPOSAL.sql`; install the reminder scheduler separately afterwards. The SQL file is a reviewed proposal, not a CLI-generated migration history file.
+Additive extension of the existing conversation canvas and aggregate tasks API. Install `TASK_LIFECYCLE_SCHEMA_PROPOSAL.sql` after `CANVAS_SCHEMA_PROPOSAL.sql` and `TASKS_SCHEMA_PROPOSAL.sql`; install the reminder scheduler separately afterwards. Install `TODAY_SHARED_SCHEMA_PROPOSAL.sql` afterwards for the shared Today fix. The SQL files are reviewed proposals, not CLI-generated migration history files.
 
 ## Task fields
 
@@ -76,9 +76,11 @@ The create cap counts 200 active tasks per conversation only; completed/archived
 | `open` | All active shared tasks; excludes completed and archived. |
 | `mine` | Active tasks assigned to the caller. |
 | `overdue` | Active timed tasks before the server's transaction time; date-only tasks before `p_today`. |
-| `today` | Active caller-assigned or unassigned shared tasks; timed date evaluated in caller `p_timezone`, date-only equals `p_today`. |
+| `today` | All accessible active shared tasks scheduled for `p_today`, regardless of assignee; timed dates use caller `p_timezone`. Also includes undated tasks created on `p_today` in that zone. |
 | `completed` | Completed tasks that have not been archived. |
 | `archived` | Archived tasks, both completed and incomplete. |
+
+For Today, an explicit due instant or date always takes precedence over creation time: a task created today for tomorrow is absent from Today. An undated task created on an earlier local day remains in the open list, not Today. Including an undated item does not assign a due date, change its schedule version, or create reminders. The UI labels undated entries as `Добавлено сегодня`; it must not present creation time as a scheduled deadline. All Today pages and its chip count use the same membership-checked `matching` relation before applying the cursor. The separate `mine` view retains its assignee restriction. Task output additionally returns `content` when that optional schema is installed, otherwise null.
 
 The browser supplies its local YYYY-MM-DD as `p_today` and IANA zone as `p_timezone`. Current-time deadline comparison comes from PostgreSQL, not a client clock. These are display filters, never authorization. Deleted tasks never appear in any list. The old aggregate API also excludes archived tasks.
 
@@ -111,4 +113,4 @@ Delete uses the existing guarded `pablicus_delete_canvas_task`. It removes the t
 
 ## Verification
 
-`task-lifecycle.test.mjs` executes the exact proposals in synthetic PGlite fixtures. Cases cover normalization, midnight timezone boundaries, opt-out/default reminders, version invalidation, retries/conflicts, v1 preservation, completion/archive/postpone, pagination/counts, deletion without resurrection/content retention, project boundaries, membership/approval/anonymous denial, and helper/table ACL.
+`task-lifecycle.test.mjs` executes the exact proposals in synthetic PGlite fixtures. Cases cover normalization, midnight timezone boundaries for due and creation instants, shared-assignee Today, undated saved-today inclusion, explicit future-date precedence, opt-out/default reminders, version invalidation, retries/conflicts, v1 preservation, completion/archive/postpone, pagination/counts, deletion without resurrection/content retention, project boundaries, membership/approval/anonymous denial, and helper/table ACL.
