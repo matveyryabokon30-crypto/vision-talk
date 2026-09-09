@@ -21,7 +21,11 @@ jobs:
           python apps/pablicus/finalize.py
           for f in apps/pablicus/dist/*.js; do node --check "$f"; done
       - name: Install test browser engines
-        run: python -m playwright install --with-deps chromium webkit
+        run: |
+          # The hosted image can expose a stale Google Chrome apt index. Playwright
+          # does not need that third-party source for its pinned browser bundles.
+          sudo find /etc/apt/sources.list.d -maxdepth 1 -type f \\( -iname '*chrome*' -o -iname '*google*' \\) -delete
+          python -m playwright install --with-deps chromium webkit
       - name: Browser integration in disposable copy; verify release hashes unchanged
         run: python apps/pablicus/tests/run_isolated.py
       - name: Archive exact candidate and evidence
