@@ -185,7 +185,7 @@
 /* A project/task has its own text-and-attachments composer. Do not leave the
    global message field in the same visual viewport: its input would submit to
    the chat and its keyboard geometry would cover the canvas editor. */
-#app.canvas-active:has(#chatCanvasPanel[data-editing="true"]) #composer,
+#app.canvas-active:has(#chatCanvasPanel .pablicusChatCanvas[data-editing="true"]) #composer,
 #app.canvas-active:has(#chatCanvasPanel .pccTaskSheet[open]) #composer,
 #app.canvas-editing #composer { display: none !important; }
 #app.composer-fullscreen #chatViewTabs { visibility: hidden; pointer-events: none; }
