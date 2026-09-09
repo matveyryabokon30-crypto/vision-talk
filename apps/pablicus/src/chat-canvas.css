@@ -19,7 +19,7 @@
 .pablicusChatCanvas .pccPlan{padding:6px 0 0;min-width:0}
 .pablicusChatCanvas .pccProject{position:relative;width:100%;min-width:0;margin:0;border-radius:22px;background:var(--surface,#fff);box-shadow:0 3px 20px rgba(30,35,40,.035)}
 .pablicusChatCanvas .pccProjectCard{position:relative;display:flex;flex-direction:column;gap:6px;width:100%;min-width:0;max-height:164px;margin:0;padding:16px 42px 16px 17px;border:0;border-radius:22px;background:transparent;text-align:left;overflow:hidden}
-.pablicusChatCanvas .pccProjectCard[aria-expanded=true]{position:absolute;top:4px;right:4px;z-index:1;display:grid;place-items:center;width:44px;min-width:44px;height:44px;min-height:44px;margin:0;padding:0;border-radius:50%}
+.pablicusChatCanvas .pccProjectCard[aria-expanded=true]{position:relative;top:auto;right:auto;z-index:1;display:flex;align-items:center;justify-content:flex-end;width:100%;min-width:0;height:44px;min-height:44px;max-height:44px;margin:0;padding:0 3px;border-radius:0;overflow:visible}
 .pablicusChatCanvas .pccProjectTitle{display:block;width:100%;font-size:16px;font-weight:500;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pablicusChatCanvas .pccProjectExcerpt{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-height:44px;font-size:14px;line-height:1.55;overflow-wrap:anywhere;color:var(--muted,#767a7d)}
 .pablicusChatCanvas .pccProjectCard>svg{position:absolute;right:13px;top:17px;width:18px;height:18px;color:var(--muted,#767a7d);transition:transform .15s}
@@ -114,7 +114,7 @@
    light and let the expanded view use the full canvas width. */
 .pablicusChatCanvas .pccProject{background:transparent;box-shadow:none;border-radius:0}
 .pablicusChatCanvas .pccProjectCard{background:transparent;box-shadow:none;border-radius:0;border-bottom:1px solid var(--line,#e5e6e7);padding-left:3px;padding-right:36px}
-.pablicusChatCanvas .pccProjectView{padding:48px 17px 8px;margin:0;border-radius:0;background:transparent}
+.pablicusChatCanvas .pccProjectView{padding:8px 0;margin:0;border-radius:0;background:transparent;overflow:visible}
 .pablicusChatCanvas .pccProjectViewContent{max-height:none;overflow:visible;padding:0 2px}
 .pablicusChatCanvas .pccProjectActions{display:flex;align-items:center;gap:4px;min-height:42px;margin-top:5px}
 .pablicusChatCanvas .pccProjectActions .pccTextButton{min-height:38px;padding:6px 8px;color:var(--muted,#767a7d)}
@@ -136,3 +136,12 @@
 .pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-document .richMediaIcon{width:28px;height:28px;flex-basis:28px;background:transparent;color:var(--muted,#767a7d);font-size:17px}
 .pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-document .richMediaTitle{font-size:14px}
 .pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-document .richMediaDetails{font-size:11px}
+
+/* Project media never borrows the absolute/fixed-ratio geometry of a chat
+   bubble. Every block participates in the project height before the task list. */
+.pablicusChatCanvas .pccProjectCard[aria-expanded='true']{position:relative!important;inset:auto!important;display:flex!important;align-items:center;justify-content:flex-end;width:100%;min-width:0;height:44px;min-height:44px;max-height:44px;padding:0 3px;border-radius:0;overflow:visible}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-image{position:relative!important;inset:auto!important;display:block!important;width:100%!important;height:auto!important;min-height:0!important;aspect-ratio:auto!important;overflow:visible!important}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-image .richImage{position:static!important;inset:auto!important;display:block!important;width:auto!important;max-width:100%!important;height:auto!important;max-height:360px!important;object-fit:contain!important;visibility:visible!important}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-image .richMediaStatus{position:static!important;display:block!important;padding:5px 0!important;background:transparent!important;text-align:left!important}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-video{position:relative!important;inset:auto!important;height:auto!important;min-height:0!important;aspect-ratio:auto!important}
+.pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMediaGallery{position:relative!important;inset:auto!important;height:auto!important;min-height:0!important;aspect-ratio:auto!important}

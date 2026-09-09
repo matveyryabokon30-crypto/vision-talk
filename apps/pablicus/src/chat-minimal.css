@@ -172,9 +172,10 @@
 #chatViewTabs button[aria-selected="true"] { color: var(--text); }
 #chatViewTabs button[aria-selected="true"]::after { content: ''; position: absolute; height: 2px; left: 8px; right: 8px; bottom: 4px; border-radius: 2px; background: currentColor; opacity: .6; }
 #chatViewTabs button:focus-visible { outline: 2px solid var(--muted); outline-offset: -4px; border-radius: 8px; }
-#chatCanvasPanel { position: absolute; inset: 0; z-index: 3; min-height: 0; overflow: auto; overscroll-behavior: contain; background: var(--bg); }
+#chatCanvasPanel { position: absolute; inset: 0; z-index: 3; min-height: 0; overflow: auto; overscroll-behavior: contain; background: var(--bg); isolation: isolate; }
 #chatCanvasPanel[hidden] { display: none; }
-#app.canvas-active #vp { visibility: hidden; pointer-events: none; }
+#app.canvas-active .stage { isolation: isolate; }
+#app.canvas-active #vp { visibility: hidden; opacity: 0; pointer-events: none; }
 #app.canvas-active #composer { display: block !important; padding: 0; border-top: 0; background: transparent !important; pointer-events: none; }
 #app.canvas-active #composer #composeBox { display: block; min-height: 28px; padding: 0; border: 0; border-radius: 0; background: transparent !important; box-shadow: none; pointer-events: none; }
 #app.canvas-active #composer #composeBox > :not(#workspaceQuick),

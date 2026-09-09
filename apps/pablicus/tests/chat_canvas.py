@@ -702,6 +702,18 @@ async def one(name, engine):
             assert await surface.count() == 1
             assert await surface.locator('.pccProjectView').count() == 1
             assert await pane.locator('.pccPlan > .pccProjectView').count() == 0
+            flow = await pane.locator('.pccProject').evaluate('''node=>{
+                const project=node.getBoundingClientRect();
+                const view=node.querySelector('.pccProjectView').getBoundingClientRect();
+                const tasks=node.closest('.pccPlan').nextElementSibling.getBoundingClientRect();
+                const media=[...node.querySelectorAll('.pccProjectViewContent .richMedia')].map(item=>{
+                    const r=item.getBoundingClientRect(); return {top:r.top,bottom:r.bottom};
+                });
+                return {project:{top:project.top,bottom:project.bottom},
+                    view:{top:view.top,bottom:view.bottom},tasks:{top:tasks.top},media};
+            }''')
+            assert flow['tasks']['top'] >= flow['project']['bottom'] - 1, flow
+            assert all(item['top'] >= flow['view']['top'] - 1 and item['bottom'] <= flow['view']['bottom'] + 1 for item in flow['media']), flow
             assert (await surface.inner_text()).count('Съёмка сериала') == 1
             texts = await surface.locator('.pccProjectViewContent .richText').all_text_contents()
             assert texts == [block['text'] for block in project_content['blocks'] if block['type'] == 'text']
@@ -746,6 +758,15 @@ async def one(name, engine):
         await page.set_viewport_size({'width': 390, 'height': 844})
         await page.wait_for_timeout(200)
         checks.append('one persistent project card unfolds in place at 320/390/768px; summary is hidden, exact full text appears once, all four attachments remain, body has no height cap or inner scroll, canvas scroll reaches Edit, keyboard disclosure and refresh retain state, collapse disposes rendered media without changing saved data')
+        await page.locator('#conversationTab').click()
+        await page.wait_for_function('''()=>!document.getElementById('app').classList.contains('canvas-active')
+            && document.getElementById('chatCanvasPanel').hidden
+            && document.getElementById('vp').getClientRects().length > 0
+            && document.getElementById('composeBox').querySelector('#editor').getClientRects().length > 0''')
+        assert await page.locator('#workspaceQuick').is_visible()
+        await page.locator('#canvasTab').click()
+        await pane.locator('.pablicusChatCanvas[data-state="ready"]').wait_for()
+        checks.append('returning from the expanded canvas restores the conversation viewport and full message composer without a hidden or overlapping layer')
         await project_card.click()
         await pane.locator('.pccProjectViewContent a[href="https://example.com/brief"]').wait_for()
         await pane.locator('.pccPlanEdit').click()
