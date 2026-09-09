@@ -47,10 +47,15 @@ this.scheduleRender();if(vp.scrollTop<180)window.PablicusHost?.historyTop?.();
 this.onTouch=()=>{scrollEvidence.gestures++;};
 vp.addEventListener('scroll',this.onScroll,{passive:true});
 vp.addEventListener('touchstart',this.onTouch,{passive:true});
+this.resizeFrame=0;
 this.observer=new ResizeObserver(()=>{
-if(this.destroyed||this.busy)return;
+if(this.destroyed||this.resizeFrame)return;
+this.resizeFrame=requestAnimationFrame(()=>{
+this.resizeFrame=0;
+if(this.destroyed||this.busy||vp.clientWidth<2||vp.clientHeight<2)return;
 if(Math.abs(vp.clientWidth-this.width)>.5||Math.abs(vp.clientHeight-this.height)>.5)
 this.sync(this.lastAnchor,this.follow,'viewport-size');
+});
 });this.observer.observe(vp);
 counters.active_lists++;counters.created++;
 this.measureMissing();this.rebuild();
@@ -154,7 +159,7 @@ append(m,force=false){const a=this.capture(),f=force||this.follow;if(!f)this.pen
 edit(id,suffix){const a=this.capture(),f=this.follow,m=this.messages[this.index.get(id)];if(!m)return;m.text+=suffix;m.revision++;this.sync(a,f,'edit');}
 refreshFont(){const a=this.lastAnchor,f=this.follow;this.heights.clear();this.revisions.clear();this.sync(a,f,'font-change');}
 destroy(){
-if(this.destroyed)return;this.destroyed=true;cancelAnimationFrame(this.frame);this.observer.disconnect();
+if(this.destroyed)return;this.destroyed=true;cancelAnimationFrame(this.frame);cancelAnimationFrame(this.resizeFrame);this.observer.disconnect();
 vp.removeEventListener('scroll',this.onScroll);vp.removeEventListener('touchstart',this.onTouch);
 this.measureBox.remove();this.nodes.clear();canvas.replaceChildren();counters.active_lists--;counters.destroyed++;
 }
@@ -203,7 +208,7 @@ if(draft.expanded&&!viewWasFull){fullEntry={a,f};app.style.setProperty('--dock-h
 const returning=!draft.expanded&&viewWasFull;
 app.classList.toggle('composer-fullscreen',draft.expanded);
 if(draft.expanded){composer.setAttribute('role','dialog');composer.setAttribute('aria-modal','true');composer.setAttribute('aria-label','Редактор сообщения')}else{composer.removeAttribute('role');composer.removeAttribute('aria-modal');composer.removeAttribute('aria-label')}
-for(const n of [app.querySelector('header'),app.querySelector('.tools'),$('status'),app.querySelector('.stage')])n.inert=draft.expanded;
+for(const n of [app.querySelector('header'),app.querySelector('.tools'),$('chatViewTabs'),$('status'),app.querySelector('.stage')])n.inert=draft.expanded;
 box.classList.toggle('rich',!!rich);box.classList.toggle('expanded',draft.expanded);
 $('tray').hidden=!draft.attachments.length;
 $('tray').style.height=app.clientHeight<500?'58px':'90px';
@@ -218,7 +223,7 @@ if(richComposer)$('editor').style.height='100%';else input.style.height='100%';
 }else{
 if(returning&&!richComposer)input.style.height='40px';
 const needed=naturalInputHeight();
-const chromeHeight=app.querySelector('header').offsetHeight+app.querySelector('.tools').offsetHeight+$('status').offsetHeight;
+const chromeHeight=app.querySelector('header').offsetHeight+$('chatViewTabs').offsetHeight+app.querySelector('.tools').offsetHeight+$('status').offsetHeight;
 const overhead=composer.offsetHeight-(richComposer?$('editor').offsetHeight:input.offsetHeight);
 const maxComposer=Math.max(overhead+40,Math.min(Math.floor(app.clientHeight*.78),app.clientHeight-chromeHeight-64));
 const cap=Math.max(40,maxComposer-overhead);
@@ -496,6 +501,7 @@ window.PablicusChat={
   list.sync(a,f,'server-update');
  },
  async flush(){await richComposer?.stopRecording();if(vault){draftChanged();await vault.flush()}},
+ async persistDraft(){if(vault){draftChanged();await vault.flush()}},
  async refreshQueue(){if(vault)return refreshQueue()},
  get scope(){return{user:scopeUser,chat:scopeChat}},
  get store(){return vault?.store},get snapshot(){return publicSnapshot()},

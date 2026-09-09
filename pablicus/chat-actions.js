@@ -19,6 +19,7 @@
   const getContext=()=>options.getContext?.()||{};
   const keyOf=c=>[c.userId||'',c.conversationId||'',c.epoch??''].join(':');
   const icon=name=>scope.PablicusMessageMenu.icon(name);
+  function dismiss(){menu.close({restoreFocus:false});selected.clear();paintSelection()}
   function clear(){generation++;menu.close({restoreFocus:false});state.clear();uiRevision.clear();selected.clear();contextKey='';inflight=null;pinFlight=null;pinsLoaded=false;lastPinsAt=0;pins=[];pinIndex=0;toolbar?.remove();toolbar=null;pinBar?.remove();pinBar=null;document.querySelector('#app>header')?.classList.remove('has-pinned');document.querySelectorAll('.messageSelected').forEach(el=>el.classList.remove('messageSelected'))}
   function context(){const c=getContext(),key=keyOf(c);if(key!==contextKey){clear();contextKey=key}return{...c,key,generation}}
   const live=c=>!destroyed&&c.generation===generation&&keyOf(getContext())===c.key;
@@ -98,6 +99,7 @@
   function open(raw,{anchor,point,blockId=null}={}){
    const c=context(),m=currentMessage(raw);if(!c.userId||!c.conversationId||m.conversation_id!==c.conversationId||m.deleted_at||!anchor?.isConnected)return;
    const actions=[{id:'reply',label:'Ответить',onSelect:()=>options.onReply?.(effective(m),blockId)}];const text=textOf(m,blockId);if(text)actions.push({id:'copy',label:'Скопировать',onSelect:()=>scope.navigator.clipboard.writeText(text)});
+   if(options.onTask)actions.push({id:'task',icon:'tasks',label:'Создать задачу',onSelect:()=>options.onTask(effective(m),blockId)});
    actions.push({id:'pin',label:state.get(m.id)?.pinned?'Открепить':'Закрепить',onSelect:()=>togglePin(m)},{id:'forward',label:'Переслать',onSelect:()=>forward([m],anchor)});
    if(m.sender_id===c.userId&&textOf(m))actions.push({id:'edit',label:'Редактировать',onSelect:()=>edit(m,anchor,blockId)});
    if(mediaOf(m,blockId).length)actions.push({id:'download',label:'Скачать',onSelect:()=>download(m,anchor,blockId)});
@@ -120,7 +122,7 @@
    bubble.addEventListener('click',event=>{if(Date.now()<suppressUntil){event.preventDefault();event.stopImmediatePropagation();return}if(selected.size){event.preventDefault();event.stopImmediatePropagation();try{select(raw)}catch(error){options.onError?.(error)}return}if(event.target.closest('button,input,a,video,audio,textarea,.richMedia-audio')||scope.getSelection?.().toString())return;open(raw,{anchor:bubble,point:{x:event.clientX,y:event.clientY},blockId:blockFor(event)})},true);
   }
   function destroy(){clear();destroyed=true;menu.destroy()}
-  return Object.freeze({open,decorate,revision,sync,clear,destroy,effective,get selected(){return [...selected]}});
+  return Object.freeze({open,decorate,revision,sync,dismiss,clear,destroy,effective,get selected(){return [...selected]}});
  }
  scope.PablicusChatActions=Object.freeze({create,effective});
 })(typeof window==='undefined'?globalThis:window);
