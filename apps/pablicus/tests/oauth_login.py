@@ -90,7 +90,7 @@ async def one(engine, name):
         contexts.append(context)
         state = {
             "authorize": [], "exchanges": 0, "get_user": 0,
-            "profiles": 0, "events": [], "faults": [], "challenge": None,
+            "profiles": 0, "storage_usage": 0, "events": [], "faults": [], "challenge": None,
             "provider": "google",
             "other_profile_requests": 0,
             "other_profile_started": asyncio.Event(),
@@ -205,6 +205,21 @@ async def one(engine, name):
                         "display_name": "OAuth QA" if profile_id == USER_ID else "Other QA", "avatar_url": None,
                         "is_approved": approved if profile_id == USER_ID else other_approved,
                     }
+                elif parsed.path == "/rest/v1/rpc/pablicus_storage_usage":
+                    assert route.request.method == "POST" and body == {}
+                    assert state["get_user"] > 0 and state["profiles"] > 0
+                    assert approved and identity_matches
+                    authorization = route.request.headers.get("authorization", "")
+                    assert authorization.startswith("Bearer ")
+                    claims = authorization.removeprefix("Bearer ").split(".")[1]
+                    assert json.loads(base64.urlsafe_b64decode(claims + "=" * (-len(claims) % 4)))["sub"] == USER_ID
+                    state["storage_usage"] += 1
+                    state["events"].append("storage_usage")
+                    # The isolated OAuth backend has no uploaded objects.
+                    payload = [{"total_bytes": 0, "own_bytes": 0,
+                                "object_count": 0, "own_object_count": 0,
+                                "unknown_size_count": 0,
+                                "measured_at": "2026-09-09T00:00:00Z"}]
                 elif parsed.path.startswith("/rest/v1/rpc/my_conversations"):
                     payload = []
                 else:
@@ -419,7 +434,7 @@ async def one(engine, name):
         }
     finally:
         result["mock_states"] = [{
-            key: state[key] for key in ("authorize", "exchanges", "get_user", "profiles", "events", "faults", "other_profile_requests")
+            key: state[key] for key in ("authorize", "exchanges", "get_user", "profiles", "storage_usage", "events", "faults", "other_profile_requests")
         } for state in states]
         result["last_urls"] = [page.url for context in contexts for page in context.pages]
         checkpoint = EVIDENCE / (name + "-oauth-login.json")
