@@ -385,7 +385,10 @@ async function restoreDraft(s){
  status('Черновик восстановлен локально. Ничего не отправлено.');
 }
 function paintVault(s){
- const labels={loading:'Открываю хранилище…',empty:'',dirty:'Изменения ещё не сохранены…',saving:'Сохраняется…',saved:'Черновик сохранён',restored:'Черновик восстановлен',error:'Не сохранено · '+(s.error?.name||'ошибка'),'load-error':'Восстановление недоступно',conflict:'Изменено в другой вкладке'};
+ const needsAttention=['error','load-error','conflict'].includes(s.state);
+ $('vaultLine').hidden=!needsAttention;
+ $('composer').style.setProperty('--save-feedback-height',needsAttention?'24px':'0px');
+ const labels={error:'Не сохранено · '+(s.error?.name||'ошибка'),'load-error':'Восстановление недоступно',conflict:'Изменено в другой вкладке'};
  const n=$('saveState');n.textContent=labels[s.state]??'';n.dataset.state=s.state;n.title=s.error?.message||'Локальное хранилище, не отправка и не облачная резервная копия';
  $('saveRetry').hidden=!['error','load-error'].includes(s.state);
  $('loadSaved').hidden=s.state!=='conflict';
@@ -403,7 +406,7 @@ async function initializeVault(){
  $('reloadSaved').onclick=()=>reloadQueue().catch(notifyError);
  $('verifySaved').onclick=()=>vault.verify().then(r=>status(r.pass?'Сверка: текст и байты всех файлов совпали':'Сверка: несовпадение')).catch(notifyError);
  $('loadSaved').onclick=()=>{if(confirm('Заменить текущий несохранённый текст сохранённой версией из другой вкладки?'))vault.loadSaved().catch(notifyError)};
- $('storageInfo').onclick=()=>{showStorageReport()};
+
  $('persistRequest').onclick=()=>vault.requestPersistent().then(v=>status(v?'Браузер предоставил устойчивое хранение. Не резервная копия.':'Устойчивое хранение не предоставлено. Обычное локальное сохранение доступно.'));
  $('injectError').onclick=async()=>{if(!vault.ready)return;if(vault.state==='conflict')return;try{await vault.flush()}catch{};vault.store.fault='quota';vault.pending={snapshot:captureDraft()};try{await vault.flush()}catch{status('ДЕМО отказа записи. Текст на экране сохранён; нажми ↻ рядом с ошибкой.')}};
  $('reportBtn').onclick=showStorageReport;

@@ -22,7 +22,6 @@
         plus: 'M12 5v14M5 12h14',
         edit: 'm15 5 4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15v5Z',
         source: 'M9 10 5 6l4-4M5 6h9a6 6 0 0 1 0 12h-2',
-        conversation: 'M20 11a8 8 0 0 1-8 8H5l-3 3v-8a8 8 0 1 1 18-3Z',
         close: 'm6 6 12 12M18 6 6 18',
         check: 'm5 12 4 4 10-10',
       };
@@ -51,13 +50,11 @@
     const pane = el('section', 'pablicusChatCanvas');
     pane.setAttribute('aria-label', 'Общее полотно чата');
     pane.hidden = true;
-    const head = el('header', 'pccHeader');
-    const heading = el('div', 'pccHeading');
-    heading.append(el('p', 'pccEyebrow', 'Общий план'), el('h2', 'pccTitle', 'Полотно'));
-    const conversation = button('pccIcon pccConversation', 'Вернуться к разговору', 'conversation');
-    conversation.hidden = typeof options.onConversation !== 'function';
+    const head = el('div', 'pccProjectsHead');
+    const planLabel = el('label', 'pccLabel', 'Проекты');
+    planLabel.htmlFor = uid + '-plan';
     const refresh = button('pccIcon pccRefresh', 'Обновить полотно', 'refresh');
-    head.append(heading, conversation, refresh);
+    head.append(planLabel, refresh);
     const status = el('p', 'pccStatus');
     status.setAttribute('role', 'status');
     status.setAttribute('aria-live', 'polite');
@@ -65,8 +62,6 @@
     retry.hidden = true;
     const content = el('div', 'pccContent');
     const planSection = el('section', 'pccPlan');
-    const planLabel = el('label', 'pccLabel', 'План');
-    planLabel.htmlFor = uid + '-plan';
     const planBody = el('textarea', 'pccPlanBody');
     planBody.id = uid + '-plan';
     planBody.maxLength = 20000;
@@ -75,18 +70,18 @@
     const planFoot = el('div', 'pccFormFoot');
     const planNotice = el('p', 'pccNotice pccPlanNotice');
     planNotice.setAttribute('role', 'status');
-    const planSave = button('pccButton pccPlanSave', 'Сохранить план');
+    const planSave = button('pccButton pccPlanSave', 'Сохранить проекты');
     planFoot.append(planNotice, planSave);
     const planConflict = el('div', 'pccConflict pccPlanConflict');
     planConflict.hidden = true;
-    const planServerLabel = el('p', 'pccConflictLabel', 'Сейчас в общем плане');
+    const planServerLabel = el('p', 'pccConflictLabel', 'Текущий текст проектов');
     const planServerBody = el('p', 'pccServerBody pccPlanServerBody');
     const planConflictActions = el('div', 'pccConflictActions');
     const planUseServer = button('pccTextButton pccPlanUseServer', 'Принять общий текст');
     const planReplace = button('pccButton pccPlanReplace', 'Сохранить мою версию');
     planConflictActions.append(planUseServer, planReplace);
     planConflict.append(planServerLabel, planServerBody, planConflictActions);
-    planSection.append(planLabel, planBody, planFoot, planConflict);
+    planSection.append(planBody, planFoot, planConflict);
     const tasksSection = el('section', 'pccTasks');
     const tasksHead = el('div', 'pccTasksHead');
     const tasksHeading = el('h3', 'pccLabel', 'Дела');
@@ -155,12 +150,12 @@
     function updatePlanControls() {
       planBody.disabled = !snapshot || savingPlan;
       planSave.disabled = !snapshot || !planDirty || savingPlan;
-      planSave.textContent = savingPlan ? 'Сохраняем…' : 'Сохранить план';
+      planSave.textContent = savingPlan ? 'Сохраняем…' : 'Сохранить проекты';
       planSave.hidden = planChanged;
       planReplace.disabled = !snapshot || savingPlan;
       planUseServer.disabled = savingPlan;
       planConflict.hidden = !planChanged;
-      if (planChanged) planServerBody.textContent = snapshot?.canvas.body || 'План пока пуст.';
+      if (planChanged) planServerBody.textContent = snapshot?.canvas.body || 'Проекты пока не описаны.';
     }
     function updateTaskControls() {
       add.disabled = !snapshot || taskBusy || !!taskDraft;
@@ -194,7 +189,7 @@
         autosize(planBody, 360);
       } else if (planDirty && !savingPlan && data.canvas.revision !== planBaseRevision) {
         planChanged = true;
-        planState('План изменился у собеседника. Ваш текст сохранён в поле выше.', 'conflict');
+        planState('Текст проектов изменился у собеседника. Ваш текст сохранён в поле выше.', 'conflict');
       }
       updatePlanControls();
       renderTasks();
@@ -242,7 +237,7 @@
         const data = await options.load({ context: { ...context }, signal: controller.signal });
         if (!current(ticket) || request !== loadTicket || controller.signal.aborted) return;
         applySnapshot(data);
-        status.textContent = 'Общее для участников чата';
+        status.textContent = '';
       } catch (error) {
         if (!current(ticket) || request !== loadTicket || isAbort(error) || controller.signal.aborted) return;
         if (!snapshot) pane.dataset.state = 'error';
@@ -303,7 +298,7 @@
           const data = await recoverConflict(ticket);
           if (!current(ticket)) return;
           planChanged = !!data;
-          planState(data ? 'План изменился у собеседника. Ваш текст сохранён в поле выше.' : 'План изменился. Обновите полотно, чтобы сравнить версии. Ваш текст сохранён.', 'conflict');
+          planState(data ? 'Текст проектов изменился у собеседника. Ваш текст сохранён в поле выше.' : 'Текст проектов изменился. Обновите полотно, чтобы сравнить версии. Ваш текст сохранён.', 'conflict');
         } else planState(errorMessage(error), 'error');
       } finally {
         controllers.delete(controller);
@@ -720,7 +715,6 @@
     add.onclick = () => startTask();
     refresh.onclick = () => load(true);
     retry.onclick = () => load(true);
-    conversation.onclick = () => options.onConversation?.();
     scope.addEventListener('focus', onFocus);
     scope.addEventListener('beforeunload', onBeforeUnload);
     document.addEventListener('visibilitychange', onFocus);
