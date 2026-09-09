@@ -167,10 +167,19 @@
   --state: 0px;
 }
 #app > header {
+  display: grid;
+  grid-template-columns: 44px 44px minmax(0, 1fr) 44px 44px;
+  gap: 4px;
+  align-items: center;
   padding-right: 10px;
   padding-left: 10px;
   border-bottom-color: transparent;
 }
+#app > header #chatBack { grid-column: 1; grid-row: 1; min-height: 44px; }
+#app > header .chatHeading { grid-column: 3; grid-row: 1; min-width: 0; }
+#app > header #chatLibraryOpen { grid-column: 4; grid-row: 1; }
+#app > header #reportBtn { grid-column: 5; grid-row: 1; min-height: 44px; }
+#app > header #queueBtn[hidden] { display: none; }
 #app > header #chatTitle {
   font-size: 16px;
   font-weight: 400;
