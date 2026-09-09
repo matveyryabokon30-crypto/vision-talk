@@ -114,7 +114,9 @@ async def one(name, engine):
     async def open_main():
         await page.locator('.chatMain').first.click()
         await page.wait_for_function('PablicusChat?.rich && PablicusChat?.store && PablicusChat?.list')
-        await page.wait_for_function("PablicusChat.scope.chat==='" + MAIN_CHAT + "'")
+        # scope.chat is assigned before the durable draft restoration finishes;
+        # wait for the ready flag so WebKit cannot overwrite the first keystrokes.
+        await page.wait_for_function("PablicusChat.scope.chat==='" + MAIN_CHAT + "' && window.vault?.ready && !window.vault?.restoring")
 
     async def end_text(value):
         last = page.locator('#editor textarea').last
