@@ -33,3 +33,7 @@ except subprocess.CalledProcessError:commit='local-uncommitted'
 (D/'version.json').write_text(json.dumps({'product':'Pablicus','version':json.loads((D/'version.json').read_text())['version'],'commit':commit,'asset_revision':rev,'stage':'CANDIDATE_PENDING_LIVE_TWO_ACCOUNT_AND_DEVICE_ACCEPTANCE'},indent=2))
 (D/'ASSET_MANIFEST.json').write_text(json.dumps({str(f.relative_to(D)):hashlib.sha256(f.read_bytes()).hexdigest() for f in sorted(D.rglob('*')) if f.is_file() and f.name!='ASSET_MANIFEST.json'},indent=2))
 print('PWA artifact complete; asset revision',rev,'commit',commit)
+
+# Keep approved icon provenance and platform links inside the existing release gate.
+import sys
+subprocess.run([sys.executable,str(R/'tests/glass_icon_integrity.py')],check=True)
