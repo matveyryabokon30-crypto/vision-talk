@@ -52,6 +52,26 @@ s=s.replace("['modes','Помощник'],", "")
 s=s.replace("$('taskMenu').onclick=e=>openMenu('tasks',$('taskMenu'),e.detail===0);", "$('taskMenu').onclick=()=>window.PablicusHost.unavailable('Помощник');")
 s=s.replace("app.querySelector('.tools'),$('status'),app.querySelector('.stage')", "app.querySelector('.tools'),$('chatViewTabs'),$('status'),app.querySelector('.stage')")
 s=s.replace("app.querySelector('header').offsetHeight+app.querySelector('.tools').offsetHeight", "app.querySelector('header').offsetHeight+$('chatViewTabs').offsetHeight+app.querySelector('.tools').offsetHeight")
+# The dock already follows visualViewport above the software keyboard. Safari
+# can keep the home-indicator safe-area inset there, leaving a second empty gap.
+# Only remove that inset for a focused text editor and an unzoomed, reduced
+# visual viewport; focus alone also happens with a hardware keyboard attached.
+layout_start='function applyLayout(){if(simulating)return;'
+assert s.count(layout_start)==1,'Viewport layout changed; review required'
+s=s.replace(layout_start,"""function keyboardOccludesViewport(v){
+const active=document.activeElement;
+const editable=active&&app.contains(active)&&!active.readOnly&&!active.disabled&&active.inputMode!=='none'&&(active.isContentEditable||active.tagName==='TEXTAREA'||(active.tagName==='INPUT'&&['text','search','email','url','tel','password','number'].includes(active.type)));
+return !!(editable&&v&&Math.abs(v.scale-1)<.02&&Math.max(innerHeight,document.documentElement.clientHeight)-v.height>120);
+}
+"""+layout_start,1)
+layout_changed='const changed=Math.abs(app.clientWidth-width)>.5||Math.abs(app.clientHeight-h)>.5;'
+assert s.count(layout_changed)==1,'Viewport size detection changed; review required'
+s=s.replace(layout_changed,"""const keyboardOpen=keyboardOccludesViewport(v),keyboardChanged=app.classList.contains('keyboard-open')!==keyboardOpen;
+app.classList.toggle('keyboard-open',keyboardOpen);
+const changed=keyboardChanged||Math.abs(app.clientWidth-width)>.5||Math.abs(app.clientHeight-h)>.5;""",1)
+layout_events="window.addEventListener('resize',queueLayout);"
+assert s.count(layout_events)==1,'Viewport event binding changed; review required'
+s=s.replace(layout_events,"app.addEventListener('focusin',queueLayout);app.addEventListener('focusout',queueLayout);\n"+layout_events,1)
 s=s.replace("draft.mode==='message'?'Сохранить в исходящие; не доставка'", "draft.mode==='message'?'Отправить сообщение'")
 # Normal draft persistence is silent. Keep recovery actions available only when
 # saving fails or another tab changes the draft; the ordinary dock has no footer.

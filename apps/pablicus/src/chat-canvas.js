@@ -146,12 +146,14 @@
     function planState(text, state) {
       planNotice.textContent = text;
       planNotice.dataset.state = state || '';
+      planFoot.hidden = planSave.hidden && !text;
     }
     function updatePlanControls() {
       planBody.disabled = !snapshot || savingPlan;
       planSave.disabled = !snapshot || !planDirty || savingPlan;
       planSave.textContent = savingPlan ? 'Сохраняем…' : 'Сохранить проекты';
-      planSave.hidden = planChanged;
+      planSave.hidden = !snapshot || (!planDirty && !savingPlan) || planChanged;
+      planFoot.hidden = planSave.hidden && !planNotice.textContent;
       planReplace.disabled = !snapshot || savingPlan;
       planUseServer.disabled = savingPlan;
       planConflict.hidden = !planChanged;
