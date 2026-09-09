@@ -1,0 +1,37 @@
+name: Import owner-approved glass icon
+on:
+  push:
+    branches: [pablicus-icon-import-20260909]
+    paths: ['.github/workflows/pablicus-approved-icon-import.yml']
+permissions:
+  contents: write
+jobs:
+  import-approved-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 6268053b91b3c9676469e00758b90216c7406b34
+      - name: Preserve exact approved image, with content-address verification
+        run: |
+          python - <<'PY'
+          import hashlib, pathlib, urllib.request
+          url = 'https://sdmntprbrazilsouth.oaiusercontent.com/files/00000000-8c38-820e-8fd5-83c39b86ed08/raw?se=2026-09-09T14%3A46%3A18Z&sp=r&sv=2026-02-06&sr=b&scid=be0d404d-9c49-5329-b3d4-d7af6a6fd8e3&skoid=061609b8-1cdb-4a5b-9e68-c7ab9a523a8f&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-09T02%3A04%3A57Z&ske=2026-09-10T02%3A04%3A57Z&sks=b&skv=2026-02-06&sig=b69NVtS/eraOU%2BBRGzboEWDZHAqSk1nHDSpvmJJDS6E%3D'
+          with urllib.request.urlopen(url, timeout=40) as response:
+              data = response.read(1000000)
+          assert len(data) == 834240, 'Unexpected approved source size'
+          assert hashlib.sha256(data).hexdigest() == 'e410d1c9077a66a33f68b4bb5efbd5d11dea041819607b4991e7057788c81207', 'Approved image checksum mismatch'
+          target = pathlib.Path('apps/pablicus/branding/public-glass-approved-20260909.png')
+          target.parent.mkdir(parents=True, exist_ok=True)
+          target.write_bytes(data)
+          print('Approved original PNG verified: 834240 bytes, SHA-256 match')
+          PY
+      - name: Commit only original image, without importer workflow or publication
+        run: |
+          git config user.name 'Pablicus asset import'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- apps/pablicus/branding/public-glass-approved-20260909.png
+          test "$(git diff --cached --name-only | wc -l)" -eq 1
+          git commit -m 'Preserve exact owner-approved glass chat icon source'
+          git push origin HEAD:refs/heads/pablicus-glass-icon-20260909
