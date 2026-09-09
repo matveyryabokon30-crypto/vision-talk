@@ -97,8 +97,8 @@
  }
  function renderCanvasContent({host,content,context,signal}){
   const active=()=>canvasCurrent(context)&&!signal?.aborted&&host.isConnected;
-  const view=PablicusRichMessage.render(content,{mountRoot:host,isActive:active,linkify:true,
-   resolveUrl:async path=>{if(!active())throw new DOMException('Разговор изменился','AbortError');const url=await signedUrl(path);if(!active())throw new DOMException('Разговор изменился','AbortError');return url;},
+  const view=PablicusRichMessage.render(content,{mountRoot:host,isActive:active,linkify:true,naturalMedia:true,
+   resolveUrl:async(path,block)=>{if(!active())throw new DOMException('Разговор изменился','AbortError');const url=await signedUrl(path||block?.path);if(!active())throw new DOMException('Разговор изменился','AbortError');return url;},
    openMedia:(block,gallery)=>{if(!active())return;return['image','video'].includes(block.type)?mediaViewer.open((gallery?.items||[block]).map(item=>mediaItem(item)),gallery?.index||0):viewAttachment({type:block.type,attachment_path:block.path,attachment_metadata:{name:block.name,mime_type:block.mime,size_bytes:block.size}},active);}
   });
   host.replaceChildren(view);view.activate();
@@ -113,7 +113,7 @@
  function enableTaskNotifications(){const pending=pushNotifications.enable();return Promise.resolve(pending).then(()=>{if(!pushNotifications.enabled)throw Error('Уведомления не включены. Откройте приложение с главного экрана iPhone и разрешите уведомления.');});}
  function canvasNavigationAllowed(){return!chatCanvas.hasUnsavedChanges()||confirm('В полотне есть несохранённые изменения. Выйти без сохранения?');}
  function paintConversationView(){
-  $('app').classList.toggle('canvas-active',canvasVisible);$('chatCanvasPanel').hidden=!canvasVisible;$('vp').inert=canvasVisible;
+  $('app').classList.toggle('canvas-active',canvasVisible);$('chatCanvasPanel').hidden=!canvasVisible;$('vp').inert=canvasVisible;$('composer').hidden=canvasVisible;
   for(const [id,selected]of [['conversationTab',!canvasVisible],['canvasTab',canvasVisible]]){$(id).setAttribute('aria-selected',String(selected));$(id).tabIndex=selected?0:-1;}
  }
  function resetConversationView(){++canvasSwitch;++canvasEpoch;chatCanvas.reset();workspaceUploadState.clear();canvasVisible=false;paintConversationView();}
@@ -243,7 +243,7 @@
   if(attempt!==authVersion||signal?.aborted)return;
   if(r.error){const cached=safeGet('pablicus:'+uid+':profile');if(!verifiedPasskey&&!navigator.onLine&&cached)profile=cached;else{user=null;throw Error('Не удалось проверить доступ к аккаунту. '+r.error.message)}}else profile=r.data;
   if(!profile.is_approved){profile=null;user=null;throw Error('Аккаунт ещё не одобрен. Свяжитесь с владельцем Pablicus.')}
-  safeSet('pablicus:'+uid+':profile',profile);$('loginPane').hidden=true;$('workspace').hidden=false;$('mainNav').hidden=false;dialogs=safeGet(cacheKey())||[];renderHome();await loadDialogs();if(user?.id!==uid)return;startInbox();pump();showPersonLink();showPushConversation();pushNotifications.refresh();
+  safeSet('pablicus:'+uid+':profile',profile);$('loginPane').hidden=true;$('workspace').hidden=false;$('mainNav').hidden=false;dialogs=safeGet(cacheKey())||[];renderHome();$('home').classList.remove('auth-booting');await loadDialogs();if(user?.id!==uid)return;startInbox();pump();showPersonLink();showPushConversation();pushNotifications.refresh();
  }
  $('loginForm').onsubmit=async e=>{e.preventDefault();if(passkeySigninActive)return;$('loginSubmit').disabled=true;$('loginError').textContent='';try{const r=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(r.error)throw r.error;$('password').value='';trustExplicitSignIn();await authenticate(r.data.session)}catch(e){$('loginError').textContent=e.message}finally{$('loginSubmit').disabled=false}};
  const authConfig=globalThis.PablicusAuthConfig;
@@ -336,7 +336,7 @@
  PablicusOAuthSession.restore({client:sb,storageKey:authStorageKey,href:authCallbackHref}).then(session=>{
   if(session&&new window.URL(authCallbackHref).searchParams.has('code'))trustExplicitSignIn();
   authBooting=false;const next=pendingAuthEvent?pendingAuthEvent.session:session;pendingAuthEvent=null;return authenticate(next);
- }).catch(e=>{authBooting=false;pendingAuthEvent=null;authenticate(null);$('loginError').textContent=e.message});
+ }).then(()=>{$('home').classList.remove('auth-booting')}).catch(e=>{authBooting=false;pendingAuthEvent=null;authenticate(null);$('home').classList.remove('auth-booting');$('loginError').textContent=e.message});
  async function loadDialogs(){if(!user||refreshing||!navigator.onLine)return;refreshing=true;const uid=user.id;try{let r=await sb.rpc('my_conversations_v3');if(r.error)r=await sb.rpc('my_conversations_v2');if(r.error)throw r.error;if(user?.id!==uid)return;dialogs=r.data||[];safeSet(cacheKey(),dialogs);if(!current&&page==='chats')renderHome()}catch(e){if(!dialogs.length)toast('Не удалось обновить список разговоров')}finally{refreshing=false}}
  function storageSize(bytes){const value=Number(bytes);if(!Number.isFinite(value)||value<0)return'—';if(value===0)return'0 Б';const units=['Б','КБ','МБ','ГБ','ТБ'],index=Math.min(4,Math.floor(Math.log(value)/Math.log(1024)));return new Intl.NumberFormat('ru',{maximumFractionDigits:index?1:0}).format(value/1024**index)+' '+units[index];}
  function mountStorageUsage(parent){

@@ -224,6 +224,7 @@ async def one(name, engine):
     async def open_canvas():
         await page.locator('#canvasTab').click()
         await pane.locator('.pablicusChatCanvas[data-state="ready"]').wait_for()
+        assert await page.locator('#composer').is_hidden()
 
     async def fill_plan(value):
         if not await body.is_visible():
@@ -686,6 +687,10 @@ async def one(name, engine):
             else:
                 await project_card.click()
             await pane.locator('.pccProjectViewContent a[href="https://example.com/brief"]').wait_for()
+            assert await pane.locator('.pccProjectViewContent .richMessageNaturalMedia').count() == 1
+            assert await pane.locator('.pccProjectViewContent .richMedia-video video').count() == 1
+            await pane.locator('.pccPlanCopy').click()
+            await pane.locator('.pccCopyStatus').wait_for()
             assert await project_card.get_attribute('aria-expanded') == 'true'
             assert await project_card.get_attribute('aria-label') == 'Свернуть проект'
             assert await project_card.inner_text() == ''
