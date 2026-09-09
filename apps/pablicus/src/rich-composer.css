@@ -1,14 +1,19 @@
 /* One ordered document: text, media and voice remain editable together. */
-#composeBox.rich-composer {
-  grid-template-columns: 40px minmax(0, 1fr) 36px 40px 40px;
-  grid-template-areas: 'tray tray tray tray tray' 'task task task task task' 'attach editor expand voice send';
-}
+/* Text and shortcuts belong to one surface, like a message composer. */
+#composeBox.rich-composer,
 #composeBox.rich-composer.rich,
 #composeBox.rich-composer.rich-has-media {
-  grid-template-columns: 40px minmax(0, 1fr) 36px 40px 40px;
-  grid-template-areas: 'task task task task task' 'editor editor editor editor expand' 'attach modes hide voice send';
-  row-gap: 4px;
+  grid-template-columns: 36px minmax(0, 1fr) 30px 36px 38px;
+  grid-template-areas: 'tray tray tray tray tray' 'task task task task task' 'editor editor editor editor editor' 'attach quick expand voice send';
+  gap: 0 2px;
+  align-items: center;
+  padding: 3px 7px 5px;
 }
+#composeBox.rich-composer #workspaceQuick { grid-area: quick; min-width: 0; align-self: center; }
+#app:not(.composer-fullscreen) #composeBox.rich-composer #hideKey { display: none; }
+#composer #composeBox.rich-composer > .cicon { width: 36px; height: 36px; min-height: 36px; align-self: center; }
+#composer #composeBox.rich-composer #expand { width: 30px; }
+#composer #composeBox.rich-composer #send { width: 38px; height: 38px; min-height: 38px; }
 #editor.richEditor.richHasMedia {
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -107,9 +112,9 @@
 #composer #richVoice.is-recording { background: #d747471a; color: #d74747; }
 .richVoiceStop { display: block; width: 13px; height: 13px; border-radius: 3px; background: currentColor; }
 #app.composer-fullscreen #composeBox.rich-composer {
-  grid-template-columns: 40px minmax(0, 1fr) 40px 40px 44px;
-  grid-template-rows: 40px minmax(0, 1fr) 44px;
-  grid-template-areas: 'title title title title expand' 'editor editor editor editor editor' 'attach spacer hide voice send';
+  grid-template-columns: 36px minmax(0, 1fr) 30px 36px 38px;
+  grid-template-rows: 40px minmax(0, 1fr) 40px;
+  grid-template-areas: 'title title title hide expand' 'editor editor editor editor editor' 'attach quick quick voice send';
 }
 #app.composer-fullscreen #editor.richEditor { height: 100%; min-height: 0; max-height: none; overflow-y: auto; }
 #app.composer-fullscreen #editor.richEditor.richHasMedia #input { height: auto; min-height: 40px; }

@@ -71,7 +71,7 @@ def canvas_sdk():
       ['__OTHER_CHAT__']:seedCanvas('__OTHER_CHAT__','__OTHER_PLAN__')
     };
     __mock.canvasState[chat].tasks.push({id:'__TASK_ID__',title:'Подготовить три идеи',
-      assignee_id:peer,due_date:'2026-09-11',due_at:null,due_timezone:'UTC',reminder_minutes:null,followup_minutes:null,archived_at:null,completed:false,revision:1,
+      assignee_id:peer,due_date:'2030-09-11',due_at:null,due_timezone:'UTC',reminder_minutes:null,followup_minutes:null,archived_at:null,completed:false,revision:1,
       source_message_id:null,source_block_id:null,
       created_at:canvasNow(),created_by:peer,updated_at:canvasNow(),updated_by:peer});
     __mock.peerPlan=body=>{const state=__mock.canvasState[chat];
@@ -208,7 +208,7 @@ async def one(name, engine):
     page.on('pageerror', lambda error: errors.append(str(error)))
     pane = page.locator('#chatCanvasPanel')
     body = pane.locator('.pccPlanBody')
-    form = pane.locator('.pccTaskForm')
+    form = page.locator('.pccTaskForm')
 
     async def open_chat(chat_id):
         await page.locator('.chatMain').filter(has_text='@qa_peer' if chat_id == MAIN_CHAT else 'Соседний QA чат').click()
@@ -217,6 +217,54 @@ async def one(name, engine):
     async def open_canvas():
         await page.locator('#canvasTab').click()
         await pane.locator('.pablicusChatCanvas[data-state="ready"]').wait_for()
+
+    async def choose_date(value):
+        # Exercise the visible calendar, never fill its hidden storage input.
+        for _ in range(60):
+            day = form.locator(f'.pccCalendarDay[data-date="{value}"]')
+            if await day.count():
+                await day.click()
+                assert await form.locator('.pccTaskDate').input_value() == value
+                return
+            first = await form.locator('.pccCalendarDay[data-date]').first.get_attribute('data-date')
+            direction = '.pccCalendarNext' if value > first else '.pccCalendarPrev'
+            await form.locator(direction).click()
+        raise AssertionError('Calendar did not reach ' + value)
+
+    async def task_action(selector):
+        details = form.locator('.pccTaskMore')
+        if await details.get_attribute('open') is None:
+            await form.locator('.pccTaskMoreToggle').click()
+        await form.locator(selector).click()
+
+    async def assert_simple_sheet(width):
+        await page.set_viewport_size({'width': width, 'height': 844})
+        await page.wait_for_timeout(70)
+        sheet = page.locator('.pccTaskSheet')
+        assert await sheet.is_visible()
+        assert await form.locator('.pccCalendar').is_visible()
+        assert await form.locator('.pccTaskTime').is_visible()
+        assert await form.locator('.pccTaskReminder').is_visible()
+        assert await form.locator('.pccTaskTitle').is_visible()
+        assert await form.locator('.pccTaskSave').inner_text() == 'Добавить'
+        assert not await form.locator('.pccTaskAssignee').count()
+        assert not await form.locator('.pccTaskFollowup').count()
+        assert not await form.locator('.pccTaskMore').count()
+        assert not await form.locator('.pccTaskDone,.pccTaskArchive,.pccTaskDelete,.pccTaskPostpone').count()
+        layout = await form.evaluate("""node=>{
+          const rect=selector=>{const r=node.querySelector(selector).getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right};};
+          const r=node.closest('.pccTaskSheet').getBoundingClientRect();
+          return {calendar:rect('.pccCalendar'),time:rect('.pccTaskTime'),reminder:rect('.pccTaskReminder'),
+            title:rect('.pccTaskTitle'),save:rect('.pccTaskSave'),left:r.left,right:r.right,top:r.top,bottom:r.bottom,
+            viewport:innerWidth,height:innerHeight,overflow:document.documentElement.scrollWidth>innerWidth};
+        }""")
+        assert layout['left'] >= -1 and layout['right'] <= width + 1 and not layout['overflow'], layout
+        assert layout['top'] >= -1 and layout['bottom'] <= layout['height'] + 1, layout
+        assert layout['calendar']['bottom'] <= layout['time']['top'] + 1, layout
+        assert layout['time']['bottom'] <= layout['reminder']['top'] + 1, layout
+        assert layout['reminder']['bottom'] <= layout['title']['top'] + 1, layout
+        assert layout['title']['bottom'] <= layout['save']['top'] + 1, layout
+        await page.screenshot(path=str(EVIDENCE / f'chat-canvas-{name}-new-task-{width}.png'))
 
     async def server_tasks():
         return await page.evaluate('id=>structuredClone(__mock.canvasState[id].tasks)', MAIN_CHAT)
@@ -230,6 +278,7 @@ async def one(name, engine):
 
     try:
         EVIDENCE.mkdir(exist_ok=True)
+        await page.clock.set_fixed_time('2030-09-09T06:00:00.000Z')
         await page.goto('http://127.0.0.1:8765/', wait_until='domcontentloaded')
         await page.wait_for_selector('.chatMain')
         await open_chat(MAIN_CHAT)
@@ -277,15 +326,26 @@ async def one(name, engine):
 
         await pane.locator('.pccTaskAdd').click()
         await form.wait_for()
+        assert await form.locator('.pccTaskDate').input_value() == '2030-09-09'
+        assert await form.locator('.pccTaskTime').input_value() == '10:00'
+        await assert_simple_sheet(390)
+        await assert_simple_sheet(320)
+        await page.set_viewport_size({'width': 390, 'height': 844})
+        title_before = await form.locator('.pccTaskTitle').evaluate('node=>node.getBoundingClientRect().height')
+        await form.locator('.pccTaskTitle').fill('Синтетический текст задачи\nВторая строка задачи\nТретья строка задачи\nЧетвёртая строка задачи')
+        title_after = await form.locator('.pccTaskTitle').evaluate('node=>node.getBoundingClientRect().height')
+        assert title_after > title_before, (title_before, title_after)
         await form.locator('.pccTaskTitle').fill('Забронировать студию')
-        options = await form.locator('.pccTaskAssignee option').evaluate_all('(nodes)=>nodes.map(n=>({value:n.value,text:n.textContent}))')
-        assert any(option['value'] == PEER and 'Катя' in option['text'] for option in options), options
-        await form.locator('.pccTaskAssignee').select_option(PEER)
-        await form.locator('.pccTaskDate').fill('2026-09-11')
+        await form.locator('.pccCalendarNext').click()
+        await choose_date('2030-10-02')
+        assert await form.locator('.pccCalendarDay[data-date]').count() == 31
+        await form.locator('.pccCalendarPrev').click()
+        assert await form.locator('.pccTaskDate').input_value() == '2030-10-02'
+        await choose_date('2030-09-11')
         await form.locator('.pccTaskSave').click()
         await form.wait_for(state='hidden')
         task = next(task for task in await server_tasks() if task['title'] == 'Забронировать студию')
-        assert task['assignee_id'] == PEER and task['due_date'] == '2026-09-11'
+        assert task['assignee_id'] == USER and task['due_date'] == '2030-09-11'
         assert task['created_by'] == USER and not task['completed']
         await card(task['id']).locator('.pccTaskToggle').click()
         await page.wait_for_function('([id,taskId])=>__mock.canvasState[id].tasks.find(t=>t.id===taskId)?.completed', arg=[MAIN_CHAT, task['id']])
@@ -298,27 +358,26 @@ async def one(name, engine):
         await pane.locator('.pccTaskView[data-view="open"]').click()
         await card(task['id']).locator('.pccTaskEdit').click()
         await form.locator('.pccTaskTitle').fill('Студия «Свет» забронирована')
-        await form.locator('.pccTaskAssignee').select_option('')
-        await form.locator('.pccTaskDate').fill('')
+        await choose_date('2030-09-12')
         await form.locator('.pccTaskSave').click()
         await form.wait_for(state='hidden')
         updated = next(item for item in await server_tasks() if item['id'] == task['id'])
-        assert updated['title'] == 'Студия «Свет» забронирована' and updated['assignee_id'] is None and updated['due_date'] is None
+        assert updated['title'] == 'Студия «Свет» забронирована' and updated['assignee_id'] == USER and updated['due_date'] == '2030-09-12'
         await card(task['id']).locator('.pccTaskEdit').click()
-        await form.locator('.pccTaskDelete').click()
+        await task_action('.pccTaskDelete')
         assert any(item['id'] == task['id'] for item in await server_tasks())
         await form.locator('.pccTaskDeleteConfirm').click()
         await card(task['id']).wait_for(state='hidden')
         assert not any(item['id'] == task['id'] for item in await server_tasks())
-        checks.append('tasks can be created with participant/date, completed, reopened, edited including clearing optional fields, and removed only after explicit confirmation')
+        checks.append('New task immediately opens one calendar sheet: date, time, reminder, expanding text and a single Add action at 390/320px; it creates for the caller, then supports completion/reopening/editing and explicit confirmed removal')
 
         # Exercise an actual non-UTC browser timezone and an absolute transport instant.
         await pane.locator('.pccTaskAdd').click()
         await form.locator('.pccTaskTitle').fill('Проверить свет в студии QA')
-        await form.locator('.pccTaskDate').fill('2030-09-11')
+        await choose_date('2030-09-11')
         await form.locator('.pccTaskTime').fill('15:00')
         await form.locator('.pccTaskReminder').select_option('60')
-        assert await form.locator('.pccTaskFollowup').input_value() == '180'
+        assert not await form.locator('.pccTaskFollowup').count()
         assert not any(item['title'] == 'Проверить свет в студии QA' for item in await server_tasks())
         await form.locator('.pccTaskSave').click()
         await form.wait_for(state='hidden')
@@ -331,7 +390,7 @@ async def one(name, engine):
         await card(timed['id']).locator('.pccTaskEdit').click()
         assert await form.locator('.pccTaskTime').input_value() == '15:00'
         assert await form.locator('.pccTaskReminder').input_value() == '60'
-        assert await form.locator('.pccTaskFollowup').input_value() == '180'
+        assert not await form.locator('.pccTaskFollowup').count()
         await form.locator('.pccTaskTitle').fill('Проверить свет и камеру QA')
         await form.locator('.pccTaskSave').click()
         await form.wait_for(state='hidden')
@@ -341,14 +400,14 @@ async def one(name, engine):
         checks.append('15:00 Moscow becomes 12:00 UTC with timezone, a one-hour reminder and default three-hour follow-up; title-only editing preserves that schedule and the counter reports a total')
 
         await card(timed['id']).locator('.pccTaskEdit').click()
-        await form.locator('.pccTaskPostpone').click()
-        await form.locator('.pccTaskDate').fill('2001-01-01')
+        await task_action('.pccTaskPostpone')
+        await choose_date('2030-09-08')
         await form.locator('.pccTaskTime').fill('10:00')
         previous_calls = await page.evaluate('__mock.canvasCalls.filter(call=>call.name!=="pablicus_get_canvas").length')
         await form.locator('.pccTaskSave').click()
         assert await form.is_visible()
         assert await page.evaluate('__mock.canvasCalls.filter(call=>call.name!=="pablicus_get_canvas").length') == previous_calls
-        await form.locator('.pccTaskDate').fill('2030-09-12')
+        await choose_date('2030-09-12')
         await form.locator('.pccTaskTime').fill('16:30')
         await form.locator('.pccTaskSave').click()
         await form.wait_for(state='hidden')
@@ -358,12 +417,12 @@ async def one(name, engine):
         checks.append('rescheduling rejects a past instant before any write, accepts a future local date/time, and keeps the same task and reminder preferences')
 
         await card(timed['id']).locator('.pccTaskEdit').click()
-        await form.locator('.pccTaskDone').click()
+        await task_action('.pccTaskDone')
         await form.wait_for(state='hidden')
         await card(timed['id']).wait_for(state='hidden')
         await pane.locator('.pccTaskView[data-view="completed"]').click()
         await card(timed['id']).locator('.pccTaskEdit').click()
-        await form.locator('.pccTaskArchive').click()
+        await task_action('.pccTaskArchive')
         await form.wait_for(state='hidden')
         await card(timed['id']).wait_for(state='hidden')
         await pane.locator('.pccTaskView[data-view="archived"]').click()
@@ -371,16 +430,16 @@ async def one(name, engine):
         archived = next(item for item in await server_tasks() if item['id'] == timed['id'])
         assert archived['completed'] and archived['archived_at'], archived
         await card(timed['id']).locator('.pccTaskEdit').click()
-        await form.locator('.pccTaskRestore').click()
+        await task_action('.pccTaskRestore')
         await form.wait_for(state='hidden')
         await card(timed['id']).wait_for(state='hidden')
         await pane.locator('.pccTaskView[data-view="completed"]').click()
         await card(timed['id']).locator('.pccTaskEdit').click()
-        await form.locator('.pccTaskArchive').click()
+        await task_action('.pccTaskArchive')
         await form.wait_for(state='hidden')
         await pane.locator('.pccTaskView[data-view="archived"]').click()
         await card(timed['id']).locator('.pccTaskEdit').click()
-        await form.locator('.pccTaskDelete').click()
+        await task_action('.pccTaskDelete')
         assert any(item['id'] == timed['id'] for item in await server_tasks())
         await form.locator('.pccTaskDeleteConfirm').click()
         await form.wait_for(state='hidden')
@@ -406,7 +465,7 @@ async def one(name, engine):
 
         await card(TASK_ID).locator('.pccTaskEdit').click()
         await form.locator('.pccTaskTitle').fill('Мой вариант задачи')
-        await form.locator('.pccTaskDate').fill('2030-09-15')
+        await choose_date('2030-09-15')
         await form.locator('.pccTaskTime').fill('11:20')
         await form.locator('.pccTaskReminder').select_option('30')
         await page.evaluate('([id,text])=>__mock.peerTask(id,text)', [TASK_ID, 'Катя уже изменила задачу'])
@@ -418,13 +477,14 @@ async def one(name, engine):
         assert next(item for item in await server_tasks() if item['id'] == TASK_ID)['title'] == 'Катя уже изменила задачу'
         await form.locator('.pccTaskReplace').click()
         await form.wait_for(state='hidden')
-        assert next(item for item in await server_tasks() if item['id'] == TASK_ID)['title'] == 'Мой вариант задачи'
+        shared_task = next(item for item in await server_tasks() if item['id'] == TASK_ID)
+        assert shared_task['title'] == 'Мой вариант задачи' and shared_task['assignee_id'] == PEER
         checks.append('editing a stale task never silently overwrites the other participant; explicit conflict resolution preserves and then saves the local form')
 
         await page.evaluate('__mock.loseCreateResponse=true')
         await pane.locator('.pccTaskAdd').click()
         await form.locator('.pccTaskTitle').fill('Создать ровно один раз')
-        await form.locator('.pccTaskDate').fill('2030-09-16')
+        await choose_date('2030-09-16')
         await form.locator('.pccTaskTime').fill('09:40')
         await form.locator('.pccTaskReminder').select_option('60')
         await form.locator('.pccTaskSave').click()
@@ -436,7 +496,7 @@ async def one(name, engine):
         retry_task = next(item for item in await server_tasks() if item['title'] == 'Создать ровно один раз')
         await form.locator('.pccTaskTitle').fill('Уточнить задачу после потери ответа')
         await form.locator('.pccTaskSave').click()
-        await pane.locator(f'.pccTaskForm[data-task-id="{retry_task["id"]}"]').wait_for()
+        await page.locator(f'.pccTaskForm[data-task-id="{retry_task["id"]}"]').wait_for()
         assert await form.locator('.pccTaskTitle').input_value() == 'Уточнить задачу после потери ответа'
         assert len([item for item in await server_tasks() if item['title'] == 'Создать ровно один раз']) == 1
         create_calls = await page.evaluate('__mock.canvasCalls.filter(call=>call.name==="pablicus_create_canvas_task_v2"&&call.args.p_title==="Создать ровно один раз")')

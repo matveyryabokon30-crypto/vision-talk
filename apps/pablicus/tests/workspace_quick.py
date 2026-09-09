@@ -15,6 +15,7 @@ from urllib.parse import urlparse
 from playwright.async_api import async_playwright
 
 from chat_canvas import OTHER_PLAN
+from rich_message_integration import MOCK_MIC
 from message_interactions import DIST, EVIDENCE, MAIN_CHAT, OTHER_CHAT, PEER, SECOND_USER, USER
 from tasks_home import tasks_sdk, task_id
 
@@ -102,6 +103,7 @@ async def one(name, engine):
             body=file.read_bytes())
 
     await context.route('**/*', route)
+    await context.add_init_script(MOCK_MIC)
     page = await context.new_page()
     page.set_default_timeout(15000)
     page.on('pageerror', lambda error: errors.append(str(error)))
@@ -115,7 +117,36 @@ async def one(name, engine):
         await page.wait_for_function('id=>PablicusChat?.scope?.chat===id && !document.getElementById("app").inert && document.getElementById("app").style.visibility!=="hidden"', arg=chat_id)
 
     async def wait_count(kind, total):
-        await page.wait_for_function('([kind,total])=>document.querySelector(".pwqChip[data-kind="+kind+"] .pwqChipLabel")?.textContent===(kind==="projects"?"Проекты · "+total:total===0?"Сегодня · нет дел":"Сегодня · "+total+" "+(total%100>=11&&total%100<=14?"дел":total%10===1?"дело":total%10>=2&&total%10<=4?"дела":"дел"))', arg=[kind, total])
+        await page.wait_for_function('([kind,total])=>document.querySelector(".pwqChip[data-kind="+kind+"] .pwqChipLabel")?.textContent===(kind==="projects"?"Проекты "+total:"Сегодня "+total)', arg=[kind, total])
+        description = await chip(kind).get_attribute('aria-label')
+        assert str(total) in description, description
+        assert ('Сегодня' if kind == 'tasks' else 'Все проекты') in description, description
+
+    async def assert_composer_layout(width, state='normal'):
+        await page.set_viewport_size({'width': width, 'height': 844})
+        await page.wait_for_timeout(70)
+        geometry = await page.locator('#composer').evaluate("""footer=>{
+          const box=footer.querySelector('#composeBox'),quick=footer.querySelector('#workspaceQuick');
+          const rect=node=>{const r=node.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,height:r.height,center:r.top+r.height/2};};
+          return {inside:quick.parentElement===box,box:rect(box),quick:rect(quick),footer:rect(footer),
+            chips:[...quick.querySelectorAll('.pwqChip')].map(rect),
+            labels:[...quick.querySelectorAll('.pwqChipLabel')].map(node=>({text:node.textContent,width:node.clientWidth,content:node.scrollWidth})),
+            tools:['attach','richVoice','send'].map(id=>document.getElementById(id)).filter(node=>node?.getClientRects().length).map(rect),
+            padding:parseFloat(getComputedStyle(footer).paddingBottom)||0,
+            viewport:innerWidth,overflow:document.documentElement.scrollWidth>innerWidth};
+        }""")
+        assert geometry['inside'], geometry
+        assert all(label['content'] <= label['width'] for label in geometry['labels']), geometry
+        assert not geometry['overflow'] and geometry['box']['left'] >= -1 and geometry['box']['right'] <= width + 1, geometry
+        for rect in [geometry['quick'], *geometry['chips'], *geometry['tools']]:
+            assert rect['left'] >= geometry['box']['left'] - 1 and rect['right'] <= geometry['box']['right'] + 1, geometry
+            assert rect['top'] >= geometry['box']['top'] - 1 and rect['bottom'] <= geometry['box']['bottom'] + 1, geometry
+        centers = [rect['center'] for rect in [*geometry['chips'], *geometry['tools']]]
+        assert max(centers) - min(centers) <= 3, geometry
+        if state != 'fullscreen':
+            assert geometry['footer']['bottom'] - geometry['box']['bottom'] <= geometry['padding'] + 2, geometry
+            assert geometry['box']['height'] <= 112, geometry
+        await page.screenshot(path=str(EVIDENCE / f'workspace-quick-{name}-composer-{state}-{width}.png'))
 
     async def row_ids():
         return await popover.locator('.pwqRow').evaluate_all('(nodes)=>nodes.map(node=>node.dataset.key)')
@@ -157,7 +188,73 @@ async def one(name, engine):
         checks.append('Today pagination appends all 55 once with the exact timestamp/id cursor while the chip count remains the whole result, not the first 40 rows')
 
         await popover.locator('.pwqClose').click()
+        await assert_composer_layout(390)
+        await assert_composer_layout(320)
+        await page.locator('#expand').click()
+        await page.wait_for_function('document.getElementById("app").classList.contains("composer-fullscreen")')
+        await assert_composer_layout(320, 'fullscreen')
+        await page.locator('#expand').click()
+        await page.wait_for_function('!document.getElementById("app").classList.contains("composer-fullscreen")')
+        await page.evaluate('document.getElementById("app").classList.add("keyboard-open")')
+        await assert_composer_layout(320, 'keyboard-class')
+        await page.evaluate('document.getElementById("app").classList.remove("keyboard-open")')
+        await page.set_viewport_size({'width': 390, 'height': 844})
+        checks.append('Today/Projects are inside the actual composer toolbar beside plus, microphone and send at 390/320px and fullscreen; no shortcut row or allocated gap remains underneath, including simulated keyboard CSS state')
+
         await page.locator('#input').fill('Черновик QA до перехода между проектами')
+        await page.locator('#richVoice').click()
+        await page.wait_for_function('PablicusChat.rich.recording')
+        await chip('tasks').click()
+        await popover.wait_for()
+        assert await page.evaluate('PablicusChat.rich.recording && __mockMic.stops===0')
+        await popover.locator('.pwqClose').click()
+        await page.locator('#richVoice').click()
+        await page.wait_for_function('!PablicusChat.rich.recording && PablicusChat.rich.capture().files.length===1')
+        await page.locator('#editor .richMedia-audio [aria-label="Убрать вложение"]').click()
+        assert await page.locator('#input').input_value() == 'Черновик QA до перехода между проектами'
+        checks.append('opening and closing shortcuts inside the toolbar preserves composed text and ongoing mocked voice capture; only pressing stop ends the recording')
+
+        # Same-conversation navigation cannot rely on reopening the chat to reset
+        # the expanded composer: selecting the destination must collapse it.
+        await page.locator('#expand').click()
+        await page.wait_for_function('document.getElementById("app").classList.contains("composer-fullscreen")')
+        await chip('projects').click()
+        await popover.locator(f'.pwqRow[data-conversation-id="{MAIN_CHAT}"]').click()
+        await page.locator('#chatCanvasPanel .pablicusChatCanvas[data-state="ready"]').wait_for()
+        assert not await page.evaluate('document.getElementById("app").classList.contains("composer-fullscreen")')
+        assert await page.locator('.pccPlanBody').is_visible()
+        assert await page.locator('#canvasTab').get_attribute('aria-selected') == 'true'
+        assert await page.locator('#input').input_value() == 'Черновик QA до перехода между проектами'
+        await page.locator('#conversationTab').click()
+        await page.locator('#expand').click()
+        await page.wait_for_function('document.getElementById("app").classList.contains("composer-fullscreen")')
+        await chip('tasks').click()
+        await popover.locator(f'.pwqRow[data-task-id="{task_id(53)}"]').click()
+        await page.locator(f'.pccTaskForm[data-task-id="{task_id(53)}"]').wait_for()
+        assert await page.locator('.pccTaskSheet').is_visible()
+        assert not await page.evaluate('document.getElementById("app").classList.contains("composer-fullscreen")')
+        assert await page.locator('#canvasTab').get_attribute('aria-selected') == 'true'
+        assert await page.locator('#input').input_value() == 'Черновик QA до перехода между проектами'
+        checks.append('selecting either a project or an exact task from fullscreen collapses the editor and visibly opens the same-chat canvas/calendar sheet without losing the message draft')
+
+        # Close and reopen in one event turn, before native history.back() has
+        # delivered popstate; that old event must not dismiss the new task.
+        await page.evaluate('''id=>{
+          window.__quickSheetBackEvents=0;
+          window.addEventListener('popstate',()=>window.__quickSheetBackEvents++,{once:true});
+          document.querySelector('.pccTaskCancel').click();
+          document.querySelector('.pccTask[data-task-id="'+id+'"] .pccTaskEdit').click();
+        }''', task_id(51))
+        await page.wait_for_function('window.__quickSheetBackEvents===1')
+        await page.locator(f'.pccTaskForm[data-task-id="{task_id(51)}"]').wait_for()
+        assert await page.locator('.pccTaskSheet').is_visible()
+        await page.go_back()
+        await page.locator('.pccTaskSheet').wait_for(state='hidden')
+        assert await page.evaluate('PablicusChat.scope.chat') == MAIN_CHAT
+        await page.locator('#conversationTab').click()
+        assert await page.locator('#input').input_value() == 'Черновик QA до перехода между проектами'
+        checks.append('rapidly closing one calendar and opening another survives the pending history traversal; the next browser Back closes only that new sheet and retains the chat/draft')
+
         await chip('projects').click()
         projects = await page.evaluate('__mock.allProjects().map(project=>project.conversation_id)')
         assert len(projects) == 45
@@ -194,18 +291,20 @@ async def one(name, engine):
         await page.locator(f'#chatCanvasPanel .pccTask[data-task-id="{task_id(56)}"]').wait_for()
         assert await page.locator('#canvasTab').get_attribute('aria-selected') == 'true'
         await page.locator(f'.pccTaskForm[data-task-id="{task_id(56)}"]').wait_for()
+        await page.locator('.pccTaskCancel').click()
         await chip('tasks').click()
         await popover.locator(f'.pwqRow[data-task-id="{task_id(54)}"]').click()
         await page.locator(f'.pccTaskForm[data-task-id="{task_id(54)}"]').wait_for()
         assert await page.locator('.pccTaskTime').input_value() == '09:30'
         await page.evaluate('([chat,id])=>{const state=__mock.canvasState[chat];__mock.removedQuickTask=state.tasks.find(task=>task.id===id);state.tasks=state.tasks.filter(task=>task.id!==id);state.revision++;}', [OTHER_CHAT, task_id(54)])
+        await page.locator('.pccTaskCancel').click()
         await chip('tasks').click()
         await popover.locator(f'.pwqRow[data-task-id="{task_id(54)}"]').click()
         await page.wait_for_function('()=>document.querySelector("#chatCanvasPanel .pccStatus")?.textContent.includes("удалено")')
         assert 'недоступно' in await page.locator('#chatCanvasPanel .pccStatus').inner_text()
         assert not await page.locator('.pccTaskForm').is_visible()
         await page.evaluate('chat=>{__mock.canvasState[chat].tasks.push(__mock.removedQuickTask);__mock.canvasState[chat].revision++;}', OTHER_CHAT)
-        checks.append('selecting another task in the same chat replaces a clean editor; a stale shortcut to a deleted task closes that editor and leaves a visible unavailable notice')
+        checks.append('selecting tasks opens each exact calendar sheet; closing it returns to the toolbar and a stale shortcut to a deleted task opens no editor and leaves a visible unavailable notice')
         await page.locator('#chatBack').click()
         await open_chat(MAIN_CHAT)
         assert await page.locator('#input').input_value() == 'Черновик QA до перехода между проектами'

@@ -24,6 +24,8 @@
         source: 'M9 10 5 6l4-4M5 6h9a6 6 0 0 1 0 12h-2',
         close: 'm6 6 12 12M18 6 6 18',
         check: 'm5 12 4 4 10-10',
+        previous: 'm14 6-6 6 6 6',
+        next: 'm10 6 6 6-6 6',
       };
       const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       svg.setAttribute('viewBox', '0 0 24 24');
@@ -86,7 +88,7 @@
     const tasksHead = el('div', 'pccTasksHead');
     const tasksHeading = el('h3', 'pccLabel', 'Дела');
     const taskCount = el('span', 'pccTaskCount');
-    const add = button('pccButton pccTaskAdd', 'Добавить дело');
+    const add = button('pccButton pccTaskAdd', 'Новое дело');
     add.prepend(icon('plus'));
     tasksHead.append(tasksHeading, taskCount, add);
     const taskFormHost = el('div', 'pccTaskFormHost');
@@ -116,6 +118,7 @@
     let taskDraft = null, taskForm = null, taskBusy = false, pendingSource = null;
     let taskOperation = null, planError = false;
     let taskView = 'open', pendingTask = null, taskLinkNotice = '';
+    let taskSheet = null, taskReturnFocus = null, taskSheetHistory = false, taskSheetBackPending = false;
     const controllers = new Set();
 
     function sameIdentity() {
@@ -213,11 +216,11 @@
       add.hidden = !!taskDraft;
       if (!taskForm) return;
       for (const input of taskForm.querySelectorAll('input,textarea,select,button')) input.disabled = taskBusy;
-      for (const input of taskForm.querySelectorAll('.pccTaskReminder,.pccTaskFollowup')) input.disabled = taskBusy || !taskDraft.dueDate || !taskDraft.dueTime;
+      for (const input of taskForm.querySelectorAll('.pccTaskReminder')) input.disabled = taskBusy || !taskDraft.dueDate || !taskDraft.dueTime;
       for (const input of taskForm.querySelectorAll('.pccTaskDone,.pccTaskArchive,.pccTaskRestore')) input.disabled = taskBusy || !!taskDraft.conflict;
       const save = taskForm.querySelector('.pccTaskSave');
       save.disabled = taskBusy || !taskDraft.title.trim();
-      save.textContent = taskBusy ? 'Сохраняем…' : (taskDraft.isNew ? 'Добавить дело' : 'Сохранить дело');
+      save.textContent = taskBusy ? 'Сохраняем…' : (taskDraft.isNew ? 'Добавить' : 'Сохранить');
       save.hidden = !!taskDraft.conflict;
       taskForm.querySelector('.pccTaskConflict').hidden = !taskDraft.conflict;
       taskForm.querySelector('.pccTaskDeleteConfirm').hidden = !taskDraft.confirmDelete;
@@ -484,12 +487,15 @@
         return;
       }
       if (taskLinkNotice) { taskLinkNotice = ''; status.textContent = ''; }
-      const timed = localFields(task?.due_at);
+      taskReturnFocus = document.activeElement;
+      const defaultTime = new Date();
+      defaultTime.setHours(defaultTime.getHours() + 1, 0, 0, 0);
+      const timed = localFields(task?.due_at || (!task ? defaultTime.toISOString() : null));
       taskDraft = {
         id: task?.id || newId(), isNew: !task,
         title: task?.title || String(source?.text || source?.title || '').slice(0, 500),
-        assigneeId: task?.assignee_id || null, dueDate: timed.date || task?.due_date || null,
-        dueTime: timed.time, baseDueDate: task?.due_date || null, schedule: scheduleOf(task || {}), scheduleChanged: false, deadlineChanged: false,
+        assigneeId: task ? task.assignee_id || null : context.userId, dueDate: timed.date || task?.due_date || null,
+        dueTime: timed.time, baseDueDate: task?.due_date || null, schedule: scheduleOf(task || {}), scheduleChanged: !task, deadlineChanged: !task,
         reminderMinutes: task?.reminder_minutes ?? null, followupMinutes: task?.due_at ? task.followup_minutes ?? null : 180,
         archived: !!task?.archived_at, review: !!review,
         completed: !!task?.completed, baseRevision: task?.revision || 0,
@@ -500,151 +506,259 @@
       renderTaskForm();
       taskEmpty.hidden = true;
       updateTaskControls();
-      taskForm.scrollIntoView({ block: review ? 'start' : 'nearest' });
-      if (review) taskForm.querySelector('.pccTaskDone')?.focus({ preventScroll: true });
-      else taskForm.querySelector('.pccTaskTitle').focus({ preventScroll: true });
+      showTaskSheet();
+    }
+    function updateSheetViewport() {
+      if (!taskSheet?.open) return;
+      const viewport = scope.visualViewport;
+      taskSheet.style.setProperty('--pcc-viewport-top', (viewport?.offsetTop || 0) + 'px');
+      taskSheet.style.setProperty('--pcc-viewport-height', (viewport?.height || scope.innerHeight) + 'px');
+    }
+    function ensureSheetHistory() {
+      if (taskSheetHistory || taskSheetBackPending) return;
+      try {
+        scope.history.pushState({ ...scope.history.state, pccTaskSheet: uid }, '', scope.location.href);
+        taskSheetHistory = true;
+      } catch (_) { /* The native dialog still supports its close button and Escape. */ }
+    }
+    function showTaskSheet() {
+      if (!taskSheet || !opened) return;
+      if (!taskSheet.open) taskSheet.showModal();
+      updateSheetViewport();
+      ensureSheetHistory();
+      autosize(taskForm.querySelector('.pccTaskTitle'), 180);
+      const target = taskDraft.review ? taskForm.querySelector('.pccTaskDone') : taskForm.querySelector('.pccCalendarDay[aria-pressed="true"]');
+      (target || taskForm.querySelector('.pccTaskCancel')).focus({ preventScroll: true });
+    }
+    function hideTaskSheet() {
+      if (taskSheet?.open) taskSheet.close();
+      if (taskSheetHistory) {
+        taskSheetHistory = false;
+        if (scope.history.state?.pccTaskSheet === uid) {
+          taskSheetBackPending = true;
+          scope.history.back();
+        }
+      }
+    }
+    function onSheetBack() {
+      // A close may be followed by another task before the asynchronous traversal.
+      // Wait for that traversal before registering the new sheet's back entry.
+      if (taskSheetBackPending) {
+        taskSheetBackPending = false;
+        if (taskSheet?.open && opened && !destroyed) ensureSheetHistory();
+        return;
+      }
+      if (!taskSheetHistory || scope.history.state?.pccTaskSheet === uid) return;
+      taskSheetHistory = false;
+      if (taskBusy) {
+        try {
+          scope.history.pushState({ ...scope.history.state, pccTaskSheet: uid }, '', scope.location.href);
+          taskSheetHistory = true;
+        } catch (_) { /* Keep the in-flight form until its response resolves. */ }
+      } else dismissTask();
     }
     function renderTaskForm() {
+      const wasOpen = !!taskSheet?.open;
+      if (wasOpen) taskSheet.close();
+      taskSheet = el('dialog', 'pccTaskSheet');
+      taskSheet.setAttribute('aria-modal', 'true');
+      taskSheet.setAttribute('aria-labelledby', uid + '-task-heading');
+      taskSheet.oncancel = event => { event.preventDefault(); dismissTask(); };
+      taskSheet.onclick = event => { if (event.target === taskSheet) dismissTask(); };
       taskForm = el('form', 'pccTaskForm');
       taskForm.dataset.taskId = taskDraft.isNew ? 'new' : taskDraft.id;
       taskForm.setAttribute('aria-label', taskDraft.isNew ? 'Новое дело' : 'Редактирование дела');
-      taskForm.append(el('h4', 'pccFormTitle', taskDraft.isNew ? 'Новое дело' : 'Дело'));
+      const heading = el('div', 'pccTaskSheetHead');
+      const cancel = button('pccIcon pccTaskCancel', 'Закрыть дело', 'close');
+      cancel.onclick = dismissTask;
+      const caption = el('h4', 'pccFormTitle', taskDraft.isNew ? 'Новое дело' : 'Дело');
+      caption.id = uid + '-task-heading';
+      heading.append(cancel, caption);
+      taskForm.append(heading);
       if (taskDraft.review && !taskDraft.completed && !taskDraft.archived) taskForm.append(el('p', 'pccTaskReview', 'Получилось сделать дело?'));
-      const title = el('textarea', 'pccTaskTitle');
-      title.maxLength = 500;
-      title.rows = 2;
-      title.required = true;
-      title.placeholder = 'Что нужно сделать?';
-      title.value = taskDraft.title;
-      title.oninput = () => { taskDraft.title = title.value; taskDraft.dirty = true; autosize(title, 220); updateTaskControls(); };
-      taskForm.append(formField('Дело', title, 'task-title'));
-      const details = el('div', 'pccTaskFields');
-      const assignee = el('select', 'pccTaskAssignee');
-      const nobody = el('option', '', 'Без исполнителя');
-      nobody.value = '';
-      assignee.append(nobody);
-      for (const participant of snapshot.participants) {
-        const option = el('option', '', person(participant.id));
-        option.value = participant.id;
-        assignee.append(option);
-      }
-      if (taskDraft.assigneeId && !snapshot.participants.some(row => row.id === taskDraft.assigneeId)) {
-        const option = el('option', '', 'Участник больше не в чате');
-        option.value = taskDraft.assigneeId;
-        assignee.append(option);
-      }
-      assignee.value = taskDraft.assigneeId || '';
-      assignee.onchange = () => { taskDraft.assigneeId = assignee.value || null; taskDraft.dirty = true; };
+      const calendar = el('section', 'pccCalendar');
+      calendar.setAttribute('aria-label', 'Дата дела');
+      const monthBar = el('div', 'pccCalendarHead');
+      const monthName = el('p', 'pccCalendarMonth');
+      monthName.id = uid + '-task-month';
+      monthName.setAttribute('aria-live', 'polite');
+      const previous = button('pccIcon pccCalendarPrev', 'Предыдущий месяц', 'previous');
+      const next = button('pccIcon pccCalendarNext', 'Следующий месяц', 'next');
+      monthBar.append(monthName, previous, next);
+      const weekdays = el('div', 'pccCalendarWeekdays');
+      weekdays.setAttribute('aria-hidden', 'true');
+      for (const day of ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']) weekdays.append(el('span', '', day));
+      const grid = el('div', 'pccCalendarGrid');
+      grid.setAttribute('role', 'grid');
+      grid.setAttribute('aria-labelledby', monthName.id);
       const date = el('input', 'pccTaskDate');
-      date.type = 'date';
+      date.type = 'hidden';
       date.value = taskDraft.dueDate || '';
+      const selectedDate = () => new Date((taskDraft.dueDate || localFields(new Date().toISOString()).date) + 'T12:00:00');
+      let visibleMonth = selectedDate();
+      visibleMonth.setDate(1);
+      const dateKey = value => localFields(value.toISOString()).date;
+      const fullDate = value => value.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+      function markDeadline() {
+        taskDraft.dirty = true; taskDraft.scheduleChanged = true; taskDraft.deadlineChanged = true;
+        updateTaskControls();
+      }
+      function chooseDate(value, focus) {
+        taskDraft.dueDate = value;
+        date.value = value;
+        markDeadline();
+        renderCalendar(value, focus);
+      }
+      function renderCalendar(focusDate, focus) {
+        const year = visibleMonth.getFullYear(), month = visibleMonth.getMonth();
+        const monthText = visibleMonth.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' }).replace(/ г\.$/, '');
+        monthName.textContent = monthText.charAt(0).toUpperCase() + monthText.slice(1);
+        grid.replaceChildren();
+        const offset = (new Date(year, month, 1).getDay() + 6) % 7;
+        const count = new Date(year, month + 1, 0).getDate();
+        const today = localFields(new Date().toISOString()).date;
+        const focused = focusDate || (taskDraft.dueDate?.startsWith(dateKey(visibleMonth).slice(0, 7)) ? taskDraft.dueDate : dateKey(visibleMonth));
+        for (let week = 0; week < Math.ceil((offset + count) / 7); week++) {
+          const row = el('div', 'pccCalendarWeek'); row.setAttribute('role', 'row');
+          for (let weekday = 0; weekday < 7; weekday++) {
+            const cell = el('div', 'pccCalendarCell'); cell.setAttribute('role', 'gridcell');
+            const day = week * 7 + weekday - offset + 1;
+            if (day >= 1 && day <= count) {
+              const value = new Date(year, month, day, 12), key = dateKey(value);
+              const choice = button('pccCalendarDay', fullDate(value));
+              choice.textContent = String(day);
+              choice.dataset.date = key;
+              choice.setAttribute('aria-pressed', String(key === taskDraft.dueDate));
+              if (key === today) choice.setAttribute('aria-current', 'date');
+              choice.tabIndex = key === focused ? 0 : -1;
+              choice.disabled = taskBusy;
+              choice.onclick = () => chooseDate(key, true);
+              choice.onkeydown = event => {
+                const movement = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7, Home: -weekday, End: 6 - weekday }[event.key];
+                const target = new Date(value);
+                if (movement !== undefined) target.setDate(target.getDate() + movement);
+                else if (event.key === 'PageUp' || event.key === 'PageDown') {
+                  target.setDate(1); target.setMonth(target.getMonth() + (event.key === 'PageUp' ? -1 : 1));
+                  target.setDate(Math.min(day, new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate()));
+                } else return;
+                event.preventDefault();
+                visibleMonth = new Date(target.getFullYear(), target.getMonth(), 1, 12);
+                renderCalendar(dateKey(target), true);
+              };
+              cell.append(choice);
+            }
+            row.append(cell);
+          }
+          grid.append(row);
+        }
+        if (focus) grid.querySelector('[data-date="' + focused + '"]')?.focus({ preventScroll: true });
+      }
+      function changeMonth(direction) {
+        visibleMonth.setMonth(visibleMonth.getMonth() + direction);
+        renderCalendar();
+      }
+      previous.onclick = () => changeMonth(-1);
+      next.onclick = () => changeMonth(1);
+      date.onchange = () => {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date.value)) return;
+        visibleMonth = new Date(date.value + 'T12:00:00'); visibleMonth.setDate(1);
+        chooseDate(date.value, false);
+      };
+      calendar.append(monthBar, weekdays, grid, date);
+      taskForm.append(calendar);
+      const details = el('div', 'pccTaskFields');
       const time = el('input', 'pccTaskTime');
-      time.type = 'time';
-      time.value = taskDraft.dueTime || '';
-      time.step = '60';
+      time.type = 'time'; time.value = taskDraft.dueTime || ''; time.step = '60';
+      time.onchange = () => {
+        taskDraft.dueTime = time.value;
+        if (time.value && !taskDraft.dueDate) chooseDate(localFields(new Date().toISOString()).date, false);
+        markDeadline();
+      };
       const reminder = el('select', 'pccTaskReminder');
-      for (const [value, text] of [['', 'Не напоминать'], ['0', 'В указанное время'], ['15', 'За 15 минут'], ['30', 'За 30 минут'], ['60', 'За час'], ['1440', 'За день']]) {
+      for (const [value, text] of [['', 'Нет'], ['0', 'В момент дела'], ['15', 'За 15 минут'], ['30', 'За 30 минут'], ['60', 'За час'], ['1440', 'За день']]) {
         const choice = el('option', '', text); choice.value = value; reminder.append(choice);
       }
       reminder.value = taskDraft.reminderMinutes == null ? '' : String(taskDraft.reminderMinutes);
-      const followup = el('select', 'pccTaskFollowup');
-      for (const [value, text] of [['180', 'Через 3 часа'], ['', 'Не спрашивать']]) {
-        const choice = el('option', '', text); choice.value = value; followup.append(choice);
-      }
-      followup.value = taskDraft.followupMinutes == null ? '' : String(taskDraft.followupMinutes);
-      const timezone = el('p', 'pccTaskTimezone', 'Время на этом устройстве: ' + localZone());
-      const notificationHint = el('p', 'pccTaskNotificationHint', 'Напоминания приходят на устройства с включёнными уведомлениями.');
-      const enableNotifications = button('pccTextButton pccTaskNotifications', 'Включить уведомления');
-      enableNotifications.onclick = () => {
-        let request;
-        try { request = options.onEnableNotifications?.(); }
-        catch (_) { taskNotice('Не удалось включить уведомления. Проверьте разрешение в настройках устройства.', 'error'); return; }
-        Promise.resolve(request).then(() => { if (taskForm?.contains(enableNotifications)) updateScheduleControls(); }, () => { if (taskForm?.contains(enableNotifications)) taskNotice('Не удалось включить уведомления. Проверьте разрешение в настройках устройства.', 'error'); });
+      reminder.onchange = () => {
+        taskDraft.reminderMinutes = reminder.value === '' ? null : Number(reminder.value);
+        taskDraft.scheduleChanged = true; taskDraft.dirty = true;
+        updateTaskControls();
+        if (taskDraft.reminderMinutes == null || options.notificationsEnabled?.() === true || typeof options.onEnableNotifications !== 'function') return;
+        const activeForm = taskForm;
+        try {
+          const request = options.onEnableNotifications();
+          Promise.resolve(request).catch(() => {
+            if (taskForm === activeForm) taskNotice('Для напоминаний разрешите уведомления в профиле.', 'error');
+          });
+        } catch (_) { taskNotice('Для напоминаний разрешите уведомления в профиле.', 'error'); }
       };
-      function updateScheduleControls() {
-        const timed = !!(taskDraft.dueDate && taskDraft.dueTime);
-        reminder.disabled = !timed || taskBusy;
-        followup.disabled = !timed || taskBusy;
-        timezone.hidden = !taskDraft.dueTime;
-        const alarms = timed && (taskDraft.reminderMinutes != null || taskDraft.followupMinutes != null);
-        notificationHint.hidden = !alarms;
-        enableNotifications.hidden = !alarms || typeof options.onEnableNotifications !== 'function' || options.notificationsEnabled?.() === true;
-      }
-      date.onchange = () => {
-        taskDraft.dueDate = date.value || null;
-        if (!date.value) { taskDraft.dueTime = ''; time.value = ''; }
-        taskDraft.dirty = true; taskDraft.scheduleChanged = true; taskDraft.deadlineChanged = true;
-        updateScheduleControls();
-      };
-      time.onchange = () => {
-        taskDraft.dueTime = time.value;
-        if (time.value && !date.value) { date.value = localFields(new Date().toISOString()).date; taskDraft.dueDate = date.value; }
-        taskDraft.dirty = true; taskDraft.scheduleChanged = true; taskDraft.deadlineChanged = true;
-        updateScheduleControls();
-      };
-      reminder.onchange = () => { taskDraft.reminderMinutes = reminder.value === '' ? null : Number(reminder.value); taskDraft.scheduleChanged = true; taskDraft.dirty = true; updateScheduleControls(); };
-      followup.onchange = () => { taskDraft.followupMinutes = followup.value === '' ? null : Number(followup.value); taskDraft.scheduleChanged = true; taskDraft.dirty = true; updateScheduleControls(); };
-      const assigneeField = formField('Кто делает', assignee, 'task-assignee');
-      assigneeField.classList.add('pccTaskAssigneeField');
-      details.append(assigneeField, formField('Дата', date, 'task-date'), formField('Время', time, 'task-time'), formField('Напомнить', reminder, 'task-reminder'), formField('Уточнить выполнение', followup, 'task-followup'));
+      details.append(formField('Время', time, 'task-time'), formField('Напомнить', reminder, 'task-reminder'));
       taskForm.append(details);
-      taskForm.append(timezone, notificationHint, enableNotifications);
-      if (taskDraft.sourceMessageId) {
-        const source = button('pccTextButton pccTaskSource', 'Из переписки');
-        source.prepend(icon('source'));
-        source.onclick = () => locateSource(taskDraft.sourceMessageId, source);
-        taskForm.append(source);
-      }
-      const notice = el('p', 'pccNotice pccTaskNotice');
-      notice.setAttribute('role', 'status');
-      const conflict = el('div', 'pccConflict pccTaskConflict');
-      conflict.hidden = true;
-      const replace = button('pccButton pccTaskReplace', 'Сохранить мою версию');
-      replace.onclick = () => saveTask(true);
+      const title = el('textarea', 'pccTaskTitle');
+      title.id = uid + '-task-title'; title.setAttribute('aria-label', 'Что нужно сделать?');
+      title.maxLength = 500; title.rows = 2; title.required = true;
+      title.placeholder = 'Что нужно сделать?'; title.value = taskDraft.title;
+      title.oninput = () => { taskDraft.title = title.value; taskDraft.dirty = true; autosize(title, 180); updateTaskControls(); };
+      taskForm.append(title);
+      const notice = el('p', 'pccNotice pccTaskNotice'); notice.setAttribute('role', 'status');
+      const conflict = el('div', 'pccConflict pccTaskConflict'); conflict.hidden = true;
+      const replace = button('pccButton pccTaskReplace', 'Сохранить мою версию'); replace.onclick = () => saveTask(true);
       conflict.append(el('p', 'pccConflictLabel', 'Сейчас в общем деле'), el('p', 'pccServerBody pccTaskServerBody'), replace);
       const actions = el('div', 'pccTaskActions');
-      const cancel = button('pccTextButton pccTaskCancel', 'Отмена');
-      cancel.onclick = dismissTask;
-      const save = button('pccButton pccTaskSave', taskDraft.isNew ? 'Добавить дело' : 'Сохранить дело');
-      save.type = 'submit';
+      const save = button('pccButton pccTaskSave', taskDraft.isNew ? 'Добавить' : 'Сохранить'); save.type = 'submit';
+      actions.append(save);
+      const confirm = button('pccButton pccTaskDeleteConfirm', 'Удалить дело для всех навсегда');
+      confirm.hidden = true; confirm.onclick = deleteTask;
+      taskForm.append(notice, conflict, actions);
       if (!taskDraft.isNew) {
+        const more = el('details', 'pccTaskMore');
+        const moreToggle = el('summary', 'pccTaskMoreToggle', 'Действия с делом');
         const lifecycle = el('div', 'pccTaskLifecycle');
         const done = button('pccTextButton pccTaskDone', taskDraft.completed ? 'Вернуть в работу' : 'Сделано');
         done.onclick = () => { void saveTask(false, { completed: !taskDraft.completed, archived: false }); };
         const postpone = button('pccTextButton pccTaskPostpone', 'Перенести');
         postpone.onclick = () => {
-          taskDraft.postponing = true; taskDraft.dirty = true;
-          taskNotice('Выберите новую дату и время, затем сохраните дело.', '');
-          date.focus();
+          taskDraft.postponing = true; taskDraft.dirty = true; more.open = false;
+          taskNotice('Выберите новую дату и время.', '');
+          calendar.scrollIntoView({ block: 'nearest' });
+          grid.querySelector('[aria-pressed="true"]')?.focus({ preventScroll: true });
         };
         const archive = button('pccTextButton ' + (taskDraft.archived ? 'pccTaskRestore' : 'pccTaskArchive'), taskDraft.archived ? 'Из архива' : 'В архив');
         archive.onclick = () => { void saveTask(false, { archived: !taskDraft.archived }); };
-        lifecycle.append(done, postpone, archive);
-        const reviewPrompt = taskForm.querySelector('.pccTaskReview');
-        if (reviewPrompt) reviewPrompt.after(lifecycle);
-        else taskForm.append(lifecycle);
-        const remove = button('pccTextButton pccTaskDelete', 'Удалить дело');
+        const remove = button('pccTextButton pccTaskDelete', 'Удалить');
         remove.onclick = () => { taskDraft.confirmDelete = !taskDraft.confirmDelete; updateTaskControls(); };
-        actions.append(remove);
-      }
-      actions.append(cancel, save);
-      const confirm = button('pccButton pccTaskDeleteConfirm', 'Удалить дело для всех навсегда');
-      confirm.hidden = true;
-      confirm.onclick = deleteTask;
-      taskForm.append(notice, conflict, actions, confirm);
+        lifecycle.append(done, postpone, archive, remove);
+        more.append(moreToggle, lifecycle, confirm);
+        if (taskDraft.sourceMessageId) {
+          const source = button('pccTextButton pccTaskSource', 'Из переписки'); source.prepend(icon('source'));
+          source.onclick = () => locateSource(taskDraft.sourceMessageId, source); more.append(source);
+        }
+        taskForm.append(more);
+        if (taskDraft.review) {
+          more.open = true;
+          taskForm.querySelector('.pccTaskReview')?.after(more);
+        }
+      } else taskForm.append(confirm);
       taskForm.onsubmit = event => { event.preventDefault(); void saveTask(false); };
-      taskFormHost.replaceChildren(taskForm);
-      autosize(title, 220);
-      updateTaskControls();
-      updateScheduleControls();
+      taskSheet.append(taskForm); taskFormHost.replaceChildren(taskSheet);
+      renderCalendar(); updateTaskControls();
+      if (wasOpen) showTaskSheet();
     }
     function dismissTask() {
       if (taskBusy) return;
-      taskDraft = null;
-      taskForm = null;
+      const previousFocus = taskReturnFocus, previousTaskId = taskDraft?.isNew ? null : taskDraft?.id;
+      const ticket = generation;
+      hideTaskSheet();
+      taskDraft = null; taskForm = null; taskSheet = null;
       taskFormHost.replaceChildren();
-      taskEmpty.hidden = (snapshot?.tasks.length || 0) > 0;
-      updateTaskControls();
+      renderTasks(); updateTaskControls();
+      taskReturnFocus = null;
+      scope.requestAnimationFrame(() => {
+        if (!opened || destroyed || ticket !== generation || taskSheet?.open) return;
+        const editedRow = previousTaskId && [...taskList.querySelectorAll('.pccTask')].find(row => row.dataset.taskId === previousTaskId);
+        const candidate = previousFocus?.isConnected ? previousFocus : editedRow?.querySelector('.pccTaskEdit') || add;
+        if (!candidate.disabled && !candidate.closest('[hidden]')) candidate.focus({ preventScroll: true });
+      });
     }
     async function saveTask(replace, changes) {
       const ticket = generation;
@@ -795,6 +909,7 @@
       if (!opened) ++generation;
       opened = true;
       pane.hidden = false;
+      if (taskDraft && !settings?.taskId) showTaskSheet();
       if (settings?.sourceMessage) pendingSource = settings.sourceMessage;
       if (settings?.taskId) {
         // Explicit task navigation has already passed the host's unsaved-changes guard.
@@ -817,6 +932,7 @@
       return load(true);
     }
     function close() {
+      hideTaskSheet();
       opened = false;
       pane.hidden = true;
       stopRequests();
@@ -840,6 +956,8 @@
       planConflict.hidden = true;
       taskDraft = null;
       taskForm = null;
+      taskSheet = null;
+      taskReturnFocus = null;
       taskFormHost.replaceChildren();
       taskList.replaceChildren();
       taskCount.textContent = '';
@@ -867,6 +985,10 @@
       scope.removeEventListener('focus', onFocus);
       scope.removeEventListener('beforeunload', onBeforeUnload);
       document.removeEventListener('visibilitychange', onFocus);
+      scope.removeEventListener('resize', updateSheetViewport);
+      scope.removeEventListener('popstate', onSheetBack);
+      scope.visualViewport?.removeEventListener('resize', updateSheetViewport);
+      scope.visualViewport?.removeEventListener('scroll', updateSheetViewport);
     }
     planBody.oninput = () => {
       planDirty = planBody.value !== planBaseBody;
@@ -903,6 +1025,10 @@
     scope.addEventListener('focus', onFocus);
     scope.addEventListener('beforeunload', onBeforeUnload);
     document.addEventListener('visibilitychange', onFocus);
+    scope.addEventListener('resize', updateSheetViewport);
+    scope.addEventListener('popstate', onSheetBack);
+    scope.visualViewport?.addEventListener('resize', updateSheetViewport);
+    scope.visualViewport?.addEventListener('scroll', updateSheetViewport);
     const api = { mount, open, close, reset, newTask, hasUnsavedChanges, destroy, element: pane };
     if (options.host) mount(options.host);
     reset();
