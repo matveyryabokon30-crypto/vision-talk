@@ -145,3 +145,14 @@
 .pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-image .richMediaStatus{position:static!important;display:block!important;padding:5px 0!important;background:transparent!important;text-align:left!important}
 .pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMedia-video{position:relative!important;inset:auto!important;height:auto!important;min-height:0!important;aspect-ratio:auto!important}
 .pablicusChatCanvas .pccProjectViewContent .richMessageNaturalMedia .richMediaGallery{position:relative!important;inset:auto!important;height:auto!important;min-height:0!important;aspect-ratio:auto!important}
+
+
+/* Editing is a separate canvas surface. The ordinary chat composer is hidden
+   in this mode, so the editor and its save controls share one scrollable flow
+   on iOS instead of competing for the keyboard viewport. */
+.pablicusChatCanvas[data-editing="true"]{padding-bottom:max(24px,env(safe-area-inset-bottom))}
+.pablicusChatCanvas[data-editing="true"] .pccPlanEditor{scroll-margin-top:12px;scroll-margin-bottom:24px}
+.pablicusChatCanvas .pccPlanEditor .workspaceEditor{width:100%;min-height:0}
+.pablicusChatCanvas .pccPlanEditor .workspaceEditorBody{max-height:none;overflow:visible;overscroll-behavior:visible}
+.pablicusChatCanvas .pccPlanEditor .workspaceEditorInput{display:block;min-height:48px;padding:10px 2px}
+.pablicusChatCanvas .pccPlanEditor .richMedia-image .richImage{max-height:min(36vh,260px)}

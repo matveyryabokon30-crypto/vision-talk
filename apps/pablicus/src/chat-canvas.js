@@ -189,6 +189,8 @@
     function renderProject() {
       const value = richContent(snapshot?.canvas.content, snapshot?.canvas.body);
       const exists = hasContent(value);
+      pane.dataset.editing = String(planEditing || !!taskDraft);
+      options.onEditing?.(planEditing || !!taskDraft);
       planSurface.hidden = !exists || planEditing;
       planSurface.dataset.expanded = String(planExpanded && !planEditing);
       planNew.hidden = exists || planEditing;
@@ -249,7 +251,17 @@
       const editor = ensurePlanEditor();
       planEditing = true;
       if (!planError && !planChanged) planState('', planDirty ? 'dirty' : '');
-      renderProject(); updatePlanControls(); editor.focus();
+      renderProject(); updatePlanControls();
+      editor.focus({first: true});
+      const reveal = () => {
+        if (destroyed || !planEditing || planEditor !== editor) return;
+        const body = editor.element.querySelector('.workspaceEditorBody');
+        if (body) body.scrollTop = 0;
+        planEditorHost.scrollIntoView({block: 'start', inline: 'nearest', behavior: 'auto'});
+      };
+      reveal();
+      scope.requestAnimationFrame(reveal);
+      scope.setTimeout(reveal, 120);
     }
     async function preparedContent(editor, controller, ticket) {
       await editor.stopRecording();
@@ -655,6 +667,8 @@
         conflict: false, confirmDelete: false, dirty: !task,
       };
       renderTaskForm();
+      pane.dataset.editing = 'true';
+      options.onEditing?.(true);
       taskEmpty.hidden = true;
       updateTaskControls();
       showTaskSheet();
@@ -922,6 +936,8 @@
       taskEditor?.destroy(); taskEditor = null;
       taskDraft = null; taskForm = null; taskSheet = null;
       taskFormHost.replaceChildren();
+      pane.dataset.editing = String(planEditing);
+      options.onEditing?.(planEditing);
       renderTasks(); updateTaskControls();
       taskReturnFocus = null;
       scope.requestAnimationFrame(() => {
@@ -1087,6 +1103,8 @@
       if (!opened) ++generation;
       opened = true;
       pane.hidden = false;
+      pane.dataset.editing = String(planEditing || !!taskDraft);
+      options.onEditing?.(planEditing || !!taskDraft);
       if (taskDraft && !settings?.taskId) showTaskSheet();
       if (settings?.sourceMessage) pendingSource = settings.sourceMessage;
       if (settings?.taskId) {
@@ -1114,6 +1132,8 @@
       if (planViewCleanup) { planViewCleanup(); planViewCleanup = null; }
       planRenderedContent = '';
       planViewContent.replaceChildren();
+      pane.dataset.editing = 'false';
+      options.onEditing?.(false);
       opened = false;
       pane.hidden = true;
       stopRequests();
@@ -1155,6 +1175,8 @@
       content.hidden = true;
       retry.hidden = true;
       pane.dataset.state = 'idle';
+      pane.dataset.editing = 'false';
+      options.onEditing?.(false);
       updatePlanControls();
       updateTaskControls();
     }

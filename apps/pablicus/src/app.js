@@ -108,7 +108,8 @@
   load:args=>canvasRpc('pablicus_get_canvas',args),savePlan:args=>canvasRpc('pablicus_save_canvas_plan_v2',args),
   createTask:args=>canvasRpc('pablicus_create_canvas_task_v3',args),updateTask:args=>canvasRpc('pablicus_update_canvas_task_v3',args),deleteTask:args=>canvasRpc('pablicus_delete_canvas_task',args),
   uploadContent:uploadCanvasContent,renderContent:renderCanvasContent,resolveUrl:signedUrl,
-  onLocate:async id=>{const message=await libraryMessage(id);await showConversationView();await locateMessage(message);},onConversation:()=>showConversationView(),
+  onLocate:async id=>{const message=await libraryMessage(id);if(await showConversationView()===false)return;await locateMessage(message);},onConversation:()=>showConversationView(),
+  onEditing:editing=>{$('app').classList.toggle('canvas-editing',!!editing)},
   onMutation:()=>workspaceQuick.refresh(),notificationsEnabled:()=>pushNotifications.enabled,onEnableNotifications:enableTaskNotifications});
  function enableTaskNotifications(){const pending=pushNotifications.enable();return Promise.resolve(pending).then(()=>{if(!pushNotifications.enabled)throw Error('Уведомления не включены. Откройте приложение с главного экрана iPhone и разрешите уведомления.');});}
  function canvasNavigationAllowed(){return!chatCanvas.hasUnsavedChanges()||confirm('В полотне есть несохранённые изменения. Выйти без сохранения?');}
@@ -117,10 +118,11 @@
   for(const [id,selected]of [['conversationTab',!canvasVisible],['canvasTab',canvasVisible]]){$(id).setAttribute('aria-selected',String(selected));$(id).tabIndex=selected?0:-1;}
  }
  function resetConversationView(){++canvasSwitch;++canvasEpoch;chatCanvas.reset();workspaceUploadState.clear();canvasVisible=false;paintConversationView();}
- async function showConversationView(){++canvasSwitch;chatCanvas.close();canvasVisible=false;paintConversationView();requestAnimationFrame(()=>PablicusChat.list?.refreshFont());}
+ async function showConversationView(){if(!canvasNavigationAllowed())return false;PablicusChat.rich?.blur?.();++canvasSwitch;chatCanvas.close();canvasVisible=false;paintConversationView();requestAnimationFrame(()=>PablicusChat.list?.refreshFont());return true;}
  async function showCanvasView(sourceMessage,options={}){
   if(!user||!current||opening)return;const context=canvasContext(),ticket=++canvasSwitch;
   if(canvasVisible&&!sourceMessage&&!options.taskId&&chatCanvas.element?.dataset.state==='ready')return;
+  PablicusChat.rich?.blur?.();
   PablicusChat.collapseEditor();
   await PablicusChat.persistDraft();if(ticket!==canvasSwitch||!canvasCurrent(context))return;
   mediaViewer.close();chatLibrary.reset();messageTools.dismiss();canvasVisible=true;paintConversationView();await chatCanvas.open(sourceMessage?{sourceMessage,...options}:options);
@@ -377,7 +379,7 @@
  document.querySelectorAll('#mainNav button').forEach(b=>b.onclick=()=>{page=b.dataset.page;renderHome()});document.querySelectorAll('#chatFilters button').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll('#chatFilters button').forEach(x=>x.classList.toggle('selected',x===b));renderHome()});$('searchChats').oninput=renderHome;
  $('newChat').onclick=()=>people.open($('searchChats').value);
  function mapped(m){return{id:m.id,number:m.server_seq,mine:m.sender_id===user?.id,text:PablicusChatActions.effective(m).body||'',revision:messageTools.revision(m),remote:m}}
- async function openConversation(d,{canvas=false}={}){if(opening||!user||!canvasNavigationAllowed())return;workspaceQuick.close();resetTasksHome();resetConversationView();if(canvas){canvasVisible=true;paintConversationView();}mediaViewer.close();chatLibrary.reset();messageTools.clear();PablicusRichMessage.stopAll?.();opening=true;const uid=user.id,ep=++epoch;current=d;inboxContext();rows=[];peersRead=0;if(channel){await sb.removeChannel(channel);channel=null}$('home').hidden=true;$('app').style.visibility='hidden';$('app').inert=true;$('app').hidden=false;$('chatTitle').textContent=d.title||'Разговор';connection();$('chatHint').textContent='Загружаем разговор…';$('chatHint').hidden=false;try{
+ async function openConversation(d,{canvas=false}={}){if(opening||!user||!canvasNavigationAllowed())return;workspaceQuick.close();resetTasksHome();resetConversationView();if(canvas){canvasVisible=true;paintConversationView();}mediaViewer.close();chatLibrary.reset();messageTools.clear();PablicusRichMessage.stopAll?.();opening=true;const uid=user.id,ep=++epoch;current=d;inboxContext();rows=[];peersRead=0;if(channel){await sb.removeChannel(channel);channel=null}$('home').hidden=true;$('app').style.visibility='';$('app').inert=true;$('app').hidden=false;$('chatTitle').textContent=d.title||'Разговор';connection();$('chatHint').textContent='Загружаем разговор…';$('chatHint').hidden=false;try{
    let remote=[];const r=navigator.onLine?await sb.from('messages').select('*').eq('conversation_id',d.id).order('server_seq',{ascending:false}).limit(150):{data:[],error:null};if(r.error){if(navigator.onLine)toast('История пока недоступна. Черновик и очередь доступны локально.')}else remote=(r.data||[]).reverse();if(ep!==epoch){if(current?.id===d.id&&user?.id===uid){$('app').style.visibility='';$('app').inert=false;}return;}rows=remote;inboxSeq.set(d.id,Math.max(inboxSeq.get(d.id)||0,+rows.at(-1)?.server_seq||0));await PablicusChat.open(uid,d.id,rows.map(mapped));if(ep!==epoch||user?.id!==uid){if(current?.id===d.id&&user?.id===uid){$('app').style.visibility='';$('app').inert=false;}return;}$('app').style.visibility='';$('app').inert=false;connection();
    messageTools.sync();channel=sb.channel('pablicus-chat-'+d.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'conversation_id=eq.'+d.id},()=>syncMessages()).subscribe(state=>{if(state==='SUBSCRIBED')syncMessages()});pump();
   }catch(e){problem(e);if(current?.id===d.id&&user?.id===uid){$('app').style.visibility='';$('app').inert=false;}current=null;$('app').hidden=true;$('home').hidden=false;renderHome()}finally{if(current?.id===d.id&&user?.id===uid){$('app').style.visibility='';$('app').inert=false;}opening=false;inboxContext();workspaceQuick.refresh()}}

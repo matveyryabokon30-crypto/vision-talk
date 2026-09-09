@@ -279,7 +279,22 @@
       async stopRecording() { await addQueue; await rich.stopRecording(); return snapshot(); },
       startRecording: () => disabled ? Promise.resolve() : rich.startRecording(),
       setDisabled(value) { disabled = !!value; if (disabled) { menu.hidden = true; attach.setAttribute('aria-expanded', 'false'); } paintDisabled(); },
-      focus() { if (!disabled) rich.focus(); },
+      focus(settings = {}) {
+        if (disabled) return;
+        /* Always enter at the first text block. Restoring a selection after a
+           media block makes iOS scroll the image into the toolbar and hides
+           the real text field. */
+        if (settings.first !== false) {
+          const first = body.querySelector('textarea');
+          if (first) {
+            first.focus({preventScroll: true});
+            body.scrollTop = 0;
+            first.scrollIntoView({block: 'nearest', inline: 'nearest'});
+            return;
+          }
+        }
+        rich.focus();
+      },
       destroy() {
         if (destroyed) return;
         destroyed = true; contentEpoch++; rich.destroy(); root.remove();
