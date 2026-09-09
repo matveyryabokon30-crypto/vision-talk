@@ -133,6 +133,7 @@
       for (const kind of KINDS) chips[kind].setAttribute('aria-expanded', String(opened === kind));
     }
     function timeLabel(task) {
+      if (!task.due_at && !task.due_date) return 'Добавлено сегодня';
       if (!task.due_at) return 'Сегодня';
       const date = new Date(task.due_at);
       if (Number.isNaN(date.getTime())) return 'Сегодня';

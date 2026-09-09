@@ -24,7 +24,7 @@
  const passkeySignInClient=supabase.createClient(URL,KEY,{auth:{storageKey:'pablicus-passkey-candidate',persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,flowType:'pkce',experimental:{passkey:true}},global:{fetch:timeoutFetch}});
  let authVersion=0,passkeys=null,passwordLogin=null,passkeySigninActive=false,passkeyAuthEvent=null,sessionCleanup=Promise.resolve();
  let user=null,profile=null,dialogs=[],current=null,rows=[],page='chats',filter='all',opening=false,syncing=false,olderBusy=false,refreshing=false,worker=false,pumpPending=false,channel=null,epoch=0,toastTimer=0,peersRead=0;
- const signed=new Map(),cacheKey=()=>`pablicus:${user?.id}:dialogs`,focusKey=()=>`pablicus:${user?.id}:focus`;
+ const signed=new Map(),workspaceUploadState=new Map(),cacheKey=()=>`pablicus:${user?.id}:dialogs`,focusKey=()=>`pablicus:${user?.id}:focus`;
  const replyCache=new Map();
  const mediaViewer=PablicusMediaViewer.create({resolveUrl:mediaUrl,download:downloadAttachment});
  const messageTools=PablicusChatActions.create({getContext:()=>({userId:user?.id,conversationId:current?.id,epoch,rows}),rpc:(name,args)=>sb.rpc(name,args),onRows:next=>{rows=next;PablicusChat.update(rows.map(mapped));refreshReplyQuotes()},onReply:chooseReply,onTask:taskFromMessage,onDownload:downloadAttachment,getDialogs:async()=>{await loadDialogs();return dialogs},onForward:forwardMessages,onLocate:locateMessage,onError:problem});
@@ -52,16 +52,62 @@
  async function canvasRpc(name,{context,signal,...values}){
   if(!canvasCurrent(context))throw new DOMException('Разговор изменился','AbortError');
   const params={p_conversation_id:context.conversationId};
-  const names={body:'p_body',expectedRevision:'p_expected_revision',id:'p_task_id',title:'p_title',assigneeId:'p_assignee_id',dueDate:'p_due_date',completed:'p_completed',sourceMessageId:'p_source_message_id',sourceBlockId:'p_source_block_id',schedule:'p_schedule',archived:'p_archived'};
-  for(const [key,value]of Object.entries(values))if(names[key])params[names[key]]=value;
+  const names={body:'p_body',content:'p_content',expectedRevision:'p_expected_revision',id:'p_task_id',title:'p_title',assigneeId:'p_assignee_id',dueDate:'p_due_date',completed:'p_completed',sourceMessageId:'p_source_message_id',sourceBlockId:'p_source_block_id',schedule:'p_schedule',archived:'p_archived'};
+  for(const [key,value]of Object.entries(values))if(names[key]&&!(values.content&&['body','title'].includes(key)))params[names[key]]=value;
   let request=sb.rpc(name,params);if(signal&&request.abortSignal)request=request.abortSignal(signal);
   const result=await request;if(!canvasCurrent(context)||signal?.aborted)throw new DOMException('Запрос отменён','AbortError');if(result.error)throw result.error;
   if(!result.data||result.data.conversation_id!==context.conversationId||!Array.isArray(result.data.tasks)||!Array.isArray(result.data.participants))throw Error('Не удалось прочитать полотно. Повторите попытку.');
   return result.data;
  }
+ async function uploadCanvasContent({context,snapshot,signal}){
+  const check=()=>{if(!canvasCurrent(context)||signal?.aborted)throw new DOMException('Разговор изменился','AbortError');};
+  check();
+  const checked=PablicusRichMessage.validate(snapshot?.content);
+  if(!checked.ok||snapshot?.errors?.length)throw Error(snapshot?.errors?.[0]||'Проверьте содержимое перед сохранением');
+  const canonical=checked.content.blocks.filter(block=>block.type!=='text'||block.text.trim());
+  if(canonical.length>100)throw Error('В одном деле или проекте — до 100 блоков');
+  if(canonical.filter(b=>b.type==='text').map(b=>b.text).join('\n').length>20000)throw Error('Текст дела или проекта — до 20 000 символов');
+  const files=new Map((snapshot.files||[]).map(file=>[file.id,file]));
+  let bytes=0;
+  const prepared=canonical.map(block=>{
+   if(block.type==='text')return{block};
+   if(block.path){bytes+=Number(block.size)||0;return{block};}
+   const file=files.get(block.assetId);
+   if(!file?.file||typeof file.file.arrayBuffer!=='function')throw Error('Исходный файл вложения недоступен. Добавьте его снова.');
+   const actual={...file,name:file.name||file.file.name||'Вложение',type:file.type||file.file.type||'application/octet-stream',size:file.file.size};
+   if(!actual.size||actual.size>25*1024*1024)throw Error('Размер одного вложения — от 1 байта до 25 МБ');
+   bytes+=actual.size;
+   return{block,file:actual};
+  });
+  if(bytes>100*1024*1024)throw Error('Все вложения одного дела или проекта — до 100 МБ');
+  const blocks=[];
+  for(const {block,file} of prepared){
+   check();
+   if(!file){blocks.push(block);continue;}
+   const key=context.userId+'/'+context.conversationId+'/'+block.assetId;
+   let state=workspaceUploadState.get(key);
+   if(!state){state={file:file.file,id:crypto.randomUUID(),parts:{}};workspaceUploadState.set(key,state);}
+   if(state.file!==file.file)throw Error('Вложение изменилось. Добавьте новую версию отдельным файлом.');
+   const store={progress:async(_item,_owner,part,delta)=>{check();state.parts[part]={...state.parts[part],...delta};}};
+   const result=await upload(store,state,{id:block.id},file,'workspace',context.conversationId,context.userId,state.id,{signal,isCurrent:()=>canvasCurrent(context)});
+   check();
+   blocks.push({id:block.id,type:block.type,path:result.path,name:file.name,mime:file.type,size:file.size});
+  }
+  return{v:1,blocks};
+ }
+ function renderCanvasContent({host,content,context,signal}){
+  const active=()=>canvasCurrent(context)&&!signal?.aborted&&host.isConnected;
+  const view=PablicusRichMessage.render(content,{mountRoot:host,isActive:active,linkify:true,
+   resolveUrl:async path=>{if(!active())throw new DOMException('Разговор изменился','AbortError');const url=await signedUrl(path);if(!active())throw new DOMException('Разговор изменился','AbortError');return url;},
+   openMedia:(block,gallery)=>{if(!active())return;return['image','video'].includes(block.type)?mediaViewer.open((gallery?.items||[block]).map(item=>mediaItem(item)),gallery?.index||0):viewAttachment({type:block.type,attachment_path:block.path,attachment_metadata:{name:block.name,mime_type:block.mime,size_bytes:block.size}},active);}
+  });
+  host.replaceChildren(view);view.activate();
+  return()=>{view.dispose();view.remove();};
+ }
  const chatCanvas=PablicusChatCanvas.create({host:$('chatCanvasPanel'),getContext:canvasContext,
-  load:args=>canvasRpc('pablicus_get_canvas',args),savePlan:args=>canvasRpc('pablicus_save_canvas_plan',args),
-  createTask:args=>canvasRpc('pablicus_create_canvas_task_v2',args),updateTask:args=>canvasRpc('pablicus_update_canvas_task_v2',args),deleteTask:args=>canvasRpc('pablicus_delete_canvas_task',args),
+  load:args=>canvasRpc('pablicus_get_canvas',args),savePlan:args=>canvasRpc('pablicus_save_canvas_plan_v2',args),
+  createTask:args=>canvasRpc('pablicus_create_canvas_task_v3',args),updateTask:args=>canvasRpc('pablicus_update_canvas_task_v3',args),deleteTask:args=>canvasRpc('pablicus_delete_canvas_task',args),
+  uploadContent:uploadCanvasContent,renderContent:renderCanvasContent,resolveUrl:signedUrl,
   onLocate:async id=>{const message=await libraryMessage(id);await showConversationView();await locateMessage(message);},onConversation:()=>showConversationView(),
   onMutation:()=>workspaceQuick.refresh(),notificationsEnabled:()=>pushNotifications.enabled,onEnableNotifications:enableTaskNotifications});
  function enableTaskNotifications(){const pending=pushNotifications.enable();return Promise.resolve(pending).then(()=>{if(!pushNotifications.enabled)throw Error('Уведомления не включены. Откройте приложение с главного экрана iPhone и разрешите уведомления.');});}
@@ -70,7 +116,7 @@
   $('app').classList.toggle('canvas-active',canvasVisible);$('chatCanvasPanel').hidden=!canvasVisible;$('vp').inert=canvasVisible;
   for(const [id,selected]of [['conversationTab',!canvasVisible],['canvasTab',canvasVisible]]){$(id).setAttribute('aria-selected',String(selected));$(id).tabIndex=selected?0:-1;}
  }
- function resetConversationView(){++canvasSwitch;++canvasEpoch;chatCanvas.reset();canvasVisible=false;paintConversationView();}
+ function resetConversationView(){++canvasSwitch;++canvasEpoch;chatCanvas.reset();workspaceUploadState.clear();canvasVisible=false;paintConversationView();}
  async function showConversationView(){++canvasSwitch;chatCanvas.close();canvasVisible=false;paintConversationView();requestAnimationFrame(()=>PablicusChat.list?.refreshFont());}
  async function showCanvasView(sourceMessage,options={}){
   if(!user||!current||opening)return;const context=canvasContext(),ticket=++canvasSwitch;
@@ -418,7 +464,7 @@
  }
  async function loadOlder(){if(!current||olderBusy||!navigator.onLine||!rows.length)return;const first=+rows[0].server_seq;if(first<=1)return;olderBusy=true;const d=current,ep=epoch;try{const r=await sb.from('messages').select('*').eq('conversation_id',d.id).lt('server_seq',first).order('server_seq',{ascending:false}).limit(100);if(r.error)throw r.error;if(ep!==epoch||current?.id!==d.id)return;const older=(r.data||[]).reverse();if(older.length){rows=[...older,...rows];PablicusChat.prepend(older.map(mapped))}}catch(e){if(navigator.onLine)console.warn('history')}finally{olderBusy=false}}
  async function signedUrl(path){const old=signed.get(path);if(old&&old.until>Date.now())return old.url;const r=await sb.storage.from(BUCKET).createSignedUrl(path,300);if(r.error)throw r.error;signed.set(path,{url:r.data.signedUrl,until:Date.now()+240000});return r.data.signedUrl}
- async function viewAttachment(r){if(['image','video'].includes(r.type))return mediaViewer.open([{type:r.type,path:r.attachment_path,localAssetId:r.localAssetId,name:r.attachment_metadata?.name||'Вложение',mime:r.attachment_metadata?.mime_type}],0);const md=r.attachment_metadata||{},c=dialog(md.name||'Вложение');c.append(el('p','','Открываю…'));const uid=user?.id,u=r.localAssetId?PablicusChat.localAssetUrl(r.localAssetId):await signedUrl(r.attachment_path);if(user?.id!==uid)return;c.replaceChildren();
+ async function viewAttachment(r,isCurrent=()=>true){if(['image','video'].includes(r.type))return mediaViewer.open([{type:r.type,path:r.attachment_path,localAssetId:r.localAssetId,name:r.attachment_metadata?.name||'Вложение',mime:r.attachment_metadata?.mime_type}],0);const md=r.attachment_metadata||{},c=dialog(md.name||'Вложение');const pending=el('p','','Открываю…');c.append(pending);const uid=user?.id,u=r.localAssetId?PablicusChat.localAssetUrl(r.localAssetId):await signedUrl(r.attachment_path);if(user?.id!==uid||!isCurrent()||!pending.isConnected||!$('productDialog').open)return;c.replaceChildren();
   if(r.type==='image'){const im=el('img','viewerImage');im.src=u;im.alt='Фотография';c.append(im)}
   else if((md.mime_type||'').startsWith('audio/')){const a=el('audio');a.controls=true;a.src=u;c.append(a)}
   else if(r.type==='video'){const v=el('video','viewerVideo');v.controls=true;v.playsInline=true;v.preload='metadata';v.src=u;v.onerror=()=>{if(v.isConnected)c.prepend(el('p','muted','Браузер не смог воспроизвести это видео. Откройте или сохраните файл ниже.'))};c.append(v)}
@@ -436,14 +482,16 @@
   const f=item.files.find(file=>file.id===block.assetId);if(!f)throw Error('Байты вложения не найдены');
   return [{id:block.id,type:block.type,path:cid+'/'+uid+'/'+id+'/'+block.id+'/'+attachmentName(f),name:f.name,mime:f.type||'application/octet-stream',size:f.size}];
  })};}
- async function upload(store,item,m,f,owner,cid,uid,richMessageId=null){const id=await pablicusClientId(item.id,m.id),path=cid+'/'+uid+'/'+(richMessageId?richMessageId+'/'+m.id:id)+'/'+attachmentName(f);
-  if(await objectExists(path))return{path,id};if(user?.id!==uid)throw Error('Аккаунт изменился');
-  if(f.size<=6*1024*1024){const r=await sb.storage.from(BUCKET).upload(path,f.file,{contentType:f.type||'application/octet-stream',upsert:false});if(r.error&&!await objectExists(path))throw r.error;return{path,id}}
+ async function upload(store,item,m,f,owner,cid,uid,richMessageId=null,controls=null){
+  const check=()=>{if(controls?.signal?.aborted||(controls?.isCurrent&&!controls.isCurrent()))throw new DOMException('Разговор изменился','AbortError');};
+  check();const id=await pablicusClientId(item.id,m.id),path=cid+'/'+uid+'/'+(richMessageId?richMessageId+'/'+m.id:id)+'/'+attachmentName(f);
+  if(await objectExists(path)){check();return{path,id};}check();if(user?.id!==uid)throw Error('Аккаунт изменился');
+  if(f.size<=6*1024*1024){const r=await sb.storage.from(BUCKET).upload(path,f.file,{contentType:f.type||'application/octet-stream',upsert:false});check();if(r.error&&!await objectExists(path))throw r.error;return{path,id}}
   const endpoint=URL.replace('.supabase.co','.storage.supabase.co')+'/storage/v1/upload/resumable';let location=item.parts?.[m.id]?.upload_url;
-  const auth=async()=>{if(user?.id!==uid)throw Error('Аккаунт изменился');const s=await sb.auth.getSession();if(!s.data.session)throw Error('Войдите для продолжения отправки');if(s.data.session.user.id!==uid)throw Error('Аккаунт изменился');return{Authorization:'Bearer '+s.data.session.access_token,apikey:KEY,'Tus-Resumable':'1.0.0'}};
-  let offset=0;if(location){const lu=new window.URL(location),eu=new window.URL(endpoint);if(lu.origin!==eu.origin||!lu.pathname.startsWith('/storage/v1/upload/resumable/'))throw Error('Некорректный адрес загрузки');const h=await timeoutFetch(location,{method:'HEAD',headers:await auth()});if(h.ok)offset=+(h.headers.get('Upload-Offset')||0);else if([404,410].includes(h.status))location=null;else throw Error('Не удалось продолжить загрузку: '+h.status)}
-  if(!location){const r=await timeoutFetch(endpoint,{method:'POST',headers:{...await auth(),'Upload-Length':String(f.size),'Upload-Metadata':[['bucketName',BUCKET],['objectName',path],['contentType',f.type||'application/octet-stream'],['cacheControl','3600']].map(([k,v])=>k+' '+b64(v)).join(',')}});if(!r.ok)throw Error('Ошибка начала загрузки: '+r.status);if(!r.headers.get('Location'))throw Error('Сервер не вернул адрес загрузки');location=new window.URL(r.headers.get('Location'),endpoint).href;if(new window.URL(location).origin!==new window.URL(endpoint).origin)throw Error('Некорректный адрес загрузки');await store.progress(item.id,owner,m.id,{upload_url:location})}
-  while(offset<f.size){const end=Math.min(offset+6*1024*1024,f.size),r=await timeoutFetch(location,{method:'PATCH',headers:{...await auth(),'Upload-Offset':String(offset),'Content-Type':'application/offset+octet-stream'},body:f.file.slice(offset,end)},60000);if(!r.ok)throw Error('Загрузка прервана: '+r.status);offset=+(r.headers.get('Upload-Offset')||end);await store.progress(item.id,owner,m.id,{upload_url:location,uploaded:offset})}
+  const auth=async()=>{check();if(user?.id!==uid)throw Error('Аккаунт изменился');const s=await sb.auth.getSession();check();if(!s.data.session)throw Error('Войдите для продолжения отправки');if(s.data.session.user.id!==uid)throw Error('Аккаунт изменился');return{Authorization:'Bearer '+s.data.session.access_token,apikey:KEY,'Tus-Resumable':'1.0.0'}};
+  let offset=0;if(location){const lu=new window.URL(location),eu=new window.URL(endpoint);if(lu.origin!==eu.origin||!lu.pathname.startsWith('/storage/v1/upload/resumable/'))throw Error('Некорректный адрес загрузки');const h=await timeoutFetch(location,{method:'HEAD',headers:await auth(),signal:controls?.signal});if(h.ok)offset=+(h.headers.get('Upload-Offset')||0);else if([404,410].includes(h.status))location=null;else throw Error('Не удалось продолжить загрузку: '+h.status)}
+  if(!location){const r=await timeoutFetch(endpoint,{method:'POST',signal:controls?.signal,headers:{...await auth(),'Upload-Length':String(f.size),'Upload-Metadata':[['bucketName',BUCKET],['objectName',path],['contentType',f.type||'application/octet-stream'],['cacheControl','3600']].map(([k,v])=>k+' '+b64(v)).join(',')}});if(!r.ok)throw Error('Ошибка начала загрузки: '+r.status);if(!r.headers.get('Location'))throw Error('Сервер не вернул адрес загрузки');location=new window.URL(r.headers.get('Location'),endpoint).href;if(new window.URL(location).origin!==new window.URL(endpoint).origin)throw Error('Некорректный адрес загрузки');await store.progress(item.id,owner,m.id,{upload_url:location})}
+  while(offset<f.size){check();const end=Math.min(offset+6*1024*1024,f.size),r=await timeoutFetch(location,{method:'PATCH',signal:controls?.signal,headers:{...await auth(),'Upload-Offset':String(offset),'Content-Type':'application/offset+octet-stream'},body:f.file.slice(offset,end)},60000);if(!r.ok)throw Error('Загрузка прервана: '+r.status);offset=+(r.headers.get('Upload-Offset')||end);await store.progress(item.id,owner,m.id,{upload_url:location,uploaded:offset})}
   return{path,id};
  }
  async function pump(){if(worker){pumpPending=true;return}if(!user||!navigator.onLine||document.hidden)return;worker=true;const uid=user.id,owner=DraftVault.uid();try{

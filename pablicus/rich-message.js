@@ -131,7 +131,8 @@
     let disposed = false, initialized = false, observer = null, resizeFrame = null, mountFrame = null;
     const images = [], audioPlayers = [];
     // NaturalList renders measurement copies too. They must never resolve media URLs.
-    const isLiveRow = () => root.isConnected && !!root.closest('#canvas') && !root.closest('.measureBox');
+    const isLiveRow = () => root.isConnected && !root.closest('.measureBox') &&
+      (options.mountRoot ? options.mountRoot.contains(root) && options.isActive?.() !== false : !!root.closest('#canvas'));
     const notifyResize = () => {
       if (disposed || resizeFrame !== null || typeof options.onResize !== 'function') return;
       resizeFrame = frame(() => {
@@ -457,6 +458,21 @@
       if (parent !== root && !parent.parentNode) root.append(parent);
       if (block.type === 'text') {
         const text = element('div', 'richText', block.text);
+        if (options.linkify) {
+          text.replaceChildren();
+          const pattern = /https?:\/\/[^\s<>]+/gu;
+          let offset = 0;
+          for (const match of block.text.matchAll(pattern)) {
+            const value = match[0].replace(/[.,!?;:]+$/u, '');
+            const href = safeResolvedUrl(value);
+            if (!href) continue;
+            text.append(document.createTextNode(block.text.slice(offset, match.index)));
+            const link = element('a', 'richTextLink', value);
+            link.href = href; link.target = '_blank'; link.rel = 'noopener noreferrer';
+            text.append(link); offset = match.index + value.length;
+          }
+          text.append(document.createTextNode(block.text.slice(offset)));
+        }
         text.dataset.blockId = block.id;
         root.append(text);
         continue;
