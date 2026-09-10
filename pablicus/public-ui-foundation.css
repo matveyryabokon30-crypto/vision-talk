@@ -25,8 +25,46 @@
 #screenContent.factory-active .factoryModuleReason,#screenContent.factory-active .factoryTest{color:var(--text)}
 :root[data-theme=dark] #screenContent.factory-active .factorySummary,:root[data-theme=dark] #screenContent.factory-active .factorySection,:root[data-theme=dark] #screenContent.factory-active .factoryProjectCard,:root[data-theme=dark] #screenContent.factory-active .factoryInput{background:var(--surface);color:var(--text)}
 @media(prefers-color-scheme:dark){:root:not([data-theme=light]) #screenContent.factory-active .factorySummary,:root:not([data-theme=light]) #screenContent.factory-active .factorySection,:root:not([data-theme=light]) #screenContent.factory-active .factoryProjectCard,:root:not([data-theme=light]) #screenContent.factory-active .factoryInput{background:var(--surface);color:var(--text)}}
-#app.canvas-active{grid-template-rows:var(--head) var(--tools) var(--state) minmax(0,1fr) auto!important}
-#app.canvas-active #composer{display:block!important;visibility:visible!important;grid-row:5;position:relative;z-index:20}
-#app.canvas-active .stage{grid-row:4;min-height:0;overflow:hidden}
-#app.canvas-active #chatCanvasPanel{height:100%;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:20px}
-@media(max-width:420px){#mainNav button{font-size:10.5px}#mainNav button span,#mainNav .botsNavMark{font-size:21px}#screenContent.factory-active,#screenContent.bots-active{padding-left:16px;padding-right:16px}}
+
+/* Chat shell follows one stable Telegram-like geometry. */
+#app{--head:58px!important}
+#app.typing{--head:58px!important;--tools:46px!important;--state:27px!important}
+#app.typing>.tools,#app.typing>#status{visibility:visible!important}
+#app>header{position:relative;height:58px!important;min-height:58px;padding:7px 10px!important;background:var(--bg)!important;border-bottom:0!important;align-items:center!important}
+#app>header .chatHeading{position:absolute!important;left:50%;top:50%;transform:translate(-50%,-50%);width:auto!important;max-width:58%;height:44px;display:grid!important;grid-template-columns:36px minmax(0,1fr);grid-template-rows:1fr;align-items:center;gap:8px;padding:4px 11px 4px 5px;border-radius:24px;background:var(--surface);box-shadow:0 1px 0 var(--line);z-index:2}
+#app>header .chatSectionLabel,#app>header #chatHint{display:none!important}
+#chatTitle{padding:0!important;min-height:0!important;border:0!important;background:transparent!important;border-radius:0!important;font-size:16px!important;font-weight:600!important;line-height:1.15!important;text-align:left!important;color:var(--text)!important}
+.publicChatAvatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--text);font-size:15px;font-weight:600;overflow:hidden;background-size:cover;background-position:center}
+#chatBack,#chatLibraryOpen,#reportBtn{position:relative;z-index:3;background:var(--surface)!important;border:0!important;border-radius:22px!important;width:44px!important;height:44px!important;min-height:44px!important;padding:0!important}
+#chatViewTabs{background:var(--bg)!important}
+
+/* The canvas owns the same composer as the conversation. */
+#app.canvas-active,#app.public-canvas-visible{grid-template-rows:var(--head) 46px 27px minmax(0,1fr) auto!important}
+#app.canvas-active #composer,#app.public-canvas-visible #composer{display:block!important;visibility:visible!important;opacity:1!important;grid-row:5!important;position:relative!important;bottom:auto!important;z-index:40!important;height:auto!important;min-height:0!important}
+#app.canvas-active .stage,#app.public-canvas-visible .stage{grid-row:4!important;min-height:0!important;overflow:hidden!important}
+#app.canvas-active #chatCanvasPanel,#app.public-canvas-visible #chatCanvasPanel{display:block!important;height:100%!important;overflow:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:18px}
+
+/* Photos/video are content, not cards inside cards. */
+.bubble:has(.richMessageHasMedia){padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;overflow:visible!important}
+.bubble:has(.richMessageHasMedia)>.meta{padding:4px 8px 0!important}
+.richMessage.richMessageHasMedia{width:min(360px,78vw)!important;gap:4px!important}
+.richMessage .richMedia{border:0!important;box-shadow:none!important}
+.richMessage .richMedia-image,.richMessage .richMediaGallery{border:0!important;background:transparent!important;border-radius:18px!important;overflow:hidden!important}
+.richMessage .richMediaGallery{gap:2px!important}
+.richMessage .richImage{border:0!important}
+.richMessage .richMedia:not(.richMedia-image):not(.richMedia-audio){border:0!important;background:transparent!important;border-radius:0!important;padding:8px 0!important}
+
+/* Profile: one centered identity block + compact settings rows. */
+.profileCard.publicProfile{max-width:620px!important;padding:18px 22px 120px!important;margin:0 auto!important;text-align:left}
+.publicProfile .profileAvatar{position:relative;width:132px!important;height:132px!important;margin:8px auto 20px!important;border-radius:50%!important;font-size:46px!important;background:var(--soft)!important;background-size:cover!important;background-position:center!important;overflow:visible!important}
+.publicProfile .profileAvatar.has-photo{color:transparent!important}
+.publicAvatarEdit{position:absolute!important;right:1px!important;bottom:1px!important;width:38px!important;height:38px!important;min-height:38px!important;padding:0!important;border-radius:50%!important;border:3px solid var(--bg)!important;background:var(--surface)!important;color:var(--text)!important;display:grid!important;place-items:center!important}
+.publicAvatarEdit svg{width:18px;height:18px}
+.publicProfile h2,.publicProfile h3,.publicProfile>strong{letter-spacing:-.35px}
+.publicProfile .setting{display:flex!important;align-items:center!important;gap:13px!important;min-height:58px!important;margin:0!important;padding:12px 14px!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:transparent!important;color:var(--text)!important;font-size:16px!important}
+.publicProfile .setting:first-of-type{border-radius:18px 18px 0 0!important}
+.publicSettingIcon{width:30px;height:30px;display:grid;place-items:center;flex:none;color:var(--text)}
+.publicSettingIcon svg{width:22px;height:22px}
+.publicProfile label{margin:18px 0!important;padding:10px 0!important;border-bottom:1px solid var(--line)}
+
+@media(max-width:420px){#mainNav button{font-size:10.5px}#mainNav button span,#mainNav .botsNavMark{font-size:21px}#screenContent.factory-active,#screenContent.bots-active{padding-left:16px;padding-right:16px}#app>header .chatHeading{max-width:61%}.profileCard.publicProfile{padding-left:18px!important;padding-right:18px!important}.publicProfile .profileAvatar{width:124px!important;height:124px!important}}
