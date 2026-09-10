@@ -1,0 +1,27 @@
+name: Public Bot Core - source preparation
+on:
+  push:
+    branches: [feat/public-bot-core-20260910]
+    paths: [.github/workflows/public-bot-core-check.yml]
+permissions:
+  contents: read
+jobs:
+  source-snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Export exact public source for isolated compatibility checks
+        run: |
+          mkdir -p /tmp/public-bot-core-source
+          git archive --format=tar HEAD > /tmp/public-bot-core-source/repository.tar
+          git rev-parse HEAD > /tmp/public-bot-core-source/commit.txt
+          git rev-parse HEAD^ > /tmp/public-bot-core-source/base-commit.txt
+          sha256sum /tmp/public-bot-core-source/repository.tar > /tmp/public-bot-core-source/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: public-bot-core-source
+          path: /tmp/public-bot-core-source/
+          retention-days: 7
