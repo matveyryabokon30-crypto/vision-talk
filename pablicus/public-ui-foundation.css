@@ -1,0 +1,29 @@
+/* Unified Public UI foundation: navigation, Bots/Factory, themes, canvas composer. */
+:root{--public-content-max:760px}
+#mainNav{grid-template-columns:repeat(5,minmax(0,1fr));padding:6px 5px max(6px,env(safe-area-inset-bottom));gap:2px}
+#mainNav button{min-width:0;min-height:54px;padding:5px 2px;font-size:11px;line-height:1.15;gap:2px;border-radius:11px}
+#mainNav button span{font-size:22px;line-height:24px}
+#mainNav .botsNavMark{font-size:22px;line-height:24px}
+#screenContent.factory-active,#screenContent.bots-active{width:100%;max-width:var(--public-content-max);margin:0 auto;padding:0 20px 32px;color:var(--text);font-family:inherit}
+#screenContent.factory-active .botsHeader,#screenContent.bots-active .botsHeader{position:relative;min-height:46px;margin:0 0 6px;padding:0;border:0;background:transparent}
+#screenContent.factory-active .botsHeader h2,#screenContent.bots-active .botsHeader h2{display:none}
+#screenContent.factory-active .botsBack,#screenContent.bots-active .botsBack{position:relative;width:42px;min-width:42px;height:42px;min-height:42px;margin-left:-12px;padding:0;border:0;background:transparent;border-radius:50%;font-size:34px;font-weight:300;line-height:1;color:var(--text)}
+#screenContent.bots-active>.solid,#screenContent.factory-active>.solid{min-height:48px;border-radius:18px;background:var(--control)!important;color:var(--control-text)!important}
+#screenContent.factory-active h3,#screenContent.bots-active h3{font-family:inherit;color:var(--text);letter-spacing:-.25px}
+#screenContent.factory-active .factoryLead{font-size:16.5px;line-height:1.5;color:var(--text);margin:2px 0 18px}
+#screenContent.factory-active .factoryTitle{font-size:24px;line-height:1.18;font-weight:650;letter-spacing:-.55px;margin:7px 0 10px}
+#screenContent.factory-active .factoryProblem{font-size:16.5px;line-height:1.55;color:var(--text)}
+#screenContent.factory-active .factorySummary,#screenContent.factory-active .factorySection{background:var(--surface);color:var(--text);border-color:var(--line);box-shadow:none}
+#screenContent.factory-active .factoryProjectCard{background:var(--surface);color:var(--text);border-color:var(--line)}
+#screenContent.factory-active .factoryInput,#screenContent.factory-active .factoryFile{background:var(--surface);color:var(--text);border-color:var(--line)}
+#screenContent.factory-active .factoryCapability,#screenContent.factory-active .factoryPlanModule,#screenContent.factory-active .factoryPhase{border-color:var(--line)}
+#screenContent.factory-active .factoryReady{background:color-mix(in srgb,#34c759 14%,var(--surface));color:var(--text)}
+#screenContent.factory-active .factoryStatus{color:var(--text)}
+#screenContent.factory-active .factoryModuleReason,#screenContent.factory-active .factoryTest{color:var(--text)}
+:root[data-theme=dark] #screenContent.factory-active .factorySummary,:root[data-theme=dark] #screenContent.factory-active .factorySection,:root[data-theme=dark] #screenContent.factory-active .factoryProjectCard,:root[data-theme=dark] #screenContent.factory-active .factoryInput{background:var(--surface);color:var(--text)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) #screenContent.factory-active .factorySummary,:root:not([data-theme=light]) #screenContent.factory-active .factorySection,:root:not([data-theme=light]) #screenContent.factory-active .factoryProjectCard,:root:not([data-theme=light]) #screenContent.factory-active .factoryInput{background:var(--surface);color:var(--text)}}
+#app.canvas-active{grid-template-rows:var(--head) var(--tools) var(--state) minmax(0,1fr) auto!important}
+#app.canvas-active #composer{display:block!important;visibility:visible!important;grid-row:5;position:relative;z-index:20}
+#app.canvas-active .stage{grid-row:4;min-height:0;overflow:hidden}
+#app.canvas-active #chatCanvasPanel{height:100%;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:20px}
+@media(max-width:420px){#mainNav button{font-size:10.5px}#mainNav button span,#mainNav .botsNavMark{font-size:21px}#screenContent.factory-active,#screenContent.bots-active{padding-left:16px;padding-right:16px}}
