@@ -11,4 +11,5 @@
  botButton.onclick=()=>openBots().catch(()=>location.reload());
  nav.addEventListener('click',e=>{const button=e.target.closest('button[data-page]');if(!button||button===botButton)return;if(mounted){mounted=false;bots.reset();}},true);
  client.auth.onAuthStateChange((_event,session)=>{user=session?.user||null;if(!user&&mounted){mounted=false;bots.reset();}});sessionUser();
+ const bridge=document.createElement('script');bridge.src='bot-scenario-bridge.js';bridge.defer=true;document.head.append(bridge);
 })();
