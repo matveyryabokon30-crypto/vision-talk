@@ -1,0 +1,3 @@
+[functions.public-bot-core]
+# Handler authenticates Supabase JWTs AND hashed, revocable pbc_ chat keys.
+verify_jwt = false
