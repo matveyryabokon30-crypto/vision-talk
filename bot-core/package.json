@@ -1,0 +1,1 @@
+{"name":"public-bot-core-cloud","version":"0.1.1","private":true,"type":"module","engines":{"node":">=22.16.0"},"scripts":{"test":"node --test tests/*.test.mjs"},"description":"Cloud runtime source subset; complete local SQLite runner remains in the separately delivered source archive."}

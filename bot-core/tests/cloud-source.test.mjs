@@ -1,0 +1,16 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createHandler} from '../src/http/handler.mjs';
+import {AppError} from '../src/core/errors.mjs';
+import {SupabaseStore} from '../src/storage/supabase.mjs';
+import {templates} from '../src/core/templates.mjs';
+import {validateFlow,advance} from '../src/core/flow.mjs';
+const handler=createHandler({service:{},authenticate:async()=>{throw new AppError('UNAUTHORIZED','Denied',401);},allowedOrigins:['https://matveyryabokon30-crypto.github.io'],basePath:'/public-bot-core'});
+test('cloud health reports source version',async()=>{const r=await handler(new Request('https://app.test/public-bot-core/health'));assert.equal(r.status,200);assert.equal((await r.json()).version,'0.1.1');});
+test('cloud API denies absent authentication',async()=>{const r=await handler(new Request('https://app.test/public-bot-core/v1/me'));assert.equal(r.status,401);});
+test('cloud origin allowlist denies unrelated page',async()=>{const r=await handler(new Request('https://app.test/public-bot-core/health',{headers:{Origin:'https://evil.invalid'}}));assert.equal(r.status,403);});
+test('cloud preflight allows current Public origin',async()=>{const r=await handler(new Request('https://app.test/public-bot-core/v1/me',{method:'OPTIONS',headers:{Origin:'https://matveyryabokon30-crypto.github.io'}}));assert.equal(r.status,204);assert.equal(r.headers.get('Access-Control-Allow-Origin'),'https://matveyryabokon30-crypto.github.io');});
+test('canonical templates validate',()=>{assert.deepEqual(templates.map(t=>t.id),['intake','help']);for(const t of templates)assert.equal(validateFlow(t.flow).version,1);});
+test('intake produces one explicit result',()=>{let state=null,records=[];const flow=validateFlow(templates[0].flow);for(const text of ['/start','QA Person','qa@example.com','morning','yes']){const r=advance(flow,state,{text});state=r.state;records.push(...r.records);}assert.equal(records.length,1);assert.equal(records[0].data.contact,'qa@example.com');assert.equal(state.done,true);});
+test('secret API key is not sent as bearer token',async()=>{let options;const s=new SupabaseStore({url:'https://app.test',serviceKey:'sb_secret_fixture_only',fetcher:async(_u,o)=>{options=o;return Response.json([]);}});await s.listBots('fixture');assert.equal(options.headers.apikey,'sb_secret_fixture_only');assert.equal(options.headers.Authorization,undefined);});
+test('cloud store rejects non-HTTPS endpoints',()=>{assert.throws(()=>new SupabaseStore({url:'http://app.test',serviceKey:'fixture-key-only'}));});
