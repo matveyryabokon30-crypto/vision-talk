@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {assertBcryptPassword,createQaPassword,QA_PASSWORD_BYTES} from '../qa/password.mjs';
+const bytes = s => new TextEncoder().encode(s).byteLength;
+test('test password is exactly 52 ASCII bytes',()=>{const p=createQaPassword();assert.equal(p.length,QA_PASSWORD_BYTES);assert.equal(bytes(p),52);assert.match(p,/^[\x21-\x7e]+$/);});
+test('four character categories',()=>{const p=createQaPassword();for(const r of [/[A-Z]/,/[a-z]/,/[0-9]/,/[!@#$%^&*]/])assert.match(p,r);});
+test('1000 independent random fixtures',()=>{const seen=new Set();for(let i=0;i<1000;i++){const p=createQaPassword();assert.equal(bytes(p),52);seen.add(p);}assert.equal(seen.size,1000);});
+test('72 bytes accepted; 73 rejected',()=>{assert.equal(assertBcryptPassword('a'.repeat(72)),'a'.repeat(72));assert.throws(()=>assertBcryptPassword('a'.repeat(73)),RangeError);});
+test('Cyrillic byte boundary',()=>{assert.equal(bytes('я'.repeat(36)),72);assertBcryptPassword('я'.repeat(36));assert.throws(()=>assertBcryptPassword('я'.repeat(37)),RangeError);});
+test('four-byte Unicode boundary',()=>{assert.equal(bytes('😀'.repeat(18)),72);assertBcryptPassword('😀'.repeat(18));assert.throws(()=>assertBcryptPassword('😀'.repeat(19)),RangeError);});
+test('reject empty and nonstrings',()=>{for(const v of ['',null,undefined,42,{},[],new Uint8Array(1)])assert.throws(()=>assertBcryptPassword(v),TypeError);});
+test('no normalization or trimming',()=>{const p='  Qa9!е\u0301я  ';assert.equal(assertBcryptPassword(p),p);});
+test('no silent truncation or secret in error',()=>{const p='sensitive-fixture-value-'.repeat(5);let e;try{assertBcryptPassword(p);}catch(x){e=x;}assert.ok(e instanceof RangeError);assert.ok(!e.message.includes('sensitive-fixture-value'));});
