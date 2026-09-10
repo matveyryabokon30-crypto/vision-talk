@@ -4,9 +4,10 @@
 #mainNav button{min-width:0;min-height:54px;padding:5px 2px;font-size:11px;line-height:1.15;gap:2px;border-radius:11px}
 #mainNav button span{font-size:22px;line-height:24px}
 #mainNav .botsNavMark{font-size:22px;line-height:24px}
-#home.bot-shell-active .homeHeader{position:relative;justify-content:center;min-height:58px;padding:16px 54px 12px}
-#home.bot-shell-active .homeTitle{font-size:17px;font-weight:500;line-height:1.2;letter-spacing:-.2px;text-align:center;color:var(--text)}
-#home.bot-shell-active .homeHeader .plain{position:absolute;right:14px}
+#home .homeHeader{position:relative!important;justify-content:center!important;min-height:58px;padding:8px 58px!important;background:var(--bg)!important}
+#home .homeTitle{display:inline-flex!important;align-items:center;justify-content:center;min-height:38px;max-width:220px;padding:7px 18px;border-radius:21px;background:var(--surface);box-shadow:0 1px 0 var(--line);font-size:16px!important;font-weight:500!important;line-height:1.15;letter-spacing:-.2px;text-align:center;color:var(--text)}
+#home .homeHeader .plain{position:absolute!important;right:12px;top:7px}
+#workspace .workspaceTop #sectionTitle{display:none!important}
 #screenContent.factory-active,#screenContent.bots-active{width:100%;max-width:var(--public-content-max);margin:0 auto;padding:0 20px 32px;color:var(--text);font-family:inherit}
 #screenContent.factory-active .botsHeader,#screenContent.bots-active .botsHeader{position:relative;min-height:44px;margin:0 0 4px;padding:0;border:0;background:transparent}
 #screenContent.factory-active .botsHeader h2,#screenContent.bots-active .botsHeader h2{display:none}
@@ -26,45 +27,63 @@
 :root[data-theme=dark] #screenContent.factory-active .factorySummary,:root[data-theme=dark] #screenContent.factory-active .factorySection,:root[data-theme=dark] #screenContent.factory-active .factoryProjectCard,:root[data-theme=dark] #screenContent.factory-active .factoryInput{background:var(--surface);color:var(--text)}
 @media(prefers-color-scheme:dark){:root:not([data-theme=light]) #screenContent.factory-active .factorySummary,:root:not([data-theme=light]) #screenContent.factory-active .factorySection,:root:not([data-theme=light]) #screenContent.factory-active .factoryProjectCard,:root:not([data-theme=light]) #screenContent.factory-active .factoryInput{background:var(--surface);color:var(--text)}}
 
-/* Chat shell follows one stable Telegram-like geometry. */
+/* Stable chat shell. */
 #app{--head:58px!important}
-#app.typing{--head:58px!important;--tools:46px!important;--state:27px!important}
-#app.typing>.tools,#app.typing>#status{visibility:visible!important}
-#app>header{position:relative;height:58px!important;min-height:58px;padding:7px 10px!important;background:var(--bg)!important;border-bottom:0!important;align-items:center!important}
-#app>header .chatHeading{position:absolute!important;left:50%;top:50%;transform:translate(-50%,-50%);width:auto!important;max-width:58%;height:44px;display:grid!important;grid-template-columns:36px minmax(0,1fr);grid-template-rows:1fr;align-items:center;gap:8px;padding:4px 11px 4px 5px;border-radius:24px;background:var(--surface);box-shadow:0 1px 0 var(--line);z-index:2}
+#app.typing{--head:58px!important}
+#app>header{position:relative;height:58px!important;min-height:58px;padding:7px 10px!important;background:var(--bg)!important;border-bottom:0!important;display:grid!important;grid-template-columns:44px 1fr 44px 44px!important;gap:4px!important;align-items:center!important}
+#app>header .chatHeading{position:absolute!important;left:50%!important;right:auto!important;top:50%!important;transform:translate(-50%,-50%)!important;width:max-content!important;max-width:58%!important;height:44px!important;display:grid!important;grid-template-columns:34px minmax(0,1fr)!important;grid-template-rows:1fr!important;align-items:center!important;gap:8px!important;padding:5px 13px 5px 5px!important;border-radius:24px!important;background:var(--surface)!important;box-shadow:0 1px 0 var(--line)!important;z-index:2!important}
 #app>header .chatSectionLabel,#app>header #chatHint{display:none!important}
-#chatTitle{padding:0!important;min-height:0!important;border:0!important;background:transparent!important;border-radius:0!important;font-size:16px!important;font-weight:600!important;line-height:1.15!important;text-align:left!important;color:var(--text)!important}
-.publicChatAvatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--text);font-size:15px;font-weight:600;overflow:hidden;background-size:cover;background-position:center}
-#chatBack,#chatLibraryOpen,#reportBtn{position:relative;z-index:3;background:var(--surface)!important;border:0!important;border-radius:22px!important;width:44px!important;height:44px!important;min-height:44px!important;padding:0!important}
+#chatTitle{padding:0!important;min-height:0!important;border:0!important;background:transparent!important;border-radius:0!important;font-size:16px!important;font-weight:600!important;line-height:1.15!important;text-align:left!important;color:var(--text)!important;max-width:180px!important}
+.publicChatAvatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--text);font-size:14px;font-weight:600;overflow:hidden;background-size:cover;background-position:center}
+#chatBack{grid-column:1!important;justify-self:start!important}#chatLibraryOpen{grid-column:3!important;justify-self:end!important}#reportBtn{grid-column:4!important;justify-self:end!important}
+#chatBack,#chatLibraryOpen,#reportBtn{position:relative!important;z-index:3!important;background:var(--surface)!important;border:0!important;border-radius:22px!important;width:44px!important;height:44px!important;min-height:44px!important;padding:0!important;margin:0!important;display:grid!important;place-items:center!important}
 #chatViewTabs{background:var(--bg)!important}
 
-/* The canvas owns the same composer as the conversation. */
-#app.canvas-active,#app.public-canvas-visible{grid-template-rows:var(--head) 46px 27px minmax(0,1fr) auto!important}
-#app.canvas-active #composer,#app.public-canvas-visible #composer{display:block!important;visibility:visible!important;opacity:1!important;grid-row:5!important;position:relative!important;bottom:auto!important;z-index:40!important;height:auto!important;min-height:0!important}
-#app.canvas-active .stage,#app.public-canvas-visible .stage{grid-row:4!important;min-height:0!important;overflow:hidden!important}
-#app.canvas-active #chatCanvasPanel,#app.public-canvas-visible #chatCanvasPanel{display:block!important;height:100%!important;overflow:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:18px}
+/* Canvas uses the same real composer. No mutation loop, no special fake composer. */
+#app.canvas-active,#app.public-canvas-visible{grid-template-rows:58px 44px 0 minmax(0,1fr) auto!important}
+#app.canvas-active>.tools,#app.canvas-active>#status,#app.public-canvas-visible>.tools,#app.public-canvas-visible>#status{display:none!important}
+#app.canvas-active .stage,#app.public-canvas-visible .stage{grid-row:4!important;min-height:0!important;overflow:hidden!important;position:relative!important}
+#app.canvas-active #chatCanvasPanel,#app.public-canvas-visible #chatCanvasPanel{display:block!important;position:absolute!important;inset:0!important;height:auto!important;overflow:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:18px!important}
+#app.canvas-active #composer,#app.public-canvas-visible #composer{display:block!important;visibility:visible!important;opacity:1!important;grid-row:5!important;position:relative!important;z-index:40!important;height:auto!important;min-height:0!important;padding:0 max(14px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))!important;background:var(--bg)!important;pointer-events:auto!important}
+#app.canvas-active #composer #composeBox,#app.public-canvas-visible #composer #composeBox{display:grid!important;pointer-events:auto!important;background:var(--glass)!important;border-radius:26px!important;box-shadow:0 4px 24px color-mix(in srgb,var(--text) 3%,transparent)!important}
+#app.canvas-active #composer #composeBox>#editor,#app.public-canvas-visible #composer #composeBox>#editor,#app.canvas-active #composer #composeBox>#attach,#app.public-canvas-visible #composer #composeBox>#attach,#app.canvas-active #composer #composeBox>#expand,#app.public-canvas-visible #composer #composeBox>#expand,#app.canvas-active #composer #composeBox>#hideKey,#app.public-canvas-visible #composer #composeBox>#hideKey,#app.canvas-active #composer #composeBox>#send,#app.public-canvas-visible #composer #composeBox>#send{display:flex!important}
+#app.canvas-active #composer #workspaceQuick,#app.public-canvas-visible #composer #workspaceQuick{display:none!important}
+#app.canvas-active #composer #fullTitle,#app.public-canvas-visible #composer #fullTitle,#app.canvas-active #composer #modeBar,#app.public-canvas-visible #composer #modeBar{display:none!important}
+#app.canvas-active #composer #tray:not([hidden]),#app.public-canvas-visible #composer #tray:not([hidden]),#app.canvas-active #composer #replyDraft:not([hidden]),#app.public-canvas-visible #composer #replyDraft:not([hidden]){display:flex!important}
 
-/* Photos/video are content, not cards inside cards. */
-.bubble:has(.richMessageHasMedia){padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;overflow:visible!important}
-.bubble:has(.richMessageHasMedia)>.meta{padding:4px 8px 0!important}
-.richMessage.richMessageHasMedia{width:min(360px,78vw)!important;gap:4px!important}
+/* Message geometry: modern bubbles and metadata live inside the content. */
+#app .bubble{position:relative!important;border:0!important;border-radius:20px 20px 20px 7px!important;padding:10px 13px 20px!important;box-shadow:0 1px 0 color-mix(in srgb,var(--text) 7%,transparent)!important}
+#app .mine .bubble{border-radius:20px 20px 7px 20px!important}
+#app .bubble>.meta{position:absolute!important;right:9px!important;bottom:5px!important;margin:0!important;padding:0!important;display:flex!important;align-items:center!important;gap:3px!important;font-size:10.5px!important;line-height:1!important;color:var(--muted)!important;background:transparent!important;z-index:4!important;white-space:nowrap!important}
+#app .messageReceipt svg{width:12px!important;height:12px!important}
+#app .bubble:has(.richMessageHasMedia){padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;overflow:visible!important}
+#app .bubble:has(.richMessageHasMedia)>.meta{right:8px!important;bottom:7px!important;padding:3px 5px!important;border-radius:10px!important;background:color-mix(in srgb,var(--bg) 72%,transparent)!important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.richMessage.richMessageHasMedia{width:min(360px,78vw)!important;gap:0!important}
 .richMessage .richMedia{border:0!important;box-shadow:none!important}
 .richMessage .richMedia-image,.richMessage .richMediaGallery{border:0!important;background:transparent!important;border-radius:18px!important;overflow:hidden!important}
 .richMessage .richMediaGallery{gap:2px!important}
 .richMessage .richImage{border:0!important}
 .richMessage .richMedia:not(.richMedia-image):not(.richMedia-audio){border:0!important;background:transparent!important;border-radius:0!important;padding:8px 0!important}
 
-/* Profile: one centered identity block + compact settings rows. */
-.profileCard.publicProfile{max-width:620px!important;padding:18px 22px 120px!important;margin:0 auto!important;text-align:left}
-.publicProfile .profileAvatar{position:relative;width:132px!important;height:132px!important;margin:8px auto 20px!important;border-radius:50%!important;font-size:46px!important;background:var(--soft)!important;background-size:cover!important;background-position:center!important;overflow:visible!important}
-.publicProfile .profileAvatar.has-photo{color:transparent!important}
-.publicAvatarEdit{position:absolute!important;right:1px!important;bottom:1px!important;width:38px!important;height:38px!important;min-height:38px!important;padding:0!important;border-radius:50%!important;border:3px solid var(--bg)!important;background:var(--surface)!important;color:var(--text)!important;display:grid!important;place-items:center!important}
-.publicAvatarEdit svg{width:18px;height:18px}
-.publicProfile h2,.publicProfile h3,.publicProfile>strong{letter-spacing:-.35px}
-.publicProfile .setting{display:flex!important;align-items:center!important;gap:13px!important;min-height:58px!important;margin:0!important;padding:12px 14px!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:transparent!important;color:var(--text)!important;font-size:16px!important}
-.publicProfile .setting:first-of-type{border-radius:18px 18px 0 0!important}
-.publicSettingIcon{width:30px;height:30px;display:grid;place-items:center;flex:none;color:var(--text)}
-.publicSettingIcon svg{width:22px;height:22px}
-.publicProfile label{margin:18px 0!important;padding:10px 0!important;border-bottom:1px solid var(--line)}
+/* Task archive: never leak the accessibility label into the visual row. */
+.pablicusTasksHome .pthToggle{font-size:0!important;line-height:0!important;overflow:hidden!important;white-space:nowrap!important;color:transparent!important}
+.pablicusTasksHome .pthToggle .pthCheck{font-size:14px!important;line-height:1!important;color:var(--text)!important;flex:none!important}
+.pablicusTasksHome .pthTask{display:grid!important;grid-template-columns:44px minmax(0,1fr)!important;gap:6px!important;align-items:start!important;padding:8px 0 10px!important;min-width:0!important}
+.pablicusTasksHome .pthOpen{grid-column:2!important;width:100%!important;min-width:0!important;padding:7px 4px 9px!important;overflow:hidden!important}
+.pablicusTasksHome .pthTaskTitle,.pablicusTasksHome .pthConversation,.pablicusTasksHome .pthTaskMeta{width:100%!important;max-width:100%!important;overflow-wrap:anywhere!important;word-break:normal!important}
 
-@media(max-width:420px){#mainNav button{font-size:10.5px}#mainNav button span,#mainNav .botsNavMark{font-size:21px}#screenContent.factory-active,#screenContent.bots-active{padding-left:16px;padding-right:16px}#app>header .chatHeading{max-width:61%}.profileCard.publicProfile{padding-left:18px!important;padding-right:18px!important}.publicProfile .profileAvatar{width:124px!important;height:124px!important}}
+/* Profile = identity + primary actions + one Settings entry. */
+.profileCard.publicProfile{max-width:620px!important;padding:14px 22px 120px!important;margin:0 auto!important;text-align:center!important}
+.publicProfile .profileAvatar{position:relative;width:138px!important;height:138px!important;margin:10px auto 16px!important;border-radius:50%!important;font-size:48px!important;background:var(--soft)!important;background-size:cover!important;background-position:center!important;overflow:visible!important}
+.publicProfile .profileAvatar.has-photo{color:transparent!important}
+.publicAvatarEdit{position:absolute!important;right:2px!important;bottom:2px!important;width:38px!important;height:38px!important;min-height:38px!important;padding:0!important;border-radius:50%!important;border:3px solid var(--bg)!important;background:var(--surface)!important;color:var(--text)!important;display:grid!important;place-items:center!important}
+.publicAvatarEdit svg{width:18px;height:18px}
+.publicProfileName{margin:0!important;font-size:25px!important;font-weight:650!important;line-height:1.2!important;letter-spacing:-.55px!important;text-align:center!important}
+.publicProfileUsername{margin:6px 0 22px!important;font-size:15px!important;line-height:1.35!important;text-align:center!important;color:var(--muted)!important}
+.publicProfile>.setting{display:flex!important;align-items:center!important;gap:13px!important;min-height:58px!important;margin:0!important;padding:12px 14px!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:transparent!important;color:var(--text)!important;font-size:16px!important;text-align:left!important}
+.publicProfile>#shareProfile{border-radius:18px 18px 0 0!important}.publicProfile>#copyProfileLink{border-radius:0!important}.publicProfile>.publicSettingsEntry{border-radius:0 0 18px 18px!important;margin-bottom:16px!important}
+.publicSettingIcon{width:30px;height:30px;display:grid;place-items:center;flex:none;color:var(--text)}
+.publicSettingIcon svg{width:22px;height:22px}.publicChevron{margin-left:auto;color:var(--muted);font-size:28px;font-weight:300}
+.publicSettingsPanel{display:block;text-align:left;margin-top:4px}.publicSettingsPanel[hidden]{display:none!important}.publicSettingsHead{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:center;min-height:52px;margin:0 -4px 14px;background:var(--bg)}.publicSettingsHead h3{margin:0;font-size:20px;font-weight:600}.publicSettingsBack{position:absolute;left:0;width:44px;height:44px;min-height:44px;padding:0;border:0;border-radius:50%;background:var(--surface);font-size:34px;font-weight:300}.publicSettingsPanel>label{display:flex!important;align-items:center!important;justify-content:space-between!important;margin:0!important;padding:14px!important;min-height:58px;border-bottom:1px solid var(--line)!important}.publicSettingsPanel .setting{display:flex!important;align-items:center!important;gap:13px!important;width:100%!important;min-height:58px!important;margin:0!important;padding:12px 14px!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:transparent!important;text-align:left!important}.publicSettingsPanel .storageUsage,.publicSettingsPanel .passkey-settings{margin-top:24px!important;padding-top:18px!important;border-top:1px solid var(--line)!important}.publicSettingsPanel>p.muted{font-size:13px!important;line-height:1.55!important;text-align:left!important}
+
+@media(max-width:420px){#mainNav button{font-size:10.5px}#mainNav button span,#mainNav .botsNavMark{font-size:21px}#screenContent.factory-active,#screenContent.bots-active{padding-left:16px;padding-right:16px}#app>header .chatHeading{max-width:63%!important}#chatTitle{max-width:145px!important}.profileCard.publicProfile{padding-left:18px!important;padding-right:18px!important}.publicProfile .profileAvatar{width:128px!important;height:128px!important}}
