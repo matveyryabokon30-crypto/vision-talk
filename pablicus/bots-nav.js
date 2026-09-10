@@ -3,9 +3,7 @@
  const PROJECT_URL='https://ctcoqgsztdtsazdiwcmd.supabase.co',KEY='sb_publishable_kMGqZAM2vadfXbBr8r5uzw_l9EiBtIw',STORAGE='sb-ctcoqgsztdtsazdiwcmd-auth-token';
  const home=document.getElementById('home'),nav=document.getElementById('mainNav'),content=document.getElementById('screenContent'),title=document.getElementById('sectionTitle'),brand=document.getElementById('brandTitle'),search=document.getElementById('searchChats'),filters=document.getElementById('chatFilters'),newChat=document.getElementById('newChat');if(!nav||!content||!window.PablicusBots||!window.supabase)return;
  const uiCss=document.createElement('link');uiCss.rel='stylesheet';uiCss.href='public-ui-foundation.css';document.head.append(uiCss);
- const repairCss=document.createElement('link');repairCss.rel='stylesheet';repairCss.href='ux-repair-20260911.css';document.head.append(repairCss);
  const ux=document.createElement('script');ux.src='ux-refinement.js';ux.defer=true;document.head.append(ux);
- const repairJs=document.createElement('script');repairJs.src='ux-repair-20260911.js';repairJs.defer=true;document.head.append(repairJs);
  const client=supabase.createClient(PROJECT_URL,KEY,{auth:{storageKey:STORAGE,persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});let user=null,mounted=false,factory=null;
  const factoryCss=document.createElement('link');factoryCss.rel='stylesheet';factoryCss.href='bot-factory.css';document.head.append(factoryCss);
  const factoryScript=document.createElement('script');factoryScript.src='bot-factory.js';factoryScript.onload=()=>{if(window.PublicBotFactory)factory=window.PublicBotFactory.create({client,getUser:()=>user});};document.head.append(factoryScript);
