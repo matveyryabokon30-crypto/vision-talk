@@ -4,8 +4,11 @@
 #mainNav button{min-width:0;min-height:54px;padding:5px 2px;font-size:11px;line-height:1.15;gap:2px;border-radius:11px}
 #mainNav button span{font-size:22px;line-height:24px}
 #mainNav .botsNavMark{font-size:22px;line-height:24px}
+#home.bot-shell-active .homeHeader{position:relative;justify-content:center;min-height:58px;padding:16px 54px 12px}
+#home.bot-shell-active .homeTitle{font-size:17px;font-weight:500;line-height:1.2;letter-spacing:-.2px;text-align:center;color:var(--text)}
+#home.bot-shell-active .homeHeader .plain{position:absolute;right:14px}
 #screenContent.factory-active,#screenContent.bots-active{width:100%;max-width:var(--public-content-max);margin:0 auto;padding:0 20px 32px;color:var(--text);font-family:inherit}
-#screenContent.factory-active .botsHeader,#screenContent.bots-active .botsHeader{position:relative;min-height:46px;margin:0 0 6px;padding:0;border:0;background:transparent}
+#screenContent.factory-active .botsHeader,#screenContent.bots-active .botsHeader{position:relative;min-height:44px;margin:0 0 4px;padding:0;border:0;background:transparent}
 #screenContent.factory-active .botsHeader h2,#screenContent.bots-active .botsHeader h2{display:none}
 #screenContent.factory-active .botsBack,#screenContent.bots-active .botsBack{position:relative;width:42px;min-width:42px;height:42px;min-height:42px;margin-left:-12px;padding:0;border:0;background:transparent;border-radius:50%;font-size:34px;font-weight:300;line-height:1;color:var(--text)}
 #screenContent.bots-active>.solid,#screenContent.factory-active>.solid{min-height:48px;border-radius:18px;background:var(--control)!important;color:var(--control-text)!important}
