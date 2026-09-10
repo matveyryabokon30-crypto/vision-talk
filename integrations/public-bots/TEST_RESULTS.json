@@ -1,0 +1,40 @@
+{
+  "candidate": "Public Bots integrated candidate 0.1.0",
+  "base_commit": "daa313cf2c490bde210beb871e1845768522b044",
+  "production_published": false,
+  "tests": {
+    "node_transport": {"passed": 17, "failed": 0},
+    "python_builder": {"passed": 3, "failed": 0},
+    "chromium_component_groups": {"passed": 17, "failed": 0}
+  },
+  "browser_environment": "Actual full candidate DOM/scripts in about:blank; explicit URL/Auth/storage test doubles; real local BotService HTTP and SQLite. Not hosted Supabase, real navigation or installed PWA acceptance.",
+  "browser_checks": [
+    "Full candidate boots with Bots entry and control conversation",
+    "Entry opens integrated modal without a second tab",
+    "Create private intake bot through actual UI/local HTTP",
+    "Create second help bot with separate card",
+    "Lost response after commit retains pending event in test persistence",
+    "Explicit same-event retry clears pending after confirmation",
+    "Exactly one record despite replay",
+    "History reload from local server",
+    "Rename and scenario text editing",
+    "Stop disables composing and preserves history",
+    "Resume/new dialog uses updated flow snapshot",
+    "No horizontal overflow at 390px",
+    "Expired fixture token refreshes through host auth double",
+    "Host logout closes and clears account-bound screen",
+    "Second fixture owner cannot see private bots",
+    "No ordinary chat-write RPC issued by bot workflow",
+    "No candidate JavaScript errors in exercised fixture paths"
+  ],
+  "preservation": "Original source tree remains byte-identical. Generated candidate has exactly four modified files and three additions; no production source or database mutation.",
+  "candidate_modified": ["pablicus/app.js", "pablicus/index.html", "pablicus/sw.js", "pablicus/ASSET_MANIFEST.json"],
+  "candidate_added": ["pablicus/bots-client.js", "pablicus/bots-panel.js", "pablicus/bots-panel.css"],
+  "limitations": [
+    "Native browser IndexedDB was replaced in browser component tests and is not newly device-verified.",
+    "Supabase session refresh uses its existing SDK but was exercised with an Auth double here.",
+    "Real hosted candidate login, iPhone keyboard and installed-PWA/SW lifecycle remain pending.",
+    "A final rerun first encountered a pre-existing local fixture process and duplicate synthetic bot names; the process was stopped, a clean in-memory fixture was verified, and the rerun passed all 17 groups.",
+    "Previous 76 accepted cloud checks relate to the backend pilot, not this new integrated frontend."
+  ]
+}
