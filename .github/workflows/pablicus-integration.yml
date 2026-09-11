@@ -1,0 +1,60 @@
+name: Pablicus integration 1C
+
+on:
+  push:
+    branches: [refactor/pablicus-foundation-20260911]
+    paths:
+      - 'pablicus/**'
+      - 'tests/engineering/block-01/**'
+      - '.github/workflows/pablicus-integration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  INTEGRATION_1C_WORK_START_HEAD: dc4a6031e3a7b5248882f88dee11d83ccd88fd60
+
+jobs:
+  integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5.6.0
+        with:
+          python-version: '3.12.7'
+      - name: Capture exact tracked source and baseline provenance
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,pathlib,platform,shutil,subprocess
+          out=pathlib.Path('integration-1c-results'); out.mkdir(exist_ok=True)
+          prefixes=('pablicus/','tests/engineering/block-01/','docs/engineering/block-01/','docs/pablicus/','.github/workflows/')
+          hashes={}
+          for name in subprocess.check_output(['git','ls-files'],text=True,timeout=10).splitlines():
+              if not (name.startswith(prefixes) or name in ['PABLICUS_CONTEXT.md','README.md']): continue
+              source=pathlib.Path(name)
+              if source.is_symlink(): raise RuntimeError('Unexpected symlink: '+name)
+              b=source.read_bytes(); dest=out/'source'/name; dest.parent.mkdir(parents=True,exist_ok=True); dest.write_bytes(b)
+              hashes[name]={'sha256':hashlib.sha256(b).hexdigest(),'git_blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()}
+          data={'WORK_START_HEAD':os.environ['INTEGRATION_1C_WORK_START_HEAD'],'CAPTURE_SHA':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],'run_attempt':os.environ['GITHUB_RUN_ATTEMPT'],'python':platform.python_version(),'platform':platform.platform(),'node':subprocess.check_output(['node','--version'],text=True,timeout=5).strip(),'sources':hashes,'integration_status':'NOT_RUN_BASELINE_CAPTURE_ONLY'}
+          (out/'SOURCE_MANIFEST.json').write_text(json.dumps(data,indent=2)+'\n')
+          PY
+      - name: Preserve accepted 1B regressions on captured source
+        run: |
+          timeout --kill-after=5s 120s python tests/engineering/block-01/test_controller_1b.py --source-root . --output integration-1c-results/regression-1b.json
+      - name: Record initial integration capture boundary
+        run: |
+          printf '%s\n' 'This run captures the exact baseline and executes 1B only. Browser integration 1C is NOT_RUN, not accepted.' > integration-1c-results/BOUNDARY.txt
+      - name: Retain original evidence
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: integration-1c-${{ github.sha }}
+          path: integration-1c-results/
+          retention-days: 14
+          include-hidden-files: true
+          if-no-files-found: error
