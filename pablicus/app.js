@@ -24,7 +24,7 @@
  const passkeySignInClient=supabase.createClient(URL,KEY,{auth:{storageKey:'pablicus-passkey-candidate',persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,flowType:'pkce',experimental:{passkey:true}},global:{fetch:timeoutFetch}});
  window.PablicusController?.setServices({client:sb,recoveryClient,passkeySignInClient,getSession:()=>sb.auth.getSession()});
  let authVersion=0,authEventSerial=0,sessionViewCleared=false,passkeys=null,passwordLogin=null,passkeySigninActive=false,passkeyAuthEvent=null,sessionCleanup=Promise.resolve();
- let user=null,profile=null,dialogs=[],current=null,rows=[],page='chats',filter='all',opening=false,syncing=false,olderBusy=false,refreshing=false,worker=false,pumpPending=false,channel=null,epoch=0,toastTimer=0,peersRead=0;
+ let user=null,profile=null,dialogs=[],current=null,rows=[],page='chats',filter='all',opening=false,syncing=false,olderBusy=false,refreshing=false,worker=false,pumpPending=false,channel=null,epoch=0,toastTimer=0,peersRead=0,conversationLeave=null;
  const signed=new Map(),workspaceUploadState=new Map(),cacheKey=()=>`pablicus:${user?.id}:dialogs`,focusKey=()=>`pablicus:${user?.id}:focus`;
  const replyCache=new Map();
  const mediaViewer=PablicusMediaViewer.create({resolveUrl:mediaUrl,download:downloadAttachment});
@@ -431,7 +431,10 @@
  async function leaveConversationView(isCurrent=()=>true){
   if(!current)return;
   workspaceQuick.close();resetConversationView();mediaViewer.close();chatLibrary.reset();messageTools.clear();PablicusRichMessage.stopAll?.();
-  await PablicusChat.leave();if(!isCurrent())return;
+  // A successor must not reuse the list while this accepted exit can destroy it.
+  const pending=conversationLeave||(conversationLeave=PablicusChat.leave());
+  try{await pending}finally{if(conversationLeave===pending)conversationLeave=null}
+  if(!isCurrent())return;
   current=null;opening=false;inboxContext();epoch++;if(channel)sb.removeChannel(channel);channel=null;$('app').hidden=true;$('home').hidden=false;
  }
  $('chatBack').onclick=async()=>{try{if(window.PablicusController){await window.PablicusController.navigate({section:page==='bots'?'chats':page,screen:'home',conversationId:null,resourceId:null,canvas:false});return}if(!canvasNavigationAllowed())return;await leaveConversationView();renderHome();loadDialogs()}catch(e){problem(e)}};
@@ -578,14 +581,16 @@
  async function showOutbox(){const c=dialog('Исходящие'),store=PablicusChat.store;if(!store)return;const q=(await store.readQueue(false)).filter(r=>!['sent','cancelled'].includes(r.state));if(!q.length)c.append(el('p','','Все исходящие подтверждены сервером. Это не означает, что получатель их прочитал.'));for(const r of q){const b=el('section','outboxItem');b.append(el('strong','',({queued:'В очереди',sending:'Отправляется',error:'Ошибка'})[r.state]||r.state),el('p','',r.messages.find(m=>m.kind==='text')?.text.slice(0,180)||'Вложения'));if(r.error)b.append(el('p','danger',r.error.message));const retry=el('button','setting','Повторить');retry.onclick=async()=>{try{await store.retry(r.id);$('productDialog').close();pump()}catch(e){problem(e)}};b.append(retry);c.append(b)}}
  if(window.PablicusController){
  window.PablicusController.register('conversation',async({state,isCurrent})=>{
+  const pending=conversationLeave;if(pending)await pending;
   if(!isCurrent())return;
-  if(current?.id!==state.conversationId){const d=dialogs.find(x=>x.id===state.conversationId)||{id:state.conversationId,title:'Разговор'};await mountConversation(d,{isCurrent})}
+  if(current?.id!==state.conversationId||!PablicusChat.list){const d=dialogs.find(x=>x.id===state.conversationId)||{id:state.conversationId,title:'Разговор'};await mountConversation(d,{isCurrent})}
   if(isCurrent()&&current?.id===state.conversationId)await mountConversationView();
   return()=>{};
  });
  window.PablicusController.register('canvas',async({state,isCurrent,params={}})=>{
+  const pending=conversationLeave;if(pending)await pending;
   if(!isCurrent())return;
-  if(current?.id!==state.conversationId){const d=dialogs.find(x=>x.id===state.conversationId)||{id:state.conversationId,title:'Разговор'};await mountConversation(d,{canvas:true,isCurrent})}
+  if(current?.id!==state.conversationId||!PablicusChat.list){const d=dialogs.find(x=>x.id===state.conversationId)||{id:state.conversationId,title:'Разговор'};await mountConversation(d,{canvas:true,isCurrent})}
   if(isCurrent()&&current?.id===state.conversationId)await mountCanvasView(params.sourceMessage,params.canvasOptions||{},isCurrent);
   return()=>{};
  });

@@ -22,6 +22,8 @@ permissions:
 env:
   SUBSTEP_1B_START_HEAD: a0e7cb75d053aa0fc43de6904bcca5f85321bb4f
   SUBSTEP_1B_WORK_START_HEAD: ff32cfcbbe985236cdd8b4c0bea0ea82232adc37
+  SUBSTEP_1B_R2_BASELINE: a4e19bc696f2516c2f56790b2114c69bc0f05530
+  SUBSTEP_1B_R2_WORK_START_HEAD: 1e12b31d45c4ccbf7d337ce9a11dee3814579c24
 
 jobs:
   acceptance:
@@ -40,7 +42,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p block01-results/baseline-1b block01-results/work-start-1b block01-results/1b/source
+          mkdir -p block01-results/baseline-1b block01-results/work-start-1b block01-results/1b/source block01-results/r2-baseline
           for pair in "$SUBSTEP_1B_START_HEAD:baseline-1b" "$SUBSTEP_1B_WORK_START_HEAD:work-start-1b"; do
             sha="${pair%%:*}"; folder="${pair#*:}"
             git cat-file -e "$sha^{commit}"
@@ -49,15 +51,19 @@ jobs:
             done
             printf '%s\n' "$sha" > "block01-results/$folder/SOURCE_HEAD.txt"
           done
+          for name in app-controller.js app.js chat.js; do
+            git show "$SUBSTEP_1B_R2_BASELINE:pablicus/$name" > "block01-results/r2-baseline/$name"
+          done
+          printf '%s\n' "$SUBSTEP_1B_R2_BASELINE" > block01-results/r2-baseline/SOURCE_HEAD.txt
           python - <<'PY'
           import hashlib,json,os,pathlib,platform,shutil,subprocess
           root=pathlib.Path.cwd(); out=root/'block01-results/1b'
-          paths=['pablicus/app-controller.js','pablicus/app.js','pablicus/bots-nav.js','pablicus/bot-scenario-bridge.js','tests/engineering/block-01/test_controller_1b.py','tests/engineering/block-01/controller_1b_scenarios.cjs','.github/workflows/pablicus-foundation.yml']
+          paths=['pablicus/app-controller.js','pablicus/app.js','pablicus/chat.js','pablicus/bots-nav.js','pablicus/bot-scenario-bridge.js','tests/engineering/block-01/test_controller_1b.py','tests/engineering/block-01/controller_1b_scenarios.cjs','tests/engineering/block-01/controller_1b_leave.cjs','.github/workflows/pablicus-foundation.yml']
           hashes={}
           for name in paths:
               source=root/name; target=out/'source'/name; target.parent.mkdir(parents=True,exist_ok=True); shutil.copyfile(source,target)
               b=source.read_bytes(); hashes[name]={'sha256':hashlib.sha256(b).hexdigest(),'git_blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()}
-          data={'START_HEAD':os.environ['SUBSTEP_1B_START_HEAD'],'WORK_START_HEAD':os.environ['SUBSTEP_1B_WORK_START_HEAD'],'TESTED_SHA':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],'run_attempt':os.environ['GITHUB_RUN_ATTEMPT'],'python':platform.python_version(),'platform':platform.platform(),'node':subprocess.check_output(['node','--version'],text=True,timeout=5).strip(),'sources':hashes,'status':'NOT_RUN'}
+          data={'START_HEAD':os.environ['SUBSTEP_1B_START_HEAD'],'WORK_START_HEAD':os.environ['SUBSTEP_1B_R2_WORK_START_HEAD'],'PREVIOUS_WORK_START_HEAD':os.environ['SUBSTEP_1B_WORK_START_HEAD'],'R2_BASELINE':os.environ['SUBSTEP_1B_R2_BASELINE'],'TESTED_SHA':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],'run_attempt':os.environ['GITHUB_RUN_ATTEMPT'],'python':platform.python_version(),'platform':platform.platform(),'node':subprocess.check_output(['node','--version'],text=True,timeout=5).strip(),'sources':hashes,'status':'NOT_RUN'}
           (out/'SOURCE_MANIFEST.json').write_text(json.dumps(data,indent=2)+'\n')
           PY
       - name: Install pinned browser test dependencies
@@ -106,7 +112,39 @@ jobs:
               assert d[test]['execution']['exit_code']==1 and not d[test]['execution']['timed_out'],d
           PY
           test "$code" -eq 1
-      - name: Run every bounded 1B scenario on this candidate
+      - name: R2 real leave must reproduce on a4e19bc with controls
+        shell: bash
+        run: |
+          set +e
+          python tests/engineering/block-01/test_controller_1b.py \
+            --source-root . \
+            --controller-path block01-results/r2-baseline/app-controller.js \
+            --app-path block01-results/r2-baseline/app.js \
+            --chat-path block01-results/r2-baseline/chat.js \
+            --only 1B-LEAVE-DENY,1B-LEAVE-COMPLETE,1B-LEAVE-RESUME,1B-LEAVE-FLUSH-REJECT \
+            --output block01-results/r2-baseline/results.json \
+            > block01-results/r2-baseline/run.log 2>&1
+          code=$?
+          set -e
+          python - <<'PY'
+          import json
+          d=json.load(open('block01-results/r2-baseline/results.json'))
+          for test in ['1B-LEAVE-DENY','1B-LEAVE-COMPLETE']:
+              assert d[test]['status']=='PASS' and d[test]['execution']['exit_code']==0,d
+          for test in ['1B-LEAVE-RESUME','1B-LEAVE-FLUSH-REJECT']:
+              assert d[test]['status']=='FAIL' and d[test]['reason']==test,d
+              assert d[test]['execution']['exit_code']==1 and not d[test]['execution']['timed_out'],d
+          resume=d['1B-LEAVE-RESUME']
+          assert len(resume['runs'])==5,resume
+          for run in resume['runs']:
+              assert run['resumed']=={'status':'fulfilled','value':True},run
+              assert run['actual']['listPresent'] is False and run['actual']['destroyed']==1 and run['actual']['opened']==0,run
+              assert not run['errors'] and not run['unhandled'],run
+          assert resume['provenance']['source_kind']=='full-chat.js',resume
+          assert resume['provenance']['source_git_blob']=='4ff59d33af9fd587035d80e7134c225c5c00ffb2',resume
+          PY
+          test "$code" -eq 1
+      - name: Run all 31 bounded 1B scenarios on this candidate
         run: |
           python tests/engineering/block-01/test_controller_1b.py \
             --source-root . \

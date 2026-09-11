@@ -27,6 +27,8 @@ CASES = [
     '1B-AUTH-BOOT-ERROR', '1B-AUTH-LOGOUT-RELOGIN',
     '1B-LATE-REJECT', '1B-SESSION-LATE', '1B-SESSION-ERROR',
     '1B-SESSION-ORDER', '1B-TIMEOUT-SELFTEST',
+    '1B-LEAVE-DENY', '1B-LEAVE-COMPLETE', '1B-LEAVE-RESUME',
+    '1B-LEAVE-FLUSH-REJECT', '1B-LEAVE-CANVAS-RESUME', '1B-LEAVE-REPEAT-BACK',
 ]
 INTERNAL = 'HARNESS_NEVER_FINISHES'
 
@@ -92,6 +94,7 @@ def main() -> int:
     ap.add_argument('--source-root', type=Path, default=Path.cwd())
     ap.add_argument('--controller-path', type=Path)
     ap.add_argument('--app-path', type=Path)
+    ap.add_argument('--chat-path', type=Path, help='Production chat.js or an explicitly recorded exact leave-method excerpt')
     ap.add_argument('--browser', help='Legacy CLI compatibility; these contracts use Node VM, not a browser.')
     ap.add_argument('--output', type=Path, default=Path('block01-results/controller-1b.json'))
     ap.add_argument('--only', default='')
@@ -103,6 +106,8 @@ def main() -> int:
     ctl = (args.controller_path or root/'pablicus/app-controller.js').resolve()
     app = (args.app_path or root/'pablicus/app.js').resolve()
     script = Path(__file__).with_name('controller_1b_scenarios.cjs').resolve()
+    leave_script = Path(__file__).with_name('controller_1b_leave.cjs').resolve()
+    chat = (args.chat_path or root/'pablicus/chat.js').resolve()
     selected = args.only.split(',') if args.only else CASES
     if any(t not in CASES+[INTERNAL] for t in selected) or len(selected) != len(set(selected)):
         ap.error('Unknown or duplicate scenario name in --only')
@@ -113,7 +118,7 @@ def main() -> int:
     environment = {'python':sys.version, 'platform':platform.platform(), 'source_root':str(root),
                    'scope':'Exact application/controller functions; synthetic DOM/SDK/I/O; no real server or device',
                    'case_timeout_seconds':args.case_timeout,
-                   'sources':{str(p): digest(p) if p.exists() else None for p in [ctl, app, script, Path(__file__).resolve()]}}
+                   'sources':{str(p): digest(p) if p.exists() else None for p in [ctl, app, script, leave_script, chat, Path(__file__).resolve()]}}
     save(args.output.with_suffix('.environment.json'), environment)
     try:
         for name in selected:
@@ -150,7 +155,10 @@ def main() -> int:
                         'execution':execution,'probe':str(probe),'probe_sha256':digest(probe) if probe.exists() else None,
                         'probe_result':child_result,'process_ids':ids,'still_running':active}
             else:
-                execution=execute(['node',str(script),name,str(root),str(ctl),str(app)],args.case_timeout,logfile)
+                command=['node',str(leave_script if name.startswith('1B-LEAVE-') else script),name,str(root),str(ctl),str(app)]
+                if name.startswith('1B-LEAVE-'):
+                    command.append(str(chat))
+                execution=execute(command,args.case_timeout,logfile)
                 if execution.get('timed_out'):
                     record={'status':'TIMEOUT','reason':execution['reason']}
                 elif execution.get('launch_error'):
