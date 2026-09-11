@@ -3,8 +3,9 @@
  const PROJECT_URL='https://ctcoqgsztdtsazdiwcmd.supabase.co',KEY='sb_publishable_kMGqZAM2vadfXbBr8r5uzw_l9EiBtIw',STORAGE='sb-ctcoqgsztdtsazdiwcmd-auth-token';
  const home=document.getElementById('home'),nav=document.getElementById('mainNav'),content=document.getElementById('screenContent'),title=document.getElementById('sectionTitle'),brand=document.getElementById('brandTitle'),search=document.getElementById('searchChats'),filters=document.getElementById('chatFilters'),newChat=document.getElementById('newChat');if(!nav||!content||!window.PablicusBots||!window.supabase)return;
  const uiCss=document.createElement('link');uiCss.rel='stylesheet';uiCss.href='public-ui-foundation.css';document.head.append(uiCss);
- const ux=document.createElement('script');ux.src='ux-refinement.js';ux.defer=true;document.head.append(ux);
  const createCss=document.createElement('link');createCss.rel='stylesheet';createCss.href='creation-flows.css';document.head.append(createCss);
+ const hotfixCss=document.createElement('link');hotfixCss.rel='stylesheet';hotfixCss.href='public-hotfix-v8.css';document.head.append(hotfixCss);
+ const ux=document.createElement('script');ux.src='ux-refinement.js';ux.defer=true;ux.onload=()=>{const hotfix=document.createElement('script');hotfix.src='public-hotfix-v8.js';hotfix.defer=true;document.head.append(hotfix);};document.head.append(ux);
  const createJs=document.createElement('script');createJs.src='creation-flows.js';createJs.defer=true;document.head.append(createJs);
  const client=supabase.createClient(PROJECT_URL,KEY,{auth:{storageKey:STORAGE,persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});let user=null,mounted=false,factory=null;
  const factoryCss=document.createElement('link');factoryCss.rel='stylesheet';factoryCss.href='bot-factory.css';document.head.append(factoryCss);
