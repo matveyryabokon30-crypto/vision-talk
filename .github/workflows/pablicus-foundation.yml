@@ -19,6 +19,9 @@ on:
 permissions:
   contents: read
 
+env:
+  SUBSTEP_1B_START_HEAD: a0e7cb75d053aa0fc43de6904bcca5f85321bb4f
+
 jobs:
   acceptance:
     name: Block 01 browser acceptance
@@ -28,6 +31,7 @@ jobs:
       - uses: actions/checkout@v4.2.2
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-python@v5.6.0
         with:
           python-version: '3.12.7'
@@ -35,6 +39,41 @@ jobs:
         run: |
           python -m pip install --disable-pip-version-check playwright==1.57.0 beautifulsoup4==4.14.3
           python -m playwright install --with-deps chromium
+      - name: Prepare evidence directory and frozen 1B baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p block01-results/baseline-1b
+          git cat-file -e "$SUBSTEP_1B_START_HEAD^{commit}"
+          git show "$SUBSTEP_1B_START_HEAD:pablicus/app-controller.js" > block01-results/baseline-1b/app-controller.js
+          git show "$SUBSTEP_1B_START_HEAD:pablicus/app.js" > block01-results/baseline-1b/app.js
+          printf '%s\n' "$SUBSTEP_1B_START_HEAD" > block01-results/baseline-1b/START_HEAD.txt
+      - name: 1B baseline R1/R2 must reproduce with same assertions
+        shell: bash
+        run: |
+          set +e
+          python tests/engineering/block-01/test_controller_1b.py \
+            --source-root . \
+            --controller-path block01-results/baseline-1b/app-controller.js \
+            --app-path block01-results/baseline-1b/app.js \
+            --only 1B-T01,1B-T02 \
+            --output block01-results/baseline-1b/results.json \
+            > block01-results/baseline-1b/run.log 2>&1
+          code=$?
+          set -e
+          python - <<'PY'
+          import json
+          p='block01-results/baseline-1b/results.json'
+          d=json.load(open(p,encoding='utf-8'))
+          assert d['1B-T01']['status']=='FAIL', d
+          assert d['1B-T02']['status']=='FAIL', d
+          PY
+          test "$code" -ne 0
+      - name: Run 1B-T01 through 1B-T06 on candidate
+        run: |
+          python tests/engineering/block-01/test_controller_1b.py \
+            --source-root . \
+            --output block01-results/controller-1b.json
       - name: Start isolated static server
         run: |
           python -m http.server 8080 --bind 127.0.0.1 > /tmp/pablicus-http.log 2>&1 &
@@ -42,7 +81,7 @@ jobs:
           for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8080/pablicus/index.html >/dev/null && exit 0; sleep 0.5; done
           cat /tmp/pablicus-http.log
           exit 1
-      - name: Run B1-T01 through B1-T10
+      - name: Run existing B1-T01 through B1-T10
         run: |
           python tests/engineering/block-01/test_block01.py \
             --source-root . \
@@ -58,6 +97,7 @@ jobs:
           test "$code" -ne 0
           grep -q 'controlled regression detected as expected' block01-results/negative-cycle.log
       - name: Upload evidence
+        if: always()
         uses: actions/upload-artifact@v4.6.2
         with:
           name: block-01-acceptance-${{ github.sha }}
