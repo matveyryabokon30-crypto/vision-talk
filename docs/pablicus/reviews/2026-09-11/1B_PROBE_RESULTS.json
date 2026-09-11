@@ -1,0 +1,74 @@
+{
+  "source_head": "3d291271ebd0152a6122076e2b33940afc50eb05",
+  "code_and_ci_sha": "e8f267446fa35e7b83b6a9767e33dea2e6a48bff",
+  "source_blobs": {
+    "app-controller.js": "26dafda6de517cb611cd3d01c3475287b25471e6",
+    "app.js": "fdc44388d3e75a9d964e42410ad5e149bcaeff8d"
+  },
+  "python": "3.13.5",
+  "scope": "isolated pinned controller and exact app function/caller bodies; synthetic DOM/dependencies; network blocked; no full application or device acceptance",
+  "cases": {
+    "R1_LATEST_WINS": {
+      "status": "PASS",
+      "detail": {
+        "pass": true,
+        "actual": "C",
+        "mounts": [
+          "C"
+        ],
+        "expected": "C only"
+      }
+    },
+    "R2_LATE_CLEANUP": {
+      "status": "PASS",
+      "detail": {
+        "pass": true,
+        "functionCleanup": 1,
+        "objectCleanup": 1,
+        "correctThis": true,
+        "newResources": 1,
+        "screen": "B"
+      }
+    },
+    "R3_LATE_REJECTION": {
+      "status": "PASS",
+      "detail": {
+        "pass": true,
+        "screen": "new",
+        "newResources": 1,
+        "oldResources": 0,
+        "cleanupCount": 1,
+        "errors": [
+          "late-old-rejection"
+        ],
+        "unhandled": [],
+        "oldReturn": false
+      }
+    },
+    "R4_UNSAVED_CANVAS_CANCEL": {
+      "status": "FAIL",
+      "detail": {
+        "pass": false,
+        "before": {
+          "screen": "canvas",
+          "canvas": true,
+          "visible": true
+        },
+        "after": {
+          "screen": "conversation",
+          "canvas": false,
+          "visible": false
+        },
+        "prompts": 0,
+        "unsavedChecks": 0,
+        "closed": 1,
+        "expected": "declined navigation keeps canvas; no close; confirmation once",
+        "sourceLines": [
+          "115-128",
+          "135",
+          "535-536"
+        ]
+      }
+    }
+  }
+}
