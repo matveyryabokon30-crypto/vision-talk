@@ -1,0 +1,33 @@
+name: Apply Block 01 candidate patch
+
+on:
+  push:
+    branches: [refactor/pablicus-foundation-20260911]
+    paths:
+      - '.engineering/block01.patch.gz.b64'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+      - name: Apply exact candidate patch and remove bootstrap files
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 -d .engineering/block01.patch.gz.b64 | gzip -d > /tmp/block01.patch
+          git apply --check /tmp/block01.patch
+          git apply --index /tmp/block01.patch
+          git rm .engineering/block01.patch.gz.b64 .github/workflows/block01-apply.yml
+          git diff --cached --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "refactor(pablicus): implement foundation Block 01 candidate"
+          git push origin HEAD:refactor/pablicus-foundation-20260911
