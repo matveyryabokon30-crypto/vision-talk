@@ -1,0 +1,1 @@
+ async leave(){await this.flush();input.blur();closeMenu(false);list?.destroy();list=null;},

@@ -1,0 +1,132 @@
+{
+  "schema": "pablicus-independent-review/1.0",
+  "review_round": 2,
+  "date": "2026-09-11",
+  "task_id": "PABLICUS-BLOCK01-1B-COMPLETION-20260911",
+  "verdict": "SUBSTEP_1B_NOT_ACCEPTED",
+  "next_action": "TARGETED_COMPLETION_REQUIRED",
+  "blocking_findings": [
+    "1B-LEAVE-RESUME"
+  ],
+  "tested_sha": "a4e19bc696f2516c2f56790b2114c69bc0f05530",
+  "handoff_head": "95102dba14276439f44db8cb12c787a7644c88ed",
+  "main_observed": "f348aceacc3acdb315387a4066f6f495ce269b54",
+  "ci": {
+    "run": 34618904735,
+    "job": 103327639447,
+    "artifact": 10271625992,
+    "bytes": 139000,
+    "sha256": "de93bec511ea01819050823626634347bd9452f660a10cc47a472286982fbf59",
+    "crc_ok": true,
+    "checks": "completed/success"
+  },
+  "source_verification": {
+    "pablicus/app-controller.js": {
+      "sha256": "bf59c9cb2e98193f75c66f264b92bdc9c74c65727fb44a2d415e9d3c367ff470",
+      "git_blob": "598a9e03e6c2784d750c46d701713cbb894e3cef",
+      "matches_ci_manifest_and_remote_git_blob": true
+    },
+    "pablicus/app.js": {
+      "sha256": "4fec4b7fb8f60cebca6752fefa1c641af5a2978b15a07d03258b86e15726683b",
+      "git_blob": "b2b37e8eb439b7076ed0e771c9e51c472265cace",
+      "matches_ci_manifest_and_remote_git_blob": true
+    },
+    "pablicus/bots-nav.js": {
+      "sha256": "ce6675fe2477d5ca29923f8ffea2cdeeb2fe8fa27505084e85a66eeafae231ab",
+      "git_blob": "0220112901ab17ace345e6bbb5de82c2514de8cf",
+      "matches_ci_manifest_and_remote_git_blob": true
+    },
+    "pablicus/bot-scenario-bridge.js": {
+      "sha256": "1ece4fb607a086b0e2c90a5c2271539718cb9d3054a751f3ed75bcc92a22f7b6",
+      "git_blob": "a65a2d993ae3a8639ece31f6f7dd4039f84743d1",
+      "matches_ci_manifest_and_remote_git_blob": true
+    },
+    "tests/engineering/block-01/test_controller_1b.py": {
+      "sha256": "c5aed6076b205ebe642bc6b400d62d170707a056b39f219e5e87eeae14ef487b",
+      "git_blob": "7c6bf2d3620439738bb570d67758b1fa93d24b38",
+      "matches_ci_manifest_and_remote_git_blob": true
+    },
+    "tests/engineering/block-01/controller_1b_scenarios.cjs": {
+      "sha256": "6064f551fdbc2dc00a7392c7bf192e93bbb1cec6a0cc1cf4313f6b63923fb9de",
+      "git_blob": "25acf4bf867fc1bd3645811586be9a5d748fd9d1",
+      "matches_ci_manifest_and_remote_git_blob": true
+    },
+    ".github/workflows/pablicus-foundation.yml": {
+      "sha256": "9c0f3d6ece6004b20058132dde6debf9b006213a60e66c9af6f83f079eaf3e4c",
+      "git_blob": "01101c6f0b4ea7383205a915e794212a154a7b26",
+      "matches_ci_manifest_and_remote_git_blob": true
+    }
+  },
+  "checked_original_log_hashes": 36,
+  "hash_mismatches": [],
+  "local_rerun": {
+    "passed": 25,
+    "total": 25,
+    "source": "local-rerun/controller-1b.json",
+    "sha256": "a383cae5a229125e57fbf2627cf51cae2026a7eb5840b748bb4df7d872cc18aa"
+  },
+  "baseline_reruns": {
+    "historical": "2 exact expected FAIL; exit 1",
+    "work_start": "3 exact expected FAIL; exit 1"
+  },
+  "independent_reproduction": {
+    "file": "1B_R2_RUNTIME_RESULTS.json",
+    "sha256": "bc32741d69b26a7242d7abcda4d3497ee5ffd18ffeefb6bee5da3523995c3611",
+    "controls_pass": 2,
+    "repeated_failure": 5,
+    "error": 0,
+    "timeout": 0,
+    "finding": "Successful resume to conversation c1 is followed by old leave destroying the message list after flush",
+    "actual": {
+      "before": {
+        "section": "chats",
+        "screen": "canvas",
+        "resourceId": null,
+        "conversationId": "c1",
+        "canvas": true,
+        "generation": 1,
+        "sessionGeneration": 0,
+        "sessionUserId": null
+      },
+      "after": {
+        "section": "chats",
+        "screen": "conversation",
+        "resourceId": null,
+        "conversationId": "c1",
+        "canvas": false,
+        "generation": 3,
+        "sessionGeneration": 0,
+        "sessionUserId": null
+      },
+      "resumed": true,
+      "actual": {
+        "listPresent": false,
+        "destroyed": 1,
+        "opened": 0
+      },
+      "confirm": 1,
+      "app": {
+        "user": "A",
+        "profile": "A",
+        "current": "c1",
+        "visible": false,
+        "authVersion": 0,
+        "epoch": 0
+      }
+    },
+    "representation": "Whitespace-normalized copy of the runner JSON; values unchanged; raw pretty JSON retained in downloadable package"
+  },
+  "nonblocking_report_correction": "T06 is five sequential bounded node --check subprocesses, not a shared eight-second wall-clock test.",
+  "dismissed_hypothesis": {
+    "name": "CURRENT_FAILURE_BECOMES_STALE_DURING_CLEANUP",
+    "disposition": "NOT_A_CONFIRMED_BLOCKER",
+    "reason": "Refined probe observed screenAtDelivery=old, not the new screen. No change to current mount rejection semantics required."
+  },
+  "limits": [
+    "Inspected exact function extraction and synthetic DOM/SDK/flush/list boundaries, not a full application or real IndexedDB run",
+    "Reuse of executor fixture is disclosed; scenario and real leave instrumentation are independent",
+    "No proven loss of persisted messages, drafts or attachments",
+    "No physical iPhone, real server Auth, complete 1C or full security acceptance",
+    "No runtime code, main, production or Supabase changes by reviewer"
+  ]
+}
