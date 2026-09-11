@@ -22,6 +22,7 @@
  const recoveryClient=supabase.createClient(URL,KEY,{auth:{storageKey:'pablicus-recovery-request',persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,flowType:'implicit'},global:{fetch:timeoutFetch}});
  // A candidate key login cannot write or broadcast the application's session.
  const passkeySignInClient=supabase.createClient(URL,KEY,{auth:{storageKey:'pablicus-passkey-candidate',persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,flowType:'pkce',experimental:{passkey:true}},global:{fetch:timeoutFetch}});
+ window.PablicusController?.setServices({client:sb,recoveryClient,passkeySignInClient,getSession:()=>sb.auth.getSession()});
  let authVersion=0,passkeys=null,passwordLogin=null,passkeySigninActive=false,passkeyAuthEvent=null,sessionCleanup=Promise.resolve();
  let user=null,profile=null,dialogs=[],current=null,rows=[],page='chats',filter='all',opening=false,syncing=false,olderBusy=false,refreshing=false,worker=false,pumpPending=false,channel=null,epoch=0,toastTimer=0,peersRead=0;
  const signed=new Map(),workspaceUploadState=new Map(),cacheKey=()=>`pablicus:${user?.id}:dialogs`,focusKey=()=>`pablicus:${user?.id}:focus`;
@@ -131,7 +132,7 @@
   const text=block?(block.type==='text'?block.text:block.name||''):(message.body||'');
   await showCanvasView({id:message.id,blockId:blockId||null,text:String(text||'').slice(0,500)});
  }
- $('conversationTab').onclick=()=>showConversationView().catch(problem);$('canvasTab').onclick=()=>showCanvasView().catch(problem);
+ $('conversationTab').onclick=()=>window.PablicusController?window.PablicusController.navigate({section:'chats',screen:'conversation',conversationId:current?.id,canvas:false}).catch(problem):showConversationView().catch(problem);$('canvasTab').onclick=()=>window.PablicusController?window.PablicusController.navigate({section:'chats',screen:'canvas',conversationId:current?.id,canvas:true}).catch(problem):showCanvasView().catch(problem);
  $('chatViewTabs').onkeydown=event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();const target=event.key==='Home'?'conversationTab':event.key==='End'?'canvasTab':event.target.id==='conversationTab'?'canvasTab':'conversationTab';$(target).focus();$(target).click();};
  let tasksEpoch=0;
  const tasksContext=()=>({userId:user?.id,epoch:tasksEpoch,active:!!user&&!current&&page==='tasks'});
@@ -324,7 +325,7 @@
  }
  let authBooting=true,pendingAuthEvent=null;
  passwordLogin=PablicusLogin.mount({client:sb,recoveryClient,projectUrl:URL,canSignIn:()=>!passkeySigninActive&&!publicKeyFlow.snapshot().busy,authenticate:session=>{trustExplicitSignIn();return authenticate(session)}});
- sb.auth.onAuthStateChange((_event,session)=>{
+ sb.auth.onAuthStateChange((_event,session)=>{window.PablicusController?.sessionChanged();
   if(passkeySigninActive){
    const previous=passkeyAuthEvent?.session?.user.id;
    passkeyAuthEvent={event:_event,session};
@@ -356,15 +357,15 @@
   }catch(e){if(active(ticket)){total.textContent='—';own.textContent='—';box.dataset.state='unavailable';status.textContent='Не удалось узнать занятое место. Повторите проверку.';}}finally{if(active(ticket))refresh.disabled=false;}}
   refresh.onclick=measure;measure();
  }
+ function goConversation(d,options={}){return window.PablicusController?window.PablicusController.navigate({section:'chats',screen:options.canvas?'canvas':'conversation',conversationId:d.id,resourceId:null}):openConversation(d,options)}
  function renderHome(){
-  if(!user||current)return;resetTasksHome();const c=$('screenContent');c.replaceChildren();$('sectionTitle').textContent={chats:'Чаты',feed:'Лента',tasks:'Дела',profile:'Профиль'}[page];$('sectionTitle').hidden=page==='chats';$('searchChats').hidden=page!=='chats';$('chatFilters').hidden=page!=='chats';$('newChat').hidden=page!=='chats';
-  document.querySelectorAll('#mainNav button').forEach(b=>b.classList.toggle('selected',b.dataset.page===page));
+  if(!user||current)return;resetTasksHome();const c=$('screenContent');c.replaceChildren();$('searchChats').hidden=page!=='chats';$('chatFilters').hidden=page!=='chats';$('newChat').hidden=page!=='chats';
   if(page==='chats'){
    const find=el('button','findPeople','Найти человека');find.type='button';find.prepend(PablicusMessageMenu.icon('users'));find.onclick=()=>people.open($('searchChats').value);c.append(find);
    const saved=el('button','savedConversation','Избранное');saved.type='button';saved.append(el('span','muted','Сообщения и материалы для себя'));saved.onclick=async()=>{saved.disabled=true;try{const r=await sb.rpc('start_saved_conversation');if(r.error)throw r.error;await loadDialogs();await openConversation(dialogs.find(d=>d.id===r.data)||{id:r.data,title:'Избранное'})}catch(e){problem(e)}finally{saved.disabled=false}};c.append(saved);
-   const focused=new Set(safeGet(focusKey())||[]),q=$('searchChats').value.toLowerCase();const ds=dialogs.filter(d=>(filter!=='focus'||focused.has(d.id))&&(!q||String(d.title).toLowerCase().includes(q)));
+   const focused=new Set(safeGet(focusKey())||[]),q=$('searchChats').value.toLowerCase(),visible=dialogs.filter(d=>(filter!=='focus'||focused.has(d.id))&&(!q||String(d.title).toLowerCase().includes(q)));const ds=window.PablicusChatListView?PablicusChatListView.ordered(visible,focused):visible;
    if(!ds.length){c.append(el('p','empty',filter==='focus'?'Здесь появятся отмеченные вами разговоры.':'Разговоров пока нет. Найдите человека по имени или откройте его ссылку профиля.'));return}
-   for(const d of ds){const row=el('section','chatCard'),button=el('button','chatMain'),avatar=el('span','avatar',(d.title||'?').replace('@','').slice(0,1).toUpperCase()),body=el('span','chatText');body.append(el('strong','',d.title||'Разговор'),el('span','previewText',d.last_message||'Начните разговор'));button.append(avatar,body);if(+d.unread_count)button.append(el('span','unread',d.unread_count));button.onclick=()=>openConversation(d).catch(problem);const focus=el('button','focusBtn',focused.has(d.id)?'★':'☆');focus.setAttribute('aria-label','Изменить Фокус');focus.onclick=()=>{focused.has(d.id)?focused.delete(d.id):focused.add(d.id);safeSet(focusKey(),[...focused]);renderHome()};row.append(button,focus);c.append(row)}
+   for(const d of ds){const row=el('section','chatCard');row.dataset.conversationId=d.id;const button=el('button','chatMain'),avatar=el('span','avatar',(d.title||'?').replace('@','').slice(0,1).toUpperCase()),body=el('span','chatText');body.append(el('strong','',d.title||'Разговор'),el('span','previewText',d.last_message||'Начните разговор'));button.append(avatar,body);if(+d.unread_count)button.append(el('span','unread',d.unread_count));button.onclick=()=>goConversation(d).catch(problem);const focus=el('button','focusBtn',focused.has(d.id)?'★':'☆');focus.setAttribute('aria-label','Изменить Фокус');focus.onclick=()=>{focused.has(d.id)?focused.delete(d.id):focused.add(d.id);safeSet(focusKey(),[...focused]);renderHome()};row.append(button,focus);c.append(row)}
   }else if(page==='profile'){
    const p=el('section','profileCard');p.append(el('div','profileAvatar',(profile.display_name||profile.username).slice(0,1).toUpperCase()),el('h2','',profile.display_name||profile.username),el('p','muted','@'+profile.username));
    const share=el('button','setting profileShare','Поделиться профилем');share.id='shareProfile';share.prepend(PablicusMessageMenu.icon('share'));share.onclick=()=>shareProfile().catch(problem);const copyLink=el('button','setting profileCopyLink','Скопировать ссылку');copyLink.id='copyProfileLink';copyLink.onclick=async()=>{try{await navigator.clipboard.writeText(PablicusPeople.profileLink(profile.username));toast('Ссылка на профиль скопирована')}catch(e){problem(e)}};p.append(share,copyLink);
@@ -375,14 +376,20 @@
    tasksHome.mount(c);
   }else{c.append(el('p','empty','Публикации, подписки и сторис появятся в следующем обновлении. Раздел пока не включён.'))}
  }
- document.querySelectorAll('#mainNav button').forEach(b=>b.onclick=()=>{page=b.dataset.page;renderHome()});document.querySelectorAll('#chatFilters button').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll('#chatFilters button').forEach(x=>x.classList.toggle('selected',x===b));renderHome()});$('searchChats').oninput=renderHome;
+ document.querySelectorAll('#mainNav button').forEach(b=>b.onclick=()=>{const target=b.dataset.page;if(window.PablicusController){window.PablicusController.navigate({section:target,screen:'home',resourceId:null}).catch(problem)}else{page=target;renderHome()}});
+ if(window.PablicusController){
+  window.PablicusController.register('home',async({state,isCurrent})=>{if(!isCurrent())return;page=state.section;renderHome();return()=>{};});
+  window.PablicusController.subscribe(state=>{if(state.screen==='home'){page=state.section;const label={chats:'Чаты',feed:'Лента',tasks:'Дела',bots:'Боты',profile:'Профиль'}[state.section];const brand=$('brandTitle');if(brand&&label)brand.textContent=label;}});
+ }
+
+ document.querySelectorAll('#chatFilters button').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll('#chatFilters button').forEach(x=>x.classList.toggle('selected',x===b));renderHome()});$('searchChats').oninput=renderHome;
  $('newChat').onclick=()=>people.open($('searchChats').value);
  function mapped(m){return{id:m.id,number:m.server_seq,mine:m.sender_id===user?.id,text:PablicusChatActions.effective(m).body||'',revision:messageTools.revision(m),remote:m}}
  async function openConversation(d,{canvas=false}={}){if(opening||!user||!canvasNavigationAllowed())return;workspaceQuick.close();resetTasksHome();resetConversationView();if(canvas){canvasVisible=true;paintConversationView();}mediaViewer.close();chatLibrary.reset();messageTools.clear();PablicusRichMessage.stopAll?.();opening=true;const uid=user.id,ep=++epoch;current=d;inboxContext();rows=[];peersRead=0;if(channel){await sb.removeChannel(channel);channel=null}$('home').hidden=true;$('app').style.visibility='hidden';$('app').inert=true;$('app').hidden=false;$('chatTitle').textContent=d.title||'Разговор';connection();$('chatHint').textContent='Загружаем разговор…';$('chatHint').hidden=false;try{
    let remote=[];const r=navigator.onLine?await sb.from('messages').select('*').eq('conversation_id',d.id).order('server_seq',{ascending:false}).limit(150):{data:[],error:null};if(r.error){if(navigator.onLine)toast('История пока недоступна. Черновик и очередь доступны локально.')}else remote=(r.data||[]).reverse();if(ep!==epoch){if(current?.id===d.id&&user?.id===uid){$('app').style.visibility='';$('app').inert=false;}return;}rows=remote;inboxSeq.set(d.id,Math.max(inboxSeq.get(d.id)||0,+rows.at(-1)?.server_seq||0));await PablicusChat.open(uid,d.id,rows.map(mapped));if(ep!==epoch||user?.id!==uid){if(current?.id===d.id&&user?.id===uid){$('app').style.visibility='';$('app').inert=false;}return;}$('app').style.visibility='';$('app').inert=false;connection();
    messageTools.sync();channel=sb.channel('pablicus-chat-'+d.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'conversation_id=eq.'+d.id},()=>syncMessages()).subscribe(state=>{if(state==='SUBSCRIBED')syncMessages()});pump();
   }catch(e){problem(e);if(current?.id===d.id&&user?.id===uid){$('app').style.visibility='';$('app').inert=false;}current=null;$('app').hidden=true;$('home').hidden=false;renderHome()}finally{if(current?.id===d.id&&user?.id===uid){$('app').style.visibility='';$('app').inert=false;}opening=false;inboxContext();workspaceQuick.refresh()}}
- $('chatBack').onclick=async()=>{if(!canvasNavigationAllowed())return;workspaceQuick.close();resetConversationView();mediaViewer.close();chatLibrary.reset();messageTools.clear();PablicusRichMessage.stopAll?.();try{await PablicusChat.leave();current=null;inboxContext();epoch++;if(channel)sb.removeChannel(channel);channel=null;$('app').hidden=true;$('home').hidden=false;renderHome();loadDialogs()}catch(e){problem(e)}};
+ $('chatBack').onclick=async()=>{if(!canvasNavigationAllowed())return;workspaceQuick.close();resetConversationView();mediaViewer.close();chatLibrary.reset();messageTools.clear();PablicusRichMessage.stopAll?.();try{await PablicusChat.leave();current=null;inboxContext();epoch++;if(channel)sb.removeChannel(channel);channel=null;$('app').hidden=true;$('home').hidden=false;if(window.PablicusController)await window.PablicusController.navigate({section:page==='bots'?'chats':page,screen:'home',conversationId:null,resourceId:null,canvas:false});else renderHome();loadDialogs()}catch(e){problem(e)}};
  async function syncMessages(){if(!current||!user||syncing||opening||document.hidden||!navigator.onLine)return;syncing=true;const d=current,uid=user.id,ep=epoch;try{
   const last=rows.at(-1)?.server_seq||0,r=await sb.from('messages').select('*').eq('conversation_id',d.id).gt('server_seq',last).order('server_seq',{ascending:true}).limit(200);if(r.error)throw r.error;if(ep!==epoch||uid!==user?.id)return;
   if(r.data?.length){const seen=new Set(rows.map(m=>m.id));rows.push(...r.data.filter(m=>!seen.has(m.id)));PablicusChat.update(rows.map(mapped))}
@@ -524,6 +531,11 @@
   }finally{if(store!==PablicusChat.store)store.close()}}
  }catch(e){problem(e)}finally{worker=false;if(pumpPending){pumpPending=false;setTimeout(()=>pump(),0)}}}
  async function showOutbox(){const c=dialog('Исходящие'),store=PablicusChat.store;if(!store)return;const q=(await store.readQueue(false)).filter(r=>!['sent','cancelled'].includes(r.state));if(!q.length)c.append(el('p','','Все исходящие подтверждены сервером. Это не означает, что получатель их прочитал.'));for(const r of q){const b=el('section','outboxItem');b.append(el('strong','',({queued:'В очереди',sending:'Отправляется',error:'Ошибка'})[r.state]||r.state),el('p','',r.messages.find(m=>m.kind==='text')?.text.slice(0,180)||'Вложения'));if(r.error)b.append(el('p','danger',r.error.message));const retry=el('button','setting','Повторить');retry.onclick=async()=>{try{await store.retry(r.id);$('productDialog').close();pump()}catch(e){problem(e)}};b.append(retry);c.append(b)}}
+ if(window.PablicusController){
+ window.PablicusController.register('conversation',async({state,isCurrent})=>{if(current?.id===state.conversationId){await showConversationView();return()=>{}}const d=dialogs.find(x=>x.id===state.conversationId)||{id:state.conversationId,title:'Разговор'};await openConversation(d);if(!isCurrent()&&current?.id===d.id)resetConversationView();return()=>{}});
+ window.PablicusController.register('canvas',async({state,isCurrent})=>{if(current?.id!==state.conversationId){const d=dialogs.find(x=>x.id===state.conversationId)||{id:state.conversationId,title:'Разговор'};await openConversation(d,{canvas:true})}else await showCanvasView();if(!isCurrent()&&current?.id===state.conversationId)resetConversationView();return()=>{}});
+ window.PablicusController.setServices({...window.PablicusController.getServices(),openConversation,getDialogs:()=>dialogs,getUser:()=>user,notify:toast});
+}
  window.PablicusHost={renderMessage,renderPendingMessage,messageMeta,paintReplyDraft,notify:toast,acceptFile,unavailable,showOutbox,historyTop:loadOlder,canSend:()=>{if(!user||!profile?.is_approved||!current||opening||PablicusChat.scope.user!==user.id||PablicusChat.scope.chat!==current.id)return false;if((PablicusChat.rich?.capture().text||$('input').value||'').length>5000){toast('Одно сообщение — до 5000 символов. Черновик сохранён; сократите его или разделите.');return false}return true}};
  window.addEventListener('pablicus:queued',()=>pump());window.addEventListener('online',()=>{connection();loadDialogs();syncMessages();pump()});window.addEventListener('offline',connection);document.addEventListener('visibilitychange',()=>{inboxContext();if(!document.hidden)messageTools.sync();if(!document.hidden){connection();loadDialogs();syncMessages();pump()}});
  setInterval(()=>{pollInbox();if(!document.hidden)messageTools.sync()},5000);

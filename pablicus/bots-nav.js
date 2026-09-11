@@ -1,25 +1,16 @@
-/* Main-navigation adapter for Bot Core. Loaded after app.js and reuses the same persisted Public session. */
+/* Block 01 Bot Core navigation adapter: shared session/client and explicit routes. */
 (function(){'use strict';
- const PROJECT_URL='https://ctcoqgsztdtsazdiwcmd.supabase.co',KEY='sb_publishable_kMGqZAM2vadfXbBr8r5uzw_l9EiBtIw',STORAGE='sb-ctcoqgsztdtsazdiwcmd-auth-token';
- const home=document.getElementById('home'),nav=document.getElementById('mainNav'),content=document.getElementById('screenContent'),title=document.getElementById('sectionTitle'),brand=document.getElementById('brandTitle'),search=document.getElementById('searchChats'),filters=document.getElementById('chatFilters'),newChat=document.getElementById('newChat');if(!nav||!content||!window.PablicusBots||!window.supabase)return;
- const uiCss=document.createElement('link');uiCss.rel='stylesheet';uiCss.href='public-ui-foundation.css';document.head.append(uiCss);
- const createCss=document.createElement('link');createCss.rel='stylesheet';createCss.href='creation-flows.css';document.head.append(createCss);
- const hotfixCss=document.createElement('link');hotfixCss.rel='stylesheet';hotfixCss.href='public-hotfix-v8.css';document.head.append(hotfixCss);
- const ux=document.createElement('script');ux.src='ux-refinement.js';ux.defer=true;ux.onload=()=>{const hotfix=document.createElement('script');hotfix.src='public-hotfix-v8.js';hotfix.defer=true;document.head.append(hotfix);};document.head.append(ux);
- const createJs=document.createElement('script');createJs.src='creation-flows.js';createJs.defer=true;document.head.append(createJs);
- const client=supabase.createClient(PROJECT_URL,KEY,{auth:{storageKey:STORAGE,persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});let user=null,mounted=false,factory=null;
- const factoryCss=document.createElement('link');factoryCss.rel='stylesheet';factoryCss.href='bot-factory.css';document.head.append(factoryCss);
- const factoryScript=document.createElement('script');factoryScript.src='bot-factory.js';factoryScript.onload=()=>{if(window.PublicBotFactory)factory=window.PublicBotFactory.create({client,getUser:()=>user});};document.head.append(factoryScript);
+ const home=document.getElementById('home'),nav=document.getElementById('mainNav'),content=document.getElementById('screenContent'),search=document.getElementById('searchChats'),filters=document.getElementById('chatFilters'),newChat=document.getElementById('newChat');
+ const controller=window.PablicusController,services=controller?.getServices();if(!home||!nav||!content||!controller||!services?.client||!window.PablicusBots)return;
+ function css(href){if(document.querySelector(`link[href="${href}"]`))return;const l=document.createElement('link');l.rel='stylesheet';l.href=href;document.head.append(l)}
+ function script(src){if(document.querySelector(`script[src="${src}"]`))return Promise.resolve();return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.append(s)})}
+ css('public-ui-foundation.css');css('bot-factory.css');script('ux-refinement.js');
+ let factory=null;const ensureFactory=()=>factory?Promise.resolve(factory):script('bot-factory.js').then(()=>factory=window.PublicBotFactory.create({client:services.client,getUser:()=>services.getUser?.()}));
  const botButton=document.createElement('button');botButton.dataset.page='bots';botButton.innerHTML='<span class="botsNavMark">◈</span>Боты';nav.insertBefore(botButton,nav.querySelector('[data-page="profile"]'));
- const bots=PablicusBots.create({client,getUser:()=>user,onError:e=>{const toast=document.getElementById('toast');if(toast){toast.textContent=e?.message||'Ошибка Bot Core';toast.hidden=false;setTimeout(()=>toast.hidden=true,2500);}}});
- async function sessionUser(){const r=await client.auth.getSession();user=r.data?.session?.user||null;return user;}
- function shell(name,mode='bots'){title.textContent=name;title.hidden=true;if(brand)brand.textContent=name;if(home)home.classList.add('bot-shell-active');search.hidden=true;filters.hidden=true;newChat.hidden=true;content.classList.toggle('bots-active',mode==='bots');content.classList.toggle('factory-active',mode==='factory');nav.querySelectorAll('button').forEach(b=>b.classList.toggle('selected',b===botButton));}
- function restoreHomeHeader(button){const labels={chats:'Чаты',feed:'Лента',tasks:'Дела',profile:'Профиль'};const label=labels[button?.dataset.page]||'Чаты';if(brand)brand.textContent=label;if(title){title.textContent=label;title.hidden=true;}}
- function leaveShell(){if(home)home.classList.remove('bot-shell-active');content.classList.remove('bots-active','factory-active');}
- async function openBots(){await sessionUser();if(!user){location.reload();return;}const neutral=nav.querySelector('[data-page="feed"]');if(neutral&&!mounted)neutral.click();mounted=true;shell('Боты','bots');bots.mount(content);}
- botButton.onclick=()=>openBots().catch(()=>location.reload());
- content.addEventListener('click',e=>{const b=e.target.closest('button');if(!mounted||!factory||!b||b.textContent.trim()!=='Создать бота')return;e.preventDefault();e.stopImmediatePropagation();shell('Фабрика','factory');factory.mount(content,()=>{shell('Боты','bots');bots.mount(content);});},true);
- nav.addEventListener('click',e=>{const button=e.target.closest('button[data-page]');if(!button||button===botButton)return;if(mounted){mounted=false;leaveShell();bots.reset();}setTimeout(()=>restoreHomeHeader(button),0);},true);
- client.auth.onAuthStateChange((_event,session)=>{user=session?.user||null;if(!user&&mounted){mounted=false;leaveShell();bots.reset();}});sessionUser();
- const bridge=document.createElement('script');bridge.src='bot-scenario-bridge.js';bridge.defer=true;document.head.append(bridge);
+ const bots=PablicusBots.create({client:services.client,getUser:()=>services.getUser?.(),onError:e=>services.notify?.(e?.message||'Ошибка Bot Core'),onFactory:()=>controller.navigate({section:'bots',screen:'factory'}),onScenario:id=>controller.navigate({section:'bots',screen:'scenario',resourceId:id})});
+ function shell(mode){home.classList.toggle('bot-shell-active',['bots','factory','scenario'].includes(mode));if(search)search.hidden=true;if(filters)filters.hidden=true;if(newChat)newChat.hidden=true;content.classList.toggle('bots-active',mode==='bots');content.classList.toggle('factory-active',mode==='factory')}
+ controller.register('bots',async({isCurrent})=>{if(!isCurrent())return;shell('bots');bots.mount(content);return()=>bots.reset()});
+ controller.register('factory',async({isCurrent})=>{const f=await ensureFactory();if(!isCurrent())return;shell('factory');f.mount(content,()=>controller.navigate({section:'bots',screen:'bots'}));return()=>f.reset?.()});
+ botButton.onclick=()=>controller.navigate({section:'bots',screen:'bots'});
+ controller.subscribe(state=>{if(!['bots','factory','scenario'].includes(state.screen))home.classList.remove('bot-shell-active')});script('bot-scenario-bridge.js');
 })();
