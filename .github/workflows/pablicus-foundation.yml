@@ -21,6 +21,7 @@ permissions:
 
 env:
   SUBSTEP_1B_START_HEAD: a0e7cb75d053aa0fc43de6904bcca5f85321bb4f
+  SUBSTEP_1B_WORK_START_HEAD: ff32cfcbbe985236cdd8b4c0bea0ea82232adc37
 
 jobs:
   acceptance:
@@ -35,20 +36,35 @@ jobs:
       - uses: actions/setup-python@v5.6.0
         with:
           python-version: '3.12.7'
+      - name: Prepare pinned sources and partial evidence before checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p block01-results/baseline-1b block01-results/work-start-1b block01-results/1b/source
+          for pair in "$SUBSTEP_1B_START_HEAD:baseline-1b" "$SUBSTEP_1B_WORK_START_HEAD:work-start-1b"; do
+            sha="${pair%%:*}"; folder="${pair#*:}"
+            git cat-file -e "$sha^{commit}"
+            for name in app-controller.js app.js; do
+              git show "$sha:pablicus/$name" > "block01-results/$folder/$name"
+            done
+            printf '%s\n' "$sha" > "block01-results/$folder/SOURCE_HEAD.txt"
+          done
+          python - <<'PY'
+          import hashlib,json,os,pathlib,platform,shutil,subprocess
+          root=pathlib.Path.cwd(); out=root/'block01-results/1b'
+          paths=['pablicus/app-controller.js','pablicus/app.js','pablicus/bots-nav.js','pablicus/bot-scenario-bridge.js','tests/engineering/block-01/test_controller_1b.py','tests/engineering/block-01/controller_1b_scenarios.cjs','.github/workflows/pablicus-foundation.yml']
+          hashes={}
+          for name in paths:
+              source=root/name; target=out/'source'/name; target.parent.mkdir(parents=True,exist_ok=True); shutil.copyfile(source,target)
+              b=source.read_bytes(); hashes[name]={'sha256':hashlib.sha256(b).hexdigest(),'git_blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()}
+          data={'START_HEAD':os.environ['SUBSTEP_1B_START_HEAD'],'WORK_START_HEAD':os.environ['SUBSTEP_1B_WORK_START_HEAD'],'TESTED_SHA':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],'run_attempt':os.environ['GITHUB_RUN_ATTEMPT'],'python':platform.python_version(),'platform':platform.platform(),'node':subprocess.check_output(['node','--version'],text=True,timeout=5).strip(),'sources':hashes,'status':'NOT_RUN'}
+          (out/'SOURCE_MANIFEST.json').write_text(json.dumps(data,indent=2)+'\n')
+          PY
       - name: Install pinned browser test dependencies
         run: |
           python -m pip install --disable-pip-version-check playwright==1.57.0 beautifulsoup4==4.14.3
           python -m playwright install --with-deps chromium
-      - name: Prepare evidence directory and frozen 1B baseline
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p block01-results/baseline-1b
-          git cat-file -e "$SUBSTEP_1B_START_HEAD^{commit}"
-          git show "$SUBSTEP_1B_START_HEAD:pablicus/app-controller.js" > block01-results/baseline-1b/app-controller.js
-          git show "$SUBSTEP_1B_START_HEAD:pablicus/app.js" > block01-results/baseline-1b/app.js
-          printf '%s\n' "$SUBSTEP_1B_START_HEAD" > block01-results/baseline-1b/START_HEAD.txt
-      - name: 1B baseline R1/R2 must reproduce with same assertions
+      - name: 1B baseline R1/R2 must fail for their exact expected assertions
         shell: bash
         run: |
           set +e
@@ -63,13 +79,34 @@ jobs:
           set -e
           python - <<'PY'
           import json
-          p='block01-results/baseline-1b/results.json'
-          d=json.load(open(p,encoding='utf-8'))
-          assert d['1B-T01']['status']=='FAIL', d
-          assert d['1B-T02']['status']=='FAIL', d
+          d=json.load(open('block01-results/baseline-1b/results.json'))
+          for test,reason in [('1B-T01','R1_LATEST_WINS'),('1B-T02','R2_LATE_CLEANUP')]:
+              assert d[test]['status']=='FAIL' and d[test]['reason']==reason, d
+              assert d[test]['execution']['exit_code']==1 and not d[test]['execution']['timed_out'],d
           PY
-          test "$code" -ne 0
-      - name: Run 1B-T01 through 1B-T06 on candidate
+          test "$code" -eq 1
+      - name: Real unsaved Canvas caller must reproduce on WORK_START_HEAD
+        shell: bash
+        run: |
+          set +e
+          python tests/engineering/block-01/test_controller_1b.py \
+            --source-root . \
+            --controller-path block01-results/work-start-1b/app-controller.js \
+            --app-path block01-results/work-start-1b/app.js \
+            --only 1B-T03,1B-T04,1B-SESSION-LATE \
+            --output block01-results/work-start-1b/results.json \
+            > block01-results/work-start-1b/run.log 2>&1
+          code=$?
+          set -e
+          python - <<'PY'
+          import json
+          d=json.load(open('block01-results/work-start-1b/results.json'))
+          for test,reason in [('1B-T03','REAL_AUTH_REFRESH_AND_REPEAT'),('1B-T04','R4_REAL_CALLER_CANCEL'),('1B-SESSION-LATE','EXPLICIT_IDENTITY_OVERTAKES_LOOKUP')]:
+              assert d[test]['status']=='FAIL' and d[test]['reason']==reason,d
+              assert d[test]['execution']['exit_code']==1 and not d[test]['execution']['timed_out'],d
+          PY
+          test "$code" -eq 1
+      - name: Run every bounded 1B scenario on this candidate
         run: |
           python tests/engineering/block-01/test_controller_1b.py \
             --source-root . \
@@ -78,12 +115,12 @@ jobs:
         run: |
           python -m http.server 8080 --bind 127.0.0.1 > /tmp/pablicus-http.log 2>&1 &
           echo $! > /tmp/pablicus-http.pid
-          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8080/pablicus/index.html >/dev/null && exit 0; sleep 0.5; done
+          for i in $(seq 1 30); do curl --max-time 2 -fsS http://127.0.0.1:8080/pablicus/index.html >/dev/null && exit 0; sleep 0.5; done
           cat /tmp/pablicus-http.log
           exit 1
-      - name: Run existing B1-T01 through B1-T10
+      - name: Run existing B1-T01 through B1-T10 without extending 1C scope
         run: |
-          python tests/engineering/block-01/test_block01.py \
+          timeout --kill-after=5s 180s python tests/engineering/block-01/test_block01.py \
             --source-root . \
             --entrypoint-url http://127.0.0.1:8080/pablicus/ \
             --output-dir block01-results
@@ -91,11 +128,18 @@ jobs:
         shell: bash
         run: |
           set +e
-          python tests/engineering/block-01/test_negative_cycle.py --source-root . > block01-results/negative-cycle.log 2>&1
+          timeout --kill-after=5s 60s python tests/engineering/block-01/test_negative_cycle.py --source-root . > block01-results/negative-cycle.log 2>&1
           code=$?
           set -e
           test "$code" -ne 0
+          test "$code" -ne 124
+          test "$code" -ne 137
           grep -q 'controlled regression detected as expected' block01-results/negative-cycle.log
+      - name: Stop server and retain its log
+        if: always()
+        run: |
+          if test -f /tmp/pablicus-http.pid; then kill "$(cat /tmp/pablicus-http.pid)" || true; fi
+          if test -f /tmp/pablicus-http.log; then cp /tmp/pablicus-http.log block01-results/http.log; fi
       - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@v4.6.2
@@ -104,3 +148,4 @@ jobs:
           path: block01-results/
           retention-days: 14
           if-no-files-found: error
+          include-hidden-files: true

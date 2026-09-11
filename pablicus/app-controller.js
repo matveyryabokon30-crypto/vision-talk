@@ -25,29 +25,44 @@
  function releaseCurrentScope(){if(currentScope){const owned=currentScope;currentScope=null;const pending=Promise.resolve(owned.dispose()),tracked=pending.finally(()=>{if(releasePromise===tracked)releasePromise=null});releasePromise=tracked;return tracked}return releasePromise||Promise.resolve()}
  function transitionIsCurrent(transition,target){return !disposed&&latestRequest===transition.id&&!transition.abort.signal.aborted&&state.sessionGeneration===transition.sessionGeneration&&(!target.resourceId||state.resourceId===target.resourceId)&&(!target.conversationId||state.conversationId===target.conversationId)}
 
- async function navigate(next){
+ async function navigate(next,params={}){
   if(disposed)return false;
-  const requestId=++requestSerial;latestRequest=requestId;const previous=clone(),target=normalizeTarget(next),transition={id:requestId,abort:new AbortController(),scope:createScope(),sessionGeneration:state.sessionGeneration};
+  const previous=clone(),target=normalizeTarget(next);
+  // Consent is synchronous and precedes request publication, abort and cleanup.
+  if(typeof services?.beforeNavigate==='function'){
+   const allowed=services.beforeNavigate({previous,target,params});
+   if(allowed&&typeof allowed.then==='function')throw TypeError('beforeNavigate must be synchronous');
+   if(allowed===false)return false;
+  }
+  const requestId=++requestSerial;latestRequest=requestId;const transition={id:requestId,abort:new AbortController(),scope:createScope(),sessionGeneration:state.sessionGeneration};
   if(activeTransition&&activeTransition!==transition){activeTransition.abort.abort();void activeTransition.scope.dispose()}activeTransition=transition;
   await releaseCurrentScope();
   if(disposed||latestRequest!==requestId||transition.abort.signal.aborted||state.sessionGeneration!==transition.sessionGeneration){await transition.scope.dispose();if(activeTransition===transition)activeTransition=null;return false}
   Object.assign(state,target,{generation:state.generation+1});currentScope=transition.scope;emit();
   const key=target.screen||target.section,handler=handlers.get(key)||handlers.get(target.section);if(!handler){if(activeTransition===transition)activeTransition=null;return true}
-  const ctx={state:clone(),previous,services,signal:transition.abort.signal,onCleanup:transition.scope.add,isCurrent:()=>transitionIsCurrent(transition,target)};
+  const ctx={state:clone(),previous,services,params,signal:transition.abort.signal,onCleanup:transition.scope.add,isCurrent:()=>transitionIsCurrent(transition,target)};
   try{const result=await handler(ctx),lateCleanup=transition.scope.add(result);if(lateCleanup)await lateCleanup;if(!ctx.isCurrent()){await transition.scope.dispose();if(currentScope===transition.scope)currentScope=null;if(activeTransition===transition)activeTransition=null;return false}if(activeTransition===transition)activeTransition=null;return true}
   catch(error){const stale=!ctx.isCurrent();await transition.scope.dispose();if(currentScope===transition.scope)currentScope=null;if(activeTransition===transition)activeTransition=null;if(stale){reportError(error);return false}throw error}
  }
 
  function applySessionIdentity(userId){
-  const normalized=userId||null;if(state.sessionUserId===normalized)return Promise.resolve(false);
+  const normalized=userId||null;if(state.sessionUserId===normalized)return (releasePromise||Promise.resolve()).then(()=>false);
   state.sessionUserId=normalized;state.sessionGeneration++;state.generation++;latestRequest=++requestSerial;
   if(activeTransition){activeTransition.abort.abort();void activeTransition.scope.dispose();activeTransition=null}
   emit();return releaseCurrentScope().then(()=>true);
  }
  function sessionChanged(userId){
+  const lookup=++sessionLookupSerial;
+  if(disposed)return Promise.resolve(false);
+  // An explicit SDK identity invalidates all earlier asynchronous lookups.
   if(arguments.length)return applySessionIdentity(userId);
-  const lookup=++sessionLookupSerial,getSession=services?.getSession;if(typeof getSession!=='function')return Promise.resolve(false);
-  return Promise.resolve(getSession()).then(result=>{if(disposed||lookup!==sessionLookupSerial)return false;return applySessionIdentity(result?.data?.session?.user?.id||null)},error=>{reportError(error);return false});
+  const getSession=services?.getSession;if(typeof getSession!=='function')return Promise.resolve(false);
+  return Promise.resolve().then(()=>getSession()).then(result=>{
+   if(disposed||lookup!==sessionLookupSerial)return false;
+   if(result?.error){reportError(result.error);return false}
+   if(!result?.data||!Object.prototype.hasOwnProperty.call(result.data,'session')){reportError(Error('Invalid session response'));return false}
+   return applySessionIdentity(result.data.session?.user?.id||null);
+  },error=>{reportError(error);return false});
  }
  function subscribe(fn){subs.add(fn);fn(clone());return()=>subs.delete(fn)}
  async function dispose(){if(disposed)return;disposed=true;sessionLookupSerial++;latestRequest=++requestSerial;if(activeTransition){activeTransition.abort.abort();await activeTransition.scope.dispose();activeTransition=null}await releaseCurrentScope();handlers.clear();subs.clear()}

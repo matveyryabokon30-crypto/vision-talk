@@ -1,64 +1,182 @@
+"""Bounded executable 1B contracts. Each scenario owns a killable process group.
+
+Only the DOM, SDK events and I/O/resource boundaries are synthetic. Production
+callbacks, authentication, view functions and controller registrations are read
+from --app-path, not copied into the fixture. This is not 1C/full-device acceptance.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
 from pathlib import Path
-import argparse, json, shutil, subprocess, sys
-from playwright.sync_api import sync_playwright
+import platform
+import signal
+import subprocess
+import sys
+import time
+import traceback
 
-ap=argparse.ArgumentParser()
-ap.add_argument('--source-root',type=Path,default=Path.cwd())
-ap.add_argument('--controller-path',type=Path,default=None)
-ap.add_argument('--app-path',type=Path,default=None)
-ap.add_argument('--browser',default=shutil.which('chromium'))
-ap.add_argument('--output',type=Path,default=Path('block01-results/controller-1b.json'))
-ap.add_argument('--only',default='')
-a=ap.parse_args();root=a.source_root.resolve();controller=(a.controller_path or root/'pablicus/app-controller.js').resolve();app_path=(a.app_path or root/'pablicus/app.js').resolve();a.output.parent.mkdir(parents=True,exist_ok=True)
-selected={x.strip() for x in a.only.split(',') if x.strip()};results={}
-FIX='''<!doctype html><body><div id="home"><header><span id="brandTitle">Чаты</span><span id="sectionTitle"></span></header><nav id="mainNav"><button data-page="chats"></button><button data-page="feed"></button><button data-page="tasks"></button><button data-page="bots"></button><button data-page="profile"></button></nav></div></body>'''
-def wanted(tid):return not selected or tid in selected
-def record(tid,ok,detail):
- if wanted(tid):results[tid]={'status':'PASS' if ok else 'FAIL','detail':detail}
-def page(browser):
- p=browser.new_page();p.set_content(FIX);p.add_script_tag(path=str(controller));return p
-def ae(p,body):return p.evaluate('(async()=>{'+body+'})()')
+CASES = [
+    '1B-T01', '1B-T02', '1B-T03', '1B-T04', '1B-T05', '1B-T06',
+    '1B-CANVAS-YES', '1B-CANVAS-CLEAN', '1B-CANVAS-CALLERS',
+    '1B-CANVAS-ROUNDTRIP', '1B-CANVAS-HOME', '1B-CANVAS-PENDING',
+    '1B-AUTH-LOGOUT', '1B-AUTH-SWITCH', '1B-AUTH-LATE-ERROR',
+    '1B-AUTH-ORDER', '1B-AUTH-PASSKEY', '1B-AUTH-BOOT',
+    '1B-AUTH-BOOT-ERROR', '1B-AUTH-LOGOUT-RELOGIN',
+    '1B-LATE-REJECT', '1B-SESSION-LATE', '1B-SESSION-ERROR',
+    '1B-SESSION-ORDER', '1B-TIMEOUT-SELFTEST',
+]
+INTERNAL = 'HARNESS_NEVER_FINISHES'
 
-with sync_playwright() as pw:
- b=pw.chromium.launch(executable_path=a.browser,headless=True,args=['--no-sandbox','--disable-dev-shm-usage'])
- if wanted('1B-T01'):
-  p=page(b);d=ae(p,"""
-   const wait=()=>new Promise(r=>setTimeout(r,0));let releaseX,enteredX=false,mounts=[];
-   PablicusController.register('X',async()=>async()=>{enteredX=true;await new Promise(r=>releaseX=r)});
-   for(const name of ['A','B','C'])PablicusController.register(name,async()=>{mounts.push(name);return()=>{}});
-   await PablicusController.navigate({section:'chats',screen:'X'});const pa=PablicusController.navigate({section:'chats',screen:'A'});while(!enteredX)await wait();const pb=PablicusController.navigate({section:'chats',screen:'B'});releaseX();await Promise.all([pa,pb]);const first={screen:PablicusController.state().screen,mounts:[...mounts]};
-   let releaseX2,enteredX2=false;PablicusController.register('X2',async()=>async()=>{enteredX2=true;await new Promise(r=>releaseX2=r)});await PablicusController.navigate({screen:'X2'});mounts=[];const aa=PablicusController.navigate({screen:'A'});while(!enteredX2)await wait();const bb=PablicusController.navigate({screen:'B'}),cc=PablicusController.navigate({screen:'C'});releaseX2();await Promise.all([aa,bb,cc]);return{first,second:{screen:PablicusController.state().screen,mounts}};
-  """);ok=d['first']['screen']=='B' and d['first']['mounts']==['B'] and d['second']['screen']=='C' and d['second']['mounts']==['C'];record('1B-T01',ok,d);p.close()
- if wanted('1B-T02'):
-  p=page(b);d=ae(p,"""
-   const wait=()=>new Promise(r=>setTimeout(r,0));let releaseA,startedA=false,funcClean=0,objClean=0,bResources=0;
-   PablicusController.register('A',async()=>{startedA=true;await new Promise(r=>releaseA=r);return()=>{funcClean++}});PablicusController.register('B',async({onCleanup})=>{bResources++;onCleanup?.(()=>bResources--);return()=>{}});
-   const pa=PablicusController.navigate({screen:'A',resourceId:'a'});while(!startedA)await wait();await PablicusController.navigate({screen:'B',resourceId:'b'});releaseA();await pa;const afterFunction={funcClean,bResources,screen:PablicusController.state().screen};
-   let releaseD,startedD=false;const obj={count:0,async dispose(){if(this!==obj)throw Error('lost this');this.count++;objClean++}};PablicusController.register('D',async()=>{startedD=true;await new Promise(r=>releaseD=r);return obj});const pd=PablicusController.navigate({screen:'D',resourceId:'d'});while(!startedD)await wait();await PablicusController.navigate({screen:'B',resourceId:'b2'});releaseD();await pd;await PablicusController.navigate({screen:'B',resourceId:'b3'});return{afterFunction,funcClean,objClean,objCount:obj.count,bResources,screen:PablicusController.state().screen};
-  """);ok=d['afterFunction']=={'funcClean':1,'bResources':1,'screen':'B'} and d['funcClean']==1 and d['objClean']==1 and d['objCount']==1 and d['bResources']==1 and d['screen']=='B';record('1B-T02',ok,d);p.close()
- if wanted('1B-T03'):
-  p=page(b);d=ae(p,"""
-   let sessionUser='user-1',cleaned=0,release,started=false,mounted=[];
-   PablicusController.setServices({getSession:async()=>({data:{session:sessionUser?{user:{id:sessionUser}}:null}})});await PablicusController.sessionChanged();
-   PablicusController.register('stable',async()=>{mounted.push('stable');return()=>{cleaned++}});await PablicusController.navigate({screen:'stable'});const before=PablicusController.state();await PablicusController.sessionChanged();const refresh={before:before.sessionGeneration,after:PablicusController.state().sessionGeneration,cleaned};
-   PablicusController.register('slow',async({isCurrent})=>{started=true;await new Promise(r=>release=r);if(isCurrent())mounted.push('slow');return()=>{cleaned++}});const slow=PablicusController.navigate({screen:'slow'});while(!started)await new Promise(r=>setTimeout(r,0));sessionUser=null;const logout=PablicusController.sessionChanged();release();await Promise.all([slow,logout]);const afterLogout={mounted:[...mounted],cleaned,state:PablicusController.state()};sessionUser='user-2';await PablicusController.sessionChanged();return{refresh,afterLogout,final:PablicusController.state()};
-  """);app=app_path.read_text(encoding='utf-8');contract='sb.auth.onAuthStateChange' in app and 'PablicusController?.sessionChanged();' in app and 'getSession:()=>sb.auth.getSession()' in app;ok=d['refresh']['before']==d['refresh']['after'] and d['refresh']['cleaned']==0 and 'slow' not in d['afterLogout']['mounted'] and d['afterLogout']['cleaned']>=1 and d['final'].get('sessionUserId')=='user-2' and contract;record('1B-T03',ok,{'runtime':d,'auth_contract':contract});p.close()
- if wanted('1B-T04'):
-  p=page(b);d=ae(p,"""
-   const seen=[];for(const name of ['conversation','canvas'])PablicusController.register(name,async({state})=>{seen.push({screen:state.screen,conversationId:state.conversationId,canvas:state.canvas,resourceId:state.resourceId});return()=>{}});await PablicusController.navigate({section:'chats',screen:'conversation',conversationId:'c1',resourceId:'bot-old'});const a=PablicusController.state();await PablicusController.navigate({section:'chats',screen:'canvas',conversationId:'c1',resourceId:'bot-old'});const mid=PablicusController.state();await PablicusController.navigate({section:'chats',screen:'conversation',conversationId:'c1'});return{seen,a,mid,c:PablicusController.state()};
-  """);app=app_path.read_text(encoding='utf-8');contract="screen:'conversation',conversationId:current?.id" in app and "screen:'canvas',conversationId:current?.id" in app and 'canvasNavigationAllowed()' in app;ok=not d['a']['canvas'] and d['a']['resourceId'] is None and d['mid']['screen']=='canvas' and d['mid']['canvas'] and d['mid']['conversationId']=='c1' and d['mid']['resourceId'] is None and d['c']['screen']=='conversation' and not d['c']['canvas'] and contract;record('1B-T04',ok,{'runtime':d,'caller_contract':contract});p.close()
- if wanted('1B-T05'):
-  p=page(b);d=ae(p,"""
-   const errors=[];PablicusController.setServices({reportError:e=>errors.push(e?.message||String(e))});PablicusController.register('badMount',async()=>{throw Error('mount-fail')});let mountRejected=false;try{await PablicusController.navigate({screen:'badMount'})}catch(e){mountRejected=e.message==='mount-fail'}let good=0,active=0;PablicusController.register('badCleanup',async()=>()=>{throw Error('cleanup-fail')});PablicusController.register('good',async({onCleanup})=>{good++;active++;onCleanup(()=>active--);return()=>{}});await PablicusController.navigate({screen:'badCleanup'});await PablicusController.navigate({screen:'good'});for(let i=0;i<10;i++)await PablicusController.navigate({screen:'good',resourceId:'r'+i});return{mountRejected,good,active,errors,state:PablicusController.state()};
-  """);ok=d['mountRejected'] and d['good']==11 and d['active']==1 and 'cleanup-fail' in d['errors'] and d['state']['screen']=='good';record('1B-T05',ok,d);p.close()
- b.close()
+def digest(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
-if wanted('1B-T06'):
- paths=[controller,app_path,root/'pablicus/bots-nav.js',root/'pablicus/bot-scenario-bridge.js'];syntax=[]
- for path in paths:
-  r=subprocess.run(['node','--check',str(path)],capture_output=True,text=True);syntax.append({'path':str(path.relative_to(root)) if path.is_relative_to(root) else str(path),'code':r.returncode,'stderr':r.stderr})
- app=app_path.read_text(encoding='utf-8');bots=(root/'pablicus/bots-nav.js').read_text(encoding='utf-8');bridge=(root/'pablicus/bot-scenario-bridge.js').read_text(encoding='utf-8');ctl=controller.read_text(encoding='utf-8')
- contract={'auth_user_identity':'PablicusController?.sessionChanged();' in app and 'getSession:()=>sb.auth.getSession()' in app,'conversation_screen':"screen:'conversation',conversationId:current?.id" in app,'canvas_screen':"screen:'canvas',conversationId:current?.id" in app,'controller_signal':'signal:transition.abort.signal' in ctl,'scope_cleanup':'onCleanup:transition.scope.add' in ctl,'bots_scope':'onCleanup' in bots,'scenario_signal':'signal' in bridge and 'onCleanup' in bridge}
- record('1B-T06',all(x['code']==0 for x in syntax) and all(contract.values()),{'syntax':syntax,'contract':contract})
+def save(path: Path, data: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(path.name + '.tmp')
+    temporary.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    temporary.replace(path)
 
-a.output.write_text(json.dumps(results,ensure_ascii=False,indent=2),encoding='utf-8');print(json.dumps(results,ensure_ascii=False,indent=2));sys.exit(1 if any(v['status']!='PASS' for v in results.values()) else 0)
+def execute(command: list[str], limit: float, logfile: Path) -> dict:
+    """Always retain logs and an exit status, including startup and timeout errors."""
+    started = time.monotonic()
+    proc = None
+    result = {'command': command, 'timeout_seconds': limit}
+    try:
+        proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                text=True, start_new_session=True)
+        try:
+            output, _ = proc.communicate(timeout=limit)
+            result.update(exit_code=proc.returncode, timed_out=False)
+        except subprocess.TimeoutExpired:
+            os.killpg(proc.pid, signal.SIGTERM)
+            try:
+                output, _ = proc.communicate(timeout=1)
+            except subprocess.TimeoutExpired:
+                os.killpg(proc.pid, signal.SIGKILL)
+                output, _ = proc.communicate(timeout=2)
+            result.update(exit_code=proc.returncode, timed_out=True,
+                          reason=f'PROCESS_TIMEOUT after {limit}s; process group terminated')
+    except Exception as exc:
+        output = traceback.format_exc()
+        result.update(exit_code=None, timed_out=False, launch_error=str(exc))
+    finally:
+        if proc is not None:
+            # Kill residual children even if the parent exited before its descendants.
+            try:
+                os.killpg(proc.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            if proc.poll() is None:
+                proc.wait(timeout=2)
+    logfile.parent.mkdir(parents=True, exist_ok=True)
+    logfile.write_text(output, encoding='utf-8')
+    result.update(elapsed_seconds=round(time.monotonic()-started, 4),
+                  log=str(logfile), log_sha256=digest(logfile))
+    return result
+
+def running(pid: int) -> bool:
+    try:
+        stat = Path(f'/proc/{pid}/stat')
+        if stat.exists() and stat.read_text().split()[2] == 'Z':
+            return False  # Exited; not an executing orphan process.
+        os.kill(pid, 0)
+        return True
+    except ProcessLookupError:
+        return False
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--source-root', type=Path, default=Path.cwd())
+    ap.add_argument('--controller-path', type=Path)
+    ap.add_argument('--app-path', type=Path)
+    ap.add_argument('--browser', help='Legacy CLI compatibility; these contracts use Node VM, not a browser.')
+    ap.add_argument('--output', type=Path, default=Path('block01-results/controller-1b.json'))
+    ap.add_argument('--only', default='')
+    ap.add_argument('--case-timeout', type=float, default=8.0)
+    args = ap.parse_args()
+    if not 0.2 <= args.case_timeout <= 60:
+        ap.error('--case-timeout must be between 0.2 and 60 seconds')
+    root = args.source_root.resolve()
+    ctl = (args.controller_path or root/'pablicus/app-controller.js').resolve()
+    app = (args.app_path or root/'pablicus/app.js').resolve()
+    script = Path(__file__).with_name('controller_1b_scenarios.cjs').resolve()
+    selected = args.only.split(',') if args.only else CASES
+    if any(t not in CASES+[INTERNAL] for t in selected) or len(selected) != len(set(selected)):
+        ap.error('Unknown or duplicate scenario name in --only')
+    args.output = args.output.resolve()
+    logs = args.output.parent/(args.output.stem+'-logs')
+    results = {name: {'status':'NOT_RUN', 'reason':'Scenario has not executed'} for name in selected}
+    save(args.output, results)
+    environment = {'python':sys.version, 'platform':platform.platform(), 'source_root':str(root),
+                   'scope':'Exact application/controller functions; synthetic DOM/SDK/I/O; no real server or device',
+                   'case_timeout_seconds':args.case_timeout,
+                   'sources':{str(p): digest(p) if p.exists() else None for p in [ctl, app, script, Path(__file__).resolve()]}}
+    save(args.output.with_suffix('.environment.json'), environment)
+    try:
+        for name in selected:
+            results[name] = {'status':'RUNNING', 'reason':'Scenario started; not yet a pass'}
+            save(args.output, results)
+            logfile = logs/(name+'.log')
+            if name == '1B-T06':
+                checks=[]
+                for path in [ctl,app,root/'pablicus/bots-nav.js',root/'pablicus/bot-scenario-bridge.js',script]:
+                    checks.append(execute(['node','--check',str(path)], min(5,args.case_timeout), logs/(name+'-'+path.name+'.log')))
+                status='TIMEOUT' if any(c.get('timed_out') for c in checks) else 'PASS' if all(c['exit_code']==0 for c in checks) else 'ERROR'
+                record={'status':status, 'checks':checks}
+            elif name == '1B-TIMEOUT-SELFTEST':
+                probe = args.output.parent/'timeout-probe/results.json'
+                cmd=[sys.executable,str(Path(__file__).resolve()),'--source-root',str(root),
+                     '--controller-path',str(ctl),'--app-path',str(app),'--only',INTERNAL,
+                     '--case-timeout','0.5','--output',str(probe)]
+                execution=execute(cmd,6,logfile)
+                child_results=json.loads(probe.read_text()) if probe.exists() else {}
+                child_result=child_results.get(INTERNAL,{})
+                probe_log=Path(child_result.get('execution',{}).get('log','/nonexistent'))
+                ids=[]
+                if probe_log.is_file():
+                    for line in probe_log.read_text().splitlines():
+                        try:
+                            entry=json.loads(line)
+                            if entry.get('probe')=='intentional-hang':ids=[entry['pid'],entry['child_pid']]
+                        except (ValueError,KeyError): pass
+                active=[pid for pid in ids if running(pid)]
+                ok=(execution['exit_code'] not in [None,0] and not execution.get('timed_out')
+                    and child_result.get('status')=='TIMEOUT' and len(ids)==2 and not active
+                    and probe_log.is_file() and child_result['execution']['log_sha256']==digest(probe_log))
+                record={'status':'PASS' if ok else 'FAIL','reason':'Timeout is recorded as TIMEOUT/nonzero, logs retained, parent and child stopped',
+                        'execution':execution,'probe':str(probe),'probe_sha256':digest(probe) if probe.exists() else None,
+                        'probe_result':child_result,'process_ids':ids,'still_running':active}
+            else:
+                execution=execute(['node',str(script),name,str(root),str(ctl),str(app)],args.case_timeout,logfile)
+                if execution.get('timed_out'):
+                    record={'status':'TIMEOUT','reason':execution['reason']}
+                elif execution.get('launch_error'):
+                    record={'status':'ERROR','reason':execution['launch_error']}
+                else:
+                    entries=[]
+                    for line in logfile.read_text().splitlines():
+                        try:
+                            parsed=json.loads(line)
+                            if parsed.get('test')==name: entries.append(parsed)
+                        except (ValueError,AttributeError): pass
+                    record=entries[-1] if entries else {'status':'ERROR','reason':'No structured result from scenario; inspect log'}
+                    if record.get('status')=='PASS' and execution['exit_code']!=0:
+                        record={'status':'ERROR','reason':'PASS payload conflicts with nonzero exit code','payload':record}
+                record['execution']=execution
+            results[name]=record
+            save(args.output, results)
+            print(name,record['status'],record.get('reason',''),flush=True)
+    except BaseException as exc:
+        for name,record in results.items():
+            if record['status']=='RUNNING':
+                results[name]={'status':'ERROR','reason':str(exc),'traceback':traceback.format_exc()}
+        save(args.output,results)
+        print(traceback.format_exc(),file=sys.stderr)
+        return 1
+    return 0 if results and all(r['status']=='PASS' for r in results.values()) else 1
+
+if __name__=='__main__':
+    raise SystemExit(main())
