@@ -1,0 +1,309 @@
+{
+  "schema": "pablicus-independent-review/1.0",
+  "date": "2026-09-11",
+  "review_round": 3,
+  "assignment_revision": "R2",
+  "verdict": "SUBSTEP_1B_ACCEPTED",
+  "closed_finding": "1B-LEAVE-RESUME",
+  "blocking_findings": [],
+  "tested_sha": "c5d82e96a236317f7a50530fb86da1a5d2bc4e26",
+  "handoff_head": "4c8e045aaac051e7d1244fd9dfe23c5124b397eb",
+  "main_observed": "f348aceacc3acdb315387a4066f6f495ce269b54",
+  "ci": {
+    "run_id": 34626105353,
+    "job_id": 103351483199,
+    "attempt": 1,
+    "status": "completed/success",
+    "artifact_id": 10273683434,
+    "bytes": 236010,
+    "sha256": "229687efa9138f9839ed89b26bcc51ec64811a29cbd65abefa799a137d08ee8a",
+    "crc_ok": true,
+    "expires_at": "2026-09-25T17:11:45Z"
+  },
+  "checked_original_log_hashes": 45,
+  "hash_mismatches": [],
+  "old_25_scenario_file_unchanged": true,
+  "local_suite": {
+    "passed": 31,
+    "total": 31,
+    "sha256": "a2549f066eedb2eed05ccc2a77157ed5d9502e6594d8107a894acb948c253d79",
+    "file_in_package": "local-rerun/controller-1b.json",
+    "python": "3.13.5",
+    "node": "v22.16.0"
+  },
+  "baseline_reruns": {
+    "historical": "2 exact expected FAIL, exit 1",
+    "previous_work_start": "3 exact expected FAIL, exit 1",
+    "r2_baseline": "2 positive-control PASS, RESUME and FLUSH-REJECT exact FAIL, exit 1; RESUME has five repetitions"
+  },
+  "independent_cases": [
+    {
+      "version": "old",
+      "scenario": "deny",
+      "status": "PASS",
+      "exit_code": 0,
+      "actual": {
+        "listPresent": true,
+        "live": true,
+        "chat": "c1",
+        "destroyed": 0,
+        "opened": 0,
+        "initial": true
+      },
+      "log_sha256": "11afd9de7a2574d13ac555f0592dca3339603dbdf44cec0c4800b015ba75fb69"
+    },
+    {
+      "version": "old",
+      "scenario": "complete",
+      "status": "PASS",
+      "exit_code": 0,
+      "actual": {
+        "listPresent": false,
+        "live": false,
+        "chat": null,
+        "destroyed": 1,
+        "opened": 0,
+        "initial": false
+      },
+      "log_sha256": "5c3954afda5425dccc77eaba7ca47dba7d2aa9c971ed17d14386f4e21f413c5d"
+    },
+    {
+      "version": "old",
+      "scenario": "resume",
+      "status": "FAIL",
+      "exit_code": 1,
+      "actual": {
+        "listPresent": false,
+        "live": false,
+        "chat": null,
+        "destroyed": 1,
+        "opened": 0,
+        "initial": false
+      },
+      "log_sha256": "ef9fc64f946f837191c71e597c6082ce6e9e6ec2b4ff806ee58c85b04992d59d"
+    },
+    {
+      "version": "old",
+      "scenario": "canvas",
+      "status": "FAIL",
+      "exit_code": 1,
+      "actual": {
+        "listPresent": false,
+        "live": false,
+        "chat": null,
+        "destroyed": 1,
+        "opened": 0,
+        "initial": false
+      },
+      "log_sha256": "897e49b7f9cd7abf310830c2a8bb647704d0cb530f4a9ca74c59a9258a44fdf0"
+    },
+    {
+      "version": "old",
+      "scenario": "reject",
+      "status": "FAIL",
+      "exit_code": 1,
+      "actual": {
+        "listPresent": true,
+        "live": true,
+        "chat": "c1",
+        "destroyed": 0,
+        "opened": 0,
+        "initial": true
+      },
+      "log_sha256": "c8b62bd068d7cc5ce44e0ddff52e716e6c0cda4b9d3a0d23dc2ad847dee881b7"
+    },
+    {
+      "version": "old",
+      "scenario": "repeat",
+      "status": "FAIL",
+      "exit_code": 1,
+      "actual": {
+        "listPresent": false,
+        "live": false,
+        "chat": null,
+        "destroyed": 1,
+        "opened": 0,
+        "initial": false
+      },
+      "log_sha256": "469afae59ffdc6def2ce97326112afb983e6e5ee9fb61bf9b572f8da4bfb2089"
+    },
+    {
+      "version": "old",
+      "scenario": "latest",
+      "status": "FAIL",
+      "exit_code": 1,
+      "actual": {
+        "listPresent": false,
+        "live": false,
+        "chat": null,
+        "destroyed": 1,
+        "opened": 0,
+        "initial": false
+      },
+      "log_sha256": "d89a611a6467549c6444c4ef589a32af39f65b117d113b445c57136d46485c59"
+    },
+    {
+      "version": "candidate",
+      "scenario": "deny",
+      "status": "PASS",
+      "exit_code": 0,
+      "actual": {
+        "listPresent": true,
+        "live": true,
+        "chat": "c1",
+        "destroyed": 0,
+        "opened": 0,
+        "initial": true
+      },
+      "log_sha256": "baa4e31dff220d32bbff5fa66777ce064058874d798841c69816cbafecf9dfbd"
+    },
+    {
+      "version": "candidate",
+      "scenario": "complete",
+      "status": "PASS",
+      "exit_code": 0,
+      "actual": {
+        "listPresent": false,
+        "live": false,
+        "chat": null,
+        "destroyed": 1,
+        "opened": 0,
+        "initial": false
+      },
+      "log_sha256": "97e994c30fa38de099ef0e75edd61c7f0a07a57bb813c2861b82b35db05c0846"
+    },
+    {
+      "version": "candidate",
+      "scenario": "resume",
+      "status": "PASS",
+      "exit_code": 0,
+      "actual": {
+        "listPresent": true,
+        "live": true,
+        "chat": "c1",
+        "destroyed": 1,
+        "opened": 1,
+        "initial": false
+      },
+      "log_sha256": "2f0369e4f17d9a5da49a31bb98d02546a3e46d9c98f24ae7945dc54e6c55724e"
+    },
+    {
+      "version": "candidate",
+      "scenario": "canvas",
+      "status": "PASS",
+      "exit_code": 0,
+      "actual": {
+        "listPresent": true,
+        "live": true,
+        "chat": "c1",
+        "destroyed": 1,
+        "opened": 1,
+        "initial": false
+      },
+      "log_sha256": "337107ba532637444aa86e28c483a2ed20aee0e4f26548daccbf0ee17a0c6946"
+    },
+    {
+      "version": "candidate",
+      "scenario": "reject",
+      "status": "PASS",
+      "exit_code": 0,
+      "actual": {
+        "listPresent": true,
+        "live": true,
+        "chat": "c1",
+        "destroyed": 0,
+        "opened": 0,
+        "initial": true
+      },
+      "log_sha256": "a582cc10c51b85995982bf1c38a4d9790ae1d05f9214323f2f27e70ac469e9c7"
+    },
+    {
+      "version": "candidate",
+      "scenario": "repeat",
+      "status": "PASS",
+      "exit_code": 0,
+      "actual": {
+        "listPresent": false,
+        "live": false,
+        "chat": null,
+        "destroyed": 1,
+        "opened": 0,
+        "initial": false
+      },
+      "log_sha256": "d387513d8740fe97f728beb48df03c02b70512614ac1ff935ed2edc943d048de"
+    },
+    {
+      "version": "candidate",
+      "scenario": "latest",
+      "status": "PASS",
+      "exit_code": 0,
+      "actual": {
+        "listPresent": true,
+        "live": true,
+        "chat": "c1",
+        "destroyed": 1,
+        "opened": 1,
+        "initial": false
+      },
+      "log_sha256": "5fddaf6cc1bd852c5637fc9fee82b5ba933036ea324a1709db50d49cf237e567"
+    }
+  ],
+  "independent_scope": "Reviewer scenarios/assertions reuse inspected fixture for extracting exact production handlers and synthetic boundaries. Real chat.leave and app.mountConversation execute; flush, list creation, DOM and SDK are controlled. Not full app/storage/device acceptance.",
+  "original_ci_browser_records": 11,
+  "browser_suite_rerun_locally": false,
+  "next_step": "1C according to approved plan; Block 1 not accepted; no deployment",
+  "limits": [
+    "Full original pre-correction 1B prompt unavailable; acceptance applies to saved corrective task and revision R2.",
+    "No physical iPhone, real server Auth, full IndexedDB/outbox durability or security acceptance.",
+    "No audit certifying absence of all historical Supabase writes by executor.",
+    "Reviewer performs no runtime-code, main, production, Supabase or user-data mutations."
+  ],
+  "reproducibility_script_recheck": {
+    "cases": 14,
+    "candidate_pass": 7,
+    "expected_old_controls": true,
+    "results_sha256": "37d4e834b851549e19590e0d6275343c25be0dfec741c8d0b7b7e64b00d95db4"
+  },
+  "source_git_blobs": {
+    "pablicus/app-controller.js": "598a9e03e6c2784d750c46d701713cbb894e3cef",
+    "pablicus/app.js": "40903beeae438f62560d058fc531596e45505af8",
+    "pablicus/chat.js": "4ff59d33af9fd587035d80e7134c225c5c00ffb2",
+    "pablicus/bots-nav.js": "0220112901ab17ace345e6bbb5de82c2514de8cf",
+    "pablicus/bot-scenario-bridge.js": "a65a2d993ae3a8639ece31f6f7dd4039f84743d1",
+    "tests/engineering/block-01/test_controller_1b.py": "bc921ed05fb612121fd052e8295f11c3ca559a23",
+    "tests/engineering/block-01/controller_1b_scenarios.cjs": "25acf4bf867fc1bd3645811586be9a5d748fd9d1",
+    "tests/engineering/block-01/controller_1b_leave.cjs": "5ed27ce503fb6e30779cc74ac17348e2c8fb9c78",
+    ".github/workflows/pablicus-foundation.yml": "295556955f0752169000a8ef50f11086fae5a5a8"
+  },
+  "source_match_count": 9,
+  "candidate_resume_observation": {
+    "actual": {
+      "listPresent": true,
+      "live": true,
+      "chat": "c1",
+      "destroyed": 1,
+      "opened": 1,
+      "initial": false
+    },
+    "events": [
+      "flush:start",
+      "flush:done",
+      "list:destroy",
+      "list:open",
+      "nav:home:false",
+      "nav:conversation:true"
+    ],
+    "pre_release": [
+      {
+        "screen": "home",
+        "state": "pending"
+      },
+      {
+        "screen": "conversation",
+        "state": "pending"
+      }
+    ]
+  },
+  "full_independent_results_sha256": "04ce14cb41447897251dea59bf61fa8a49aa5a14a2825401467d5d32765ba9ac",
+  "representation": "Selected observations from raw independent/results.json; raw logs and full results in downloadable review package. No results are reclassified."
+}

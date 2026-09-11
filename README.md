@@ -8,9 +8,13 @@
 
 Документы сохранены в рабочей ветке `refactor/pablicus-foundation-20260911`. Это не приёмка всего приложения и не production-релиз. Перед продолжением проверить актуальные исходники и поздние решения; не повторять принятый 1A.
 
-### Последняя независимая проверка
+### Последняя независимая проверка — 1B принят
 
-[Передача 1B, раунд 2 — 11 сентября 2026](docs/pablicus/reviews/2026-09-11/1B_HANDOFF_REVIEW_R2.md): **25/25 повторно PASS, но 1B не принят из-за подтверждённой гонки 1B-LEAVE-RESUME.** [Адресное задание Исполнителю](docs/pablicus/reviews/2026-09-11/1B_COMPLETION_R2_PROMPT.txt), [сводка доказательств](docs/pablicus/reviews/2026-09-11/1B_R2_RESULTS.json), [результаты воспроизведения](docs/pablicus/reviews/2026-09-11/1B_R2_RUNTIME_RESULTS.json). Следующий шаг — точечное завершение 1B, не 1C. Уже выполненные исправления сохраняются.
+**[SUBSTEP_1B_ACCEPTED](docs/engineering/block-01/REVIEW_1B_DECISION.md)** на кандидате `c5d82e96a236317f7a50530fb86da1a5d2bc4e26`, передача `4c8e045aaac051e7d1244fd9dfe23c5124b397eb`. 1B-LEAVE-RESUME закрыт. [Отчёт R3](docs/pablicus/reviews/2026-09-11/1B_HANDOFF_REVIEW_R3.md), [результаты](docs/pablicus/reviews/2026-09-11/1B_R3_RESULTS.json). Следующее действие — **[задание 1C](docs/pablicus/tasks/1C_INTEGRATION_PROMPT.txt)**. Блок 1 целиком не принят; публикация не разрешена.
+
+### Раунд 2 — история прежнего кандидата
+
+[Передача 1B, раунд 2 — 11 сентября 2026](docs/pablicus/reviews/2026-09-11/1B_HANDOFF_REVIEW_R2.md): **25/25 повторно PASS, но 1B не принят из-за подтверждённой гонки 1B-LEAVE-RESUME.** [Адресное задание Исполнителю](docs/pablicus/reviews/2026-09-11/1B_COMPLETION_R2_PROMPT.txt), [сводка доказательств](docs/pablicus/reviews/2026-09-11/1B_R2_RESULTS.json), [результаты воспроизведения](docs/pablicus/reviews/2026-09-11/1B_R2_RUNTIME_RESULTS.json). На том кандидате требовалось точечное завершение 1B. Последующее исправление принято выше.
 
 ### Предыдущая проверка — история
 
