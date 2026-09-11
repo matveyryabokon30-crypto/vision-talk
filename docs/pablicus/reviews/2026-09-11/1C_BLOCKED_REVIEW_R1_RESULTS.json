@@ -1,0 +1,75 @@
+{
+  "review": "PABLICUS-1C-BLOCKED-REVIEW-R1",
+  "date": "2026-09-11",
+  "decision": "SUBSTEP_1C_BLOCKED",
+  "integration_accepted": false,
+  "tested_sha": "f00f253ca2adfe7afc07e64cc3a1dc8f53c5692d",
+  "handoff_head": "2f8497f50a76b5f93b435b2bde456350f6d7b6bd",
+  "main_observed": "f348aceacc3acdb315387a4066f6f495ce269b54",
+  "latest_ci": {
+    "run": 34634080287,
+    "job": 103377640278,
+    "result": "failure",
+    "artifact": 10277168648,
+    "bytes": 996215,
+    "sha256": "dedb3704e36ced0537f901ec65ce2d36f6cc1ba32330bd386320861ca2cc8d65",
+    "crc_ok": true
+  },
+  "probe_ci": {
+    "run": 34632403344,
+    "artifact": 10277125856,
+    "bytes": 980341,
+    "sha256": "b30c4fba4673b46d71d4dd9cfff1720b125c4d6da6e41ef5e2d72ccfb9aaa546",
+    "crc_ok": true,
+    "partial": {"http": 200, "login": true, "conversation": true, "active_lists": 1, "vault_state": "empty", "commits": 0},
+    "stop": "Unmodeled get_message_actions response creates toast intercepting Canvas click"
+  },
+  "integrity": {
+    "source_files_against_capture_manifest": 144,
+    "browser_result_and_log_hashes": 18,
+    "mismatches": [],
+    "instrument_remote_git_blob": "c489098780ef7bfe7ee4fbbfbe58884000fdc128",
+    "case_remote_git_blob": "34ea9cd69bf6efa3a79315fd4e02a4f0bea1251c",
+    "scope": "144 source checks compare original artifact with capture manifest; remote blob reads independently confirm two analysed harness files. Compare API confirms no runtime changes."
+  },
+  "results": {
+    "original_ci_1b_pass": 31,
+    "original_ci_1c": {"PASS": 0, "FAIL": 0, "ERROR": 9, "TIMEOUT": 0, "NOT_RUN": 0},
+    "behavioural_assertions": 0,
+    "all_nine_capture_error": "ReferenceError: PablicusDebug is not defined",
+    "all_nine_boundary_calls_logged": 0,
+    "all_nine_server_closed_and_thread_stopped": true,
+    "independent_browser_or_1b_rerun": false
+  },
+  "receiver_probe": {
+    "runtime": "Node v22.16.0 VM",
+    "source_sha256": "d2f4be83c1dc8b43b315ccfc6cc9ef7159673f9ca7dda93e73d9e94627f7ba89",
+    "source_git_blob": "c489098780ef7bfe7ee4fbbfbe58884000fdc128",
+    "methods": ["setTimeout", "clearTimeout", "setInterval", "clearInterval", "requestAnimationFrame", "cancelAnimationFrame"],
+    "before_receiver_is_window": [true, true, true, true, true, true],
+    "after_receiver_is_window": [false, false, false, false, false, false],
+    "finding": "Receiver change confirmed on exact committed script with recording substitutes; browser startup causality remains unconfirmed.",
+    "application_modified": false,
+    "blocked_patch_used": false
+  },
+  "diagnostic_collector": {
+    "status": "CONFIRMED_DEFECT",
+    "source": "case.py:162",
+    "finding": "app.state fails before instrument/screenshot/HTML capture; current main lacks independent outer pageerror collection"
+  },
+  "safety_gate": {
+    "source": "Executor report and handoff manifest",
+    "original_denial_or_payload_independently_received": false,
+    "clearance_confirmed": false,
+    "repeat_or_bypass_attempted": false,
+    "exact_gate_cause_known": false
+  },
+  "remaining_requirements": [1, 2, 3, 4, 5, 6, 7],
+  "limits": [
+    "No fresh Chromium execution or administrative browser-policy changes",
+    "No full initial-capture ZIP re-download; latest and probe ZIP independently downloaded and checked",
+    "No original unpublished correction received or published",
+    "No production/Auth/RLS/data audit or physical iPhone qualification"
+  ],
+  "writes": "Review/task/recovery documents only; not a retry or alternative execution of the blocked source correction"
+}
