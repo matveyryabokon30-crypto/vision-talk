@@ -1,0 +1,70 @@
+{
+  "date": "2026-09-11",
+  "kind": "read_only_research_snapshot",
+  "approval": "proposal_not_release_acceptance",
+  "repository": "matveyryabokon30-crypto/vision-talk",
+  "branch": "refactor/pablicus-foundation-20260911",
+  "observed_branch_head": "e8f267446fa35e7b83b6a9767e33dea2e6a48bff",
+  "head_commit_time_utc": "2026-09-11T11:38:25Z",
+  "observed_main_head": "f348aceacc3acdb315387a4066f6f495ce269b54",
+  "substep_1a": "SUBSTEP_1A_ACCEPTED_WITH_EXPLICIT_EXCLUSION",
+  "unknown_patch_recovery": "NOT_RECOVERED",
+  "unknown_patch_baseline": "EXCLUDED_FROM_BASELINE",
+  "substep_1b": "candidate_tests_pass_independent_acceptance_not_established",
+  "ci": {
+    "run_id": 34595007756,
+    "job_id": 103248616898,
+    "conclusion": "success",
+    "artifact_id": 10262256146,
+    "artifact_sha256": "6a5efe3e6e892c809012299112fdd1db290daa8459384ed53a625467e20cc438",
+    "baseline_sha": "a0e7cb75d053aa0fc43de6904bcca5f85321bb4f",
+    "tests_1b": {
+      "1B-T01": "PASS",
+      "1B-T02": "PASS",
+      "1B-T03": "PASS",
+      "1B-T04": "PASS",
+      "1B-T05": "PASS",
+      "1B-T06": "PASS"
+    },
+    "local_check": "ZIP CRC and SHA-256 only; test results read, not freshly rerun"
+  },
+  "supabase": {
+    "project_ref": "ctcoqgsztdtsazdiwcmd",
+    "observed_status": "ACTIVE_HEALTHY",
+    "metadata_only": true,
+    "active_functions": [
+      "pablicus-release-test",
+      "pablicus-auth-handoff",
+      "pablicus-passkey",
+      "pablicus-push",
+      "public-bot-core",
+      "public-bot-core-qa"
+    ],
+    "dedicated_agent_endpoint_found": false,
+    "scope_note": "absence is limited to inspected function list and selected source; does not exclude unknown external services",
+    "factory_tables": {
+      "build_plans": {
+        "rls": false,
+        "anon_schema_usage": false,
+        "anon_select": false,
+        "authenticated_select": false
+      },
+      "capability_registry": {
+        "rls": false,
+        "anon_schema_usage": false,
+        "anon_select": false,
+        "authenticated_select": false
+      }
+    }
+  },
+  "not_verified": [
+    "full_ChatGPT_transcripts",
+    "all_Telegram_channel_history_and_videos",
+    "authenticated_live_ui",
+    "physical_iPhone_acceptance",
+    "complete_security_audit",
+    "load_capacity",
+    "all_external_accounts"
+  ],
+  "external_mutations_performed": false
+}

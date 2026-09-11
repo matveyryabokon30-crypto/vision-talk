@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "project": "Pablicus",
+  "plan_version": "1.0",
+  "plan_status": "OWNER_APPROVED",
+  "owner_approval_date": "2026-09-11",
+  "repository": "matveyryabokon30-crypto/vision-talk",
+  "branch_at_record": "refactor/pablicus-foundation-20260911",
+  "base_code_commit": "e8f267446fa35e7b83b6a9767e33dea2e6a48bff",
+  "base_tree_sha": "590685d4a3dcdd730c96c85096976c2626d6a90e",
+  "entrypoint": "PABLICUS_CONTEXT.md",
+  "owner_decision": "docs/pablicus/approved/2026-09-11/OWNER_DECISION.md",
+  "full_plan": "docs/pablicus/approved/2026-09-11/Pablicus_Continuation_Plan_2026-09-11.md",
+  "research_snapshot_is_historical": true,
+  "plan_approval_is_not_code_acceptance": true,
+  "source_plan_bytes_preserved": true,
+  "next_step": "Verify current HEAD and independent 1B acceptance; then 1C and 1D. Do not repeat accepted 1A.",
+  "change_scope": "documentation_only",
+  "production_deployment_authorized_by_this_record": false,
+  "full_chat_transcript_included": false,
+  "automatic_chat_sync_installed": false,
+  "original_strategy_archive_sha256": "2b92e282cea9fef51fcf6445062a7db6e2290b975e7108593677dfe1e217501e",
+  "external_evidence": {
+    "ci_run_id": 34595007756,
+    "ci_job_id": 103248616898,
+    "ci_artifact_id": 10262256146,
+    "ci_artifact_sha256": "6a5efe3e6e892c809012299112fdd1db290daa8459384ed53a625467e20cc438",
+    "ci_archive_in_this_git_change": false,
+    "note": "The original strategy ZIP contained the downloaded CI archive. This documentation commit preserves its identifiers and hash, not the binary archive. GitHub artifact availability is not guaranteed indefinitely."
+  },
+  "files": {
+    "PABLICUS_CONTEXT.md": {
+      "bytes": 9706,
+      "sha256": "f541bee89b9ef7d941b566199df2fa77465d0b30295704766dbc76214d099165",
+      "git_blob_sha1": "5f6fec004db288421f5ccd633baa1a5901a0f8dd"
+    },
+    "README.md": {
+      "bytes": 886,
+      "sha256": "62e35ca7def16fbb2f9eb71a5bc49f3e0870b663dc1cda18d26fa39cffc392a3",
+      "git_blob_sha1": "10052843584b12d27e13bc5ce2a56d264951d57c"
+    },
+    "docs/pablicus/approved/2026-09-11/OWNER_DECISION.md": {
+      "bytes": 4580,
+      "sha256": "97db917f4a391bed1cf8c7ff808b1dd871365a5cc171d36453b096fda0fb393a",
+      "git_blob_sha1": "4ad975555462d27ffa7c2eba9e6aff6cfdc11c38"
+    },
+    "docs/pablicus/approved/2026-09-11/Pablicus_Continuation_Plan_2026-09-11.md": {
+      "bytes": 25983,
+      "sha256": "d914625521cebfc3a191580f06c5734782287c9fc15b8034e3ad026891bbbb59",
+      "git_blob_sha1": "7ae1a3f880032b1e3b3e7575866084fa3909e67d"
+    },
+    "docs/pablicus/approved/2026-09-11/Pablicus_Source_Scope.md": {
+      "bytes": 4304,
+      "sha256": "c2aac16b19d335e01cf5c9b3e8574286fee8cb48607b6720c9844b06a7c98b00",
+      "git_blob_sha1": "bd0716bda4f00af83f255ed69a808cd4d7b98c52"
+    },
+    "docs/pablicus/approved/2026-09-11/Pablicus_Verified_Snapshot_2026-09-11.json": {
+      "bytes": 2336,
+      "sha256": "65ce5c0fef1118d6462a4e68fbe89be2ed957632d6024d0ad9aee107d3b7dc26",
+      "git_blob_sha1": "1d039a700c9119c2fa4884c5e7932d6e9bd32cae"
+    }
+  }
+}
