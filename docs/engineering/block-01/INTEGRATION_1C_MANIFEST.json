@@ -1,0 +1,100 @@
+{
+  "schema_version": "1.0",
+  "task_id": "PABLICUS-BLOCK01-1C-INTEGRATION-20260911",
+  "revision": "1.0",
+  "status": "SUBSTEP_1C_BLOCKED",
+  "repository": "matveyryabokon30-crypto/vision-talk",
+  "branch": "refactor/pablicus-foundation-20260911",
+  "WORK_START_HEAD": "dc4a6031e3a7b5248882f88dee11d83ccd88fd60",
+  "CODE_SHA": "f00f253ca2adfe7afc07e64cc3a1dc8f53c5692d",
+  "TESTED_SHA": "f00f253ca2adfe7afc07e64cc3a1dc8f53c5692d",
+  "tested_sha_meaning": "Exact attempted candidate; 1C CI failed. Not a passing application candidate.",
+  "handoff": {
+    "parent": "4c23c150b806f4ac012047308a7efd2e0b40a265",
+    "head_resolution": "Actual documentation commit SHA is recorded in the final receipt after creation.",
+    "parallel_commit_preserved": "4c23c150b806f4ac012047308a7efd2e0b40a265",
+    "parallel_scope": "Four documentation files for owner-approved amendment 01: PABLICUS_CONTEXT.md, README.md, AMENDMENT_01_UNIVERSAL_AI_ASSISTANT.md and OWNER_DECISION_AMENDMENT_01.md. No code/tests/workflow or current 1C requirement changed.",
+    "own_post_test_paths": ["docs/engineering/block-01/INTEGRATION_1C_MANIFEST.json", "docs/engineering/block-01/INTEGRATION_1C_REPORT.md", "docs/engineering/block-01/INTEGRATION_1C_EVIDENCE.json"],
+    "expected_post_test_diff": "Two documentation commits, seven paths total: four parallel documents preserved plus three own handoff documents. Verify actual final diff.",
+    "unused_draft_commit": "d4b1261ed628b60494bbf2022613ac72f2ca6712 was created before discovering the parallel HEAD and was never used to update the branch. No reset, force push or merge."
+  },
+  "accepted_1b": {"status": "SUBSTEP_1B_ACCEPTED", "CODE_SHA": "c5d82e96a236317f7a50530fb86da1a5d2bc4e26", "HANDOFF_HEAD": "4c8e045aaac051e7d1244fd9dfe23c5124b397eb", "unchanged": true},
+  "changed_paths_before_handoff": [
+    ".github/workflows/pablicus-integration.yml",
+    "tests/engineering/block-01/integration_1c/network.py",
+    "tests/engineering/block-01/integration_1c/probe.py",
+    "tests/engineering/block-01/integration_1c/instrument.js",
+    "tests/engineering/block-01/integration_1c/case.py",
+    "tests/engineering/block-01/integration_1c/runner.py",
+    "tests/engineering/block-01/integration_1c/scenario_routes.py",
+    "tests/engineering/block-01/integration_1c/scenario_quiet.py",
+    "tests/engineering/block-01/integration_1c/scenario_lifecycle.py",
+    "tests/engineering/block-01/integration_1c/scenario_durability.py",
+    "tests/engineering/block-01/integration_1c/scenario_canvas.py",
+    "tests/engineering/block-01/integration_1c/scenario_outbox.py",
+    "tests/engineering/block-01/integration_1c/scenario_isolation.py",
+    "tests/engineering/block-01/integration_1c/scenario_pending_send.py",
+    "tests/engineering/block-01/integration_1c/scenario_storage_errors.py"
+  ],
+  "application_changes": [],
+  "confirmed_application_fixes": [],
+  "matrix": [
+    {"requirement": 1, "modules": "real index, SDK, app/controller/chat/Canvas/bots", "cases": ["probe", "routes"], "result": "PARTIAL_ONLY: login/chat/empty IndexedDB observed in earlier probe; full routes unverified", "evidence": "CI 34632403344: probe/results.json; current: browser/routes/result.json"},
+    {"requirement": 2, "modules": "DOM, screen handlers/subscriptions/observers/timers", "cases": ["quiet", "lifecycle"], "result": "NOT_VERIFIED: no measured 50-transition sequence or before/after counts", "evidence": "browser/quiet/result.json; browser/lifecycle/result.json"},
+    {"requirement": 3, "modules": "chat/composer, vault/rich-store, native IndexedDB and Canvas", "cases": ["durability", "canvas"], "result": "NOT_VERIFIED: no completed text/order/ID/byte/reload comparison", "evidence": "browser/durability/result.json; browser/canvas/result.json"},
+    {"requirement": 4, "modules": "OutboxVault, transport/rich-store, SDK", "cases": ["outbox"], "result": "NOT_VERIFIED: queue/offline/lost ACK/rejection/retry assertions not reached", "evidence": "browser/outbox/result.json"},
+    {"requirement": 5, "modules": "real Auth SDK, app/chat/vault/outbox", "cases": ["isolation", "pending-send"], "result": "NOT_VERIFIED: account, pending write/send and late-response assertions not reached", "evidence": "browser/isolation/result.json; browser/pending-send/result.json"},
+    {"requirement": 6, "modules": "native IndexedDB transactions and working vault/queue", "cases": ["storage-errors"], "result": "NOT_VERIFIED: failure/recovery assertions not reached", "evidence": "browser/storage-errors/result.json"},
+    {"requirement": 7, "modules": "isolated mutated source copies", "cases": [], "result": "NOT_RUN: required 1C cycle/isolation/durability mutation controls not implemented", "evidence": null}
+  ],
+  "ci_history": [
+    {"sha": "23891c03bef4e7e293ed378c6e395e548df8e0ce", "run": 34631535896, "result": "success", "scope": "Source capture and 31 1B regressions only; no 1C PASS", "artifact": 10275674946, "bytes": 921201, "sha256": "86744d678f04fdf8a9ec1b732bf622c59f92083746d855e69c73a8e0ecffba24", "expires_at": "2026-09-25T18:07:58Z", "downloaded_copy": "PABLICUS_1C_BASELINE_34631535896.zip"},
+    {"sha": "60f8e0355f76f267448a9016140abb84890b8469", "run": 34632403344, "result": "failure", "scope": "Real login/chat/empty vault observed; synthetic API omission stopped Canvas click", "artifact": 10277125856, "bytes": 980341, "sha256": "b30c4fba4673b46d71d4dd9cfff1720b125c4d6da6e41ef5e2d72ccfb9aaa546", "expires_at": "2026-09-25T18:17:46Z", "downloaded_copy": "PABLICUS_1C_PROBE_34632403344.zip"},
+    {"sha": "f00f253ca2adfe7afc07e64cc3a1dc8f53c5692d", "run": 34634080287, "job": 103377640278, "attempt": 1, "result": "failure", "scope": "31 1B PASS; nine attempted browser cases ERROR before behavioral assertions", "artifact": 10277168648, "bytes": 996215, "sha256": "dedb3704e36ced0537f901ec65ce2d36f6cc1ba32330bd386320861ca2cc8d65", "expires_at": "2026-09-25T18:37:00Z", "downloaded_copy": "PABLICUS_1C_BASELINE_MATRIX_34634080287.zip"}
+  ],
+  "current_results": {
+    "regression_1b": {"PASS": 31, "FAIL": 0, "ERROR": 0, "TIMEOUT": 0, "NOT_RUN": 0},
+    "browser_processes": {"PASS": 0, "FAIL": 0, "ERROR": 9, "TIMEOUT": 0, "NOT_RUN": 0},
+    "assertions_reached": 0,
+    "common_error": "Locator.fill: Timeout 8000ms exceeded; #email exists but is not visible",
+    "capture_error": "ReferenceError: PablicusDebug is not defined",
+    "classification": "Startup/harness investigation incomplete. Not a product defect or expected negative control."
+  },
+  "primary_sha256": {
+    "SOURCE_MANIFEST.json": "b8ac21dd7255e6dc4c86db1b261cdedb08c84eded7082d3bf5dc7e36f20592e9",
+    "regression-1b.json": "065fd3725892996a3388a95fc1a34142d1531cb91edd9b2e2629891b6731561e",
+    "browser/results.json": "0f782eca391cd27cf8ee0f8b1b8dfe2aa85aac50d2891cbdde4f730f2353427d",
+    "browser.log": "d93ffc54a810b58b0fb87fed1473c9c4f8574130cfc7076488db81b704425801",
+    "timeout-probe/results.json": "0b5da324ec99766a75c4161d6d475aad2719f1590d10a93513fba0d41ff2539e",
+    "prior_probe/results.json": "8392a322c031a2c977c5cf8d169cbe7c45fe7940bec050c71cf0f16a67414681"
+  },
+  "integrity": {"original_zip_digest_and_crc": "PASS for three archives", "current_sources_checked": 144, "source_mismatches": [], "browser_result_and_process_log_hashes_checked": 18, "hash_mismatches": []},
+  "active_blocker": {
+    "service": "OpenAI tool safety gate during GitHub connector invocation",
+    "operation": "GitHub.create_tree updating tests/engineering/block-01/integration_1c/instrument.js over tree 487f1a230e5d6ca5fe5cfeef4f5834e22e4e71fe",
+    "observed_no_later_than": "2026-09-11T18:43:20Z",
+    "exact_response": "Этот вызов инструмента был заблокирован OpenAI, поскольку мы не смогли определить статус безопасности запроса.",
+    "http_status": null,
+    "returned_tree_sha": null,
+    "branch_updated_by_blocked_call": false,
+    "attempts": "One blocked correction write; no repeat or alternate-tool evasion. Independent read checks and documentation continued.",
+    "affected_work": "Publishing and executing the next harness correction required to continue nine browser scenarios",
+    "minimum_external_action": "The tool service must resolve the safety status through its normal review. GitHub permission failure is not established; no protection bypass or new product specification requested.",
+    "remaining_work_after_resolution": "Harness correction, actual scenarios, mutation controls and fresh full evidence still required"
+  },
+  "workspace": {
+    "git_error": "2026-09-11T18:05:59Z: git ls-remote: Could not resolve host: github.com",
+    "git_resolution": "Authorized GitHub connector and original CI artifact transport worked; full checkout in CI",
+    "local_browser_error": "ERR_BLOCKED_BY_ADMINISTRATOR; managed URLBlocklist [*], HTTP server 200",
+    "browser_resolution": "Policies left unchanged; used authorized GitHub Actions browser",
+    "local_source": "/mnt/data/1c-work/repo is a partial source workspace, not a Git checkout",
+    "uncommitted_edits": "Preserved separately; not covered by TESTED_SHA or CI, not shipped as a runnable correction",
+    "other_machines": "Not inspected or overwritten"
+  },
+  "test_boundaries": ["Actual local index, bundled SDK and working modules", "Synthetic HTTP/Phoenix only, no external forwarding", "Artificial users/files", "Service Worker blocked; declared local static shell during planned offline reload is not production offline qualification", "Native IDB failure/hold instrumentation is test-only and assertions were not reached", "No production RLS/Auth, physical iPhone, byte-durability or full product acceptance"],
+  "environment": {"ci_python": "3.12.7", "ci_node": "v22.23.2", "runner": "ubuntu-24.04", "playwright": "1.57.0", "probe_browser": "HeadlessChrome/143.0.7499.4", "local_python": "3.13.5", "local_node": "v22.16.0"},
+  "timeouts": {"browser_process_seconds": 120, "inner_case_seconds": 105, "common_ui_wait_ms": 8000, "1B_T06": "Five separate node checks at most five seconds each", "1B_selftest": "PASS, inner intentional TIMEOUT, runner exit 1, process exit -15, no executing probe PID", "cleanup": "Nine results record server closed/thread stopped. Runner/CI completed. No created local HTTP/browser process remained at final inspection."},
+  "remaining_requirements": [1, 2, 3, 4, 5, 6, 7],
+  "boundaries": {"main_observed": "f348aceacc3acdb315387a4066f6f495ce269b54", "main_write": false, "production_write": false, "supabase_write": false, "server_auth_write": false, "merge": false, "deployment": false, "force_push": false, "1A_repeated": false, "1B_reimplemented": false, "1D_started": false, "plan_changed_by_executor": false},
+  "stop": "Blocked handoff for review, not READY or ACCEPTED; do not advance to 1D"
+}

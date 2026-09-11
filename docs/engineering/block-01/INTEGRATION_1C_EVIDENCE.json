@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0",
+  "task_id": "PABLICUS-BLOCK01-1C-INTEGRATION-20260911",
+  "status": "SUBSTEP_1C_BLOCKED",
+  "TESTED_SHA": "f00f253ca2adfe7afc07e64cc3a1dc8f53c5692d",
+  "kind": "Compact extraction of original CI result fields; not a rerun",
+  "initial_probe": {
+    "run": 34632403344,
+    "artifact": 10277125856,
+    "status": "ERROR",
+    "http_status": 200,
+    "user_id": "11111111-1111-4111-8111-111111111111",
+    "conversation_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+    "active_lists": 1,
+    "created_lists": 1,
+    "destroyed_lists": 0,
+    "actual_store": "pablicus-v1:11111111-1111-4111-8111-111111111111:aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+    "vault_state": "empty",
+    "vault_commits": 0,
+    "restored_files": 0,
+    "page_errors": [],
+    "failure": "Canvas click intercepted by toast: UNMODELED_BOUNDARY /rest/v1/rpc/get_message_actions",
+    "meaning": "Real boot/login/chat/empty storage observed. No text/file/queue preservation assertion passed.",
+    "path": "probe/results.json",
+    "sha256": "8392a322c031a2c977c5cf8d169cbe7c45fe7940bec050c71cf0f16a67414681"
+  },
+  "current_run": {
+    "run": 34634080287,
+    "job": 103377640278,
+    "attempt": 1,
+    "artifact": 10277168648,
+    "conclusion": "failure",
+    "browser_counts": {"PASS": 0, "FAIL": 0, "ERROR": 9, "TIMEOUT": 0, "NOT_RUN": 0},
+    "common_reason": "Locator.fill: Timeout 8000ms exceeded; #email not visible",
+    "diagnostic_failure": "ReferenceError: PablicusDebug is not defined",
+    "cases": [
+      {"name": "routes", "status": "ERROR", "exit_code": 1, "assertions": 0},
+      {"name": "quiet", "status": "ERROR", "exit_code": 1, "assertions": 0},
+      {"name": "lifecycle", "status": "ERROR", "exit_code": 1, "assertions": 0},
+      {"name": "durability", "status": "ERROR", "exit_code": 1, "assertions": 0},
+      {"name": "canvas", "status": "ERROR", "exit_code": 1, "assertions": 0},
+      {"name": "outbox", "status": "ERROR", "exit_code": 1, "assertions": 0},
+      {"name": "isolation", "status": "ERROR", "exit_code": 1, "assertions": 0},
+      {"name": "pending-send", "status": "ERROR", "exit_code": 1, "assertions": 0},
+      {"name": "storage-errors", "status": "ERROR", "exit_code": 1, "assertions": 0}
+    ],
+    "primary_path": "browser/results.json",
+    "primary_sha256": "0f782eca391cd27cf8ee0f8b1b8dfe2aa85aac50d2891cbdde4f730f2353427d",
+    "interpretation": "The nine cases started, but the required behavioral assertions were not reached. ERROR is not an expected mutation FAIL or evidence of a product defect."
+  },
+  "regression_1b": {
+    "PASS": 31, "FAIL": 0, "ERROR": 0, "TIMEOUT": 0, "NOT_RUN": 0,
+    "path": "regression-1b.json",
+    "sha256": "065fd3725892996a3388a95fc1a34142d1531cb91edd9b2e2629891b6731561e",
+    "meaning": "Accepted contract regressions only, not 1C integration acceptance"
+  },
+  "intentional_timeout": {
+    "outer_selftest": "PASS",
+    "nested_test": "TIMEOUT",
+    "nested_process_exit": -15,
+    "nested_runner_exit": 1,
+    "deadline_seconds": 0.5,
+    "still_running": [],
+    "path": "timeout-probe/results.json",
+    "sha256": "0b5da324ec99766a75c4161d6d475aad2719f1590d10a93513fba0d41ff2539e"
+  },
+  "verification": {
+    "at": "2026-09-11T18:47:52Z",
+    "original_archives_crc_and_github_digest": "PASS for all three archives",
+    "source_copies_checked": 144,
+    "source_mismatches": [],
+    "browser_result_and_process_log_hashes_checked": 18,
+    "hash_mismatches": [],
+    "application_files_differing_from_initial_1c_capture": [],
+    "all_nine_servers_recorded_closed": true,
+    "all_nine_server_threads_recorded_not_alive": true
+  },
+  "remaining_controls": {"cycle_mutation": "NOT_RUN", "late_action_isolation_mutation": "NOT_RUN", "byte_preservation_mutation": "NOT_RUN"},
+  "tool_block": {
+    "operation": "GitHub.create_tree: proposed instrument.js correction",
+    "response": "Этот вызов инструмента был заблокирован OpenAI, поскольку мы не смогли определить статус безопасности запроса.",
+    "returned_sha": null,
+    "retried_to_evade_gate": false,
+    "correction_executed_in_ci": false
+  }
+}
