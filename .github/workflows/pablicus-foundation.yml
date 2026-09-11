@@ -12,6 +12,7 @@ on:
     paths:
       - 'pablicus/**'
       - 'tests/engineering/block-01/**'
+      - 'docs/engineering/block-01/**'
       - '.github/workflows/pablicus-foundation.yml'
   workflow_dispatch:
 
@@ -19,29 +20,47 @@ permissions:
   contents: read
 
 jobs:
-  source-snapshot:
-    name: Source snapshot (not acceptance)
+  acceptance:
+    name: Block 01 browser acceptance
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4.2.2
         with:
-          fetch-depth: 0
           persist-credentials: false
-      - name: Package exact public source history for offline engineering
+      - uses: actions/setup-python@v5.6.0
+        with:
+          python-version: '3.12.7'
+      - name: Install pinned browser test dependencies
+        run: |
+          python -m pip install --disable-pip-version-check playwright==1.57.0 beautifulsoup4==4.14.3
+          python -m playwright install --with-deps chromium
+      - name: Start isolated static server
+        run: |
+          python -m http.server 8080 --bind 127.0.0.1 > /tmp/pablicus-http.log 2>&1 &
+          echo $! > /tmp/pablicus-http.pid
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8080/pablicus/index.html >/dev/null && exit 0; sleep 0.5; done
+          cat /tmp/pablicus-http.log
+          exit 1
+      - name: Run B1-T01 through B1-T10
+        run: |
+          python tests/engineering/block-01/test_block01.py \
+            --source-root . \
+            --entrypoint-url http://127.0.0.1:8080/pablicus/ \
+            --output-dir block01-results
+      - name: Controlled negative regression must fail
         shell: bash
         run: |
-          set -euo pipefail
-          OUT="$RUNNER_TEMP/block01-source"
-          mkdir -p "$OUT"
-          git status --porcelain > "$OUT/status.txt"
-          test ! -s "$OUT/status.txt"
-          git rev-parse HEAD > "$OUT/checkout-sha.txt"
-          git bundle create "$OUT/source.bundle" HEAD
-          git bundle verify "$OUT/source.bundle"
-      - uses: actions/upload-artifact@v4.6.2
+          set +e
+          python tests/engineering/block-01/test_negative_cycle.py --source-root . > block01-results/negative-cycle.log 2>&1
+          code=$?
+          set -e
+          test "$code" -ne 0
+          grep -q 'controlled regression detected as expected' block01-results/negative-cycle.log
+      - name: Upload evidence
+        uses: actions/upload-artifact@v4.6.2
         with:
-          name: block-01-source-${{ github.sha }}
-          path: ${{ runner.temp }}/block01-source/
+          name: block-01-acceptance-${{ github.sha }}
+          path: block01-results/
           retention-days: 14
           if-no-files-found: error
