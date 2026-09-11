@@ -1,0 +1,74 @@
+/* Public pre-Stage-3 hotfix v8: stable Telegram-like shell, keyboard geometry, canvas/project editor. */
+:root{--public-top-h:56px;--public-composer-h:64px}
+
+/* Main section headers: plain centered title + one shared action capsule. */
+#home .homeHeader{min-height:var(--public-top-h)!important;height:var(--public-top-h)!important;padding:6px 14px!important;display:flex!important;align-items:center!important;justify-content:center!important;background:var(--bg)!important}
+#home .homeTitle{display:block!important;width:auto!important;min-width:0!important;max-width:none!important;min-height:0!important;height:auto!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;font-size:17px!important;font-weight:600!important;line-height:1.15!important;letter-spacing:-.2px!important;text-align:center!important}
+.publicHomeActions{right:12px!important;top:8px!important;height:40px!important;padding:2px 4px!important;gap:0!important;border:1px solid var(--line)!important;border-radius:22px!important;background:var(--surface)!important;box-shadow:none!important}
+.publicHomeActions .publicTopIcon{width:36px!important;height:36px!important;min-height:36px!important;border:0!important;border-radius:18px!important;background:transparent!important;box-shadow:none!important}
+.publicHomeActions .publicTopIcon+ .publicTopIcon{margin-left:0!important}
+.publicHomeActions .publicTopIcon svg{width:20px!important;height:20px!important}
+
+/* Chat header: exact center, no drift, one compact capsule for person. */
+#app>header{height:var(--public-top-h)!important;min-height:var(--public-top-h)!important;padding:6px 14px!important;grid-template-columns:44px minmax(0,1fr) 44px 44px!important;column-gap:6px!important;overflow:visible!important}
+#app>header .chatHeading{position:absolute!important;left:50%!important;right:auto!important;top:50%!important;transform:translate(-50%,-50%)!important;width:max-content!important;max-width:52vw!important;height:38px!important;min-height:38px!important;padding:3px 12px 3px 4px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;border:1px solid var(--line)!important;border-radius:20px!important;background:var(--surface)!important;box-sizing:border-box!important;overflow:hidden!important}
+#chatTitle{display:block!important;min-width:0!important;max-width:calc(52vw - 48px)!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;text-align:center!important;font-size:15px!important;line-height:1!important}
+.publicChatAvatar{flex:0 0 30px!important;width:30px!important;height:30px!important;border-radius:50%!important}
+#chatBack,#chatLibraryOpen,#reportBtn{width:42px!important;height:42px!important;min-height:42px!important;padding:0!important;border:0!important;border-radius:21px!important;background:var(--surface)!important;box-shadow:none!important}
+#chatBack{justify-self:start!important}#chatLibraryOpen,#reportBtn{justify-self:end!important}
+#chatBack svg,#chatLibraryOpen svg,#reportBtn svg{width:21px!important;height:21px!important}
+
+/* Conversation composer: never disappear, never jump above keyboard. */
+#app:not(.public-project-editing) #composer,#app.public-keyboard-open:not(.public-project-editing) #composer{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;z-index:40!important;padding:0 12px max(6px,env(safe-area-inset-bottom))!important;background:var(--bg)!important;transform:none!important}
+#app.public-keyboard-open:not(.public-project-editing) .stage{padding-bottom:0!important}
+#composer #composeBox{min-height:54px!important;height:auto!important;padding:6px 8px!important;border:0!important;border-radius:26px!important;background:var(--surface)!important;box-shadow:0 0 0 1px var(--line)!important;align-items:center!important}
+#composer #editor{min-height:40px!important;display:flex!important;align-items:center!important}
+#composer #input{min-height:24px!important;max-height:96px!important;padding:8px 4px!important;font-size:16px!important;line-height:1.35!important;background:transparent!important}
+#composer #attach,#composer #expand,#composer #send,#composer #hideKey{width:40px!important;height:40px!important;min-height:40px!important;border:0!important;border-radius:20px!important;background:transparent!important;box-shadow:none!important}
+#composer #send{background:var(--soft)!important}
+#composer #modeBar,#composer #fullTitle{display:none!important}
+
+/* Canvas: one stable scrolling surface. Global composer stays compact at bottom. */
+#app.canvas-active,#app.public-canvas-visible{grid-template-rows:var(--public-top-h) 42px minmax(0,1fr) auto!important;min-height:100dvh!important;height:100dvh!important;overflow:hidden!important}
+#app.canvas-active .stage,#app.public-canvas-visible .stage{grid-row:3!important;position:relative!important;min-height:0!important;height:auto!important;overflow:hidden!important;padding:0!important}
+#app.canvas-active #chatCanvasPanel,#app.public-canvas-visible #chatCanvasPanel{position:absolute!important;inset:0!important;display:block!important;height:auto!important;min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior-y:contain!important;overflow-anchor:none!important;scroll-behavior:auto!important;padding:10px 16px 26px!important;contain:layout paint!important}
+#app.canvas-active #composer,#app.public-canvas-visible #composer{grid-row:4!important;position:relative!important;bottom:auto!important;left:auto!important;right:auto!important;z-index:40!important;margin:0!important;padding:0 12px max(6px,env(safe-area-inset-bottom))!important;background:var(--bg)!important}
+#app.public-project-editing #composer{display:none!important}
+#chatCanvasPanel *{overflow-anchor:none!important}
+.pablicusChatCanvas{min-height:100%!important;overflow:visible!important;padding:0 0 18px!important}
+.pccProjectsHead{position:relative!important;min-height:46px!important}
+
+/* Project summary/view: no filename chrome, no close controls, no card jitter. */
+.pccProject{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;contain:layout!important}
+.pccProjectCard{width:100%!important;padding:12px 0!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;text-align:left!important}
+.pccProjectView{padding:12px 0!important;border:0!important;background:transparent!important;overflow:visible!important}
+.pccProjectViewContent{overflow:visible!important}
+.pccProjectViewContent .richMedia,.pccProjectViewContent .richMediaBody{margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important}
+.pccProjectViewContent .richMediaHead,.pccProjectViewContent .richMediaDetails,.pccProjectViewContent .richMediaRemove,.pccProjectViewContent [class*="close"],.pccProjectViewContent [aria-label*="Закры"]{display:none!important}
+.pccProjectViewContent img,.pccProjectViewContent video{display:block!important;width:auto!important;max-width:100%!important;max-height:55dvh!important;margin:8px 0!important;border:0!important;border-radius:16px!important;object-fit:contain!important;background:transparent!important}
+
+/* Project owns its editor. It must sit inside project flow, not over the whole canvas. */
+.pccPlanEditor{position:relative!important;inset:auto!important;width:100%!important;height:auto!important;min-height:0!important;margin:10px 0 0!important;padding:0!important;z-index:5!important;background:transparent!important;transform:none!important}
+.pccPlanEditor[hidden]{display:none!important}
+.pccPlanEditor .workspaceEditor{position:relative!important;inset:auto!important;width:100%!important;height:auto!important;min-height:58px!important;max-height:none!important;margin:0!important;padding:6px 8px!important;border:0!important;border-radius:24px!important;background:var(--surface)!important;box-shadow:0 0 0 1px var(--line)!important;transform:none!important}
+.pccPlanEditor .workspaceEditorBody{min-height:48px!important;max-height:42dvh!important;overflow:auto!important}
+.pccPlanEditor .richText{min-height:44px!important;padding:8px!important;font-size:16px!important;line-height:1.42!important}
+.pccPlanEditor .workspaceEditorToolbar{position:relative!important;display:flex!important;align-items:center!important;min-height:42px!important;padding:2px 0 0!important;gap:4px!important;background:transparent!important}
+.pccPlanEditor .workspaceEditorButton,.pccPlanEditor .workspaceEditorVoice{width:38px!important;height:38px!important;min-height:38px!important;border:0!important;border-radius:19px!important;background:transparent!important;box-shadow:none!important}
+.pccPlanEditor .richMedia{padding:0!important;margin:7px 0!important;border:0!important;background:transparent!important}
+.pccPlanEditor .richMediaHead,.pccPlanEditor .richMediaDetails{display:none!important}
+.pccFormFoot{position:relative!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:10px!important;margin:8px 0 0!important;padding:0!important;background:transparent!important}
+
+/* Profile/settings: only top-left navigation. */
+.publicProfileScreen .publicProfileBack,.publicSettingsScreen .publicSettingsBack{position:absolute!important;left:14px!important;top:max(12px,env(safe-area-inset-top))!important}
+.publicSettingsScreen .publicSettingsBack:not(:first-of-type),.publicSettingsScreen .publicInlineBack,.publicProfileScreen .publicInlineBack{display:none!important}
+.publicSettingsScreen h1,.publicProfileScreen h1{text-align:center!important}
+
+/* Native-feeling list geometry; no giant pills for ordinary rows. */
+.publicSettingsScreen .publicSettingRow,.publicProfileScreen .publicProfileRow{min-height:50px!important;border-radius:0!important;border:0!important;border-bottom:1px solid var(--line)!important;background:transparent!important}
+
+@media(max-width:430px){
+ #app>header .chatHeading{max-width:48vw!important}
+ #chatTitle{max-width:calc(48vw - 46px)!important}
+ .publicHomeActions{right:8px!important}
+}
