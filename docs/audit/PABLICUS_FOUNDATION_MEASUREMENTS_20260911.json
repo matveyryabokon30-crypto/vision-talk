@@ -1,0 +1,36 @@
+{
+  "date": "2026-09-11",
+  "source_commit": "f348aceacc3acdb315387a4066f6f495ce269b54",
+  "pages_run_id": 34547280893,
+  "pages_artifact_id": 10179479816,
+  "archive_sha256": "092434415ad70ec58c00144e63fee7a27d7a0913340706da58a65947184a5e5f",
+  "scope": "Offline Chromium with synthetic data and actual deployed source files. Not authenticated production E2E or physical iPhone.",
+  "tools": {"playwright": "1.57.0", "beautifulsoup4": "4.14.3", "chromium": "144.0.7559.96"},
+  "production_changed": false,
+  "counter_definition": "MutationObserver callback invocations during a one-second idle interval after warmup; not unique DOM mutations, CPU percentage or rendered frames.",
+  "idle_callback_counts": [
+    {"case": "baseline_fixture_without_enhancement_scripts", "run_1": 0, "run_2": 0},
+    {"case": "ux_refinement_only", "run_1": 60, "run_2": 60},
+    {"case": "hotfix_only", "run_1": 0, "run_2": 0},
+    {"case": "ux_hotfix_creation_combined", "run_1": 240, "run_2": 244},
+    {"case": "combined_with_hidden_home", "run_1": 244, "run_2": 240},
+    {"case": "combined_with_empty_list", "run_1": 0, "run_2": 0}
+  ],
+  "single_project_click": {
+    "baseline_fixture": {"read": 1, "edit": 0},
+    "with_ux_refinement": {"read": 0, "edit": 1},
+    "combined": {"read": 0, "edit": 1}
+  },
+  "header_geometry": [
+    {"viewport": [390, 844], "original_center_error_px": 141, "original_title_height_px": 0, "isolated_center_error_px": 0, "isolated_title_height_px": 15},
+    {"viewport": [815, 890], "original_center_error_px": 353.5, "original_title_height_px": 0, "isolated_center_error_px": 0, "isolated_title_height_px": 15},
+    {"viewport": [1440, 900], "app_width_px": 1000, "original_center_error_px": 446, "original_title_height_px": 0, "isolated_center_error_px": 0, "isolated_title_height_px": 15}
+  ],
+  "header_experiment": "Remove inherited grid-column, grid-row and flex-direction declarations from existing .chatHeading CSS rules in an isolated CSSOM. This is diagnostic intervention, not a shipped repair.",
+  "limitations": [
+    "Does not establish that every reported iOS freeze has the same sole cause.",
+    "No authenticated browser session or real user data was used in these experiments.",
+    "No full backend, security, load or physical-device acceptance is claimed.",
+    "Diagnostic recorder completion is not a product PASS."
+  ]
+}
