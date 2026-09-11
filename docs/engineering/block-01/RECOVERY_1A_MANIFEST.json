@@ -1,0 +1,145 @@
+{
+  "repository": "matveyryabokon30-crypto/vision-talk",
+  "branch": "refactor/pablicus-foundation-20260911",
+  "status": "SUBSTEP_1A_BLOCKED",
+  "start_head": "bd0e1877bf5bb2a2f00f622a767b16c4723f6333",
+  "production_head_observed": "f348aceacc3acdb315387a4066f6f495ce269b54",
+  "previous_tested_candidate": "fbe4ac2a03c03b15404ac99d54d51ed15e3f13be",
+  "source_commit": "28ed3fde33f0e5a0a28b1fa12f147de465accf6a",
+  "changed_paths": [
+    ".engineering/block01.patch.gz.b64",
+    ".github/workflows/block01-apply.yml",
+    "docs/engineering/block-01/RECOVERY_1A.md",
+    "docs/engineering/block-01/RECOVERY_1A_MANIFEST.json"
+  ],
+  "recovered_paths": [],
+  "already_present_paths": [
+    {
+      "path": "pablicus/app-controller.js",
+      "origin_commit": "fbe4ac2a03c03b15404ac99d54d51ed15e3f13be",
+      "blob_sha_at_source_commit": "bd8d48338ee9376f9fd10730f344d2f8c5346653",
+      "status": "ALREADY_PRESENT"
+    },
+    {
+      "path": "pablicus/chat-list-view.js",
+      "origin": "existing Block 01 candidate committed before or at fbe4ac2a03c03b15404ac99d54d51ed15e3f13be",
+      "blob_sha_at_source_commit": "2698bc203b237d7662f8b0ace727fb2096d9e5e5",
+      "status": "ALREADY_PRESENT"
+    },
+    {
+      "path": "pablicus/bots-nav.js",
+      "origin": "existing Block 01 candidate committed before or at fbe4ac2a03c03b15404ac99d54d51ed15e3f13be",
+      "blob_sha_at_source_commit": "efb648ca4b6bfeac4b7b61d25fe89219a25db378",
+      "status": "ALREADY_PRESENT"
+    },
+    {
+      "path": "tests/engineering/block-01/test_block01.py",
+      "origin_commit": "fbe4ac2a03c03b15404ac99d54d51ed15e3f13be",
+      "blob_sha_at_source_commit": "d42961bd29621ee9217f92468de809d5e0fb84df",
+      "status": "ALREADY_PRESENT"
+    },
+    {
+      "path": ".github/workflows/pablicus-foundation.yml",
+      "origin_commit": "fbe4ac2a03c03b15404ac99d54d51ed15e3f13be",
+      "blob_sha_at_source_commit": "09fe0e8203b08fd665f310f433bcac5ab8355e21",
+      "status": "ALREADY_PRESENT"
+    }
+  ],
+  "removed_bootstrap_paths": [
+    {
+      "path": ".engineering/block01.patch.gz.b64",
+      "historical_commit": "bd0e1877bf5bb2a2f00f622a767b16c4723f6333",
+      "blob_sha": "eca708109f00b4dcd3da7bb194f9a0c541ef6f85",
+      "size_bytes": 20208
+    },
+    {
+      "path": ".github/workflows/block01-apply.yml",
+      "historical_commit": "de309364f6185a6451956ed6a67cb27a2ae9b761",
+      "blob_sha": "a4c078d1054952f302cfe8cdcbc5ad13eedfdbc0",
+      "size_bytes": 1120
+    }
+  ],
+  "unresolved_items": [
+    {
+      "status": "NOT_RECOVERED",
+      "item": "full plaintext intended delta encoded in failed packed payload",
+      "impact": "No complete authoritative plaintext source was found. Any post-fbe4 source delta represented only by the invalid payload cannot be proven or applied without guessing."
+    },
+    {
+      "status": "OUT_OF_SCOPE",
+      "item": "controller race and lifecycle defects R1-R4",
+      "next_substep": "1B"
+    },
+    {
+      "status": "OUT_OF_SCOPE",
+      "item": "full real-module integration and corrected positive/negative acceptance controls",
+      "next_substep": "1C"
+    }
+  ],
+  "evidence": {
+    "failed_payload": {
+      "commit": "bd0e1877bf5bb2a2f00f622a767b16c4723f6333",
+      "blob_sha": "eca708109f00b4dcd3da7bb194f9a0c541ef6f85",
+      "size_bytes": 20208,
+      "sha256": null,
+      "sha256_note": "Not computed from exact bytes in the available execution environment; intentionally not inferred."
+    },
+    "apply_workflow": {
+      "commit": "de309364f6185a6451956ed6a67cb27a2ae9b761",
+      "blob_sha": "a4c078d1054952f302cfe8cdcbc5ad13eedfdbc0",
+      "size_bytes": 1120
+    },
+    "failed_run_id": 34564691620,
+    "failed_job_id": 103154288315,
+    "failed_exit_code": 1,
+    "failed_messages": [
+      "base64: invalid input",
+      "gzip: stdin: unexpected end of file",
+      "Process completed with exit code 1."
+    ],
+    "old_success_run_id": 34563633361,
+    "old_success_artifact_id": 10185261699,
+    "old_success_artifact_digest": "sha256:b63a504a7aa1b0e8714e30bc4cd3589a5ca6206d071d284cc6ba4b56d690988c",
+    "old_success_evidence_boundary": "Historical provenance only; does not establish Block 01 acceptance."
+  },
+  "checks": [
+    {
+      "check": "read_branch_and_main_heads",
+      "status": "PASS",
+      "verified_source_sha": "28ed3fde33f0e5a0a28b1fa12f147de465accf6a"
+    },
+    {
+      "check": "failure_provenance_identified",
+      "status": "PASS",
+      "verified_source_sha": "bd0e1877bf5bb2a2f00f622a767b16c4723f6333"
+    },
+    {
+      "check": "candidate_blob_identity_app_controller",
+      "status": "PASS",
+      "detail": "blob bd8d48338ee9376f9fd10730f344d2f8c5346653 at both fbe4ac2 and source_commit"
+    },
+    {
+      "check": "packed_bootstrap_absent_at_source_commit",
+      "status": "PASS",
+      "detail": "Both bootstrap paths return 404 when read at source_commit."
+    },
+    {
+      "check": "verification_workflow_directly_readable",
+      "status": "PASS",
+      "detail": "blob 09fe0e8203b08fd665f310f433bcac5ab8355e21; permissions contents: read"
+    },
+    {
+      "check": "syntax_newly_recovered_executables",
+      "status": "NOT_RUN",
+      "detail": "No executable source file was recovered or modified by 1A."
+    },
+    {
+      "check": "local_git_diff_check",
+      "status": "NOT_RUN",
+      "detail": "No writable full local Git checkout was available; post-commit GitHub diff/readback is the integrity check for this handoff."
+    }
+  ],
+  "production_deployed": false,
+  "block_01_accepted": false,
+  "requested_review": "SUBSTEP_1A"
+}
