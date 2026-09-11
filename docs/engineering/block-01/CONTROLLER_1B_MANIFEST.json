@@ -1,0 +1,286 @@
+{
+  "schema_version": "1.0",
+  "task_id": "PABLICUS-BLOCK01-1B-COMPLETION-20260911",
+  "status": "SUBSTEP_1B_READY_FOR_INDEPENDENT_REVIEW",
+  "repository": "matveyryabokon30-crypto/vision-talk",
+  "branch": "refactor/pablicus-foundation-20260911",
+  "START_HEAD": "a0e7cb75d053aa0fc43de6904bcca5f85321bb4f",
+  "WORK_START_HEAD": "ff32cfcbbe985236cdd8b4c0bea0ea82232adc37",
+  "CODE_SHA": "a4e19bc696f2516c2f56790b2114c69bc0f05530",
+  "TESTED_SHA": "a4e19bc696f2516c2f56790b2114c69bc0f05530",
+  "handoff": {
+    "head_resolution": "The documentation commit containing this manifest, reported as the exact HANDOFF_HEAD in the final handoff receipt. No future SHA is fabricated inside its own commit.",
+    "resolve_command": "git log -1 --format=%H -- docs/engineering/block-01/CONTROLLER_1B_MANIFEST.json",
+    "parent": "a4e19bc696f2516c2f56790b2114c69bc0f05530",
+    "changes_after_tested_sha": "Documentation/evidence only. Verify with git diff --name-only TESTED_SHA HANDOFF_HEAD."
+  },
+  "ci": {
+    "run_id": 34618904735,
+    "job_id": 103327639447,
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "run_url": "https://github.com/matveyryabokon30-crypto/vision-talk/actions/runs/34618904735",
+    "head_sha": "a4e19bc696f2516c2f56790b2114c69bc0f05530",
+    "completed_at": "2026-09-11T15:56:04Z",
+    "artifact": {
+      "id": 10271625992,
+      "name": "block-01-acceptance-a4e19bc696f2516c2f56790b2114c69bc0f05530",
+      "bytes": 139000,
+      "sha256": "de93bec511ea01819050823626634347bd9452f660a10cc47a472286982fbf59",
+      "expires_at": "2026-09-25T15:56:00Z",
+      "archive_crc": "PASS",
+      "downloaded_and_inspected": true
+    }
+  },
+  "sources": {
+    "pablicus/app-controller.js": {
+      "sha256": "bf59c9cb2e98193f75c66f264b92bdc9c74c65727fb44a2d415e9d3c367ff470",
+      "git_blob": "598a9e03e6c2784d750c46d701713cbb894e3cef"
+    },
+    "pablicus/app.js": {
+      "sha256": "4fec4b7fb8f60cebca6752fefa1c641af5a2978b15a07d03258b86e15726683b",
+      "git_blob": "b2b37e8eb439b7076ed0e771c9e51c472265cace"
+    },
+    "pablicus/bots-nav.js": {
+      "sha256": "ce6675fe2477d5ca29923f8ffea2cdeeb2fe8fa27505084e85a66eeafae231ab",
+      "git_blob": "0220112901ab17ace345e6bbb5de82c2514de8cf"
+    },
+    "pablicus/bot-scenario-bridge.js": {
+      "sha256": "1ece4fb607a086b0e2c90a5c2271539718cb9d3054a751f3ed75bcc92a22f7b6",
+      "git_blob": "a65a2d993ae3a8639ece31f6f7dd4039f84743d1"
+    },
+    "tests/engineering/block-01/test_controller_1b.py": {
+      "sha256": "c5aed6076b205ebe642bc6b400d62d170707a056b39f219e5e87eeae14ef487b",
+      "git_blob": "7c6bf2d3620439738bb570d67758b1fa93d24b38"
+    },
+    "tests/engineering/block-01/controller_1b_scenarios.cjs": {
+      "sha256": "6064f551fdbc2dc00a7392c7bf192e93bbb1cec6a0cc1cf4313f6b63923fb9de",
+      "git_blob": "25acf4bf867fc1bd3645811586be9a5d748fd9d1"
+    },
+    ".github/workflows/pablicus-foundation.yml": {
+      "sha256": "9c0f3d6ece6004b20058132dde6debf9b006213a60e66c9af6f83f079eaf3e4c",
+      "git_blob": "01101c6f0b4ea7383205a915e794212a154a7b26"
+    }
+  },
+  "changed_files": [
+    "pablicus/app-controller.js",
+    "pablicus/app.js",
+    "tests/engineering/block-01/test_controller_1b.py",
+    "tests/engineering/block-01/controller_1b_scenarios.cjs",
+    ".github/workflows/pablicus-foundation.yml"
+  ],
+  "unchanged_adapters": [
+    "pablicus/bots-nav.js",
+    "pablicus/bot-scenario-bridge.js"
+  ],
+  "matrix": [
+    {
+      "requirement": "R1/R2 preserved; identical assertions distinguish historical source and candidate",
+      "real_code": "pablicus/app-controller.js: navigate, createScope, normalizeCleanup",
+      "tests": [
+        "1B-T01",
+        "1B-T02"
+      ],
+      "expected": "Latest request alone mounts; late function/object cleanup once, correct this, new scope survives",
+      "result": "PASS on candidate; expected FAIL/exit 1 at historical START_HEAD",
+      "evidence": [
+        "controller-1b.json",
+        "baseline-1b/results.json"
+      ]
+    },
+    {
+      "requirement": "Gap 1: real Auth callbacks and session identity",
+      "real_code": "pablicus/app.js: onAuthStateChange, authenticate, clearSessionView, restore continuations; app-controller.js: sessionChanged",
+      "tests": [
+        "1B-T03",
+        "1B-AUTH-LOGOUT",
+        "1B-AUTH-SWITCH",
+        "1B-AUTH-LATE-ERROR",
+        "1B-AUTH-ORDER",
+        "1B-AUTH-PASSKEY",
+        "1B-AUTH-BOOT",
+        "1B-AUTH-BOOT-ERROR",
+        "1B-AUTH-LOGOUT-RELOGIN",
+        "1B-SESSION-LATE",
+        "1B-SESSION-ERROR",
+        "1B-SESSION-ORDER"
+      ],
+      "expected": "Refresh/repeat preserves stable view; logout/A-to-B invalidates old work once; late/errors/order cannot overwrite newer identity; passkey guards retained",
+      "result": "PASS",
+      "evidence": [
+        "controller-1b.json",
+        "work-start-1b/results.json"
+      ]
+    },
+    {
+      "requirement": "Gap 2: real unsaved Canvas caller, pre-destructive cancellation and related entries",
+      "real_code": "app.js: appNavigationAllowed, conversationTab, showConversationView/showCanvasView, goConversation/openConversation, chatBack, real route handlers; controller beforeNavigate",
+      "tests": [
+        "1B-T04",
+        "1B-CANVAS-YES",
+        "1B-CANVAS-CLEAN",
+        "1B-CANVAS-CALLERS",
+        "1B-CANVAS-ROUNDTRIP",
+        "1B-CANVAS-HOME",
+        "1B-CANVAS-PENDING"
+      ],
+      "expected": "Decline: unchanged route/tab/dirty view/pending work, no abort/reset/close; accept: one prompt; clean: zero prompts; canonical conversation/canvas IDs",
+      "result": "PASS; real caller fails at WORK_START_HEAD for R4_REAL_CALLER_CANCEL",
+      "evidence": [
+        "controller-1b.json",
+        "work-start-1b/results.json"
+      ]
+    },
+    {
+      "requirement": "Gap 3: late rejection, current mount failure and cleanup failure",
+      "real_code": "app-controller.js: per-transition scopes and navigate error handling",
+      "tests": [
+        "1B-LATE-REJECT",
+        "1B-T05"
+      ],
+      "expected": "New screen/resource remains; old cleanup once; late error once; old success false; no unhandled rejection; current mount rejects; cleanup error reported",
+      "result": "PASS; established late rejection implementation retained",
+      "evidence": [
+        "controller-1b.json"
+      ]
+    },
+    {
+      "requirement": "Gap 4: bounded scenarios, partial results, process cleanup",
+      "real_code": "tests/engineering/block-01/test_controller_1b.py; tests/engineering/block-01/controller_1b_scenarios.cjs; limited CI wiring",
+      "tests": [
+        "1B-T06",
+        "1B-TIMEOUT-SELFTEST"
+      ],
+      "expected": "Each 1B scenario <=8s process limit; node --check <=5s per subprocess; atomic partial JSON/logs and nonzero on failure; deliberate hang times out and processes stop",
+      "result": "PASS for timeout mechanism; intentional inner test remains TIMEOUT/runner exit 1",
+      "evidence": [
+        "controller-1b.json",
+        "timeout-probe/results.json",
+        "timeout-probe/results-logs/HARNESS_NEVER_FINISHES.log"
+      ]
+    },
+    {
+      "requirement": "Gap 5: fresh candidate verification and complete scoped handoff",
+      "real_code": ".github/workflows/pablicus-foundation.yml; docs/engineering/block-01/CONTROLLER_1B_*",
+      "tests": [
+        "all 25 1B cases",
+        "existing B1-T01 through B1-T10",
+        "controlled negative cycle",
+        "artifact SHA256/CRC/source and log hash verification"
+      ],
+      "expected": "Fresh CI bound to actual code; immutable evidence; later handoff commit documents only",
+      "result": "PASS for executed candidate/evidence; independent acceptance not assigned",
+      "evidence": [
+        "controller-1b.json",
+        "baseline-1b/results.json",
+        "work-start-1b/results.json",
+        "acceptance-results.json",
+        "timeout-probe/results.json",
+        "timeout-probe/results-logs/HARNESS_NEVER_FINISHES.log",
+        "negative-cycle.log",
+        "1b/SOURCE_MANIFEST.json"
+      ]
+    }
+  ],
+  "candidate_results": {
+    "1B-T01": "PASS",
+    "1B-T02": "PASS",
+    "1B-T03": "PASS",
+    "1B-T04": "PASS",
+    "1B-T05": "PASS",
+    "1B-T06": "PASS",
+    "1B-CANVAS-YES": "PASS",
+    "1B-CANVAS-CLEAN": "PASS",
+    "1B-CANVAS-CALLERS": "PASS",
+    "1B-CANVAS-ROUNDTRIP": "PASS",
+    "1B-CANVAS-HOME": "PASS",
+    "1B-CANVAS-PENDING": "PASS",
+    "1B-AUTH-LOGOUT": "PASS",
+    "1B-AUTH-SWITCH": "PASS",
+    "1B-AUTH-LATE-ERROR": "PASS",
+    "1B-AUTH-ORDER": "PASS",
+    "1B-AUTH-PASSKEY": "PASS",
+    "1B-AUTH-BOOT": "PASS",
+    "1B-AUTH-BOOT-ERROR": "PASS",
+    "1B-AUTH-LOGOUT-RELOGIN": "PASS",
+    "1B-LATE-REJECT": "PASS",
+    "1B-SESSION-LATE": "PASS",
+    "1B-SESSION-ERROR": "PASS",
+    "1B-SESSION-ORDER": "PASS",
+    "1B-TIMEOUT-SELFTEST": "PASS"
+  },
+  "counts": {
+    "candidate_1b_pass": 25,
+    "candidate_fail_error_timeout_not_run": 0,
+    "historical_expected_fail": 2,
+    "work_start_expected_fail": 3,
+    "existing_browser_pass": 11,
+    "existing_browser_note": "Ten B1 test IDs; B1-T01 runs separately with 3 and 100 items. Not new 1C acceptance."
+  },
+  "evidence_sha256": {
+    "controller-1b.json": "20b081ebcb01208b59adbfffcd2d47a9011f8108e995c6cecaf49033c5a64b3f",
+    "baseline-1b/results.json": "d0bcb5879d06b27ae2231ec164dd8f9eee5b205abf36aa0cc4cf5362353d83ba",
+    "work-start-1b/results.json": "4550d9e4f5a543a70c47ff6008017889ae40ae4b217c453333c10fb6691e4833",
+    "acceptance-results.json": "1b170ee6eb6e68e5e35fd9e2ba8a43a00f7bb7c3251b00a757248a337fa213b4",
+    "timeout-probe/results.json": "164b758aed51d2b1ea84b540a2e341d916e1f6965d7ecd4d06007450c8c5cbfe",
+    "timeout-probe/results-logs/HARNESS_NEVER_FINISHES.log": "a8ea44048e34fec9274df15c24415c540f4afb6e97727c644b10b28019e14c1b",
+    "negative-cycle.log": "678b29da5b5ec418553543af814ad69bebb4ce15b457c849b8d82400ed8d0e61",
+    "1b/SOURCE_MANIFEST.json": "9e779c245c75bde72dd8dac3c8264a13a7535a0157f5c6b63b5a8b5fa7234f81"
+  },
+  "derived_evidence": {
+    "path": "docs/engineering/block-01/CONTROLLER_1B_EVIDENCE.json",
+    "sha256": "c93d2267efb301d67082b5ccef4c0c4e25a4a121e66acc05fd26f68c2e53e77e",
+    "kind": "Selected original CI fields; not a new test run"
+  },
+  "environment": {
+    "ci_python": "3.12.7",
+    "ci_node": "v22.23.2",
+    "ci_platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+    "runner": "ubuntu-24.04",
+    "playwright": "1.57.0",
+    "beautifulsoup4": "4.14.3",
+    "local_python": "3.13.5",
+    "local_node": "v22.16.0",
+    "contract_runtime": "Node VM with exact production function/caller bodies and synthetic DOM/SDK/I/O boundaries",
+    "browser_runtime": "Existing B1 suite on Playwright Chromium; entrypoint HTTP 200, expected scripts loaded, no page errors"
+  },
+  "source_base": {
+    "corrective_prompt": "docs/pablicus/reviews/2026-09-11/1B_COMPLETION_PROMPT.txt",
+    "independent_review": "docs/pablicus/reviews/2026-09-11/1B_INTERIM_REVIEW.md",
+    "independent_probes": "docs/pablicus/reviews/2026-09-11/1B_PROBE_RESULTS.json",
+    "read_completely": "Corrective prompt, review/probes, PABLICUS_CONTEXT, owner decision, approved five-block plan, 1A review decision and relevant current source/test files",
+    "exact_gap": "The separate original pre-correction 1B assignment is not present in the available context/repository documents examined. Its unknown wording is not reconstructed or claimed read. This handoff covers the complete saved corrective assignment."
+  },
+  "workspace_and_transport": {
+    "initial_local_checkout": "No existing checkout found in the available runtime; created a separate partial source workspace. Other machines were not inspected or modified.",
+    "operation": "git ls-remote https://github.com/matveyryabokon30-crypto/vision-talk.git refs/heads/refactor/pablicus-foundation-20260911",
+    "attempt_at": "2026-09-11T15:19:01Z",
+    "error": "Could not resolve host: github.com",
+    "resolution": "Authorized GitHub connector read refs and files, downloaded original artifacts, created exact blobs/tree/commit and advanced only the authorized ref with force=false. Fresh CI used a full checkout. No current transport blocker.",
+    "preservation": "Code tree inherited from fresh WORK_START_HEAD; only five scoped paths replaced. No reset, force push, deletion or use of damaged patch."
+  },
+  "limits": [
+    "Not independent acceptance of 1B or Block 1.",
+    "Not full 1C application integration, real SDK/server authentication, physical iPhone, IndexedDB/outbox durability or security certification.",
+    "Exact application handlers execute against synthetic DOM/SDK/resource boundaries; this does not measure byte-level Canvas persistence.",
+    "Legacy B1 source checks/storage model limitations remain; per-scenario 1B deadlines do not certify each old B1 scenario.",
+    "CI SOURCE_MANIFEST status NOT_RUN records pre-check capture only; final test verdicts are separate and inspected.",
+    "Original CI ZIP retention is finite; the handoff includes its original downloadable bytes and derived durable evidence."
+  ],
+  "remaining_corrective_requirements": [],
+  "blockers": [],
+  "boundaries": {
+    "main_observed": "f348aceacc3acdb315387a4066f6f495ce269b54",
+    "main_write": false,
+    "production_write": false,
+    "supabase_write": false,
+    "merge": false,
+    "deployment": false,
+    "1A_repeated": false,
+    "1C_started": false,
+    "five_block_plan_changed": false,
+    "external_writes": "Git blobs/trees/commits and non-force ref update on the authorized branch; its CI run and artifact. No other external writes performed in this execution.",
+    "stop": "Stop for independent review; do not self-assign ACCEPTED."
+  }
+}
