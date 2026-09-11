@@ -46,9 +46,16 @@ jobs:
       - name: Preserve accepted 1B regressions on captured source
         run: |
           timeout --kill-after=5s 120s python tests/engineering/block-01/test_controller_1b.py --source-root . --output integration-1c-results/regression-1b.json
+      - name: Install pinned isolated browser
+        run: |
+          python -m pip install --disable-pip-version-check playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Measure the unmodified real entrypoint
+        run: |
+          timeout --kill-after=5s 120s python tests/engineering/block-01/integration_1c/probe.py > integration-1c-results/probe.log 2>&1
       - name: Record initial integration capture boundary
         run: |
-          printf '%s\n' 'This run captures the exact baseline and executes 1B only. Browser integration 1C is NOT_RUN, not accepted.' > integration-1c-results/BOUNDARY.txt
+          printf '%s\n' 'Baseline entrypoint probe plus 1B only. The full 1C integration suite is NOT_RUN, not accepted.' > integration-1c-results/BOUNDARY.txt
       - name: Retain original evidence
         if: always()
         uses: actions/upload-artifact@v4.6.2
