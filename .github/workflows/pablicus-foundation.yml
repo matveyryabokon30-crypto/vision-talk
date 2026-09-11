@@ -32,15 +32,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p source-evidence
-          git status --porcelain > source-evidence/status.txt
-          test ! -s source-evidence/status.txt
-          git rev-parse HEAD > source-evidence/checkout-sha.txt
-          git bundle create source-evidence/source.bundle HEAD
-          git bundle verify source-evidence/source.bundle
+          OUT="$RUNNER_TEMP/block01-source"
+          mkdir -p "$OUT"
+          git status --porcelain > "$OUT/status.txt"
+          test ! -s "$OUT/status.txt"
+          git rev-parse HEAD > "$OUT/checkout-sha.txt"
+          git bundle create "$OUT/source.bundle" HEAD
+          git bundle verify "$OUT/source.bundle"
       - uses: actions/upload-artifact@v4.6.2
         with:
           name: block-01-source-${{ github.sha }}
-          path: source-evidence/
+          path: ${{ runner.temp }}/block01-source/
           retention-days: 14
           if-no-files-found: error
