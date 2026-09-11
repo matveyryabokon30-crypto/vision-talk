@@ -1,0 +1,43 @@
+name: Block01 apply candidate
+
+on:
+  push:
+    branches: [refactor/pablicus-foundation-20260911]
+    paths:
+      - 'tools/block01/chunk*.b64'
+      - '.github/workflows/block01-apply-candidate.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+      - name: Reconstruct and apply reviewed Block 01 patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat tools/block01/chunk*.b64 > /tmp/block01.patch.b64
+          base64 -d /tmp/block01.patch.b64 | gzip -d > /tmp/block01.patch
+          git apply --check /tmp/block01.patch
+          git apply /tmp/block01.patch
+          rm -rf tools/block01
+          rm -f .github/workflows/block01-apply-candidate.yml
+          git status --short
+      - name: Commit candidate to engineering branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --check
+          git diff --cached --quiet && { echo 'No candidate changes produced'; exit 1; }
+          git commit -m 'refactor(block-01): unify application ownership and lifecycle'
+          git push origin HEAD:refactor/pablicus-foundation-20260911
