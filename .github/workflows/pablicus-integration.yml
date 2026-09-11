@@ -18,7 +18,7 @@ env:
 jobs:
   integration:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4.2.2
         with:
@@ -27,10 +27,10 @@ jobs:
       - uses: actions/setup-python@v5.6.0
         with:
           python-version: '3.12.7'
-      - name: Capture exact tracked source and baseline provenance
+      - name: Capture exact tracked source and provenance before checks
         run: |
           python - <<'PY'
-          import hashlib,json,os,pathlib,platform,shutil,subprocess
+          import hashlib,json,os,pathlib,platform,subprocess
           out=pathlib.Path('integration-1c-results'); out.mkdir(exist_ok=True)
           prefixes=('pablicus/','tests/engineering/block-01/','docs/engineering/block-01/','docs/pablicus/','.github/workflows/')
           hashes={}
@@ -40,22 +40,27 @@ jobs:
               if source.is_symlink(): raise RuntimeError('Unexpected symlink: '+name)
               b=source.read_bytes(); dest=out/'source'/name; dest.parent.mkdir(parents=True,exist_ok=True); dest.write_bytes(b)
               hashes[name]={'sha256':hashlib.sha256(b).hexdigest(),'git_blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()}
-          data={'WORK_START_HEAD':os.environ['INTEGRATION_1C_WORK_START_HEAD'],'CAPTURE_SHA':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],'run_attempt':os.environ['GITHUB_RUN_ATTEMPT'],'python':platform.python_version(),'platform':platform.platform(),'node':subprocess.check_output(['node','--version'],text=True,timeout=5).strip(),'sources':hashes,'integration_status':'NOT_RUN_BASELINE_CAPTURE_ONLY'}
+          data={'WORK_START_HEAD':os.environ['INTEGRATION_1C_WORK_START_HEAD'],'CAPTURE_SHA':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],'run_attempt':os.environ['GITHUB_RUN_ATTEMPT'],'python':platform.python_version(),'platform':platform.platform(),'node':subprocess.check_output(['node','--version'],text=True,timeout=5).strip(),'sources':hashes,'capture_phase':'BEFORE_CHECKS_NOT_A_VERDICT'}
           (out/'SOURCE_MANIFEST.json').write_text(json.dumps(data,indent=2)+'\n')
           PY
-      - name: Preserve accepted 1B regressions on captured source
+      - name: Preserve accepted 1B regressions
         run: |
           timeout --kill-after=5s 120s python tests/engineering/block-01/test_controller_1b.py --source-root . --output integration-1c-results/regression-1b.json
       - name: Install pinned isolated browser
         run: |
           python -m pip install --disable-pip-version-check playwright==1.57.0
           python -m playwright install --with-deps chromium
-      - name: Measure the unmodified real entrypoint
+      - name: Validate integration harness syntax
         run: |
-          timeout --kill-after=5s 120s python tests/engineering/block-01/integration_1c/probe.py > integration-1c-results/probe.log 2>&1
-      - name: Record initial integration capture boundary
+          timeout 15s python -m compileall -q tests/engineering/block-01/integration_1c
+          timeout 5s node --check tests/engineering/block-01/integration_1c/instrument.js
+      - name: Measure real browser integration scenarios
         run: |
-          printf '%s\n' 'Baseline entrypoint probe plus 1B only. The full 1C integration suite is NOT_RUN, not accepted.' > integration-1c-results/BOUNDARY.txt
+          timeout --kill-after=5s 1120s python tests/engineering/block-01/integration_1c/runner.py --source-root . --output-dir integration-1c-results/browser > integration-1c-results/browser.log 2>&1
+      - name: Record integration scope
+        if: always()
+        run: |
+          printf '%s\n' 'Real local index and SDK; real DOM/IndexedDB and application modules. Synthetic HTTP/Phoenix, no external forwarding; native IDB fault boundary. Static local shell supplied during offline reload; not production Service Worker or RLS qualification. This is the initial baseline measurement; negative controls and independent acceptance are not implied.' > integration-1c-results/BOUNDARY.txt
       - name: Retain original evidence
         if: always()
         uses: actions/upload-artifact@v4.6.2
