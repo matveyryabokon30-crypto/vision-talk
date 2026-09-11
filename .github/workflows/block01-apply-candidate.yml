@@ -27,17 +27,17 @@ jobs:
           base64 -d /tmp/block01.patch.b64 | gzip -d > /tmp/block01.patch
           git apply --check /tmp/block01.patch
           git apply /tmp/block01.patch
+          git restore .github/workflows/pablicus-foundation.yml
           rm -rf tools/block01
-          rm -f .github/workflows/block01-apply-candidate.yml
           git status --short
-      - name: Commit candidate to engineering branch only
+      - name: Commit candidate source to engineering branch only
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
+          git add -A -- ':!.github/workflows/block01-apply-candidate.yml' ':!.github/workflows/pablicus-foundation.yml'
           git diff --cached --check
-          git diff --cached --quiet && { echo 'No candidate changes produced'; exit 1; }
+          git diff --cached --quiet && { echo 'No candidate source changes produced'; exit 1; }
           git commit -m 'refactor(block-01): unify application ownership and lifecycle'
           git push origin HEAD:refactor/pablicus-foundation-20260911
