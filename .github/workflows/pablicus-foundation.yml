@@ -1,0 +1,46 @@
+name: Pablicus foundation Block 01
+
+on:
+  push:
+    branches: [refactor/pablicus-foundation-20260911]
+    paths:
+      - 'pablicus/**'
+      - 'tests/engineering/block-01/**'
+      - 'docs/engineering/block-01/**'
+      - '.github/workflows/pablicus-foundation.yml'
+  pull_request:
+    paths:
+      - 'pablicus/**'
+      - 'tests/engineering/block-01/**'
+      - '.github/workflows/pablicus-foundation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-snapshot:
+    name: Source snapshot (not acceptance)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Package exact public source history for offline engineering
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p source-evidence
+          git status --porcelain > source-evidence/status.txt
+          test ! -s source-evidence/status.txt
+          git rev-parse HEAD > source-evidence/checkout-sha.txt
+          git bundle create source-evidence/source.bundle HEAD
+          git bundle verify source-evidence/source.bundle
+      - uses: actions/upload-artifact@v4.6.2
+        with:
+          name: block-01-source-${{ github.sha }}
+          path: source-evidence/
+          retention-days: 14
+          if-no-files-found: error
