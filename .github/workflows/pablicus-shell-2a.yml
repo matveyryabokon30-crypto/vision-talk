@@ -1,0 +1,94 @@
+name: Pablicus shell 2A qualification
+on:
+  push:
+    branches: [refactor/pablicus-foundation-20260911]
+    paths:
+      - 'pablicus/**'
+      - 'tests/engineering/block-02/**'
+      - '.github/workflows/pablicus-shell-2a.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+  SHELL_2A_WORK_START_HEAD: abfc878896d8b10acc540d27ed370bbfaf2e8b70
+  SHELL_2A_PHASE: baseline
+jobs:
+  shell:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@v5.6.0
+        with:
+          python-version: '3.12.7'
+      - name: Bind exact sources before execution
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,pathlib,platform,shutil,subprocess
+          root=pathlib.Path.cwd(); out=root/'shell-2a-results'; out.mkdir()
+          sources={}
+          for name in subprocess.check_output(['git','ls-files'],text=True).splitlines():
+              p=root/name; target=out/'source'/name
+              target.parent.mkdir(parents=True,exist_ok=True); shutil.copyfile(p,target)
+              sources[name]=hashlib.sha256(p.read_bytes()).hexdigest()
+          (out/'SOURCE_MANIFEST.json').write_text(json.dumps({'tested_sha':os.environ['GITHUB_SHA'],'work_start_head':os.environ['SHELL_2A_WORK_START_HEAD'],'phase':os.environ['SHELL_2A_PHASE'],'run_id':os.environ['GITHUB_RUN_ID'],'python':platform.python_version(),'platform':platform.platform(),'sources':sources},indent=2))
+          PY
+      - name: Install pinned browser
+        run: |
+          python -m pip install --disable-pip-version-check playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Observe actual shell and duplicate-listener negative control
+        shell: bash
+        run: |
+          set +e
+          timeout --kill-after=10s 420s python tests/engineering/block-02/shell_probe.py --source-root . --output shell-2a-results/browser > shell-2a-results/browser.log 2>&1
+          code=$?
+          set -e
+          export SHELL_PROBE_EXIT="$code"
+          python - <<'PY'
+          import json,os
+          d=json.load(open('shell-2a-results/browser/summary.json'))
+          expected='FAIL' if os.environ['SHELL_2A_PHASE']=='baseline' else 'PASS'
+          assert d['status']==expected,d
+          assert int(os.environ['SHELL_PROBE_EXIT'])==(1 if expected=='FAIL' else 0)
+          assert d['browser_closed'] and d['server_closed'],d
+          for name in ['mobile','tablet','desktop']:
+              v=d['variants'][name]
+              assert v['status'] in ['PASS','FAIL'] and v['context_closed'],v
+              assert not v.get('page_errors') and not v['network_after_cleanup']['unknown'],v
+              if expected=='FAIL':
+                  assert any(c['name']=='2A-ROOT-TABS' and c['status']=='FAIL' for c in v['checks']),v
+          assert d['negative_control_qualified'],d
+          PY
+      - name: Accepted 1B regression contracts
+        run: |
+          timeout --kill-after=5s 120s python tests/engineering/block-01/test_controller_1b.py --source-root . --output shell-2a-results/1b.json > shell-2a-results/1b.log 2>&1
+          python - <<'PY'
+          import json
+          d=json.load(open('shell-2a-results/1b.json'))
+          assert len(d)==31 and all(v['status']=='PASS' for v in d.values()),d
+          PY
+      - name: Record process cleanup and result hashes
+        if: always()
+        run: |
+          python - <<'PY'
+          import hashlib,json,pathlib,subprocess
+          out=pathlib.Path('shell-2a-results')
+          rows=subprocess.check_output(['ps','-eo','pid=,comm=,args='],text=True).splitlines()
+          remaining=[r for r in rows if ('chrome-headless-shell' in r or '/playwright/driver/node' in r) and '<defunct>' not in r]
+          (out/'cleanup.json').write_text(json.dumps({'remaining':remaining,'status':'FAIL' if remaining else 'PASS'},indent=2))
+          hashes={str(p.relative_to(out)):hashlib.sha256(p.read_bytes()).hexdigest() for p in out.rglob('*') if p.is_file()}
+          (out/'HASHES.json').write_text(json.dumps(hashes,indent=2))
+          assert not remaining,remaining
+          PY
+      - uses: actions/upload-artifact@v4.6.2
+        if: always()
+        with:
+          name: shell-2a-${{ github.sha }}
+          path: shell-2a-results/
+          retention-days: 14
+          include-hidden-files: true
