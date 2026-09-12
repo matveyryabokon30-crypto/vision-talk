@@ -16,8 +16,9 @@ API_HOST='ctcoqgsztdtsazdiwcmd.supabase.co'
 
 def b64(v):
     return base64.urlsafe_b64encode(json.dumps(v,separators=(',',':')).encode()).decode().rstrip('=')
-def jwt(uid):
-    return b64({'alg':'HS256','typ':'JWT'})+'.'+b64({'sub':uid,'aud':'authenticated','role':'authenticated','exp':int(time.time())+3600,'iat':int(time.time()),'email':('a' if uid==A else 'b')+'@fixture.invalid'})+'.c3ludGhldGljLXRlc3Qtb25seQ'
+def jwt(uid,epoch=None):
+    now=int(time.time()) if epoch is None else epoch
+    return b64({'alg':'HS256','typ':'JWT'})+'.'+b64({'sub':uid,'aud':'authenticated','role':'authenticated','exp':now+3600,'iat':now,'email':('a' if uid==A else 'b')+'@fixture.invalid'})+'.c3ludGhldGljLXRlc3Qtb25seQ'
 def uid_of(token):
     try:
         t=token.removeprefix('Bearer '); part=t.split('.')[1]
@@ -26,11 +27,13 @@ def uid_of(token):
 
 def user(uid):
     return {'id':uid,'aud':'authenticated','role':'authenticated','email':('a' if uid==A else 'b')+'@fixture.invalid','email_confirmed_at':'2026-01-01T00:00:00Z','created_at':'2026-01-01T00:00:00Z','app_metadata':{'provider':'email','providers':['email']},'user_metadata':{},'identities':[]}
-def session(uid):
-    return {'access_token':jwt(uid),'refresh_token':'fixture-refresh-'+uid,'token_type':'bearer','expires_in':3600,'expires_at':int(time.time())+3600,'user':user(uid)}
+def session(uid,epoch=None):
+    now=int(time.time()) if epoch is None else epoch
+    return {'access_token':jwt(uid,now),'refresh_token':'fixture-refresh-'+uid,'token_type':'bearer','expires_in':3600,'expires_at':now+3600,'user':user(uid)}
 
 class Boundary:
-    def __init__(self, origin):
+    def __init__(self, origin, session_epoch=None):
+        self.session_epoch=session_epoch
         self.origin=origin; self.calls=[]; self.unknown=[]; self.blocked=[]
         self.offline=False; self.deny_send=False; self.lose_ack=False
         self.holds=[]; self.messages={}; self.effects=[]; self.objects={}; self.ws_channels=set();self.ws_events=[]
@@ -78,7 +81,7 @@ class Boundary:
                 if q.get('grant_type')==['refresh_token']:who=body.get('refresh_token','').removeprefix('fixture-refresh-')
                 else:who=A if body.get('email','').startswith('a@') else B
                 if who not in [A,B]:await reply({'msg':'Invalid fixture credentials'},400);return
-                await self.wait_holds(path,who);await reply(session(who));return
+                await self.wait_holds(path,who);await reply(session(who,self.session_epoch));return
             if path.endswith('/user'):await reply(user(uid) if uid else {'msg':'Unauthorized'},200 if uid else 401);return
             if path.endswith('/logout'):await reply(None,204);return
             if path.endswith('/settings'):await reply({});return

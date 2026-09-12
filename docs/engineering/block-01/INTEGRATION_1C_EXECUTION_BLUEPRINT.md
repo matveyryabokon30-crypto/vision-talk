@@ -108,7 +108,12 @@ Base capture must not require the existence of `PablicusDebug`, `PablicusControl
 
 `COLLECTOR-EARLY-ERROR-01` uses an isolated test page that throws a deliberate early browser error before application globals exist.
 
-PASS requires:
+The deliberately failing inner run must retain `ERROR` or `FAIL` and a nonzero
+process exit. The outer collector self-test may receive PASS only for detecting
+that failure and preserving all mandatory evidence. Its PASS is never credited
+as a product scenario PASS.
+
+Outer self-test PASS requires:
 
 - process/test result remains nonzero (`FAIL` or `ERROR`, never PASS);
 - first page error, message and stack/location are retained;
@@ -134,13 +139,13 @@ No universal `unknown RPC → []` fallback is permitted.
 
 ---
 
-# 3. Controlled A/B browser diagnostic protocol
+# 3. Controlled A/B0/B1 browser diagnostic protocol
 
 Status: **READY_TO_EXECUTE_AFTER_NORMAL_SAFETY_RESOLUTION**.
 
 ## 3.1 Fixed conditions
 
-A and B use exactly the same:
+A, B0 and B1 use exactly the same:
 
 - checked-out CODE_SHA;
 - `pablicus/index.html`;
@@ -157,17 +162,27 @@ A and B use exactly the same:
 - production host blocking;
 - collector implementation.
 
-Only target variable: whether `instrument.js` is injected.
+Each variant starts with the same clean browser storage and synthetic fixture
+state. Record all source hashes, including the collector and both instrument
+versions. The only target variable is the instrument variant.
 
 ## 3.2 Variant A
 
 Real Pablicus with **no instrument.js**.
 
-## 3.3 Variant B
+## 3.3 Variant B0 — published original
+
+Real Pablicus with the original published instrument from TESTED_SHA
+`f00f253ca2adfe7afc07e64cc3a1dc8f53c5692d`, Git blob
+`c489098780ef7bfe7ee4fbbfbe58884000fdc128`. This is available committed source,
+not the unavailable historical blocked payload. Preserve it unchanged for the
+experiment before selecting the corrected version.
+
+## 3.4 Variant B1 — corrected instrument
 
 Real Pablicus with the corrected instrument enabled.
 
-## 3.4 Mandatory evidence for both variants
+## 3.5 Mandatory evidence for every variant
 
 - first `pageerror`;
 - complete available stack and source/location;
@@ -187,15 +202,22 @@ Real Pablicus with the corrected instrument enabled.
 - exit classification (`PASS|FAIL|ERROR|TIMEOUT|BLOCKED`);
 - source hashes for index, app, instrument and case runner.
 
-## 3.5 Interpretation table
+## 3.6 Interpretation and separate causal questions
 
-| A | B | Interpretation |
-|---|---|---|
-| PASS | receiver-related ERROR | H1 confirmed for this browser environment |
-| same early ERROR | same early ERROR | H1 is not confirmed as root cause; investigate shared cause |
-| ERROR X | ERROR Y | treat X and Y separately; no single invented root cause |
-| PASS | PASS | receiver defect is fixed or no longer reproduces; proceed to preflight |
-| environment ERROR/TIMEOUT | any | inconclusive; environment failure is not H1 evidence |
+A/B0 tests the original instrument's influence; B0/B1 tests whether the minimal
+correction removes the same observed error; A/B1 tests normal operation with the
+corrected instrument. A and B1 passing alone does not prove historical H1.
+
+| A | B0 | B1 | Interpretation |
+|---|---|---|---|
+| PASS | preserved receiver-related startup ERROR with complete evidence | PASS | H1 reproduced and correction verified in this experiment; missing historical first-error log is not recovered |
+| PASS | PASS | PASS | `H1_NOT_REPRODUCED`; normal corrected startup verified, historical cause remains unproven |
+| same early ERROR | same early ERROR | same early ERROR | investigate shared cause; H1 not confirmed |
+| any | environment ERROR/TIMEOUT or missing evidence | any | inconclusive; no causal or negative-control PASS |
+| any | any | ERROR/FAIL/TIMEOUT | investigate actual B1 failure; do not infer that B0 had the same error |
+
+Different fingerprints are retained separately. Successful cleanup and complete
+mandatory evidence are prerequisites for each interpreted variant.
 
 Runtime Pablicus must remain unchanged until a product failure is demonstrated independently of harness defects.
 
@@ -346,7 +368,7 @@ The corpus catches:
 - `SCREEN_SCOPED`: message list, Canvas editor resources, route handlers/subscriptions/observers/channels tied to an active screen.
 - `TRANSIENT_OPERATION`: finite timeouts/rAF, in-flight RPC/fetch, one-shot mutation observers or temporary modal handlers.
 
-**Sequence:** warm lazy modules once, return to chats home, capture baseline, then run a deterministic route cycle at least six times so controller generation delta is >=50, always returning to the same home state.
+**Sequence:** warm lazy modules once, return to chats home, capture baseline, then run deterministic route cycles with at least 50 completed validated transitions, always returning to the same home state. Each counted transition records its action ID, completion, expected route, actually visible screen and working resource. Cancelled, stale or failed transitions, repeated notifications and session-identity changes do not count. A true navigate result without the expected screen/resource does not count. Controller generation delta is auxiliary evidence only; the requirement remains 50.
 
 **Measure:** live event listeners by source/type; controller subscriptions/handlers; Mutation/Resize/Intersection observers; timeouts/intervals/rAF; active message lists; media/screen resources; SDK/realtime channels; navigation count.
 
@@ -432,7 +454,7 @@ Mandatory mutations:
 - `MUTATION_B_LATE_ACCOUNT`: normal isolation PASS; isolated stale-account guard break FAIL specifically because late A affects B.
 - `MUTATION_C_BYTE_OR_ORDER`: normal durability PASS; one-byte or one-order mutation FAIL specifically on SHA-256/order assertion.
 
-Mutation source is isolated and never committed over the working candidate. Exact same positive assertion is used where practical. Mutation run must reach the behavioral assertion. ERROR/TIMEOUT/startup failure does not qualify as expected negative control.
+Mutation source is isolated and never committed over the working candidate. The exact same required behavioral assertion is used for positive and mutated variants; only the isolated behavior changes, never the expected value or verdict. Mutation run must reach that behavioral assertion. ERROR/TIMEOUT/startup failure does not qualify as expected negative control.
 
 ---
 
@@ -465,9 +487,9 @@ If preflight fails, assign one root result (`FAIL|ERROR|TIMEOUT|BLOCKED`) with f
 
 **GATE 1 — minimal harness correction:** publish only the approved instrument receiver/capture/network-boundary correction; runtime Pablicus unchanged.
 
-**GATE 2 — collector self-test:** early sentinel error is retained with nonzero result and surviving evidence.
+**GATE 2 — harness self-tests:** qualify all six native receiver/callback semantics. Collector inner early-sentinel run retains ERROR/FAIL and a nonzero exit; outer self-test PASS requires surviving mandatory evidence and gives no product-scenario credit.
 
-**GATE 3 — A/B instrument diagnostic:** execute section 3 and determine H1/H2 from evidence.
+**GATE 3 — A/B0/B1 instrument diagnostic:** execute section 3 with the unchanged published original in B0 and the corrected version in B1. Use A/B0, B0/B1 and A/B1 for their separate questions; preserve identical collector/fixture conditions and all source hashes. If B0 does not reproduce the original symptom, record H1_NOT_REPRODUCED.
 
 **GATE 4 — preflight:** complete real index → login → conversation → Canvas → return chain.
 
