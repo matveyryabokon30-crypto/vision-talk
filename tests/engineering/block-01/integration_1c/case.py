@@ -8,7 +8,7 @@ from pathlib import Path
 from urllib.parse import urlparse,unquote
 from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
 from network import Boundary,A,B,C1,C2,CB,BOT
-from collector import BrowserCollector,utc_now
+from collector import BrowserCollector,utc_now,DOM_STATE,APPLICATION_STATE,INSTRUMENT_STATE
 
 HERE=Path(__file__).resolve().parent
 ap=argparse.ArgumentParser();ap.add_argument('--case',required=True);ap.add_argument('--source-root',type=Path,required=True);ap.add_argument('--output',type=Path,required=True);args=ap.parse_args()
@@ -22,6 +22,18 @@ def check(name,ok,actual):
  RESULT['checks'].append({'name':name,'status':'PASS' if ok else 'FAIL','actual':actual});save()
  if not ok:raise AssertionError(name)
 def sha(b):return hashlib.sha256(b).hexdigest()
+
+async def initial_snapshot(page,key,phase):
+ record={'phase':phase,'start_time_utc':utc_now(),'capture_steps':{}}
+ RESULT[key]=record
+ for name,expression in [('dom_global_state',DOM_STATE),('application',APPLICATION_STATE),('instrument',INSTRUMENT_STATE)]:
+  try:
+   record[name]=await asyncio.wait_for(page.evaluate(expression),5)
+   record['capture_steps'][name]={'status':'PASS'}
+  except Exception as exc:record['capture_steps'][name]={'status':'ERROR','error':str(exc),'error_type':type(exc).__name__}
+  save()
+ record.update(end_time_utc=utc_now(),complete=all(row['status']=='PASS' for row in record['capture_steps'].values()));save()
+ if not record['complete']:raise RuntimeError('INITIAL_STATE_CAPTURE_INCOMPLETE: '+key)
 
 # Three original files with distinct binary lengths/content and UTF-8 names.
 FILES=[{'name':'1-alpha.txt','mimeType':'text/plain','buffer':'Original alpha\nСтрока один\n'.encode()},
@@ -73,6 +85,8 @@ class App:
   await self.wait(f'PablicusDebug.user==="{uid}" && !document.querySelector("#workspace").hidden')
   await self.wait('document.querySelectorAll(".chatCard").length>0')
   await self.delay(150)
+  if 'initial_authenticated_state' not in RESULT:
+   await initial_snapshot(self.page,'initial_authenticated_state','FIRST_AUTHENTICATED_HOME_BEFORE_SCENARIO_ACTIONS')
  async def switch(self,uid,wait=True):
   stage('public real SDK signIn '+uid)
   await self.page.evaluate("""async uid=>{const result=await PablicusController.getServices().client.auth.signInWithPassword({email:(uid.startsWith('111')?'a':'b')+'@fixture.invalid',password:'fixture-only-password'});if(result.error)throw result.error}""",uid)
@@ -151,7 +165,9 @@ async def main():
    collector=BrowserCollector(page,boundary,OUT)
    app=App(page,ctx,boundary,origin)
    try:
+    await initial_snapshot(page,'initial_state','FRESH_CONTEXT_BEFORE_NAVIGATION_AND_SCENARIO')
     await asyncio.wait_for(importlib.import_module('scenario_'+args.case.replace('-','_')).run(app),105)
+    if not RESULT.get('initial_authenticated_state',{}).get('complete'):raise RuntimeError('INITIAL_AUTHENTICATED_STATE_NOT_CAPTURED')
     if collector.events['page_errors']:raise RuntimeError('UNHANDLED_PAGE_ERROR: '+collector.events['page_errors'][0]['message'])
     check('1C-NETWORK-BOUNDARY-COMPLETE',not boundary.unknown and not boundary.blocked,{'unknown':boundary.unknown,'blocked':boundary.blocked})
     observed=await page.evaluate('__integration.snapshot()');check('1C-NO-UNHANDLED-ERRORS',not observed['errors'],observed['errors']);RESULT['final_resources']=observed;RESULT['status']='PASS'
