@@ -37,7 +37,7 @@ MUTATIONS = [
      'purpose': 'Omit only the real list touch-listener cleanup; all other list disposal stays intact.'},
     {'id': 'MUTATION_B_LATE_ACCOUNT', 'case': 'isolation', 'path': 'pablicus/app.js',
      'assertion': '1C-LATE-ACCOUNT-ISOLATION', 'prior': ['1C-ACCOUNT-A-RESTORED'],
-     'before': "if(!isCurrent()||ep!==epoch||user?.id!==uid){if(isCurrent()&&current?.id===d.id&&user?.id===uid){$('app').style.visibility='';$('app').inert=false;}return;}rows=remote;",
+     'before': "if(!isCurrent()||ep!==epoch||user?.id!==uid){if(isCurrent()&&current?.id===d.id&&user?.id===uid){window.PablicusShell.conversationReady(true);}return;}rows=remote;",
      'after': 'rows=remote;',
      'purpose': 'Remove only the post-HTTP-read stale gate before real Chat.open; preserve the subsequent gate and controller guards.'},
     {'id': 'MUTATION_C_BYTE_OR_ORDER', 'case': 'durability', 'path': 'pablicus/vault.js',

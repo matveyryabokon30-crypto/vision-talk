@@ -180,7 +180,7 @@ html,body{background:var(--bg)!important;color:var(--text);margin:0;width:100%;h
 #app{--head:58px!important}
 #app.typing{--head:58px!important}
 #app>header{position:relative!important;height:58px!important;min-height:58px!important;padding:7px 10px!important;background:var(--bg)!important;border:0!important;display:grid!important;grid-template-columns:44px minmax(0,1fr) 44px 44px!important;gap:5px!important;align-items:center!important}
-#app>header .chatHeading{position:absolute!important;left:50%!important;top:50%!important;right:auto!important;transform:translate(-50%,-50%)!important;display:grid!important;grid-template-columns:32px minmax(0,1fr)!important;align-items:center!important;gap:7px!important;width:max-content!important;max-width:min(56%,calc(100% - 208px))!important;min-height:44px!important;height:44px!important;padding:0 12px 0 4px!important;border:1px solid var(--line)!important;border-radius:20px!important;background:var(--surface)!important;box-shadow:none!important;z-index:2!important}
+#app>header .chatHeading{position:absolute!important;left:50%!important;top:50%!important;right:auto!important;transform:translate(-50%,-50%)!important;display:grid!important;grid-column:1 / -1!important;grid-row:1!important;grid-template-columns:minmax(0,1fr)!important;align-items:center!important;gap:7px!important;width:max-content!important;max-width:min(56%,calc(100% - 208px))!important;min-height:44px!important;height:44px!important;padding:0 12px 0 4px!important;border:1px solid var(--line)!important;border-radius:20px!important;background:var(--surface)!important;box-shadow:none!important;z-index:2!important}
 #app>header .chatSectionLabel,#app>header #chatHint{display:none!important}
 #chatViewTabs{background:var(--bg)!important;border:0!important}
 #app:not(.public-project-editing) #composer{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
@@ -195,3 +195,5 @@ html,body{background:var(--bg)!important;color:var(--text);margin:0;width:100%;h
 #mainNav button span,#mainNav .botsNavMark{font-size:21px}
 #home .homeTitle{min-width:96px;max-width:150px}
 #app>header .chatHeading{max-width:min(54%,calc(100% - 208px))!important}}
+
+#app > header #chatTitle{min-height:var(--control-size)!important;width:100%;min-width:0;}

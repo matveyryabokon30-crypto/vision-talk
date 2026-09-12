@@ -100,6 +100,23 @@ async def probe(browser,root,origin,out,width,height,mutation=False):
             result['registry']=registry
             check('2A-SINGLE-HEADER-WRITER',all('/app-shell.js:' in x['stack'] for x in registry['shellWrites']),registry['shellWrites'])
             check('2A-TOKENS-RESOLVED',len(registry['tokens'])==14 and all(all(values.values()) for values in registry['tokens'].values()),registry['tokens'])
+            def luminance(value):
+                value=value.lstrip('#');value=''.join(c*2 for c in value) if len(value)==3 else value
+                channels=[int(value[i:i+2],16)/255 for i in (0,2,4)]
+                linear=[v/12.92 if v<=.04045 else ((v+.055)/1.055)**2.4 for v in channels]
+                return sum(v*w for v,w in zip(linear,[.2126,.7152,.0722]))
+            result['contrast']={}
+            for scheme in ['light','dark']:
+                await page.emulate_media(color_scheme=scheme,reduced_motion='reduce')
+                colors=await page.evaluate("()=>Object.fromEntries(['--text','--muted','--bg','--surface','--motion-duration'].map(n=>[n,getComputedStyle(document.documentElement).getPropertyValue(n).trim()]))")
+                ratios={}
+                for fg in ['--text','--muted']:
+                    for bg in ['--bg','--surface']:
+                        a,b=sorted([luminance(colors[fg]),luminance(colors[bg])]);ratios[fg+'/'+bg]=(b+.05)/(a+.05)
+                result['contrast'][scheme]={'colors':colors,'ratios':ratios,'scope':'Opaque text/background token pairs only; not all rendered controls or WCAG compliance'}
+                check('2A-TOKEN-TEXT-CONTRAST-'+scheme,all(v>=4.5 for v in ratios.values()),result['contrast'][scheme])
+                check('2A-REDUCED-MOTION-TOKEN-'+scheme,colors['--motion-duration']=='0ms',colors['--motion-duration'])
+            await page.emulate_media(color_scheme='light',reduced_motion='no-preference')
             await page.locator('#openBots').click()
             await page.wait_for_function('!!document.querySelector(".botCard")')
             nested=await page.evaluate('''()=>({route:PablicusController.state(),selected:[...document.querySelectorAll('#mainNav .selected')].map(n=>n.dataset.page),heading:document.getElementById('brandTitle').textContent})''')
@@ -113,14 +130,15 @@ async def probe(browser,root,origin,out,width,height,mutation=False):
             operations=await page.evaluate('()=>Object.fromEntries(PablicusUI.composer.existingOperations.map(name=>[name,typeof PablicusChat.rich[name]]))')
             check('2A-LIVE-COMPOSER-ADAPTER',all(v=='function' for v in operations.values()),operations)
         result['geometry']=[]
-        for name,h in [('conversation',height),('keyboard-viewport',max(360,height-330)),('safe-area-and-long-title',max(360,height-330))]:
+        for name,h in [('conversation',height),('keyboard-viewport',max(360,height-330)),('safe-area-and-long-title',max(360,height-330)),('large-text',max(360,height-330))]:
             await page.locator('#input').focus()
-            await page.evaluate('''({height,reduced,safe})=>{
+            await page.evaluate('''({height,reduced,safe,large})=>{
+              if(large){document.documentElement.style.setProperty('--text-size','34px');document.getElementById('input').style.fontSize='33px';document.getElementById('chatTitle').style.setProperty('font-size','31px','important');}
               __shellKeyboard.height=reduced?height:null;__shellKeyboard.top=0;
               visualViewport.dispatchEvent(new Event('resize'));
               if(safe){document.documentElement.style.setProperty('--safe-area-top','47px');document.documentElement.style.setProperty('--safe-area-bottom','34px');
                 window.PablicusShell?.conversationTitle('Очень длинный заголовок разговора — проверка переполнения '.repeat(4));}
-            }''',{'height':h,'reduced':name!='conversation','safe':name=='safe-area-and-long-title'})
+            }''',{'height':h,'reduced':name!='conversation','safe':name=='safe-area-and-long-title','large':name=='large-text'})
             await page.evaluate('()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))')
             observation=await page.evaluate('''()=>{
               const ids=['app','chatBack','chatTitle','chatLibraryOpen','reportBtn','composer','input','attach','send'];
@@ -139,6 +157,9 @@ async def probe(browser,root,origin,out,width,height,mutation=False):
             check('2A-CONTROLS-VISIBLE-'+name,all(x['visible'] and x['x']>=-1 and x['y']>=-1 and x['right']<=width+1 and x['bottom']<=h+1 and x['pointerEvents']!='none' for x in critical),observation)
             if name!='conversation':check('2A-KEYBOARD-STATE-'+name,observation['keyboardOpen'] and observation['visualHeight']==h,observation)
             if result.get('registry'):
+                title=observation['elements']['chatTitle']; back=observation['elements']['chatBack']; search=observation['elements']['chatLibraryOpen']
+                check('2A-HEADER-TITLE-BOUNDS-'+name,title['width']>=44 and title['height']>=44 and title['x']>=back['right'] and title['right']<=search['x'] and title['hit'],observation['elements'])
+                check('2A-NO-HORIZONTAL-OVERFLOW-'+name,not observation['overflow'],observation['overflow'])
                 check('2A-CONTROL-TARGET-SIZE-'+name,all(observation['elements'][id]['width']>=44 and observation['elements'][id]['height']>=44 for id in ['attach','send']),observation['elements'])
                 check('2A-ICON-CONTROLS-ACCESSIBLE-'+name,all(observation['elements'][id]['label'] and observation['elements'][id]['hit'] for id in ['attach','send','chatBack','chatLibraryOpen','reportBtn']),observation['elements'])
             result['geometry'].append({'mode':name,**observation})

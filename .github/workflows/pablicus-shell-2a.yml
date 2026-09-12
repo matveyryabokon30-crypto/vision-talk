@@ -64,6 +64,25 @@ jobs:
               assert any(c['name']=='2A-ROOT-TABS' and c['status']=='FAIL' for c in v['checks']),v
           assert d['browser_closed'] and d['server_closed'],d
           PY
+      - name: Same strengthened probe must expose the title defect before correction
+        shell: bash
+        run: |
+          mkdir shell-2a-title-before
+          git archive 6c01d8b0f30003be885b152b3e9e955607ba2abd pablicus | tar -x -C shell-2a-title-before
+          set +e
+          timeout --kill-after=10s 420s python tests/engineering/block-02/shell_probe.py --source-root shell-2a-title-before --output shell-2a-results/title-before > shell-2a-results/title-before.log 2>&1
+          code=$?
+          set -e
+          test "$code" -eq 1
+          python - <<'PY'
+          import json
+          d=json.load(open('shell-2a-results/title-before/summary.json'))
+          assert d['status']=='FAIL',d
+          for name in ['mobile','tablet','desktop']:
+              v=d['variants'][name]
+              assert v['status']=='FAIL' and any(c['name'].startswith('2A-HEADER-TITLE-BOUNDS-') and c['status']=='FAIL' for c in v['checks']),v
+          assert d['browser_closed'] and d['server_closed'],d
+          PY
       - name: Observe actual shell and duplicate-listener negative control
         shell: bash
         run: |
