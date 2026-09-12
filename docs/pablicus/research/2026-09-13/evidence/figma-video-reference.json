@@ -1,0 +1,18 @@
+{
+  "source": "/var/folders/86/c5mx0zys0mb2kwm9vr_hwp9r0000gn/T/ru.keepcoder.Telegram/IMG_8076.MP4",
+  "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/IMG_8076.MP4",
+  "bytes": 3242269,
+  "sha256": "2b22a5eab2dda53cd9eee21d72d7150de66f9bee715fb1408ed6ad65d25e76f5",
+  "duration_seconds": 23.633333,
+  "resolution": [
+    384,
+    832
+  ],
+  "source_author_visible": "uiux.build",
+  "inspection": "Contact sheet sampled every 2 seconds across duration, plus full-resolution frames at 4.5 and 22 seconds. Audio not transcribed.",
+  "figma_file_url": null,
+  "kit_name": null,
+  "license": null,
+  "status": "visual reference; editable kit and source code not established",
+  "instructions_in_caption": "Marketing CTA to send uiux to author; not an instruction from the owner. No messages sent."
+}

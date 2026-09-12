@@ -1,0 +1,53 @@
+{
+  "upstream": "https://github.com/figma/sds",
+  "commit": "030aba021183cd5332b35c89c56fbaee5b600162",
+  "license": "MIT",
+  "runtime_integrated": false,
+  "files": [
+    {
+      "path": "LICENSE",
+      "sha256": "570f1f1c07d32e2cdc7da3eea40f9c772e584782db15cbf455a72a19de36b7bc",
+      "bytes": 1062
+    },
+    {
+      "path": "figma.config.json",
+      "sha256": "49e26c57f3a5e139cbd4e44453e99100501a6ebce0f5a2ca09cdc6ead81628ec",
+      "bytes": 10519
+    },
+    {
+      "path": "src/ui/compositions/Forms/Forms.tsx",
+      "sha256": "aa7d8b1b92930c2baef9e59f01242992a03fe0bacb70c6a3959f383d3c843e30",
+      "bytes": 307
+    },
+    {
+      "path": "src/ui/compositions/Forms/forms.css",
+      "sha256": "58db8771cde4f9781229a63011fac1ed15009f4609c8464f9cc7317c112fbc38",
+      "bytes": 373
+    },
+    {
+      "path": "src/ui/compositions/Cards/Cards.tsx",
+      "sha256": "a2e47d0394c964c0c971b5bfb577e776fcd3b184fbfe3c8ab9169349c07193a4",
+      "bytes": 12160
+    },
+    {
+      "path": "src/ui/compositions/Cards/cards.css",
+      "sha256": "ca4dde96e50589f8f412a084b9771c73e477bd8dee516f76c489a839ade671d2",
+      "bytes": 2332
+    },
+    {
+      "path": "src/figma/compositions/form/FormLogIn.figma.ts",
+      "sha256": "0391c1fa4d24b8a10ed85a882a1cf515d9694ca70c3e07cecdf0e9e85974ad2e",
+      "bytes": 465
+    },
+    {
+      "path": "src/figma/primitives/tab/Tabs.figma.ts",
+      "sha256": "9f7be1009b11d4b91a17cb072d4df7425a311b6842183bc397001922e36392c8",
+      "bytes": 476
+    },
+    {
+      "path": "scripts/tokens/app.mjs",
+      "sha256": "07b7530aba56017b4baa09de4f518c0805f892c43798d3fe2f9c0b3cc10aa9ce",
+      "bytes": 18070
+    }
+  ]
+}

@@ -1,0 +1,318 @@
+{
+  "date": "2026-09-13",
+  "count": 31,
+  "all_original_files_viewed": true,
+  "limits": "Images 17–25 contain thumbnail montages from older chat; not all original assets. Still images do not prove timing or actual functionality.",
+  "images": [
+    {
+      "id": 1,
+      "file": "image-1.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-1.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-1.jpg",
+      "sha256": "491834551f35110c8d54b7cffe7f05768739f5469b18b1b06f4cf64e1f7afcc1",
+      "bytes": 67671,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "72pt / kalypsodesigns: four iterations glass capsule, docked edge, fixed notch reel, looping previews. Finger gesture/motion timing not established by still."
+    },
+    {
+      "id": 2,
+      "file": "image-2.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-2.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-2.jpg",
+      "sha256": "911210fb095c7624499c082d2fa843759ba3c5218b6a96b31a98aad8deb497b3",
+      "bytes": 60707,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "72pt measured diagram: at rest 46 pt, revealed 96 pt; gap 12 pt, icon 20 pt; capsule grows to label, adjacent icons move. Reference measurements, not approved Pablicus tokens."
+    },
+    {
+      "id": 3,
+      "file": "image-3.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-3.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-3.jpg",
+      "sha256": "f97f5fa4befc3ca87234e8287503dbe27bca8cf92850481d10811069154bc3d9",
+      "bytes": 61771,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "juicelab.uiux ZIKO fintech: light translucent onboarding, stacked cards, transfer numeric keypad."
+    },
+    {
+      "id": 4,
+      "file": "image-4.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-4.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-4.jpg",
+      "sha256": "5095ab24d17cd8f0d1fdf4cfbd2747ea83d9159506dcd99052a72bc661e0b9e7",
+      "bytes": 76541,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "ZIKO transfer and cards details; restrained bottom action pills."
+    },
+    {
+      "id": 5,
+      "file": "image-5.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-5.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-5.jpg",
+      "sha256": "0d962788d81b7ca1814cc6fc7656e3e3f2400af637e2f34bf40702bb8a1279ef",
+      "bytes": 65539,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "iconlypro Immersive Visuals: video timeline with layered controls, media content stays visible."
+    },
+    {
+      "id": 6,
+      "file": "image-6.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-6.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-6.jpg",
+      "sha256": "5a292913aa56dbb4ba779003bc3b6d517fa664074c3b3e7f86a0a7f38a1e6229",
+      "bytes": 54250,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "iconlypro Clear Empty States: upload drop zone, file progress, explicit Cancel/Upload."
+    },
+    {
+      "id": 7,
+      "file": "image-7.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-7.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-7.jpg",
+      "sha256": "37b143328b567c4ed82cb89d6d336e08070cc2b008a01b833e54c249c48b9340",
+      "bytes": 54125,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "iconlypro Personalized Profiles: identity, avatar, recent status, message/call/video/privacy actions."
+    },
+    {
+      "id": 8,
+      "file": "image-8.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-8.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-8.jpg",
+      "sha256": "9b6e0657b857ef33589a105ee391cadd100f99e840207b0af15314dba22a6ef1",
+      "bytes": 76087,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "juicelab.uiux drone mission dashboard: dark modular telemetry, map and independent control panels. Visual concept, not verified shipped product."
+    },
+    {
+      "id": 9,
+      "file": "image-9.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-9.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-9.jpg",
+      "sha256": "e84565ada79d5b58ca8c0e24b5438003ff0eb2141c9f6e68b02c37c272edc669",
+      "bytes": 59551,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "juicelab.uiux Leadly AI dashboard: colored metric cards, activity graph, deal forecast."
+    },
+    {
+      "id": 10,
+      "file": "image-10.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-10.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-10.jpg",
+      "sha256": "5aa4a031cab928643519e851a698b1f40255333d6b047baea108c5f7c15c29d3",
+      "bytes": 60635,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "Leadly AI overview: clear KPI hierarchy and agent navigation. No actual product functionality proved."
+    },
+    {
+      "id": 11,
+      "file": "image-11.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-11.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-11.jpg",
+      "sha256": "71018156ae1e344283ad2b8fb29251082977e9a176ffe0527f5613127fbcbd86",
+      "bytes": 55292,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "pxdx.baddies Conversation Tone Assistant: recording popover, live transcript, Stop. No proven production app."
+    },
+    {
+      "id": 12,
+      "file": "image-12.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-12.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-12.jpg",
+      "sha256": "396659373a89ed2a6b90b38994e5324e51a80a29b33de1ccdfed50bb287f9da4",
+      "bytes": 54324,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "ZIKO mobile analytics: large numbers, income/expenses graphs, transactions."
+    },
+    {
+      "id": 13,
+      "file": "image-13.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-13.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-13.jpg",
+      "sha256": "7694d809d9c3516866eb938633b0e187793dec7ba3d73513f37a2be0c055f3af",
+      "bytes": 60909,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "ZIKO light finance: balance hierarchy, quick people actions, integrated cards."
+    },
+    {
+      "id": 14,
+      "file": "image-14.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-14.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-14.jpg",
+      "sha256": "d526c794c362cbdb9789a00ca742de74440ebd939c39279465b60c4e632f1d6a",
+      "bytes": 68817,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "ZIKO phone and detail montage: bottom contextual transfer/received controls."
+    },
+    {
+      "id": 15,
+      "file": "image-15.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-15.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-15.jpg",
+      "sha256": "8ace21b59d77b992e90e29f10837eed4bebbe4ad03f23a0c964136a9d98db8d2",
+      "bytes": 56415,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "rondesignlab air-quality glass indicator 37 Bad over photograph; concise state and semantic label."
+    },
+    {
+      "id": 16,
+      "file": "image-16.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-16.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-16.jpg",
+      "sha256": "418d12d86f8ba53602d2d46b2811b5634f61f182d3e135ca855599e1a0558489",
+      "bytes": 60133,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "rondesignlab desktop dashboard: workflow stages, active task, bright metric panels."
+    },
+    {
+      "id": 17,
+      "file": "image-17.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-17.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-17.jpg",
+      "sha256": "a7fac77d7c78ac2e3509b26fffcdfab8c67bf600c6563f6425ff2ffd8d6762cf",
+      "bytes": 70198,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "Screenshot of older chat image grid: CreditPros / TD Bank cards and credit score. Thumbnail evidence; original full-resolution assets not restored."
+    },
+    {
+      "id": 18,
+      "file": "image-18.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-18.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-18.jpg",
+      "sha256": "012cd9dfb939480d86a501f2fe04d1c8e25d890ed9a4120b09e2cb8175a87783",
+      "bytes": 68668,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "Older chat image grid: air-quality panels and dark transport/fleet dashboards with map. Thumbnail evidence only."
+    },
+    {
+      "id": 19,
+      "file": "image-19.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-19.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-19.jpg",
+      "sha256": "b5c8d2b7bd6bbfcafdb2bfcd44098799acf6a7591b41bf3d4d5fbd7d808db299",
+      "bytes": 71155,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "Older chat grid: Hydroflask-style usage panels and Cutter-style controls. Names partly from recovered register; thumbnails cannot establish every detail."
+    },
+    {
+      "id": 20,
+      "file": "image-20.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-20.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-20.jpg",
+      "sha256": "c47e3c63d95b36bca2368f079cb608a3a0170de171b830de269fe3d4d246d218",
+      "bytes": 69465,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "Older chat grid: device cycle controls and crypto small-balance conversion. Thumbnail evidence only."
+    },
+    {
+      "id": 21,
+      "file": "image-21.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-21.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-21.jpg",
+      "sha256": "d8548a4db9a0f47defb1deca78c648e84a3d571dd16da7a2ba065a3017eed977",
+      "bytes": 73601,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "Older chat grid: TD Bank and crypto conversion with translucent stacked controls."
+    },
+    {
+      "id": 22,
+      "file": "image-22.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-22.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-22.jpg",
+      "sha256": "e2bb19dae7c53bf9d451777593a263aaf39addc0d4e9f99dd033fd596ba7dd38",
+      "bytes": 71625,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "Older chat grid: crypto conversion, interior device control, water usage glass UI."
+    },
+    {
+      "id": 23,
+      "file": "image-23.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-23.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-23.jpg",
+      "sha256": "71958206dcec9cdfb5893e98d92077889efb7fdba357c27c632d5459659cab27",
+      "bytes": 62299,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "Older chat grid: crypto, credit score graph, TD Bank payment and calendar controls."
+    },
+    {
+      "id": 24,
+      "file": "image-24.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-24.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-24.jpg",
+      "sha256": "0c7988ef1729df5c655b23a1ef4b8782c49494bd3f693d794b2001013310b33a",
+      "bytes": 69209,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "Older chat grid: crypto small balances, selected-row glass, dark background."
+    },
+    {
+      "id": 25,
+      "file": "image-25.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-25.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-25.jpg",
+      "sha256": "fc525bf65fc0324445e4b63b4af3596ca79761af486f31cc57875a543ff4d3e0",
+      "bytes": 65046,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "Near-duplicate view of image 23 group; retained as separate provided source."
+    },
+    {
+      "id": 26,
+      "file": "image-26.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-26.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-26.jpg",
+      "sha256": "b54aa3d5d25eff7ccba068b6034ad8b329bf1290f3473265ae5a12e56e4660d2",
+      "bytes": 54954,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "dyslove.design cyan #1EC1CB on glass panel (RGB 30 193 203); source palette, not adopted product accent."
+    },
+    {
+      "id": 27,
+      "file": "image-27.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-27.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-27.jpg",
+      "sha256": "fb2914b444c0ed15211d57ade74ff769a3b84805c79946a843fbffa1d96a672f",
+      "bytes": 63541,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "the_prodesign Modern Fonts cover; no identifiable font files or usage license. Not an approved font dependency."
+    },
+    {
+      "id": 28,
+      "file": "image-28.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-28.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-28.jpg",
+      "sha256": "c07a6e175e5a8752a9a2757192fb7252a2b9bf4ec4294d843a116d501ef8962a",
+      "bytes": 43718,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "averlo.co soft-volume shadow result: top-left light, inset/outer depth."
+    },
+    {
+      "id": 29,
+      "file": "image-29.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-29.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-29.jpg",
+      "sha256": "b6773a143620bfec4de9bbba7b72e902742dddcd808906f8181d6caedef0b63a",
+      "bytes": 55732,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "averlo.co four-layer shadow construction diagram; aesthetic comparison, not evidence of conversion or engagement gains."
+    },
+    {
+      "id": 30,
+      "file": "image-30.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-30.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-30.jpg",
+      "sha256": "a5c9482e81398227362d3957498597d09e5caba5d7346ca59cc4301f126f1307",
+      "bytes": 53691,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "averlo.co rejected shadow example; illustrates author preference, not objective low-impact proof."
+    },
+    {
+      "id": 31,
+      "file": "image-31.jpg",
+      "source": "/Users/artem/.codex/attachments/49ae6158-b7bf-486e-89a5-643de73ff217/image-31.jpg",
+      "preserved": "/Users/artem/Documents/ChatGPT/Pablicus/research-inputs-20260913/image-31.jpg",
+      "sha256": "744ec83e804710dbcc3756737c0c004f2abee32e0d7cb5fb7d2140f373fb2aa1",
+      "bytes": 50140,
+      "inspection": "personally_viewed_original_with_view_image",
+      "observation": "averlo.co before/after shadow cover; claimed high/low views not independently substantiated."
+    }
+  ]
+}

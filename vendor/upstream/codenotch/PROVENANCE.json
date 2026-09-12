@@ -1,0 +1,28 @@
+{
+  "repository": "https://github.com/vinzdg/codenotch",
+  "commit": "bd62f4486a81a31e8239f79ae93f3370cb047b78",
+  "license": "MIT",
+  "purpose": "Unmodified upstream source reference for a Pablicus adaptation. Not loaded by runtime. Native provider integrations are not included.",
+  "files": [
+    {
+      "path": "LICENSE",
+      "sha256": "2868a2239cb49e84eae28db7a9069c6c04f8f9d4623aa360fd69feefa96edc63"
+    },
+    {
+      "path": "Sources/Notch/NotchPlacement.swift",
+      "sha256": "bf27b95c367adf349e24418c6a923a228f32c498182b0be56a606d2651997f74"
+    },
+    {
+      "path": "Sources/Notch/NotchLayout.swift",
+      "sha256": "e5da4628d58117e428c4170172b3d2cebd7d8738b06fdf226cfdccbef29ad9e0"
+    },
+    {
+      "path": "Sources/Notch/SideNotchShape.swift",
+      "sha256": "5330db6393e97c19b10bc48498f56e3de2453b2c113f6d8adbfb9ff29353e784"
+    },
+    {
+      "path": "windows/codenotch/ui/notch.html",
+      "sha256": "bfec653c180cf2ea6656d4cecbb0221f75229ffaa87f13d1e33d65ce21ebed47"
+    }
+  ]
+}

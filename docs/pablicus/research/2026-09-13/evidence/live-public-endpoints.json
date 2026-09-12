@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/auth/v1/settings",
+    "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1082)>"
+  },
+  {
+    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/functions/v1/pablicus-passkey/health",
+    "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1082)>"
+  },
+  {
+    "url": "https://matveyryabokon30-crypto.github.io/vision-talk/pablicus/auth-config.js",
+    "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1082)>"
+  },
+  {
+    "url": "https://matveyryabokon30-crypto.github.io/vision-talk/pablicus/index.html",
+    "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1082)>"
+  }
+]
