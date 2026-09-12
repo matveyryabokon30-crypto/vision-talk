@@ -6,7 +6,17 @@
 Рабочая ветка при фиксации: `refactor/pablicus-foundation-20260911`.
 Этот файл — точка входа после потери чата. Это не стенограмма и не подтверждение готовности приложения.
 
-## Передача 2B — 12 сентября 2026
+## Независимая приёмка 2B — 12 сентября 2026
+
+**SUBSTEP_2B_ACCEPTED** в границе `PABLICUS-BLOCK02-2B-SHARED-COMPONENTS-20260912`, R1. CODE_SHA = TESTED_SHA: `c5e26c2f85ef1f6d1f8ab4684d033de4f3b0d3c9`; HANDOFF_HEAD: `d791adc19aade1015f4ba34cf4beb5ce2069c93f`.
+
+[Решение](docs/pablicus/reviews/2026-09-12/2B_HANDOFF_REVIEW_R1.md), [результаты](docs/pablicus/reviews/2026-09-12/2B_R1_RESULTS.json), [reviewer probes](docs/pablicus/reviews/2026-09-12/2B_R1_PROBES.txt).
+
+Лично проверены ZIP digest/CRC, 681 file hash и 249 Git sources, structural checks, 172/172 component observations на четырёх viewport и 11/11 дополнительных проверок. Локально 30 основных 1B PASS и отдельно успешно повторён timeout self-test; первоначальные ошибки среды и reviewer probe сохранены. Первичный CI подтверждает 31/31 1B, 9/9 1C, 145 assertions, 54 transitions и квалифицированные отрицательные контроли; полный 1C локально повторно не запускался.
+
+Подтверждённых блокирующих дефектов 2B не установлено. Ограничения physical iPhone, cross-browser, production, multi-device, Service Worker и полной WCAG сохраняются. Это инженерная приёмка существующих controls/overlays, не утверждение целевого дизайна. **Block 2 целиком не принят; следующий подэтап не начат.** Новое задание передаёт Матвей; новый визуальный слой требует design approval/handoff по Amendment 03. Plan 1.0 + Amendments 01/02/03 и прежние приёмки сохранены.
+
+## Историческая передача 2B — до независимой приёмки, 12 сентября 2026
 
 **SUBSTEP_2B_READY_FOR_INDEPENDENT_REVIEW**. Это отдельное ограниченное задание Матвея `PABLICUS-BLOCK02-2B-SHARED-COMPONENTS-20260912`, R1. Исполнитель не присваивает ACCEPTED; Block 2 целиком не принят.
 

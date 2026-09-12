@@ -1,0 +1,137 @@
+Reviewer-only diagnostic source used in 2B R1. Place each named file in a review directory with exact c5e26c2 candidate checkout in candidate/. Use Playwright 1.57.0, Chromium 143.0.7499.4, PYTHONDONTWRITEBYTECODE=1 and an explicitly configured browser cache. The final behavioral probe is reviewer-2b-r3.py. Earlier versions and diagnostic are retained to distinguish tool failures from product behavior. Source code of candidate is unchanged.
+
+===== reviewer-2b.py =====
+import asyncio,functools,http.server,json,pathlib,sys,threading
+from playwright.async_api import async_playwright
+r=pathlib.Path(__file__).resolve().parent;root=r/'candidate';out=r/'reviewer-behavior';out.mkdir(exist_ok=False)
+sys.path.insert(0,str(root/'tests/engineering/block-01/integration_1c'))
+from network import Boundary,A,C1
+class Server(http.server.SimpleHTTPRequestHandler):
+ def log_message(self,*a):pass
+async def main():
+ results=[];server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(Server,directory=str(root)));t=threading.Thread(target=server.serve_forever,daemon=True);t.start();origin=f'http://127.0.0.1:{server.server_port}'
+ async with async_playwright() as p:
+  b=await p.chromium.launch(chromium_sandbox=True,args=['--disable-background-networking','--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1']);ctx=await b.new_context(service_workers='block',viewport={'width':390,'height':844});net=Boundary(origin);await ctx.route('**/*',net.handle);await ctx.route_web_socket('**/*',net.websocket);page=await ctx.new_page();page.set_default_timeout(8000);await net.attach_page(page);errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+  async def record(name,ok,actual):
+   results.append({'name':name,'status':'PASS' if ok else 'FAIL','actual':actual});(out/'results.json').write_text(json.dumps(results,ensure_ascii=False,indent=2))
+  async def frames():await page.evaluate('()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))')
+  async def sheetstate():return await page.evaluate("()=>({open:!!document.querySelector('.pccTaskSheet[open]'),text:document.querySelector('.pccTaskSheet textarea')?.value,history:history.state,route:PablicusController.state()})")
+  try:
+   await page.goto(origin+'/pablicus/');await page.locator('#email').fill('a@fixture.invalid');await page.locator('#password').fill('fixture-only-password');await page.locator('#loginSubmit').click();await page.wait_for_function('PablicusDebug.user==="'+A+'" && document.querySelectorAll(".chatCard").length>0');await page.locator('#toast').wait_for(state='hidden')
+   await page.locator('[data-conversation-id="'+C1+'"] .chatMain').click();await page.wait_for_function('PablicusChat.list && window.vault?.ready && !document.querySelector("#app").inert');await page.locator('#canvasTab').click();await page.locator('.pccProjectCard').click();await page.locator('.pccTaskAdd').click();await page.locator('.pccTaskSheet textarea').first.fill('Independent 2B unsaved task')
+   dialogs=[]
+   async def deny(d):dialogs.append(d.message);await d.dismiss()
+   page.once('dialog',deny);await page.locator('.pccTaskSheet textarea').first.focus();await page.keyboard.press('Escape');await frames();v=await sheetstate();await record('dirty-Escape-denied',len(dialogs)==1 and v['open'] and v['text']=='Independent 2B unsaved task',v)
+   page.once('dialog',deny);await page.evaluate('history.back()');await page.wait_for_function('!!history.state?.pccTaskSheet');await frames();v=await sheetstate();await record('dirty-history-back-denied',len(dialogs)==2 and v['open'] and v['text']=='Independent 2B unsaved task' and v['route']['screen']=='canvas',v)
+   page.once('dialog',lambda d:d.accept());await page.locator('.pccTaskCancel').click();await page.locator('.pccTaskSheet').wait_for(state='detached');await frames();v=await page.locator('.pccTaskAdd').evaluate('n=>n===document.activeElement');await record('dirty-confirm-close-focus',v,v)
+   await page.locator('.pccTaskAdd').click();await page.locator('.pccTaskSheet textarea').first.fill('Popover fallback text')
+   await page.evaluate("window.__nativePopover=HTMLElement.prototype.showPopover;HTMLElement.prototype.showPopover=undefined")
+   await page.locator('.pccTaskSheet .workspaceEditorExpand').click();v=await page.locator('.pccTaskSheet .workspaceEditor').evaluate("n=>({expanded:n.classList.contains('is-expanded'),text:n.querySelector('textarea').value,notice:n.querySelector('.workspaceEditorNotice').textContent})");await record('popover-unavailable-preserves-inline',not v['expanded'] and v['text']=='Popover fallback text' and 'недоступен' in v['notice'],v);await page.evaluate('HTMLElement.prototype.showPopover=__nativePopover')
+   await page.locator('.pccTaskSheet .workspaceEditorExpand').click();await frames();v=await page.locator('.pccTaskSheet .workspaceEditor').evaluate("n=>({expanded:n.classList.contains('is-expanded'),popover:n.matches(':popover-open'),focus:n.contains(document.activeElement)})");await record('popover-expanded-initial-focus',all(v.values()),v)
+   for key in ['Shift+Tab','Tab']:
+    for _ in range(12):await page.keyboard.press(key)
+    v=await page.locator('.pccTaskSheet .workspaceEditor').evaluate('n=>n.contains(document.activeElement)');await record('workspace-focus-cycle-'+key,v,v)
+   await page.keyboard.press('Escape');await frames();v=await page.evaluate("()=>({sheet:!!document.querySelector('.pccTaskSheet[open]'),popover:!!document.querySelector('.workspaceEditor:popover-open'),focus:document.activeElement.className,text:document.querySelector('.pccTaskSheet textarea').value})");await record('workspace-collapse-preserves-sheet',v['sheet'] and not v['popover'] and 'workspaceEditorExpand' in v['focus'] and v['text']=='Popover fallback text',v)
+   page.once('dialog',lambda d:d.accept());await page.locator('.pccTaskCancel').click();await page.locator('#conversationTab').click()
+   await page.locator('#reportBtn').focus();await page.evaluate("""()=>{window.__mediaResolve=null;window.__reviewViewer=PablicusMediaViewer.create({resolveUrl:()=>new Promise(r=>__mediaResolve=r)});window.__reviewOpen=__reviewViewer.open([{type:'image'}],0)}""");await page.locator('.pmvClose').click();await page.evaluate("""async()=>{window.__reviewBlob=URL.createObjectURL(new Blob(['x'],{type:'image/png'}));__mediaResolve(__reviewBlob);await __reviewOpen;}""");v=await page.evaluate("()=>({open:!!document.querySelector('.pablicusMediaViewer[open]'),media:document.querySelectorAll('.pablicusMediaViewer .pmvMedia').length,focus:document.activeElement.id})");await record('media-close-during-load-late-response',not v['open'] and v['media']==0 and v['focus']=='reportBtn',v);await page.evaluate('__reviewViewer.destroy();URL.revokeObjectURL(__reviewBlob)')
+   await record('no-page-errors',not errors,errors)
+  finally:
+   await ctx.close();await net.drain();await b.close();server.shutdown();server.server_close();t.join(2);(out/'network.json').write_text(json.dumps(net.summary(),indent=2));await record('network-and-cleanup',not net.unknown and not net.blocked and not t.is_alive(),{'unknown':net.unknown,'blocked':net.blocked,'server_closed':not t.is_alive()})
+ print(json.dumps([(x['name'],x['status']) for x in results]))
+asyncio.run(asyncio.wait_for(main(),150))
+
+===== reviewer-2b-r2.py =====
+import asyncio,functools,http.server,json,pathlib,sys,threading
+from playwright.async_api import async_playwright
+r=pathlib.Path(__file__).resolve().parent;root=r/'candidate';out=r/'reviewer-behavior-r2';out.mkdir(exist_ok=False)
+sys.path.insert(0,str(root/'tests/engineering/block-01/integration_1c'))
+from network import Boundary,A,C1
+class Server(http.server.SimpleHTTPRequestHandler):
+ def log_message(self,*a):pass
+async def main():
+ results=[];server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(Server,directory=str(root)));t=threading.Thread(target=server.serve_forever,daemon=True);t.start();origin=f'http://127.0.0.1:{server.server_port}'
+ async with async_playwright() as p:
+  b=await p.chromium.launch(chromium_sandbox=True,args=['--disable-background-networking','--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1']);ctx=await b.new_context(service_workers='block',viewport={'width':390,'height':844});net=Boundary(origin);await ctx.route('**/*',net.handle);await ctx.route_web_socket('**/*',net.websocket);page=await ctx.new_page();page.set_default_timeout(8000);await net.attach_page(page);errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+  async def record(name,ok,actual):
+   results.append({'name':name,'status':'PASS' if ok else 'FAIL','actual':actual});(out/'results.json').write_text(json.dumps(results,ensure_ascii=False,indent=2))
+  async def frames():await page.evaluate('()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))')
+  async def sheetstate():return await page.evaluate("()=>({open:!!document.querySelector('.pccTaskSheet[open]'),text:document.querySelector('.pccTaskSheet textarea')?.value,history:history.state,route:PablicusController.state()})")
+  try:
+   await page.goto(origin+'/pablicus/');await page.locator('#email').fill('a@fixture.invalid');await page.locator('#password').fill('fixture-only-password');await page.locator('#loginSubmit').click();await page.wait_for_function('PablicusDebug.user==="'+A+'" && document.querySelectorAll(".chatCard").length>0');await page.locator('#toast').wait_for(state='hidden')
+   await page.locator('[data-conversation-id="'+C1+'"] .chatMain').click();await page.wait_for_function('PablicusChat.list && window.vault?.ready && !document.querySelector("#app").inert');await page.locator('#canvasTab').click();await page.locator('.pccProjectCard').click();await page.locator('.pccTaskAdd').click();await page.locator('.pccTaskSheet textarea').first.fill('Independent 2B unsaved task')
+   dialogs=[]
+   async def deny(d):dialogs.append(d.message);await d.dismiss()
+   page.once('dialog',deny);await page.locator('.pccTaskSheet textarea').first.focus();await page.keyboard.press('Escape');await frames();v=await sheetstate();await record('dirty-Escape-denied',len(dialogs)==1 and v['open'] and v['text']=='Independent 2B unsaved task',v)
+   page.once('dialog',deny);await page.evaluate('history.back()');await page.wait_for_function('!!history.state?.pccTaskSheet');await frames();v=await sheetstate();await record('dirty-history-back-denied',len(dialogs)==2 and v['open'] and v['text']=='Independent 2B unsaved task' and v['route']['screen']=='canvas',v)
+   page.once('dialog',lambda d:d.accept());await page.locator('.pccTaskCancel').click();await page.locator('.pccTaskSheet').wait_for(state='detached');await frames();v=await page.locator('.pccTaskAdd').evaluate('n=>n===document.activeElement');await record('dirty-confirm-close-focus',v,v)
+   await page.locator('.pccTaskAdd').click();await page.locator('.pccTaskSheet textarea').first.fill('Popover fallback text')
+   await page.evaluate("window.__nativePopover=HTMLElement.prototype.showPopover;HTMLElement.prototype.showPopover=undefined")
+   await page.locator('.pccTaskSheet .workspaceEditorExpand').click();v=await page.locator('.pccTaskSheet .workspaceEditor').evaluate("n=>({expanded:n.classList.contains('is-expanded'),text:n.querySelector('textarea').value,notice:n.querySelector('.workspaceEditorNotice').textContent})");await record('popover-unavailable-preserves-inline',not v['expanded'] and v['text']=='Popover fallback text' and 'недоступен' in v['notice'],v);await page.evaluate('HTMLElement.prototype.showPopover=__nativePopover')
+   await page.locator('.pccTaskSheet .workspaceEditorExpand').click();await frames();v=await page.locator('.pccTaskSheet .workspaceEditor').evaluate("n=>({expanded:n.classList.contains('is-expanded'),popover:n.matches(':popover-open'),focus:n.contains(document.activeElement)})");await record('popover-expanded-initial-focus',all(v.values()),v)
+   for key in ['Shift+Tab','Tab']:
+    for _ in range(12):await page.keyboard.press(key)
+    v=await page.locator('.pccTaskSheet .workspaceEditor').evaluate('n=>n.contains(document.activeElement)');await record('workspace-focus-cycle-'+key,v,v)
+   await page.keyboard.press('Escape');await frames();v=await page.evaluate("()=>({sheet:!!document.querySelector('.pccTaskSheet[open]'),popover:!!document.querySelector('.workspaceEditor:popover-open'),focus:document.activeElement.className,text:document.querySelector('.pccTaskSheet textarea').value})");await record('workspace-collapse-preserves-sheet',v['sheet'] and not v['popover'] and 'workspaceEditorExpand' in v['focus'] and v['text']=='Popover fallback text',v)
+   page.once('dialog',lambda d:d.accept());await page.locator('.pccTaskCancel').click();await page.locator('#conversationTab').click()
+   await page.locator('#reportBtn').focus();await page.evaluate("""()=>{window.__mediaResolve=null;window.__reviewViewer=PablicusMediaViewer.create({resolveUrl:()=>new Promise(r=>__mediaResolve=r)});window.__reviewOpen=__reviewViewer.open([{type:'image'}],0)}""");await page.locator('.pmvClose').click();await page.evaluate("""async()=>{window.__reviewBlob=URL.createObjectURL(new Blob(['x'],{type:'image/png'}));__mediaResolve(__reviewBlob);await __reviewOpen;}""");v=await page.evaluate("()=>({open:!!document.querySelector('.pablicusMediaViewer[open]'),media:document.querySelectorAll('.pablicusMediaViewer .pmvMedia').length,focus:document.activeElement.id})");await record('media-close-during-load-late-response',not v['open'] and v['media']==0 and v['focus']=='reportBtn',v);await page.evaluate('__reviewViewer.destroy();URL.revokeObjectURL(__reviewBlob)')
+   await record('no-page-errors',not errors,errors)
+  finally:
+   await ctx.close();await net.drain();await b.close();server.shutdown();server.server_close();t.join(2);(out/'network.json').write_text(json.dumps(net.summary(),indent=2));await record('network-and-cleanup',not net.unknown and not net.blocked and not t.is_alive(),{'unknown':net.unknown,'blocked':net.blocked,'server_closed':not t.is_alive()})
+ print(json.dumps([(x['name'],x['status']) for x in results]))
+asyncio.run(asyncio.wait_for(main(),150))
+
+===== reviewer-2b-r3.py =====
+import asyncio,functools,http.server,json,pathlib,sys,threading
+from playwright.async_api import async_playwright
+r=pathlib.Path(__file__).resolve().parent;root=r/'candidate';out=r/'reviewer-behavior-r3';out.mkdir(exist_ok=False)
+sys.path.insert(0,str(root/'tests/engineering/block-01/integration_1c'))
+from network import Boundary,A,C1
+class Server(http.server.SimpleHTTPRequestHandler):
+ def log_message(self,*a):pass
+async def main():
+ results=[];server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(Server,directory=str(root)));t=threading.Thread(target=server.serve_forever,daemon=True);t.start();origin=f'http://127.0.0.1:{server.server_port}'
+ async with async_playwright() as p:
+  b=await p.chromium.launch(chromium_sandbox=True,args=['--disable-background-networking','--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1']);ctx=await b.new_context(service_workers='block',viewport={'width':390,'height':844});net=Boundary(origin);await ctx.route('**/*',net.handle);await ctx.route_web_socket('**/*',net.websocket);page=await ctx.new_page();page.set_default_timeout(8000);await net.attach_page(page);errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+  async def record(name,ok,actual):
+   results.append({'name':name,'status':'PASS' if ok else 'FAIL','actual':actual});(out/'results.json').write_text(json.dumps(results,ensure_ascii=False,indent=2))
+  async def frames():await page.evaluate('()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))')
+  async def sheetstate():return await page.evaluate("()=>({open:!!document.querySelector('.pccTaskSheet[open]'),text:document.querySelector('.pccTaskSheet textarea')?.value,history:history.state,route:PablicusController.state()})")
+  try:
+   await page.goto(origin+'/pablicus/');await page.locator('#email').fill('a@fixture.invalid');await page.locator('#password').fill('fixture-only-password');await page.locator('#loginSubmit').click();await page.wait_for_function('PablicusDebug.user==="'+A+'" && document.querySelectorAll(".chatCard").length>0');await page.locator('#toast').wait_for(state='hidden')
+   await page.locator('[data-conversation-id="'+C1+'"] .chatMain').click();await page.wait_for_function('PablicusChat.list && window.vault?.ready && !document.querySelector("#app").inert');await page.locator('#canvasTab').click();await page.locator('.pccProjectCard').click();await page.locator('.pccTaskAdd').click();await page.locator('.pccTaskSheet textarea').first.fill('Independent 2B unsaved task')
+   dialogs=[]
+   async def deny(d):dialogs.append(d.message);await d.dismiss()
+   page.once('dialog',deny);await page.locator('.pccTaskSheet textarea').first.focus();await page.keyboard.press('Escape');await frames();v=await sheetstate();await record('dirty-Escape-denied',len(dialogs)==1 and v['open'] and v['text']=='Independent 2B unsaved task',v)
+   page.once('dialog',deny);await page.evaluate('history.back()');await page.wait_for_function('!!history.state?.pccTaskSheet');await frames();v=await sheetstate();await record('dirty-history-back-denied',len(dialogs)==2 and v['open'] and v['text']=='Independent 2B unsaved task' and v['route']['screen']=='canvas',v)
+   page.once('dialog',lambda d:d.accept());await page.locator('.pccTaskCancel').click();await page.locator('.pccTaskSheet').wait_for(state='detached');await frames();v=await page.locator('.pccTaskAdd').evaluate('n=>n===document.activeElement');await record('dirty-confirm-close-focus',v,v)
+   await page.locator('.pccTaskAdd').click();await page.locator('.pccTaskSheet textarea').first.fill('Popover fallback text')
+   await page.evaluate("window.__nativePopover=HTMLElement.prototype.showPopover;HTMLElement.prototype.showPopover=undefined")
+   await page.locator('.pccTaskSheet .workspaceEditorExpand').click();v=await page.locator('.pccTaskSheet .workspaceEditor').evaluate("n=>({expanded:n.classList.contains('is-expanded'),text:n.querySelector('textarea').value,notice:n.querySelector('.workspaceEditorNotice').textContent})");await record('popover-unavailable-preserves-inline',not v['expanded'] and v['text']=='Popover fallback text' and 'недоступен' in v['notice'],v);await page.evaluate('()=>{HTMLElement.prototype.showPopover=__nativePopover;}')
+   await page.locator('.pccTaskSheet .workspaceEditorExpand').click();await frames();v=await page.locator('.pccTaskSheet .workspaceEditor').evaluate("n=>({expanded:n.classList.contains('is-expanded'),popover:n.matches(':popover-open'),focus:n.contains(document.activeElement)})");await record('popover-expanded-initial-focus',all(v.values()),v)
+   for key in ['Shift+Tab','Tab']:
+    for _ in range(12):await page.keyboard.press(key)
+    v=await page.locator('.pccTaskSheet .workspaceEditor').evaluate('n=>n.contains(document.activeElement)');await record('workspace-focus-cycle-'+key,v,v)
+   await page.keyboard.press('Escape');await frames();v=await page.evaluate("()=>({sheet:!!document.querySelector('.pccTaskSheet[open]'),popover:!!document.querySelector('.workspaceEditor:popover-open'),focus:document.activeElement.className,text:document.querySelector('.pccTaskSheet textarea').value})");await record('workspace-collapse-preserves-sheet',v['sheet'] and not v['popover'] and 'workspaceEditorExpand' in v['focus'] and v['text']=='Popover fallback text',v)
+   page.once('dialog',lambda d:d.accept());await page.locator('.pccTaskCancel').click();await page.locator('#conversationTab').click()
+   await page.locator('#reportBtn').focus();await page.evaluate("""()=>{window.__mediaResolve=null;window.__reviewViewer=PablicusMediaViewer.create({resolveUrl:()=>new Promise(r=>__mediaResolve=r)});window.__reviewOpen=__reviewViewer.open([{type:'image'}],0)}""");await page.locator('.pmvClose').click();await page.evaluate("""async()=>{window.__reviewBlob=URL.createObjectURL(new Blob(['x'],{type:'image/png'}));__mediaResolve(__reviewBlob);await __reviewOpen;}""");v=await page.evaluate("()=>({open:!!document.querySelector('.pablicusMediaViewer[open]'),media:document.querySelectorAll('.pablicusMediaViewer .pmvMedia').length,focus:document.activeElement.id})");await record('media-close-during-load-late-response',not v['open'] and v['media']==0 and v['focus']=='reportBtn',v);await page.evaluate('__reviewViewer.destroy();URL.revokeObjectURL(__reviewBlob)')
+   await record('no-page-errors',not errors,errors)
+  finally:
+   await ctx.close();await net.drain();await b.close();server.shutdown();server.server_close();t.join(2);(out/'network.json').write_text(json.dumps(net.summary(),indent=2));await record('network-and-cleanup',not net.unknown and not net.blocked and not t.is_alive(),{'unknown':net.unknown,'blocked':net.blocked,'server_closed':not t.is_alive()})
+ print(json.dumps([(x['name'],x['status']) for x in results]))
+asyncio.run(asyncio.wait_for(main(),150))
+
+===== diagnose-local.py =====
+import asyncio,functools,http.server,json,pathlib,sys,threading,urllib.request,hashlib,time
+from playwright.async_api import async_playwright
+root=pathlib.Path('candidate').resolve();sys.path.insert(0,str(root/'tests/engineering/block-01/integration_1c'));from network import Boundary
+class Server(http.server.SimpleHTTPRequestHandler):
+ def log_message(self,*a):pass
+async def main():
+ server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(Server,directory=str(root)));threading.Thread(target=server.serve_forever,daemon=True).start();origin=f'http://127.0.0.1:{server.server_port}';data=urllib.request.urlopen(origin+'/pablicus/',timeout=5).read();print('HTTP index bytes',len(data),'equal',data==(root/'pablicus/index.html').read_bytes(),flush=True)
+ async with async_playwright() as p:
+  b=await p.chromium.launch(chromium_sandbox=True,args=['--disable-background-networking','--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1']);ctx=await b.new_context(service_workers='block');n=Boundary(origin);await ctx.route('**/*',n.handle);await ctx.route_web_socket('**/*',n.websocket);page=await ctx.new_page();await n.attach_page(page);events=[];page.on('request',lambda x:events.append(['request',x.url]));page.on('requestfinished',lambda x:events.append(['finished',x.url]));page.on('requestfailed',lambda x:events.append(['failed',x.url,x.failure]));
+  try:await page.goto(origin+'/pablicus/',timeout=15000)
+  except Exception as e:print(str(e),flush=True)
+  print(json.dumps(events),flush=True);print(await page.evaluate('({state:document.readyState,html:document.documentElement.outerHTML.length,scripts:document.scripts.length})'),flush=True);await ctx.close();await b.close()
+ server.shutdown();server.server_close()
+asyncio.run(main())
