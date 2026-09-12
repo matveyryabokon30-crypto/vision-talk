@@ -56,7 +56,7 @@ async def run(a):
               and all(route.get(key) == target[key] for key in ['screen', 'section', 'conversationId', 'resourceId'])
               and state['uid'] == A and route['sessionUserId'] == A
               and route['sessionGeneration'] == before['route']['sessionGeneration']
-              and state['selected'] == [section])
+              and state['selected'] == [{'bots':'tasks','feed':'chats'}.get(section,section)])
         if screen in ['conversation', 'canvas']:
             ok = (ok and visible['app'] and not visible['home'] and not resources['appInert']
                   and visible['canvas'] == (screen == 'canvas') and state['list'] and state['ready']

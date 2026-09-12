@@ -43,7 +43,9 @@ function environment(){
   toast:no,problem:e=>errors.push(e?.message||String(e)),stopInbox:no,inboxContext:no,startInbox:no,pump:no,showPersonLink:no,showPushConversation:no,
   connection:no,paintReplyDraft:no,install:no,theme:no,passkeySettings:no,showOutbox:no,showStorageUsage:no,filter:'all',publicKeyEnabled:false});
  ctx.window=ctx;
- const run=s=>vm.runInContext(s,ctx,{timeout:1000});run(controller);
+ const run=s=>vm.runInContext(s,ctx,{timeout:1000});
+ for(const name of ['component-registry.js','app-shell.js']){const text=fs.readFileSync(root+'/pablicus/'+name,'utf8');evidence.source_spans.push({name,sha256:sha(text)});run(text)}
+ run(controller);
  run(lineContaining('let authVersion='));run(lineContaining('let user=null,profile='));
  run("let canvasVisible=false,canvasSwitch=0,canvasEpoch=0,tasksEpoch=0;let authBooting=false,pendingAuthEvent=null;const $=x=>document.getElementById(x),el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n};const canvasContext=()=>({userId:user?.id,conversationId:current?.id,epoch:canvasEpoch});const canvasCurrent=c=>user?.id===c.userId&&current?.id===c.conversationId&&canvasEpoch===c.epoch;const cacheKey=()=>`pablicus:${user?.id}:dialogs`,focusKey=()=>`pablicus:${user?.id}:focus`;passkeys={snapshot:()=>({busy:false}),cancel:()=>counts.passkeyCancel++};");
  run(lineContaining('window.PablicusController?.setServices('));

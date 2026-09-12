@@ -3,7 +3,6 @@
 
  const state={section:'chats',screen:'home',resourceId:null,conversationId:null,canvas:false,generation:0,sessionGeneration:0,sessionUserId:null};
  const handlers=new Map(),subs=new Set();
- const labels={chats:'Чаты',feed:'Лента',tasks:'Дела',bots:'Боты',profile:'Профиль'};
  let services=null,disposed=false,requestSerial=0,latestRequest=0,activeTransition=null,currentScope=null,releasePromise=null,sessionLookupSerial=0;
  const clone=()=>({...state});
 
@@ -16,7 +15,7 @@
   function dispose(){if(disposePromise)return disposePromise;closed=true;const owned=cleanups.splice(0).reverse();disposePromise=(async()=>{for(const fn of owned)await run(fn)})();return disposePromise}
   return{add,dispose,get closed(){return closed}};
  }
- function project(){const nav=document.getElementById('mainNav');if(nav)for(const button of nav.querySelectorAll('button[data-page]'))button.classList.toggle('selected',button.dataset.page===state.section);const label=state.screen==='factory'?'Фабрика':state.screen==='scenario'?'Сценарий':labels[state.section]||'Public';const brand=document.getElementById('brandTitle'),section=document.getElementById('sectionTitle');if(brand)brand.textContent=label;if(section){section.textContent=label;section.hidden=state.screen==='home'&&state.section==='chats'}}
+ function project(){root.PablicusShell?.project(clone())}
  function emit(){project();const snapshot=clone();for(const fn of [...subs]){try{fn(snapshot)}catch(error){reportError(error)}}}
  function setServices(value){services=value}
  function getServices(){return services}

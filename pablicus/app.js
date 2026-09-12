@@ -120,8 +120,7 @@
   return canvasNavigationAllowed();
  }
  function paintConversationView(){
-  $('app').classList.toggle('canvas-active',canvasVisible);$('chatCanvasPanel').hidden=!canvasVisible;$('vp').inert=canvasVisible;$('composer').hidden=false;
-  for(const [id,selected]of [['conversationTab',!canvasVisible],['canvasTab',canvasVisible]]){$(id).setAttribute('aria-selected',String(selected));$(id).tabIndex=selected?0:-1;}
+  window.PablicusShell.conversationMode(canvasVisible);
  }
  function resetConversationView(){++canvasSwitch;++canvasEpoch;chatCanvas.reset();workspaceUploadState.clear();canvasVisible=false;paintConversationView();}
  function showConversationView(){
@@ -247,7 +246,7 @@
  $('dialogClose').onclick=()=>$('productDialog').close();$('installLogin').onclick=install;
  function theme(value){safeSet('pablicus:theme',value);document.documentElement.dataset.theme=value;const dark=value==='dark'||value==='system'&&matchMedia('(prefers-color-scheme:dark)').matches;document.querySelector('meta[name="theme-color"]').content=dark?'#141516':'#fafafa';window.PablicusChat?.list?.refreshFont()}
  theme(safeGet('pablicus:theme')||'system');matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>theme(safeGet('pablicus:theme')||'system'));
- function clearSessionView(){if(sessionViewCleared)return;sessionViewCleared=true;opening=false;workspaceQuick.reset();resetTasksHome();resetConversationView();const pushCleanup=pushNotifications.clear();mediaViewer.close();chatLibrary.reset();people.close();messageTools.clear();stopInbox();PablicusRichMessage.stopAll?.();replyCache.clear();sessionCleanup=sessionCleanup.then(()=>Promise.all([pushCleanup,window.PablicusChat?.leave()])).catch(e=>toast('Не удалось сохранить черновик на устройстве. '+e.message));$('newChat').hidden=true;if(passkeys?.snapshot().busy&&passkeys.snapshot().operation!=='signIn')passkeys.cancel();$('productDialog').close();$('dialogContent').replaceChildren();user=null;profile=null;dialogs=[];rows=[];current=null;epoch++;signed.clear();if(channel)sb.removeChannel(channel);channel=null;$('app').hidden=true;$('home').hidden=false;$('workspace').hidden=true;$('mainNav').hidden=true;$('loginPane').hidden=false;}
+ function clearSessionView(){if(sessionViewCleared)return;sessionViewCleared=true;opening=false;workspaceQuick.reset();resetTasksHome();resetConversationView();const pushCleanup=pushNotifications.clear();mediaViewer.close();chatLibrary.reset();people.close();messageTools.clear();stopInbox();PablicusRichMessage.stopAll?.();replyCache.clear();sessionCleanup=sessionCleanup.then(()=>Promise.all([pushCleanup,window.PablicusChat?.leave()])).catch(e=>toast('Не удалось сохранить черновик на устройстве. '+e.message));if(passkeys?.snapshot().busy&&passkeys.snapshot().operation!=='signIn')passkeys.cancel();$('productDialog').close();$('dialogContent').replaceChildren();user=null;profile=null;dialogs=[];rows=[];current=null;epoch++;signed.clear();if(channel)sb.removeChannel(channel);channel=null;window.PablicusShell.show('home');window.PablicusShell.authentication(false);}
  async function authenticate(session,{signal,verifiedPasskey=false}={}){
   if(signal?.aborted)return;
   if(!session){const attempt=++authVersion;await window.PablicusController?.sessionChanged(null);if(attempt===authVersion&&!signal?.aborted)clearSessionView();return}
@@ -265,7 +264,7 @@
   if(attempt!==authVersion||signal?.aborted)return;
   if(r.error){const cached=safeGet('pablicus:'+uid+':profile');if(!verifiedPasskey&&!navigator.onLine&&cached)profile=cached;else{user=null;throw Error('Не удалось проверить доступ к аккаунту. '+r.error.message)}}else profile=r.data;
   if(!profile.is_approved){profile=null;user=null;throw Error('Аккаунт ещё не одобрен. Свяжитесь с владельцем Pablicus.')}
-  safeSet('pablicus:'+uid+':profile',profile);$('loginPane').hidden=true;$('workspace').hidden=false;$('mainNav').hidden=false;dialogs=safeGet(cacheKey())||[];renderHome();$('home').classList.remove('auth-booting');await loadDialogs();if(attempt!==authVersion||user?.id!==uid)return;startInbox();pump();showPersonLink();showPushConversation();pushNotifications.refresh();
+  safeSet('pablicus:'+uid+':profile',profile);window.PablicusShell.authentication(true);dialogs=safeGet(cacheKey())||[];renderHome();$('home').classList.remove('auth-booting');await loadDialogs();if(attempt!==authVersion||user?.id!==uid)return;startInbox();pump();showPersonLink();showPushConversation();pushNotifications.refresh();
  }
  $('loginForm').onsubmit=async e=>{e.preventDefault();if(passkeySigninActive)return;$('loginSubmit').disabled=true;$('loginError').textContent='';try{const r=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(r.error)throw r.error;$('password').value='';trustExplicitSignIn();await authenticate(r.data.session)}catch(e){$('loginError').textContent=e.message}finally{$('loginSubmit').disabled=false}};
  const authConfig=globalThis.PablicusAuthConfig;
@@ -397,7 +396,7 @@
  }
  function goConversation(d,options={}){const target={section:'chats',screen:options.canvas?'canvas':'conversation',conversationId:d.id,resourceId:null};if(window.PablicusController)return window.PablicusController.navigate(target);if(!appNavigationAllowed({target}))return Promise.resolve(false);return mountConversation(d,options)}
  function renderHome(){
-  if(!user||current)return;resetTasksHome();const c=$('screenContent');c.replaceChildren();$('searchChats').hidden=page!=='chats';$('chatFilters').hidden=page!=='chats';$('newChat').hidden=page!=='chats';
+  if(!user||current)return;resetTasksHome();const c=$('screenContent');c.replaceChildren();window.PablicusShell.project(window.PablicusController.state());
   if(page==='chats'){
    const find=el('button','findPeople','Найти человека');find.type='button';find.prepend(PablicusMessageMenu.icon('users'));find.onclick=()=>people.open($('searchChats').value);c.append(find);
    const saved=el('button','savedConversation','Избранное');saved.type='button';saved.append(el('span','muted','Сообщения и материалы для себя'));saved.onclick=async()=>{saved.disabled=true;try{const r=await sb.rpc('start_saved_conversation');if(r.error)throw r.error;await loadDialogs();await openConversation(dialogs.find(d=>d.id===r.data)||{id:r.data,title:'Избранное'})}catch(e){problem(e)}finally{saved.disabled=false}};c.append(saved);
@@ -415,19 +414,20 @@
   }else{c.append(el('p','empty','Публикации, подписки и сторис появятся в следующем обновлении. Раздел пока не включён.'))}
  }
  document.querySelectorAll('#mainNav button').forEach(b=>b.onclick=()=>{const target=b.dataset.page;if(window.PablicusController){window.PablicusController.navigate({section:target,screen:'home',resourceId:null}).catch(problem)}else{page=target;renderHome()}});
+ $('openBots').onclick=()=>window.PablicusController.navigate({section:'bots',screen:'bots'}).catch(problem);
  if(window.PablicusController){
   window.PablicusController.register('home',async({state,isCurrent})=>{if(!isCurrent())return;await leaveConversationView(isCurrent);if(!isCurrent())return;page=state.section;renderHome();return()=>{};});
-  window.PablicusController.subscribe(state=>{if(state.screen==='home'){page=state.section;const label={chats:'Чаты',feed:'Лента',tasks:'Дела',bots:'Боты',profile:'Профиль'}[state.section];const brand=$('brandTitle');if(brand&&label)brand.textContent=label;}});
+  window.PablicusController.subscribe(state=>{if(state.screen==='home')page=state.section;});
  }
 
  document.querySelectorAll('#chatFilters button').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll('#chatFilters button').forEach(x=>x.classList.toggle('selected',x===b));renderHome()});$('searchChats').oninput=renderHome;
  $('newChat').onclick=()=>people.open($('searchChats').value);
  function mapped(m){return{id:m.id,number:m.server_seq,mine:m.sender_id===user?.id,text:PablicusChatActions.effective(m).body||'',revision:messageTools.revision(m),remote:m}}
  function openConversation(d,options={}){return goConversation(d,options)}
- async function mountConversation(d,{canvas=false,isCurrent=()=>true}={}){if(opening||!user||!isCurrent())return;workspaceQuick.close();resetTasksHome();resetConversationView();if(canvas){canvasVisible=true;paintConversationView();}mediaViewer.close();chatLibrary.reset();messageTools.clear();PablicusRichMessage.stopAll?.();opening=true;const uid=user.id,ep=++epoch;current=d;inboxContext();rows=[];peersRead=0;if(channel){await sb.removeChannel(channel);channel=null}$('home').hidden=true;$('app').style.visibility='hidden';$('app').inert=true;$('app').hidden=false;$('chatTitle').textContent=d.title||'Разговор';connection();$('chatHint').textContent='Загружаем разговор…';$('chatHint').hidden=false;try{
-   let remote=[];const r=navigator.onLine?await sb.from('messages').select('*').eq('conversation_id',d.id).order('server_seq',{ascending:false}).limit(150):{data:[],error:null};if(r.error){if(navigator.onLine)toast('История пока недоступна. Черновик и очередь доступны локально.')}else remote=(r.data||[]).reverse();if(!isCurrent()||ep!==epoch||user?.id!==uid){if(isCurrent()&&current?.id===d.id&&user?.id===uid){$('app').style.visibility='';$('app').inert=false;}return;}rows=remote;inboxSeq.set(d.id,Math.max(inboxSeq.get(d.id)||0,+rows.at(-1)?.server_seq||0));await PablicusChat.open(uid,d.id,rows.map(mapped));if(!isCurrent()||ep!==epoch||user?.id!==uid){if(isCurrent()&&current?.id===d.id&&user?.id===uid){$('app').style.visibility='';$('app').inert=false;}return;}$('app').style.visibility='';$('app').inert=false;connection();
+ async function mountConversation(d,{canvas=false,isCurrent=()=>true}={}){if(opening||!user||!isCurrent())return;workspaceQuick.close();resetTasksHome();resetConversationView();if(canvas){canvasVisible=true;paintConversationView();}mediaViewer.close();chatLibrary.reset();messageTools.clear();PablicusRichMessage.stopAll?.();opening=true;const uid=user.id,ep=++epoch;current=d;inboxContext();rows=[];peersRead=0;if(channel){await sb.removeChannel(channel);channel=null}window.PablicusShell.conversationReady(false);window.PablicusShell.show('conversation');window.PablicusShell.conversationTitle(d.title);connection();$('chatHint').textContent='Загружаем разговор…';$('chatHint').hidden=false;try{
+   let remote=[];const r=navigator.onLine?await sb.from('messages').select('*').eq('conversation_id',d.id).order('server_seq',{ascending:false}).limit(150):{data:[],error:null};if(r.error){if(navigator.onLine)toast('История пока недоступна. Черновик и очередь доступны локально.')}else remote=(r.data||[]).reverse();if(!isCurrent()||ep!==epoch||user?.id!==uid){if(isCurrent()&&current?.id===d.id&&user?.id===uid){window.PablicusShell.conversationReady(true);}return;}rows=remote;inboxSeq.set(d.id,Math.max(inboxSeq.get(d.id)||0,+rows.at(-1)?.server_seq||0));await PablicusChat.open(uid,d.id,rows.map(mapped));if(!isCurrent()||ep!==epoch||user?.id!==uid){if(isCurrent()&&current?.id===d.id&&user?.id===uid){window.PablicusShell.conversationReady(true);}return;}window.PablicusShell.conversationReady(true);connection();
    messageTools.sync();channel=sb.channel('pablicus-chat-'+d.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'conversation_id=eq.'+d.id},()=>syncMessages()).subscribe(state=>{if(state==='SUBSCRIBED')syncMessages()});pump();
-  }catch(e){if(!isCurrent()||ep!==epoch||user?.id!==uid)return;problem(e);if(current?.id===d.id){$('app').style.visibility='';$('app').inert=false;}current=null;$('app').hidden=true;$('home').hidden=false;renderHome()}finally{if(ep===epoch&&user?.id===uid){if(isCurrent()&&current?.id===d.id){$('app').style.visibility='';$('app').inert=false;}opening=false;inboxContext();workspaceQuick.refresh()}}}
+  }catch(e){if(!isCurrent()||ep!==epoch||user?.id!==uid)return;problem(e);if(current?.id===d.id){window.PablicusShell.conversationReady(true);}current=null;window.PablicusShell.show('home');renderHome()}finally{if(ep===epoch&&user?.id===uid){if(isCurrent()&&current?.id===d.id){window.PablicusShell.conversationReady(true);}opening=false;inboxContext();workspaceQuick.refresh()}}}
  async function leaveConversationView(isCurrent=()=>true){
   if(!current)return;
   workspaceQuick.close();resetConversationView();mediaViewer.close();chatLibrary.reset();messageTools.clear();PablicusRichMessage.stopAll?.();
@@ -435,7 +435,7 @@
   const pending=conversationLeave||(conversationLeave=PablicusChat.leave());
   try{await pending}finally{if(conversationLeave===pending)conversationLeave=null}
   if(!isCurrent())return;
-  current=null;opening=false;inboxContext();epoch++;if(channel)sb.removeChannel(channel);channel=null;$('app').hidden=true;$('home').hidden=false;
+  current=null;opening=false;inboxContext();epoch++;if(channel)sb.removeChannel(channel);channel=null;window.PablicusShell.show('home');
  }
  $('chatBack').onclick=async()=>{try{if(window.PablicusController){await window.PablicusController.navigate({section:page==='bots'?'chats':page,screen:'home',conversationId:null,resourceId:null,canvas:false});return}if(!canvasNavigationAllowed())return;await leaveConversationView();renderHome();loadDialogs()}catch(e){problem(e)}};
  async function syncMessages(){if(!current||!user||syncing||opening||document.hidden||!navigator.onLine)return;syncing=true;const d=current,uid=user.id,ep=epoch;try{

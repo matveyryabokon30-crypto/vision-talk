@@ -130,12 +130,12 @@ class App:
   d=await self.state();r=d['route'];s=r['screen']
   visible={key:await self.page.locator(selector).is_visible() for key,selector in [('home','#home'),('app','#app'),('canvas','#chatCanvasPanel')]};d['actual_visibility']=visible
   if s in ['conversation','canvas']:ok=d['appVisible'] and not d['homeVisible'] and d['list'] and d['ready'] and d['scope']['chat']==r['conversationId']==d['current'] and d['scope']['user']==d['uid'] and not r['resourceId'] and d['canvasVisible']==(s=='canvas')
-  else:ok=d['homeVisible'] and not d['appVisible'] and not d['list'] and d['current'] is None and d['selected']==[r['section']]
+  else:ok=d['homeVisible'] and not d['appVisible'] and not d['list'] and d['current'] is None and d['selected']==[{'bots':'tasks','feed':'chats'}.get(r['section'],r['section'])]
   ok=ok and r['sessionUserId']==d['uid'] and visible['app']==(s in ['conversation','canvas']) and visible['home']==(s not in ['conversation','canvas']) and visible['canvas']==(s=='canvas')
   check(name,ok,d)
  async def bots(self):
   stage('UI Bots')
-  await self.page.locator('#mainNav [data-page=bots]').click();await self.wait('!!document.querySelector(".botCard")')
+  await self.page.locator('#openBots').click();await self.wait('!!document.querySelector(".botCard")')
  async def scenario(self):
   await self.page.locator('.botCard .botMain').click();await self.page.locator('[data-action=scenario]').click();await self.wait('!!document.querySelector(".scenarioList")')
  async def nav(self,section):

@@ -12,7 +12,7 @@ permissions:
 env:
   PYTHONDONTWRITEBYTECODE: '1'
   SHELL_2A_WORK_START_HEAD: abfc878896d8b10acc540d27ed370bbfaf2e8b70
-  SHELL_2A_PHASE: baseline
+  SHELL_2A_PHASE: candidate
 jobs:
   shell:
     runs-on: ubuntu-24.04
@@ -41,6 +41,29 @@ jobs:
         run: |
           python -m pip install --disable-pip-version-check playwright==1.57.0
           python -m playwright install --with-deps chromium
+      - name: Structural ownership and component contracts
+        run: |
+          python tests/engineering/block-02/ownership_checks.py --source-root . --output shell-2a-results/ownership.json > shell-2a-results/ownership.log 2>&1
+      - name: Same probe must reproduce the original root-navigation conflict
+        shell: bash
+        run: |
+          mkdir shell-2a-before
+          git archive "$SHELL_2A_WORK_START_HEAD" pablicus | tar -x -C shell-2a-before
+          set +e
+          timeout --kill-after=10s 420s python tests/engineering/block-02/shell_probe.py --source-root shell-2a-before --output shell-2a-results/before > shell-2a-results/before.log 2>&1
+          code=$?
+          set -e
+          test "$code" -eq 1
+          python - <<'PY'
+          import json
+          d=json.load(open('shell-2a-results/before/summary.json'))
+          assert d['status']=='FAIL' and d['negative_control_detected'],d
+          for name in ['mobile','tablet','desktop']:
+              v=d['variants'][name]
+              assert v['status']=='FAIL',v
+              assert any(c['name']=='2A-ROOT-TABS' and c['status']=='FAIL' for c in v['checks']),v
+          assert d['browser_closed'] and d['server_closed'],d
+          PY
       - name: Observe actual shell and duplicate-listener negative control
         shell: bash
         run: |

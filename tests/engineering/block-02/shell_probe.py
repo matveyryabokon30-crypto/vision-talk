@@ -30,6 +30,21 @@ async def probe(browser,root,origin,out,width,height,mutation=False):
             'viewport':{'width':width,'height':height},'mutation':mutation,
             'keyboard_scope':'Viewport reduction with focused input; not physical iOS keyboard qualification'}
     boundary=Boundary(origin); ctx=await browser.new_context(service_workers='block',viewport=result['viewport'])
+    await ctx.add_init_script('''{
+      const native=window.visualViewport;
+      window.__shellKeyboard={height:null,top:0};
+      if(native)Object.defineProperty(window,'visualViewport',{configurable:true,value:new Proxy(native,{get(target,key){
+        if(key==='height'&&__shellKeyboard.height!==null)return __shellKeyboard.height;
+        if((key==='offsetTop'||key==='pageTop')&&__shellKeyboard.height!==null)return __shellKeyboard.top;
+        const value=Reflect.get(target,key,target);return typeof value==='function'?value.bind(target):value;
+      }})});
+      window.__shellWrites=[];
+      const descriptor=Object.getOwnPropertyDescriptor(Node.prototype,'textContent');
+      Object.defineProperty(Node.prototype,'textContent',{...descriptor,set(value){
+        if(this.id==='brandTitle'||this.id==='sectionTitle')__shellWrites.push({id:this.id,value,stack:new Error().stack});
+        return descriptor.set.call(this,value);
+      }});
+    }''')
     await ctx.route('**/*',boundary.handle)
     await ctx.route_web_socket('**/*',boundary.websocket)
     page=await ctx.new_page();page.set_default_timeout(8000)
@@ -45,6 +60,7 @@ async def probe(browser,root,origin,out,width,height,mutation=False):
         await page.locator('#loginSubmit').click()
         await page.wait_for_function('PablicusDebug.user==="'+A+'" && document.querySelectorAll(".chatCard").length>0')
         await page.wait_for_function("[...document.scripts].some(s=>s.src.endsWith('/bot-scenario-bridge.js'))")
+        await page.locator('#toast').wait_for(state='hidden',timeout=7000)
         await page.evaluate('''() => {
           const controller=PablicusController, native=controller.navigate;
           window.__shellNavigationCalls=[];
@@ -70,13 +86,41 @@ async def probe(browser,root,origin,out,width,height,mutation=False):
             check('2A-SINGLE-NAVIGATION-DISPATCH-'+section,len(observation['calls'])==1,observation)
             check('2A-ROUTE-VISIBLE-'+section,observation['selected']==[section] and observation['home'] and not observation['app'],observation)
         result['root_visits']=visits
+        result['shell_writes']=await page.evaluate('__shellWrites')
+        await page.locator('#mainNav [data-page=chats]').focus()
+        await page.keyboard.press('Tab')
+        focus=await page.evaluate('''()=>({tag:document.activeElement.tagName,text:document.activeElement.innerText,
+          visibleFocus:document.activeElement.matches(':focus-visible'),outline:getComputedStyle(document.activeElement).outlineWidth})''')
+        check('2A-KEYBOARD-FOCUS',focus['tag']=='BUTTON' and focus['visibleFocus'] and float(focus['outline'].replace('px',''))>0,focus)
+        if await page.evaluate('!!window.PablicusUI'):
+            registry=await page.evaluate('''()=>({roots:PablicusUI.roots,components:PablicusUI.components,
+              composer:PablicusUI.composer,ia:PablicusUI.informationArchitecture,calls:PablicusUI.calls,
+              tokens:Object.fromEntries(Object.entries(PablicusUI.tokenGroups).map(([group,names])=>[group,Object.fromEntries(names.map(n=>[n,getComputedStyle(document.documentElement).getPropertyValue(n).trim()]))])),
+              shellWrites:__shellWrites})''')
+            result['registry']=registry
+            check('2A-SINGLE-HEADER-WRITER',all('/app-shell.js:' in x['stack'] for x in registry['shellWrites']),registry['shellWrites'])
+            check('2A-TOKENS-RESOLVED',len(registry['tokens'])==14 and all(all(values.values()) for values in registry['tokens'].values()),registry['tokens'])
+            await page.locator('#openBots').click()
+            await page.wait_for_function('!!document.querySelector(".botCard")')
+            nested=await page.evaluate('''()=>({route:PablicusController.state(),selected:[...document.querySelectorAll('#mainNav .selected')].map(n=>n.dataset.page),heading:document.getElementById('brandTitle').textContent})''')
+            check('2A-BOTS-NESTED-UNDER-TASKS',nested['route']['screen']=='bots' and nested['selected']==['tasks'] and nested['heading']=='Боты',nested)
+            await page.locator('#mainNav [data-page=chats]').click()
+            await page.wait_for_function('document.querySelectorAll(".chatCard").length>0')
         await page.screenshot(path=str(out/'home.png'),full_page=True)
         await page.locator('[data-conversation-id="'+C1+'"] .chatMain').click()
         await page.wait_for_function('PablicusDebug.current==="'+C1+'" && !!PablicusChat.list && !!window.vault?.ready && !document.getElementById("app").inert')
+        if result.get('registry'):
+            operations=await page.evaluate('()=>Object.fromEntries(PablicusUI.composer.existingOperations.map(name=>[name,typeof PablicusChat.rich[name]]))')
+            check('2A-LIVE-COMPOSER-ADAPTER',all(v=='function' for v in operations.values()),operations)
         result['geometry']=[]
-        for name,h in [('conversation',height),('keyboard-viewport',max(360,height-330))]:
-            await page.set_viewport_size({'width':width,'height':h})
+        for name,h in [('conversation',height),('keyboard-viewport',max(360,height-330)),('safe-area-and-long-title',max(360,height-330))]:
             await page.locator('#input').focus()
+            await page.evaluate('''({height,reduced,safe})=>{
+              __shellKeyboard.height=reduced?height:null;__shellKeyboard.top=0;
+              visualViewport.dispatchEvent(new Event('resize'));
+              if(safe){document.documentElement.style.setProperty('--safe-area-top','47px');document.documentElement.style.setProperty('--safe-area-bottom','34px');
+                window.PablicusShell?.conversationTitle('Очень длинный заголовок разговора — проверка переполнения '.repeat(4));}
+            }''',{'height':h,'reduced':name!='conversation','safe':name=='safe-area-and-long-title'})
             await page.evaluate('()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))')
             observation=await page.evaluate('''()=>{
               const ids=['app','chatBack','chatTitle','chatLibraryOpen','reportBtn','composer','input','attach','send'];
@@ -84,13 +128,19 @@ async def probe(browser,root,origin,out,width,height,mutation=False):
                 const n=document.getElementById(id),r=n.getBoundingClientRect(),s=getComputedStyle(n);
                 return [id,{x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom,
                   visible:r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none',
-                  pointerEvents:s.pointerEvents,label:n.getAttribute('aria-label'),fontSize:s.fontSize}]
+                  pointerEvents:s.pointerEvents,label:n.getAttribute('aria-label'),fontSize:s.fontSize,
+                  hit:n.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))}]
               })),overflow:document.documentElement.scrollWidth>innerWidth,
                 safeArea:getComputedStyle(document.getElementById('composer')).paddingBottom,
-                route:PablicusController.state(),styles:[...document.styleSheets].map(s=>s.href)}
+                keyboardOpen:document.getElementById('app').classList.contains('keyboard-open'),
+                visualHeight:visualViewport.height,route:PablicusController.state(),styles:[...document.styleSheets].map(s=>s.href)}
             }''')
             critical=[observation['elements'][id] for id in ['input','attach','send']]
             check('2A-CONTROLS-VISIBLE-'+name,all(x['visible'] and x['x']>=-1 and x['y']>=-1 and x['right']<=width+1 and x['bottom']<=h+1 and x['pointerEvents']!='none' for x in critical),observation)
+            if name!='conversation':check('2A-KEYBOARD-STATE-'+name,observation['keyboardOpen'] and observation['visualHeight']==h,observation)
+            if result.get('registry'):
+                check('2A-CONTROL-TARGET-SIZE-'+name,all(observation['elements'][id]['width']>=44 and observation['elements'][id]['height']>=44 for id in ['attach','send']),observation['elements'])
+                check('2A-ICON-CONTROLS-ACCESSIBLE-'+name,all(observation['elements'][id]['label'] and observation['elements'][id]['hit'] for id in ['attach','send','chatBack','chatLibraryOpen','reportBtn']),observation['elements'])
             result['geometry'].append({'mode':name,**observation})
             await page.screenshot(path=str(out/(name+'.png')),full_page=True)
         check('2A-NO-STARTUP-ERROR',not collector.events['page_errors'],collector.events['page_errors'])
@@ -128,7 +178,8 @@ async def main(args):
             await browser.close();summary['browser_closed']=True
             positives=[summary['variants'].get(name,{}).get('status') for name in ['mobile','tablet','desktop']]
             negative=summary['variants'].get('duplicate-navigation',{})
-            summary['negative_control_qualified']=negative.get('status')=='FAIL' and any(c['name'].startswith('2A-SINGLE-NAVIGATION-DISPATCH-') and c['status']=='FAIL' and len(c['actual']['calls'])==2 for c in negative.get('checks',[]))
+            summary['negative_control_detected']=negative.get('status')=='FAIL' and any(c['name'].startswith('2A-SINGLE-NAVIGATION-DISPATCH-') and c['status']=='FAIL' and len(c['actual']['calls'])==2 for c in negative.get('checks',[]))
+            summary['negative_control_qualified']=positives==['PASS']*3 and summary['negative_control_detected'] and all(c['status']=='PASS' or c['name'].startswith('2A-SINGLE-NAVIGATION-DISPATCH-') for c in negative.get('checks',[]))
             summary['status']='ERROR' if 'ERROR' in positives or negative.get('status')=='ERROR' else ('PASS' if positives==['PASS']*3 and summary['negative_control_qualified'] else 'FAIL')
     except BaseException as exc:summary.update(status='ERROR',reason=str(exc),traceback=traceback.format_exc())
     finally:

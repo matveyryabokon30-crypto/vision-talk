@@ -3,7 +3,7 @@
 #composeBox.rich-composer,
 #composeBox.rich-composer.rich,
 #composeBox.rich-composer.rich-has-media {
-  grid-template-columns: 36px minmax(0, 1fr) 30px 36px 38px;
+  grid-template-columns: var(--control-size) minmax(0, 1fr) var(--control-size) var(--control-size) var(--control-size);
   grid-template-areas: 'tray tray tray tray tray' 'task task task task task' 'editor editor editor editor editor' 'attach quick expand voice send';
   gap: 0 2px;
   align-items: center;
@@ -11,9 +11,9 @@
 }
 #composeBox.rich-composer #workspaceQuick { grid-area: quick; min-width: 0; align-self: center; }
 #app:not(.composer-fullscreen) #composeBox.rich-composer #hideKey { display: none; }
-#composer #composeBox.rich-composer > .cicon { width: 36px; height: 36px; min-height: 36px; align-self: center; }
-#composer #composeBox.rich-composer #expand { width: 30px; }
-#composer #composeBox.rich-composer #send { width: 38px; height: 38px; min-height: 38px; }
+#composer #composeBox.rich-composer > .cicon { width: var(--control-size); height: var(--control-size); min-height: var(--control-size); align-self: center; }
+#composer #composeBox.rich-composer #expand { width: var(--control-size); }
+#composer #composeBox.rich-composer #send { width: var(--control-size); height: var(--control-size); min-height: var(--control-size); }
 #editor.richEditor.richHasMedia {
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -112,7 +112,7 @@
 #composer #richVoice.is-recording { background: #d747471a; color: #d74747; }
 .richVoiceStop { display: block; width: 13px; height: 13px; border-radius: 3px; background: currentColor; }
 #app.composer-fullscreen #composeBox.rich-composer {
-  grid-template-columns: 36px minmax(0, 1fr) 30px 36px 38px;
+  grid-template-columns: var(--control-size) minmax(0, 1fr) var(--control-size) var(--control-size) var(--control-size);
   grid-template-rows: 40px minmax(0, 1fr) 40px;
   grid-template-areas: 'title title title hide expand' 'editor editor editor editor editor' 'attach quick quick voice send';
 }

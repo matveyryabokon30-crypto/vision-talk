@@ -248,9 +248,9 @@ return !!(editable&&v&&Math.abs(v.scale-1)<.02&&Math.max(innerHeight,document.do
 function applyLayout(){if(simulating)return;const v=window.visualViewport,w=v?.width||innerWidth,h=v?.height||innerHeight,a=list?.lastAnchor,f=list?.follow??true;
 const width=Math.min(w,800),left=(v?.pageLeft??scrollX)+Math.max(0,(w-800)/2),top=v?.pageTop??scrollY;
 const keyboardOpen=keyboardOccludesViewport(v),keyboardChanged=app.classList.contains('keyboard-open')!==keyboardOpen;
-app.classList.toggle('keyboard-open',keyboardOpen);
+
 const changed=keyboardChanged||Math.abs(app.clientWidth-width)>.5||Math.abs(app.clientHeight-h)>.5;
-app.style.transform='translate3d('+left+'px,'+top+'px,0)';app.style.width=width+'px';app.style.height=h+'px';
+window.PablicusShell.viewport({width,height:h,left,top,keyboardOpen});
 if(changed)syncComposer(a,f);
 if(!running){const m=metrics();observations.resizes.push(m);if(observations.resizes.length>40)observations.resizes.shift();
 if(keyStart&&keyStart.height-m.height>100){report.manual.keyboard='SHRINK_OBSERVED_NOT_HUMAN_ACCEPTANCE';observations.keyboard.push({phase:'shrink',viewport:m,controls:controlsGeometry(),bottom_delta_px:list?round(list.bottomDistance()):null});if(observations.keyboard.length>20)observations.keyboard.shift()}
