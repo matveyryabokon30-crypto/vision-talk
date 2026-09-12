@@ -1,0 +1,798 @@
+{
+  "schema_version": "1.0",
+  "block_id": "BLOCK_1",
+  "task_id": "PABLICUS-BLOCK01-1D-CLOSEOUT-20260912",
+  "revision": "R1",
+  "status": "BLOCK_1_READY_FOR_INDEPENDENT_FINAL_REVIEW",
+  "repository": "matveyryabokon30-crypto/vision-talk",
+  "branch": "refactor/pablicus-foundation-20260911",
+  "work_start_head": "21309859b3e14b7f73f756ed2907373d414e128b",
+  "final_head_at_handoff": {
+    "kind": "SELF_CONTAINING_DOCUMENTATION_COMMIT",
+    "expected_parent": "21309859b3e14b7f73f756ed2907373d414e128b",
+    "resolve_command": "git log --reverse --format=%H 21309859b3e14b7f73f756ed2907373d414e128b..refactor/pablicus-foundation-20260911 -- docs/engineering/block-01/ACCEPTANCE.md | head -n 1",
+    "meaning": "HANDOFF_HEAD — commit, впервые добавивший этот пакет после work_start_head. Собственный SHA нельзя встроить в commit; точное значение публикуется в итоговом отчёте и receipt после создания. Проверить parent, task_id и только три разрешённых paths.",
+    "not_the_tested_source_sha": true
+  },
+  "substeps": {
+    "1A": {
+      "status": "SUBSTEP_1A_ACCEPTED_WITH_EXPLICIT_EXCLUSION",
+      "decision": "docs/engineering/block-01/REVIEW_1A_DECISION.md",
+      "scope": "Сохранение реально имеющегося candidate, подтверждение provenance, удаление неисправного packed bootstrap из текущего дерева при сохранении истории.",
+      "start_head": "bd0e1877bf5bb2a2f00f622a767b16c4723f6333",
+      "source_commit": "28ed3fde33f0e5a0a28b1fa12f147de465accf6a",
+      "reviewed_final_head": "7b559b81d4e5568ffadf8b6c8097bd4241af72c7",
+      "ci_run": 34581540126,
+      "artifact_id": 10191843142,
+      "exclusion": {
+        "id": "1A_UNRECOVERED_PACKED_DELTA",
+        "recovery_state": "NOT_RECOVERED",
+        "baseline_inclusion": "EXCLUDED_FROM_BASELINE",
+        "payload_blob": "eca708109f00b4dcd3da7bb194f9a0c541ef6f85",
+        "meaning": "Исключена неизвестная реализация повреждённого packed patch, не требования продукта. Не реконструировать, не применять и не восстанавливать bootstrap без нового полного авторитетного источника."
+      }
+    },
+    "1B": {
+      "status": "SUBSTEP_1B_ACCEPTED",
+      "decision": "docs/engineering/block-01/REVIEW_1B_DECISION.md",
+      "scope": "Контроллер и реальные callers: latest-wins, cleanup, cancellation, identity/refresh, Canvas guard, late rejects и завершение leave перед возвратом к ресурсу.",
+      "historical_start_head": "a0e7cb75d053aa0fc43de6904bcca5f85321bb4f",
+      "correction_R2_work_start_head": "1e12b31d45c4ccbf7d337ce9a11dee3814579c24",
+      "accepted_code_sha": "c5d82e96a236317f7a50530fb86da1a5d2bc4e26",
+      "tested_sha": "c5d82e96a236317f7a50530fb86da1a5d2bc4e26",
+      "handoff_head": "4c8e045aaac051e7d1244fd9dfe23c5124b397eb",
+      "ci_run": 34626105353,
+      "ci_job": 103351483199,
+      "artifact": {
+        "id": 10273683434,
+        "name": "block-01-acceptance-c5d82e96a236317f7a50530fb86da1a5d2bc4e26",
+        "bytes": 236010,
+        "sha256": "229687efa9138f9839ed89b26bcc51ec64811a29cbd65abefa799a137d08ee8a",
+        "expires_at": "2026-09-25T17:11:45Z",
+        "downloaded_and_inspected": true,
+        "crc": "PASS"
+      },
+      "regression_on_final_1c": {
+        "PASS": 31,
+        "FAIL": 0,
+        "ERROR": 0,
+        "TIMEOUT": 0
+      }
+    },
+    "1C": {
+      "status": "SUBSTEP_1C_ACCEPTED",
+      "decision": "docs/pablicus/reviews/2026-09-12/1C_HANDOFF_REVIEW_R1.md",
+      "results": "docs/pablicus/reviews/2026-09-12/1C_R1_RESULTS.json",
+      "scope": "Интеграционная квалификация семи требований реальных модулей, ресурсов, storage и outbox в declared synthetic boundary.",
+      "historical_work_start_head": "dc4a6031e3a7b5248882f88dee11d83ccd88fd60",
+      "continuation_work_start_head": "56a6ecf7b5ebdf0e8cc3529d4582707188124e29",
+      "accepted_code_sha": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+      "tested_sha": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+      "handoff_head": "2d610c10cdd2be62ae2193965cd4d5a6c869f09c",
+      "independent_review_commits": [
+        "117de251d8e3273634a9637388b4bad1a8352a32",
+        "21309859b3e14b7f73f756ed2907373d414e128b"
+      ],
+      "requirements": {
+        "1_real_routes_modules_resources": "PASS",
+        "2_resource_accumulation_and_quiet_ui": "PASS",
+        "3_durability_text_ids_original_blob_bytes": "PASS",
+        "4_durable_outbox_offline_lost_ack_retry_idempotency": "PASS",
+        "5_account_isolation_late_operations_same_user_refresh": "PASS",
+        "6_storage_failures_and_recovery": "PASS",
+        "7_positive_and_negative_controls": "PASS"
+      },
+      "browser_matrix": {
+        "PASS": 9,
+        "FAIL": 0,
+        "ERROR": 0,
+        "TIMEOUT": 0,
+        "NOT_RUN": 0,
+        "BLOCKED": 0,
+        "behavioral_assertions_pass": 145,
+        "completed_transitions": 54
+      }
+    },
+    "1D": {
+      "status": "BLOCK_1_READY_FOR_INDEPENDENT_FINAL_REVIEW",
+      "task_id": "PABLICUS-BLOCK01-1D-CLOSEOUT-20260912",
+      "task_revision": "R1",
+      "authorization": "Отдельное прямое задание владельца в текущей задаче, 2026-09-12; более раннее NOT_STARTED относится к времени приёмки 1C.",
+      "work_start_head": "21309859b3e14b7f73f756ed2907373d414e128b",
+      "scope": "Closeout/documentation/review packaging only",
+      "allowed_paths": [
+        "docs/engineering/block-01/ACCEPTANCE.md",
+        "docs/engineering/block-01/REVIEW_MANIFEST.json",
+        "PABLICUS_CONTEXT.md"
+      ],
+      "review_required": true
+    }
+  },
+  "accepted_1a": "SUBSTEP_1A_ACCEPTED_WITH_EXPLICIT_EXCLUSION",
+  "accepted_1b": "SUBSTEP_1B_ACCEPTED",
+  "accepted_1c": "SUBSTEP_1C_ACCEPTED",
+  "final_code_sha": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+  "final_tested_sha": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+  "final_1c_handoff_sha": "2d610c10cdd2be62ae2193965cd4d5a6c869f09c",
+  "ci": {
+    "run_id": 34688665398,
+    "job_id": 103540004753,
+    "status": "completed",
+    "conclusion": "success",
+    "attempt": 1,
+    "head_sha": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+    "url": "https://github.com/matveyryabokon30-crypto/vision-talk/actions/runs/34688665398",
+    "reused_accepted_execution": true,
+    "new_1d_run": null
+  },
+  "artifact": {
+    "id": 10297195136,
+    "name": "integration-1c-4b886c1477c44752359ccc4b44f8ff5c072bb241",
+    "size_bytes": 2362292,
+    "github_digest": "sha256:af0115ae7d0df2efbb1b910ef9d172b4e360bef936fdb9424444ec476950bcb8",
+    "sha256": "af0115ae7d0df2efbb1b910ef9d172b4e360bef936fdb9424444ec476950bcb8",
+    "crc": "PASS",
+    "expires_at": "2026-09-26T10:34:49Z",
+    "url": "https://github.com/matveyryabokon30-crypto/vision-talk/actions/runs/34688665398/artifacts/10297195136",
+    "original_zip_filename": "integration-1c-4b886c-original.zip",
+    "original_zip_repacked": false,
+    "source_manifest_sha256": "036d684548f9936ee6068f5042c90517ad07447a471e8a14098b8649b7249771",
+    "local_copy_available_at_closeout": true
+  },
+  "runtime_changes": {
+    "inventory_basis": {
+      "from": "f348aceacc3acdb315387a4066f6f495ce269b54",
+      "to": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+      "kind": "Full Block 1 candidate diff against the production audit baseline; identical path inventory from inspected baseline 748243d0cb850c74faf4ca284ca136811fbf312c"
+    },
+    "files": [
+      {
+        "path": "pablicus/app-controller.js",
+        "change": "Единый владелец route/state, актуальность переходов, lifecycle cleanup и изоляция identity; в 1C очищен route прежнего аккаунта.",
+        "final_git_blob": "8943581de6eadf5af0b4b31e2b8a445363c4449a",
+        "final_sha256": "78a2399e58b87739b6dba2458c8ee9636d606b9879f32b805a2cc55e48d35c55"
+      },
+      {
+        "path": "pablicus/app.js",
+        "change": "Интеграция контроллера и общих сервисов, auth/Canvas/leave contracts; в 1C ограничен polling rerender изменившимися данными на chats/home.",
+        "final_git_blob": "72a478d52653fc914235d929d52fa19cdaf7baf0",
+        "final_sha256": "44fb949671e510a4aafe1311193a723602a2c26fe1853ba95ec128182d791dde"
+      },
+      {
+        "path": "pablicus/bot-scenario-bridge.js",
+        "change": "Явный ID сценария, общий клиент и lifecycle/currentness вместо позиционной DOM-навигации.",
+        "final_git_blob": "a65a2d993ae3a8639ece31f6f7dd4039f84743d1",
+        "final_sha256": "1ece4fb607a086b0e2c90a5c2271539718cb9d3054a751f3ed75bcc92a22f7b6"
+      },
+      {
+        "path": "pablicus/bots-nav.js",
+        "change": "Явные маршруты Bots/Factory и lifecycle, общий клиент вместо дублированной persisted session.",
+        "final_git_blob": "0220112901ab17ace345e6bbb5de82c2514de8cf",
+        "final_sha256": "ce6675fe2477d5ca29923f8ffea2cdeeb2fe8fa27505084e85a66eeafae231ab"
+      },
+      {
+        "path": "pablicus/bots.js",
+        "change": "Стабильные ID/actions и явные callbacks Factory/Scenario.",
+        "final_git_blob": "dc17e6c2a599c9012822cfc3749e7117bb581d51",
+        "final_sha256": "fded148d380fac278059ef33abb4ce4b7d8c7e3373168e7605dfe111c2074702"
+      },
+      {
+        "path": "pablicus/chat-list-view.js",
+        "change": "Keyed reconciliation и стабильный порядок; отсутствие лишних DOM writes при неизменённом порядке.",
+        "final_git_blob": "2698bc203b237d7662f8b0ace727fb2096d9e5e5",
+        "final_sha256": "64b3d60a84f335d65f489b5e0db393e6ffb97732ef77acca7e8087abb39b1e54"
+      },
+      {
+        "path": "pablicus/index.html",
+        "change": "Entrypoint включает модули контроллера и списка.",
+        "final_git_blob": "babddea9ea8d69f86c0f6d69adef9e4f118cdb23",
+        "final_sha256": "ac93cb1085d2013779220f3f4662f45ec5a2ea8ba42eb02a2240c2a062e93137"
+      },
+      {
+        "path": "pablicus/public-hotfix-v8.js",
+        "change": "Убрано владение навигацией и DOM observers из исторического слоя совместимости.",
+        "final_git_blob": "b4dfa2a66d9a5017f3aefeeec518d636246581e8",
+        "final_sha256": "202dc4c11d677f27f20106d2eb9fad6fcc36eebde81e24e61588916d0fda1c35"
+      },
+      {
+        "path": "pablicus/sw.js",
+        "change": "Граф candidate cache включает модули; production Service Worker не опубликован и не квалифицирован.",
+        "final_git_blob": "01e41d736321b5290b677669484370cbcfffc8de",
+        "final_sha256": "ca21bada24164a099ee4a05797d432d47a1a909e60956ce514810b2816ed0afa"
+      },
+      {
+        "path": "pablicus/ux-refinement.js",
+        "change": "Слой представления больше не владеет навигацией, порядком списка и перехватом project clicks.",
+        "final_git_blob": "eff46993090bfe9f697181cfba878c47205024f8",
+        "final_sha256": "5138c4d275248d5a259256d3db3aad1c5c8e230efe6651813c1428709f711393"
+      }
+    ],
+    "initial_candidate_preserved_by_1a": [
+      "pablicus/app-controller.js",
+      "pablicus/app.js",
+      "pablicus/bot-scenario-bridge.js",
+      "pablicus/bots-nav.js",
+      "pablicus/bots.js",
+      "pablicus/chat-list-view.js",
+      "pablicus/index.html",
+      "pablicus/public-hotfix-v8.js",
+      "pablicus/sw.js",
+      "pablicus/ux-refinement.js"
+    ],
+    "new_runtime_files_changed_in_1a": [],
+    "runtime_paths_changed_during_1b": [
+      "pablicus/app-controller.js",
+      "pablicus/app.js",
+      "pablicus/bot-scenario-bridge.js",
+      "pablicus/bots-nav.js"
+    ],
+    "runtime_paths_changed_during_1c": [
+      "pablicus/app-controller.js",
+      "pablicus/app.js"
+    ],
+    "runtime_paths_changed_during_1d": [],
+    "first_1c_fix_proof_scope": {
+      "before": "e8d017be3a8c46f3dcc78910a2082e704a4fcaa5",
+      "after": "0cf9f714a50952c42c5b503b70fc7429e8b99588",
+      "unchanged_relevant_sources_only": [
+        "tests/engineering/block-01/integration_1c/case.py",
+        "tests/engineering/block-01/integration_1c/instrument.js",
+        "tests/engineering/block-01/integration_1c/network.py",
+        "tests/engineering/block-01/integration_1c/scenario_routes.py",
+        "tests/engineering/block-01/integration_1c/scenario_quiet.py"
+      ],
+      "entire_harness_unchanged_claimed": false,
+      "explanation": "Другие harness files менялись. Принимаются только сверенные релевантные route/quiet sources и independently audited final exact-SHA artifact."
+    }
+  },
+  "test_scope": {
+    "requirements_1_7": {
+      "1": {
+        "status": "PASS",
+        "requirement": "Real modules, routes and visible resources",
+        "cases": [
+          "routes"
+        ],
+        "evidence_members": [
+          "browser/routes/result.json"
+        ]
+      },
+      "2": {
+        "status": "PASS",
+        "requirement": "54 completed transitions; no measured resource accumulation or unchanged-list rerender",
+        "cases": [
+          "lifecycle",
+          "quiet"
+        ],
+        "evidence_members": [
+          "browser/lifecycle/result.json",
+          "browser/quiet/result.json"
+        ]
+      },
+      "3": {
+        "status": "PASS",
+        "requirement": "Draft text, order, stable IDs and original Blob bytes across close/open, reload and Canvas deny/accept",
+        "cases": [
+          "durability",
+          "canvas"
+        ],
+        "evidence_members": [
+          "browser/durability/result.json",
+          "browser/canvas/result.json"
+        ]
+      },
+      "4": {
+        "status": "PASS",
+        "requirement": "Durable outbox offline/reload/lost ACK/retry/idempotency and visible explicit failure",
+        "cases": [
+          "outbox"
+        ],
+        "evidence_members": [
+          "browser/outbox/result.json"
+        ]
+      },
+      "5": {
+        "status": "PASS",
+        "requirement": "A to B to A, late read/write/send, draft/files/outbox/selection and same-user refresh",
+        "cases": [
+          "isolation",
+          "pending-send"
+        ],
+        "evidence_members": [
+          "browser/isolation/result.json",
+          "browser/pending-send/result.json"
+        ]
+      },
+      "6": {
+        "status": "PASS",
+        "requirement": "Native storage write/enqueue/load failures and recovery",
+        "cases": [
+          "storage-errors"
+        ],
+        "evidence_members": [
+          "browser/storage-errors/result.json"
+        ]
+      },
+      "7": {
+        "status": "PASS",
+        "requirement": "Positive baseline plus concrete isolated negative controls",
+        "cases": [
+          "routes",
+          "quiet",
+          "lifecycle",
+          "durability",
+          "canvas",
+          "outbox",
+          "isolation",
+          "pending-send",
+          "storage-errors"
+        ],
+        "evidence_members": [
+          "browser/routes/result.json",
+          "browser/quiet/result.json",
+          "browser/lifecycle/result.json",
+          "browser/durability/result.json",
+          "browser/canvas/result.json",
+          "browser/outbox/result.json",
+          "browser/isolation/result.json",
+          "browser/pending-send/result.json",
+          "browser/storage-errors/result.json"
+        ],
+        "negative_controls_member": "negative-controls/results.json"
+      }
+    },
+    "browser_matrix": {
+      "PASS": 9,
+      "FAIL": 0,
+      "ERROR": 0,
+      "TIMEOUT": 0,
+      "NOT_RUN": 0,
+      "BLOCKED": 0
+    },
+    "behavioral_assertions_pass": 145,
+    "completed_verified_transitions": 54,
+    "warmup_transitions_excluded": 9,
+    "selftests": {
+      "INSTRUMENT-NATIVE-RECEIVER-01": {
+        "status": "PASS",
+        "checks": 52,
+        "inner_exit_code": null
+      },
+      "COLLECTOR-EARLY-ERROR-01": {
+        "status": "PASS",
+        "checks": 12,
+        "inner_exit_code": 1
+      }
+    },
+    "ab": {
+      "status": "PASS",
+      "variants": {
+        "A": "PASS",
+        "B0": "ERROR",
+        "B1": "PASS"
+      },
+      "hypothesis": "H1_REPRODUCED_IN_CURRENT_EXPERIMENT",
+      "historical_first_error_recovered": false
+    },
+    "preflight": {
+      "status": "PASS",
+      "checks": 10
+    },
+    "network_contracts": {
+      "unit_checks_pass": 100,
+      "browser_checks_pass": 34
+    },
+    "accepted_1b_regressions": {
+      "PASS": 31,
+      "FAIL": 0,
+      "ERROR": 0,
+      "TIMEOUT": 0
+    },
+    "additional_historical_1b_review": {
+      "candidate_cases": "31/31 PASS",
+      "reviewer_real_leave_cases": "7/7 PASS",
+      "scope_note": "Историческая приёмка c5d82e; эти дополнительные 7 не объявляются новым запуском на 4b886c."
+    },
+    "new_executable_tests_in_1d": 0
+  },
+  "negative_controls": {
+    "MUTATION_A_RESOURCE_LEAK": {
+      "outer": "PASS",
+      "inner": "FAIL",
+      "assertion": "1C-NO-RESOURCE-ACCUMULATION",
+      "exit_code": 1,
+      "candidate_unchanged": true
+    },
+    "MUTATION_B_LATE_ACCOUNT": {
+      "outer": "PASS",
+      "inner": "FAIL",
+      "assertion": "1C-LATE-ACCOUNT-ISOLATION",
+      "exit_code": 1,
+      "candidate_unchanged": true
+    },
+    "MUTATION_C_BYTE_OR_ORDER": {
+      "outer": "PASS",
+      "inner": "FAIL",
+      "assertion": "1C-DRAFT-BYTES",
+      "exit_code": 1,
+      "candidate_unchanged": true
+    },
+    "MUTATION_D_ROUTE_RESOURCE": {
+      "outer": "PASS",
+      "inner": "FAIL",
+      "assertion": "1C-SCENARIO-SURVIVES-POLL",
+      "exit_code": 1,
+      "candidate_unchanged": true
+    }
+  },
+  "limitations": [
+    "Chromium 143.0.7499.4 / Playwright 1.57.0 / Python 3.12.7 / Ubuntu 24.04 CI. Safari, WebKit, Firefox и физический iPhone не квалифицированы.",
+    "Real local index, SDK, modules, DOM и IndexedDB проверены с deterministic synthetic HTTP/Phoenix boundaries. Это не production backend, RLS/Auth или real-user qualification.",
+    "Local IndexedDB durability и account isolation не доказывают multi-device synchronization или сохранность любых production данных.",
+    "Service Workers блокировались; offline shell предоставлен локальными статическими файлами. Production Service Worker installation/caching/update не квалифицированы.",
+    "Resource conclusion ограничен измеренными классами и 54 завершёнными переходами после 9 прогревочных; не доказывает неограниченную leak-free работу или поведение под произвольной нагрузкой.",
+    "1B проверяет сохранённые corrective contracts и R2; полная первоначальная постановка до коррекции не восстановлена. Его Node/VM проверки не подменяют browser integration 1C.",
+    "Browser back/forward за пределами проверенных маршрутов не сертифицирован полностью; геометрия, клавиатура, safe area и жесты относятся к последующей приёмке.",
+    "H1 воспроизведена в текущем A/B0/B1; отсутствующая первая pageerror исторического f00f253 не восстановлена. Исторические 9 ERROR не являются девятью product bugs.",
+    "WebSocket observer изменяет constructor identity, сохраняя проверенный API/prototype; условия одинаковы между A/B вариантами. Package binary hashes не записаны; версии и source hashes сохранены.",
+    "GitHub artifact имеет конечный срок хранения до 2026-09-26T10:34:49Z. Исходный ZIP сохранён локально; бессрочное хранение GitHub не заявляется.",
+    "Отсутствие production writes в прежних подэтапах записано в их отчётах; полный независимый серверный аудит внешних операций здесь не проводился. В 1D таких операций нет.",
+    "1D использует существующие принятые результаты и выполняет только документальную сверку. Новые browser/tests/CI не запускались. Итоговая независимая проверка Block 1 ещё требуется."
+  ],
+  "explicit_exclusions": [
+    {
+      "id": "1A_UNRECOVERED_PACKED_DELTA",
+      "recovery_state": "NOT_RECOVERED",
+      "baseline_inclusion": "EXCLUDED_FROM_BASELINE",
+      "payload_blob": "eca708109f00b4dcd3da7bb194f9a0c541ef6f85",
+      "meaning": "Исключена неизвестная реализация повреждённого packed patch, не требования продукта. Не реконструировать, не применять и не восстанавливать bootstrap без нового полного авторитетного источника."
+    },
+    {
+      "id": "PRODUCTION_AND_RELEASE",
+      "items": [
+        "merge to main",
+        "deployment",
+        "production Supabase",
+        "production Auth/RLS",
+        "real-user data",
+        "production Service Worker",
+        "whole-product/security/release certification"
+      ]
+    },
+    {
+      "id": "UNTESTED_ENVIRONMENTS",
+      "items": [
+        "physical iPhone",
+        "Safari/WebKit/Firefox",
+        "multi-device",
+        "unlimited-duration/resource/load guarantee"
+      ]
+    },
+    {
+      "id": "FUTURE_PRODUCT_SCOPE",
+      "items": [
+        "Block 2–5 implementation",
+        "Amendment 01 AI assistant implementation",
+        "Amendment 02 competitive capability implementation"
+      ],
+      "requirements_remain_in_approved_plan": true
+    }
+  ],
+  "canonical_documents": {
+    "frozen_inputs": [
+      {
+        "path": "PABLICUS_CONTEXT.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "372611a322a730fccaed9eeaa6a026da71e2ca2a818be2765ad5b7d31d7a61ef",
+        "git_blob": "9aabd9be58bd69c0757d1c9e026ad6fd1b2971f1",
+        "bytes": 20571
+      },
+      {
+        "path": "docs/pablicus/approved/2026-09-11/Pablicus_Continuation_Plan_2026-09-11.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "d914625521cebfc3a191580f06c5734782287c9fc15b8034e3ad026891bbbb59",
+        "git_blob": "7ae1a3f880032b1e3b3e7575866084fa3909e67d",
+        "bytes": 25983
+      },
+      {
+        "path": "docs/pablicus/approved/2026-09-11/OWNER_DECISION.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "97db917f4a391bed1cf8c7ff808b1dd871365a5cc171d36453b096fda0fb393a",
+        "git_blob": "4ad975555462d27ffa7c2eba9e6aff6cfdc11c38",
+        "bytes": 4580
+      },
+      {
+        "path": "docs/pablicus/approved/2026-09-11/AMENDMENT_01_UNIVERSAL_AI_ASSISTANT.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "709a1832e22e82c8a4c58afdbbda82937a93a849ff2c3e37179c57b8f69bfdb1",
+        "git_blob": "060b5e4ad04d49d744e8dd7e24f86ff22bae909f",
+        "bytes": 20121
+      },
+      {
+        "path": "docs/pablicus/approved/2026-09-11/OWNER_DECISION_AMENDMENT_01.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "bc1e7cf1ee425799edbf530a996afe2614653967429360ed1d1130b31192d028",
+        "git_blob": "5a1868b86e8b86244ad934b4ae5e5c0f29b0cf6d",
+        "bytes": 5736
+      },
+      {
+        "path": "docs/pablicus/approved/2026-09-11/AMENDMENT_02_COMPETITIVE_CAPABILITIES.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "3aaff30c37ce6f2e1d991af77ddd2ba3ae3705a4cb90b3a542a44e28b7d93813",
+        "git_blob": "6e0239cc6558056c884bcb10bd500b139b1e382b",
+        "bytes": 19245
+      },
+      {
+        "path": "docs/pablicus/approved/2026-09-11/OWNER_DECISION_AMENDMENT_02.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "90851be6932b4d3e4f65bb60175fb2167f48588dacd53b483cbc0bc2bc6133c8",
+        "git_blob": "900175fa88471fd458963b003aa926c7e3120712",
+        "bytes": 3747
+      },
+      {
+        "path": "docs/engineering/block-01/IMPLEMENTATION.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "b6dfbd4a330cade1e662a32af70fe88db0136a9d2218d5b80bdd590ed3d66502",
+        "git_blob": "126d682b5392144e34c82f22fbbba86b619e71cc",
+        "bytes": 3302
+      },
+      {
+        "path": "docs/engineering/block-01/OWNERSHIP_MAP.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "a21744bc60ff80cfe5e3dd6ed45164780b9a7b54eefcdf030a810a07f898f82d",
+        "git_blob": "8c2ed9dd3c2ac0e20f6c2ff52d98c920533d4dfd",
+        "bytes": 3343
+      },
+      {
+        "path": "docs/engineering/block-01/KNOWN_ISSUES.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "b35a4754645e191734d8429e17e08f1a2060e070269d213e5e32a31c13edd193",
+        "git_blob": "c8dd8935c29c27159a73023938ed5a94c36cd377",
+        "bytes": 1053
+      },
+      {
+        "path": "docs/engineering/block-01/RECOVERY_1A.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "077f0a8f1dd4e6a98024ae875b81f22a12ded32aaabb3b98d528a2c4c2560b33",
+        "git_blob": "dae6a904f0d53bc5555024123c8d9314a049da3c",
+        "bytes": 8523
+      },
+      {
+        "path": "docs/engineering/block-01/RECOVERY_1A_MANIFEST.json",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "592b9c9e56d6599a588ed8d11371240811f4c3a55cd803d20165f025e5a36939",
+        "git_blob": "a05f753177783fa7feaf7c725942223ad1c5b3b0",
+        "bytes": 5555
+      },
+      {
+        "path": "docs/engineering/block-01/REVIEW_1A_DECISION.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "3443b2448f22e5c55feba12e88e09993fd0ee0ba4fd3bfe1652ff0cf8bde8848",
+        "git_blob": "0055605d396583cd57ed965f74f88dcd10f938d5",
+        "bytes": 3169
+      },
+      {
+        "path": "docs/engineering/block-01/REVIEW_1B_DECISION.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "aee03066745a851344c5a31dc5821361413e631b5ac7963119d89b634ee4cc14",
+        "git_blob": "c07b729436bed7b4d38c166282ff2d928bac0458",
+        "bytes": 5290
+      },
+      {
+        "path": "docs/engineering/block-01/CONTROLLER_1B_REPORT.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "aad9d1c3aad01ab16b34704eb721c93c0d3eef7c588c00269552380befca7595",
+        "git_blob": "ac049e5146f85e95fc7654558e8d66338c88279a",
+        "bytes": 15935
+      },
+      {
+        "path": "docs/engineering/block-01/CONTROLLER_1B_MANIFEST.json",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "1d7c08d68ef333d25c38340e875afd1ebe65a0307146cf8af308dd7242904e44",
+        "git_blob": "d1fdc3b31afa5bb3a8b007712075be75743b9b06",
+        "bytes": 15430
+      },
+      {
+        "path": "docs/engineering/block-01/CONTROLLER_1B_EVIDENCE.json",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "8dcb8083bd1f1b132d57f21acb246d8aa439113f937e4fec0cfdf757af838967",
+        "git_blob": "cc859ab0dbd8c4bf95080f64e01a0a123777a376",
+        "bytes": 11751
+      },
+      {
+        "path": "docs/engineering/block-01/INTEGRATION_1C_REPORT.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "412d353f6e3543246bc0ecdb9379a46563306206159b1db4449d220f2d9dd9f0",
+        "git_blob": "f60e3f550df889b9edb16be97bd3dc98c0f62c5f",
+        "bytes": 27993
+      },
+      {
+        "path": "docs/engineering/block-01/INTEGRATION_1C_MANIFEST.json",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "f9d3328cce131ebd3dec4a9a240365b83ce7652533d8ffaccd43d79cf2e15b92",
+        "git_blob": "bd6aad7cc56cad0feff2eed50b1ffc4eec55fa0a",
+        "bytes": 31581
+      },
+      {
+        "path": "docs/engineering/block-01/INTEGRATION_1C_EVIDENCE.json",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "9dd2d22a508094d2bf3d77199d8d589b822edf5c1873549b2a3a320011762cbd",
+        "git_blob": "b303fb2746661b1825dd3b5a888d5248ee87c2d7",
+        "bytes": 14956
+      },
+      {
+        "path": "docs/engineering/block-01/INTEGRATION_1C_PRIMARY_EVIDENCE_R2.json",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "5ff42d1cdf2e996f7d1327d72d6533ba793da2b926d87cbef85964e605065428",
+        "git_blob": "d3bf894b18ebefb6cfaab2f1166102e0160c029f",
+        "bytes": 393076
+      },
+      {
+        "path": "docs/engineering/block-01/INTEGRATION_1C_ARTIFACT_VERIFICATION_R2.json",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "0431d96c0638e5f69afa0be539d9abd0f862304a5770e491324d7302cbb06bf1",
+        "git_blob": "46a1d2e6d37b2076866d4990afa29736d1dcad92",
+        "bytes": 8033
+      },
+      {
+        "path": "docs/engineering/block-01/INTEGRATION_1C_PRODUCT_PROOF_R2.json",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "2e3d50926c8cf04bc4834f01936a4968aebb2c65723b8a58ab254e335948420e",
+        "git_blob": "96ef0cf738ed712260e5202bd836747827613804",
+        "bytes": 95378
+      },
+      {
+        "path": "docs/engineering/block-01/INTEGRATION_1C_AUDIT_R2.json",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "3f2146caea4fe6d4cf0cf7971933db9697d79de0e6ff6dbae35667e9439dcfba",
+        "git_blob": "8a1452420484a0573568b83a0176260cb734db5d",
+        "bytes": 62869
+      },
+      {
+        "path": "docs/engineering/block-01/INTEGRATION_1C_EXECUTION_BLUEPRINT.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "7360892600358c262890437014f59776d8e8e831586927b827a31ab6060de24d",
+        "git_blob": "53bffdcc8a524d431b06c37ce43276b9d8ac5ebf",
+        "bytes": 37310
+      },
+      {
+        "path": "docs/engineering/block-01/INTEGRATION_1C_SUPPORT_STATUS_R1.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "28f89398b763483364a12690e5fce0fec5b63f06d39d1708b8041bb3f164f97a",
+        "git_blob": "f428bf1b40e7a16fa07cfa3a406af57bdf20f745",
+        "bytes": 3775
+      },
+      {
+        "path": "docs/pablicus/reviews/2026-09-11/1B_HANDOFF_REVIEW_R3.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "d33156a6ebb3992e14dfc451ad55123b72c7b458e9a04a90ad4faf6bcfe0bbd7",
+        "git_blob": "77527409d083e21337939e3ade876d1daf4f2151",
+        "bytes": 13569
+      },
+      {
+        "path": "docs/pablicus/reviews/2026-09-11/1B_R3_RESULTS.json",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "5b3b39a185f37a784e3b467369fe7c2db095560d4a5a0dbf74998d381425b631",
+        "git_blob": "f99c9da1e137256401291e6ff4d410a959e0888a",
+        "bytes": 9269
+      },
+      {
+        "path": "docs/pablicus/reviews/2026-09-12/1C_HANDOFF_REVIEW_R1.md",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "b617fff01081e0a3c825964e8c820c474b3d2b1d6309dec42d07446aafe5f3e7",
+        "git_blob": "65650b197e6bdfb727f3fb8cec144dd365a60fdb",
+        "bytes": 9548
+      },
+      {
+        "path": "docs/pablicus/reviews/2026-09-12/1C_R1_RESULTS.json",
+        "read_at_commit": "21309859b3e14b7f73f756ed2907373d414e128b",
+        "sha256": "b0f85ec74b3d88d34dad808cbd574d6abe08067e53e819e7b2df7dbb1c811e0c",
+        "git_blob": "451acbfcf9e7ab32b5c1aec8ad3b32f2bf57efc9",
+        "bytes": 4108
+      }
+    ],
+    "current_closeout": [
+      "docs/engineering/block-01/ACCEPTANCE.md",
+      "docs/engineering/block-01/REVIEW_MANIFEST.json",
+      "PABLICUS_CONTEXT.md"
+    ],
+    "input_hash_note": "Хеш PABLICUS_CONTEXT относится к входному START, до минимального обновления 1D."
+  },
+  "plan_basis": {
+    "version": "1.0",
+    "status": "OWNER_APPROVED",
+    "path": "docs/pablicus/approved/2026-09-11/Pablicus_Continuation_Plan_2026-09-11.md",
+    "owner_decision": "docs/pablicus/approved/2026-09-11/OWNER_DECISION.md",
+    "block_order": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "block_6_exists": false,
+    "plan_changed": false
+  },
+  "amendments": [
+    {
+      "id": "01",
+      "status": "OWNER_APPROVED",
+      "path": "docs/pablicus/approved/2026-09-11/AMENDMENT_01_UNIVERSAL_AI_ASSISTANT.md",
+      "decision": "docs/pablicus/approved/2026-09-11/OWNER_DECISION_AMENDMENT_01.md",
+      "implemented_in_block_1": false
+    },
+    {
+      "id": "02",
+      "status": "OWNER_APPROVED",
+      "path": "docs/pablicus/approved/2026-09-11/AMENDMENT_02_COMPETITIVE_CAPABILITIES.md",
+      "decision": "docs/pablicus/approved/2026-09-11/OWNER_DECISION_AMENDMENT_02.md",
+      "execution_blocks": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "implemented_in_block_1": false
+    }
+  ],
+  "external_writes": {
+    "this_1d_scope": "Only ordinary documentation Git objects/commit and non-force update of the authorized branch; exact returned IDs in handoff receipt.",
+    "allowed_paths": [
+      "docs/engineering/block-01/ACCEPTANCE.md",
+      "docs/engineering/block-01/REVIEW_MANIFEST.json",
+      "PABLICUS_CONTEXT.md"
+    ],
+    "force_push": false,
+    "reset": false,
+    "merge_to_main": false,
+    "deployment": false,
+    "main_write": false,
+    "new_ci_dispatch": false,
+    "support_messages": false,
+    "historical_1c_ledger": "docs/engineering/block-01/INTEGRATION_1C_SESSION_HISTORY_R2.json"
+  },
+  "production_changes": {
+    "this_1d": "NONE",
+    "main_observed": "f348aceacc3acdb315387a4066f6f495ce269b54",
+    "supabase": false,
+    "auth_rls": false,
+    "real_user_data": false,
+    "historical_evidence_boundary": "Отсутствие production writes в прежних подэтапах записано в их отчётах; полный независимый серверный аудит внешних операций здесь не проводился. В 1D таких операций нет."
+  },
+  "safety_history": {
+    "historical_gate": "NOT_RESOLVED_LAST_CANONICAL_RECORD",
+    "support": "SENT_AND_ESCALATED",
+    "specialist_review": "PENDING_LAST_CANONICAL_RECORD",
+    "current_environment_source_writes": "SUCCEEDED_WITHOUT_NEW_REFUSAL",
+    "historical_clearance_claimed": false
+  },
+  "closeout_verification": {
+    "status": "PASS",
+    "checked_at_utc": "2026-09-12T12:27:35.722129+00:00",
+    "mode": "READ_ONLY_EXISTING_EVIDENCE_NO_TEST_EXECUTION",
+    "remote_head_at_start": "21309859b3e14b7f73f756ed2907373d414e128b",
+    "parallel_review_commits_preserved": 2,
+    "canonical_files_read": 30,
+    "accepted_substeps": [
+      "1A",
+      "1B",
+      "1C"
+    ],
+    "conflicts": [],
+    "api_run_job_artifact_binding": "PASS",
+    "original_zip_sha256": "af0115ae7d0df2efbb1b910ef9d172b4e360bef936fdb9424444ec476950bcb8",
+    "original_zip_crc": "PASS",
+    "scoped_source_files_vs_git": 166,
+    "primary_evidence_member_hash_references": 1463,
+    "primary_evidence_json_pointers": 1411,
+    "four_evidence_record_hashes": "PASS",
+    "document_only_after_tested_sha": true,
+    "runtime_files_in_block_inventory": 10,
+    "test_execution_performed": false,
+    "main_read_only_head": "f348aceacc3acdb315387a4066f6f495ce269b54"
+  },
+  "review_required": true,
+  "block_1_acceptance_assigned": false,
+  "block_2_status": "NOT_STARTED",
+  "next_step": "independent final review of Block 1"
+}

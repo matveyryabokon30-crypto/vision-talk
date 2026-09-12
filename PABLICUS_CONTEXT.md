@@ -6,7 +6,21 @@
 Рабочая ветка при фиксации: `refactor/pablicus-foundation-20260911`.
 Этот файл — точка входа после потери чата. Это не стенограмма и не подтверждение готовности приложения.
 
-## Актуальная передача 1C — 12 сентября 2026
+## Актуальный пакет 1D — Block 1 closeout, 12 сентября 2026
+
+- **1A — SUBSTEP_1A_ACCEPTED_WITH_EXPLICIT_EXCLUSION**: [решение](docs/engineering/block-01/REVIEW_1A_DECISION.md); `NOT_RECOVERED` / `EXCLUDED_FROM_BASELINE` сохранены.
+- **1B — SUBSTEP_1B_ACCEPTED**: [решение](docs/engineering/block-01/REVIEW_1B_DECISION.md).
+- **1C — SUBSTEP_1C_ACCEPTED**: [независимая приёмка](docs/pablicus/reviews/2026-09-12/1C_HANDOFF_REVIEW_R1.md), [результаты](docs/pablicus/reviews/2026-09-12/1C_R1_RESULTS.json).
+- **1D / Block 1 — BLOCK_1_READY_FOR_INDEPENDENT_FINAL_REVIEW**, `review_required=true`. BLOCK_1_ACCEPTED ещё не присвоен.
+- **Block 2 — NOT_STARTED**.
+
+Канонический пакет: [ACCEPTANCE.md](docs/engineering/block-01/ACCEPTANCE.md) и [REVIEW_MANIFEST.json](docs/engineering/block-01/REVIEW_MANIFEST.json). Следующий шаг: **independent final review of Block 1**. Текущее отдельное задание владельца: `PABLICUS-BLOCK01-1D-CLOSEOUT-20260912`, R1; только closeout документов.
+
+WORK_START_HEAD 1D: `21309859b3e14b7f73f756ed2907373d414e128b`; обе более поздние записи Проверяющего после handoff 1C сохранены. Принятый CODE_SHA = TESTED_SHA 1C: `4b886c1477c44752359ccc4b44f8ff5c072bb241`; handoff 1C: `2d610c10cdd2be62ae2193965cd4d5a6c869f09c`; CI `34688665398`, artifact `10297195136`. 1D не меняет runtime/tests/workflow и не создаёт новый test run. Plan 1.0 + Amendments 01/02 сохранены; Amendment 02 не входил в Block 1 execution.
+
+Ниже сохранены исторические передачи. Их READY/BLOCKED и NOT_STARTED относятся к прежним моментам; позднейшие решения выше определяют текущие статусы. Границы tests, synthetic network, Chromium CI и exclusions не расширяются на production, весь продукт или физический iPhone.
+
+## Историческая передача Исполнителя 1C — до независимой приёмки
 
 **SUBSTEP_1C_READY_FOR_INDEPENDENT_REVIEW**; ACCEPTED не присвоен. CODE_SHA = TESTED_SHA `4b886c1477c44752359ccc4b44f8ff5c072bb241`. [Свежий CI 34688665398](https://github.com/matveyryabokon30-crypto/vision-talk/actions/runs/34688665398) SUCCESS: 9/9 сценариев, 54 completed transitions, 4 конкретных mutation FAIL, 31/31 1B PASS; исходный artifact и hashes проверены. [Отчёт R2](docs/engineering/block-01/INTEGRATION_1C_REPORT.md), [манифест](docs/engineering/block-01/INTEGRATION_1C_MANIFEST.json), [evidence](docs/engineering/block-01/INTEGRATION_1C_EVIDENCE.json).
 
@@ -52,7 +66,7 @@ Safety-блокировка конкретной source-write операции �
 2. [Исходный утверждённый план 1.0](docs/pablicus/approved/2026-09-11/Pablicus_Continuation_Plan_2026-09-11.md).
 3. [Решение по Дополнению 01](docs/pablicus/approved/2026-09-11/OWNER_DECISION_AMENDMENT_01.md) и [Дополнение 01](docs/pablicus/approved/2026-09-11/AMENDMENT_01_UNIVERSAL_AI_ASSISTANT.md).
 4. [Решение по Дополнению 02](docs/pablicus/approved/2026-09-11/OWNER_DECISION_AMENDMENT_02.md) и [Дополнение 02](docs/pablicus/approved/2026-09-11/AMENDMENT_02_COMPETITIVE_CAPABILITIES.md).
-5. Актуальное решение по 1B и задание 1C по ссылкам выше; затем [снимок состояния при утверждении плана](docs/pablicus/approved/2026-09-11/Pablicus_Verified_Snapshot_2026-09-11.json) и [источники / границы исследования](docs/pablicus/approved/2026-09-11/Pablicus_Source_Scope.md).
+5. Текущий пакет 1D, решения приёмки 1A/1B/1C по ссылкам выше; затем [снимок состояния при утверждении плана](docs/pablicus/approved/2026-09-11/Pablicus_Verified_Snapshot_2026-09-11.json) и [источники / границы исследования](docs/pablicus/approved/2026-09-11/Pablicus_Source_Scope.md).
 6. [Решение по 1A](docs/engineering/block-01/REVIEW_1A_DECISION.md), актуальные документы `docs/engineering/block-01/`, новые коммиты и результаты проверок.
 7. [Манифест первоначальной фиксации плана](docs/pablicus/approved/2026-09-11/RECOVERY_MANIFEST.json). Его хеши относятся к первоначальному снимку, не к будущим редакциям этой точки входа.
 
