@@ -1,10 +1,22 @@
 # Pablicus — восстановление контекста
 
-**Статус стратегии: OWNER_APPROVED · план 1.0 + дополнение 01 + дополнение 02 · 12 сентября 2026 года.**
+**Статус стратегии: OWNER_APPROVED · план 1.0 + дополнение 01 + дополнение 02 + дополнение 03 · 12 сентября 2026 года.**
 
 Репозиторий: `matveyryabokon30-crypto/vision-talk`.
 Рабочая ветка при фиксации: `refactor/pablicus-foundation-20260911`.
 Этот файл — точка входа после потери чата. Это не стенограмма и не подтверждение готовности приложения.
+
+## Передача 2B — 12 сентября 2026
+
+**SUBSTEP_2B_READY_FOR_INDEPENDENT_REVIEW**. Это отдельное ограниченное задание Матвея `PABLICUS-BLOCK02-2B-SHARED-COMPONENTS-20260912`, R1. Исполнитель не присваивает ACCEPTED; Block 2 целиком не принят.
+
+WORK_START_HEAD: `6822a58a7a632fcfc182e4a8e2f02eea37d55afb`; CODE_SHA = TESTED_SHA: `c5e26c2f85ef1f6d1f8ab4684d033de4f3b0d3c9`. Свежий CI: `34701805783`, job `103574775764`, artifact `10299754595`. SHA-256 ZIP: `b55508278727f1aa81e0d215ee96dde5e3ff631801c4e50c6c0dcb80db3353b6`.
+
+Канонический пакет: `docs/engineering/block-02/COMPONENTS_2B_IMPLEMENTATION.md`, `COMPONENTS_2B_MAP.json`, `COMPONENTS_2B_TEST_RESULTS.json`, `COMPONENTS_2B_MANIFEST.json` в том же каталоге. Общие native controls и существующие composer/overlay surfaces; current Controller/AppShell/PablicusUI сохранены. 2B-T01…T07 PASS в явно ограниченной квалификации; before FAIL → after PASS, 31/31 1B и 9/9 1C с четырьмя отрицательными контролями на точном SHA.
+
+Сохранены параллельные Amendment 03, owner decision и Design Reference Register. Теперь действуют Plan 1.0 + Amendments 01/02/03, пять блоков; дизайн-контур отдельный, новый дизайн/активы не внедрялись. 1A/1B/1C/1D/Block 1 и 2A остаются принятыми в прежних границах; исторические записи ниже не переписаны.
+
+Физический iPhone, остальные browser engines, production backend, multi-device, Service Worker lifecycle и полная WCAG не квалифицированы. Native Popover API требуется для fullscreen workspace editor; без него сохраняется inline-редактирование с явным сообщением. CATEGORY_A и будущие компоненты не объявлены реализованными. Следующий шаг — независимая проверка 2B через Матвея. Следующий подэтап автоматически не начат; Block 3–5 не начаты этим заданием.
 
 ## Независимая приёмка 2A — 12 сентября 2026
 
