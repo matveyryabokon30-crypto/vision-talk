@@ -145,6 +145,7 @@ async def main():
    b=await pw.chromium.launch(headless=True,args=['--no-sandbox','--disable-dev-shm-usage','--disable-background-networking','--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1'])
    ctx=await b.new_context(service_workers='block',viewport={'width':430,'height':900});await ctx.add_init_script(path=str(HERE/'instrument.js'));await ctx.route('**/*',boundary.handle);await ctx.route_web_socket('**/*',boundary.websocket)
    page=await ctx.new_page();page.set_default_timeout(8000);page.set_default_navigation_timeout(15000);RESULT['browser_version']=b.version
+   await boundary.attach_page(page)
    collector=BrowserCollector(page,boundary,OUT)
    app=App(page,ctx,boundary,origin)
    try:
@@ -156,6 +157,8 @@ async def main():
    except BaseException as exc:RESULT.update(status='TIMEOUT' if isinstance(exc,(asyncio.TimeoutError,PlaywrightTimeoutError)) else 'ERROR',reason=str(exc),traceback=traceback.format_exc())
    finally:
     for h in boundary.holds:h['release'].set()
+    try:await boundary.drain()
+    except Exception as exc:RESULT.update(unqualified_behavioral_status=RESULT['status'],status='ERROR',reason='Network callback drain failed: '+str(exc))
     RESULT.update(await collector.capture());collector.enforce_result(RESULT);save()
     RESULT['browser_cleanup']={}
     for name,resource in [('context',ctx),('browser',b)]:
@@ -163,6 +166,11 @@ async def main():
      except Exception as exc:
       RESULT['browser_cleanup'][name]={'error':str(exc)}
       if RESULT['status']=='PASS':RESULT.update(status='ERROR',reason='Browser cleanup failed: '+name)
+    try:await boundary.drain()
+    except Exception as exc:RESULT.update(unqualified_behavioral_status=RESULT['status'],status='ERROR',reason='Network cleanup callback failed: '+str(exc))
+    RESULT['network_after_cleanup']=boundary.summary()
+    if boundary.ws_channels or boundary.ws_jobs or boundary.ws_errors:
+     RESULT.update(unqualified_behavioral_status=RESULT['status'],status='ERROR',reason='WebSocket channels/jobs/errors remain after browser cleanup')
  except BaseException as exc:RESULT.update(status='ERROR',reason=str(exc),traceback=traceback.format_exc())
  finally:
   server.shutdown();server.server_close();thread.join(2);RESULT['network']=boundary.summary();RESULT['closed']={'server':True,'thread_alive':thread.is_alive()}

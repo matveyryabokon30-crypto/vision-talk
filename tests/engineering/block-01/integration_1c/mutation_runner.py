@@ -19,6 +19,7 @@ import tempfile
 import time
 import traceback
 from datetime import datetime, timezone
+from qualified_runner import process_log_failure
 
 HARNESS = Path('tests/engineering/block-01/integration_1c')
 CASES = ['routes', 'quiet', 'lifecycle', 'durability', 'canvas', 'outbox',
@@ -107,7 +108,7 @@ def validate_baseline(path, code_sha, sources):
     require(all(baseline.get('cases', {}).get(name, {}).get('status') == 'PASS' for name in CASES),
             'All nine positive scenarios must PASS before mutations')
     verified = {'results_json': str(path), 'results_sha256': digest(path), 'gates': {}, 'cases': {}}
-    for name in ['boundary', 'selftests', 'ab', 'preflight']:
+    for name in ['boundary', 'network-browser', 'selftests', 'ab', 'preflight']:
         record = baseline.get('gates', {}).get(name, {})
         require(record.get('status') == 'PASS' and record.get('exit_code') == 0, 'Prerequisite gate did not PASS: '+name)
         result_path = verified_reference(record, 'result', path.parent)
@@ -198,6 +199,7 @@ def execute_case(command, cwd, output, timeout, environment):
                 observed['cleanup_error'] = str(exc)
         observed.update(end_time_utc=utc_now(), duration_ms=round((time.monotonic()-started)*1000),
                         log=str(log), log_sha256=digest(log) if log.is_file() else None)
+        observed['harness_log_error']=process_log_failure(log) if log.is_file() else 'MISSING_PROCESS_LOG'
         result_path = output/'result.json'
         observed.update(result=str(result_path), result_sha256=digest(result_path) if result_path.is_file() else None)
     return observed
@@ -244,6 +246,7 @@ def qualify(mutation, execution, payload, output, positive):
     require(not execution['timed_out'] and execution.get('exit_code') in [0, 1],
             'Mutation must finish normally, never a process timeout/crash')
     require(execution['process_group_cleaned'], 'Mutation process group cleanup was not verified')
+    require(not execution.get('harness_log_error'), 'Mutation has a Python callback/log error')
     require(payload.get('mandatory_evidence_complete') is True and not payload.get('page_errors')
             and not payload.get('first_error') and not payload.get('collector_errors'), 'Mutation has incomplete evidence or browser errors')
     require(payload.get('status') in ['PASS', 'FAIL'], 'Mutation execution did not reach a valid behavioral verdict')

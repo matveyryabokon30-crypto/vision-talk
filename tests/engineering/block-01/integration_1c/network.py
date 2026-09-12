@@ -44,6 +44,7 @@ class Boundary:
         self.offline=False; self.deny_send=False; self.lose_ack=False
         self.holds=[]; self.messages={}; self.effects=[]; self.objects={}; self.ws_channels=set();self.ws_events=[]
         self.ws_serial=0;self.ws_connections={};self.read_marks={}
+        self.ws_jobs=set();self.ws_errors=[];self.ws_routes={};self.ws_lifecycle={};self.ws_page_serial=0
         self.canvases={}
         for uid,cids in [(A,[C1,C2]),(B,[CB])]:
             for i,cid in enumerate(cids):
@@ -256,12 +257,84 @@ class Boundary:
             if sub=='/v1/bots/'+BOT:await reply(copy.deepcopy(self.bot));return
             if sub=='/v1/bots/'+BOT+'/chats':await reply({'chats':[]});return
         await unmodeled()
+    def _ws_error(self,source,error):
+        entry={'event':'qualification_error','source':source,'status':'BOUNDARY_CALLBACK_ERROR','error':str(error),'at':round(time.monotonic(),6)}
+        self.ws_errors.append(entry);self.unknown.append(entry.copy())
+    def _ws_job(self,awaitable,source):
+        task=asyncio.create_task(awaitable);self.ws_jobs.add(task)
+        def completed(done):
+            self.ws_jobs.discard(done)
+            if done.cancelled():self._ws_error(source,'Cancelled boundary operation')
+            else:
+                error=done.exception()
+                if error is not None:self._ws_error(source,error)
+        task.add_done_callback(completed)
+    async def drain(self):
+        if self.ws_jobs:await asyncio.wait_for(asyncio.gather(*list(self.ws_jobs),return_exceptions=True),5)
+        if self.ws_errors:raise RuntimeError('WebSocket boundary qualification errors: '+str(self.ws_errors))
+    def _ws_closed(self,connection,source,status='CLOSED'):
+        for topic in list(self.ws_connections[connection]):self.ws_channels.discard((connection,topic))
+        self.ws_connections[connection].clear()
+        self.ws_events.append({'connection':connection,'event':'close','status':status,'source':source,'at':round(time.monotonic(),6)})
+    def _bind_socket_observers(self):
+        assigned={item.get('connection') for item in self.ws_lifecycle.values()}
+        for token,item in self.ws_lifecycle.items():
+            if 'connection' in item:continue
+            connection=next((c for c,r in self.ws_routes.items() if c not in assigned and r.url==item['url']),None)
+            if connection is None:continue
+            item['connection']=connection;assigned.add(connection)
+            self.ws_events.append({'connection':connection,'event':'observed','token':token,'source':'native.WebSocket.lifecycle','at':round(time.monotonic(),6)})
+            if item.get('closed'):self._ws_closed(connection,'native.WebSocket.close')
+    async def attach_page(self,page):
+        # Playwright 1.57 does not emit page.websocket for routed sockets. Its
+        # route.on_close also indexes absent code/reason for close(). Observe
+        # native lifecycle events through the public binding/init-script APIs.
+        # This identical observer is present in A, B0 and B1, independently of
+        # instrument.js; it never replaces native send/close or connects a server.
+        self.ws_page_serial+=1;page_id=self.ws_page_serial
+        def observed(source,event):
+            try:
+                token=event['token'];kind=event['event']
+                if kind=='created':
+                    if token in self.ws_lifecycle:raise ValueError('Duplicate native socket token')
+                    self.ws_lifecycle[token]={'url':event['url'],'page':page_id,'closed':False}
+                    self._bind_socket_observers()
+                else:
+                    item=self.ws_lifecycle[token]
+                    self.ws_events.append({**event,'connection':item.get('connection'),'source':'native.WebSocket.'+kind,'at':round(time.monotonic(),6)})
+                    if kind=='close':
+                        item['closed']=True
+                        if 'connection' in item:self._ws_closed(item['connection'],'native.WebSocket.close')
+                    elif kind=='error':self._ws_error('native.WebSocket.error','Native socket error '+item['url'])
+            except Exception as exc:self._ws_error('native.WebSocket.lifecycle',exc)
+        await page.expose_binding('__integrationBoundarySocketEvent',observed)
+        await page.add_init_script(script='''(() => {
+          const Native=window.WebSocket, report=window.__integrationBoundarySocketEvent;
+          const pageId=PAGE_ID, documentId=crypto.randomUUID(); let serial=0;
+          const notify=event=>{report(event).catch(error=>{setTimeout(()=>{throw error},0)})};
+          window.WebSocket=new Proxy(Native,{construct(target,args,newTarget){
+            const socket=Reflect.construct(target,args,newTarget),token=pageId+':'+documentId+':'+(++serial);
+            notify({token,event:'created',url:socket.url});
+            socket.addEventListener('open',()=>notify({token,event:'open'}),{once:true});
+            socket.addEventListener('close',event=>notify({token,event:'close',code:event.code,reason:event.reason,wasClean:event.wasClean}),{once:true});
+            socket.addEventListener('error',()=>notify({token,event:'error'}),{once:true});
+            return socket;
+          }});
+        })();'''.replace('PAGE_ID',json.dumps(str(page_id))))
+        def dispose_document(source):
+            for item in self.ws_lifecycle.values():
+                if item['page']==page_id and not item['closed']:
+                    item['closed']=True;item['disposed_by']=source
+                    if 'connection' in item:self._ws_closed(item['connection'],source,'CONTEXT_DISPOSED')
+        page.on('close',lambda *_:dispose_document('playwright.page.close'))
+        page.on('framenavigated',lambda frame:dispose_document('playwright.main_frame.navigation') if frame==page.main_frame else None)
     async def websocket(self,ws):
         # Only the bundled SDK's declared Phoenix endpoint is modeled. This
         # route never calls connect_to_server; authentication is in join frames.
         self.ws_serial+=1;connection=self.ws_serial;p=urlparse(ws.url);q=parse_qs(p.query,keep_blank_values=True)
-        channels={};self.ws_connections[connection]=channels
-        endpoint={'connection':connection,'host':p.hostname,'path':p.path,'event':'connect','at':round(time.monotonic(),6)}
+        channels={};self.ws_connections[connection]=channels;self.ws_routes[connection]=ws
+        self._bind_socket_observers()
+        endpoint={'connection':connection,'host':p.hostname,'path':p.path,'event':'connect','source':'playwright.route_web_socket','at':round(time.monotonic(),6)}
         self.ws_events.append(endpoint)
         def clear_channels():
             for topic in list(channels):self.ws_channels.discard((connection,topic))
@@ -273,11 +346,8 @@ class Boundary:
         if self.offline:
             endpoint['status']='NETWORK_UNAVAILABLE';await close(1013,'NETWORK_UNAVAILABLE');return
         endpoint['status']='SYNTHETIC_CONNECTION'
-        async def on_close(code,reason):
-            clear_channels();self.ws_events.append({'connection':connection,'event':'close','status':'CLOSED','code':code,'reason':reason})
-            await asyncio.wait_for(ws.close(code=code,reason=reason),3)
-        async def on_message(message):
-            entry={'connection':connection,'event':'invalid-frame','at':round(time.monotonic(),6)};self.ws_events.append(entry)
+        def on_message(message):
+            entry={'connection':connection,'event':'invalid-frame','source':'playwright.WebSocketRoute.on_message','at':round(time.monotonic(),6)};self.ws_events.append(entry)
             try:
                 msg=json.loads(message)
                 if isinstance(msg,list) and len(msg)==5:jr,ref,topic,event,payload=msg
@@ -293,7 +363,7 @@ class Boundary:
                     if unknown:self.unknown.append(entry.copy())
                     reply('error',{'reason':reason})
                 if self.offline:
-                    entry['status']='NETWORK_UNAVAILABLE';await close(1013,'NETWORK_UNAVAILABLE');return
+                    entry['status']='NETWORK_UNAVAILABLE';self._ws_job(close(1013,'NETWORK_UNAVAILABLE'),'offline-close');return
                 if not isinstance(topic,str) or not isinstance(payload,dict):raise ValueError('Invalid Phoenix topic/payload')
                 known_topics={'realtime:pablicus-inbox-'+uid for uid in [A,B]}|{'realtime:pablicus-chat-'+cid for cid in [C1,C2,CB]}
                 if event in ['phx_leave','access_token'] and topic not in known_topics:
@@ -332,7 +402,7 @@ class Boundary:
                 reply('ok',{'postgres_changes':[dict(expected,id=1)]})
             except Exception as exc:
                 entry.update(status='UNMODELED_BOUNDARY',error=str(exc));self.unknown.append(entry.copy())
-                await close(1008,'UNMODELED_BOUNDARY frame')
-        ws.on_close(on_close);ws.on_message(on_message)
+                self._ws_job(close(1008,'UNMODELED_BOUNDARY frame'),'invalid-frame-close')
+        ws.on_message(on_message)
     def summary(self):
-        return {'calls':self.calls,'effects':self.effects,'objects':self.objects,'unknown':self.unknown,'blocked':self.blocked,'websocket_events':self.ws_events,'active_external_channels':[{'connection':connection,'topic':topic,'uid':self.ws_connections[connection].get(topic)} for connection,topic in sorted(self.ws_channels)]}
+        return {'calls':self.calls,'effects':self.effects,'objects':self.objects,'unknown':self.unknown,'blocked':self.blocked,'websocket_events':self.ws_events,'websocket_lifecycle':self.ws_lifecycle,'websocket_qualification_errors':self.ws_errors,'pending_websocket_jobs':len(self.ws_jobs),'active_external_channels':[{'connection':connection,'topic':topic,'uid':self.ws_connections[connection].get(topic)} for connection,topic in sorted(self.ws_channels)]}

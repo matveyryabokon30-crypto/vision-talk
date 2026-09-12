@@ -14,8 +14,8 @@ def account_content(snapshot):
 async def profile_ui(a,uid,cid,label):
  # The runtime keeps profile in a closure. Read its actual rendered profile,
  # in addition to observing the cache, without adding a runtime debug hook.
- await a.back();await a.nav('profile');await a.page.locator('.profileCard h2').wait_for(state='visible')
- heading=await a.page.locator('.profileCard h2').inner_text();handle=await a.page.locator('.profileCard > p.muted').first.inner_text()
+ await a.back();await a.nav('profile');await a.page.locator('.profileCard > h2').first.wait_for(state='visible')
+ heading=await a.page.locator('.profileCard > h2').first.inner_text();handle=await a.page.locator('.profileCard > p.muted').first.inner_text()
  check(label,heading==('Fixture A' if uid==A else 'Fixture B') and handle==('@fixture_a' if uid==A else '@fixture_b'),{'heading':heading,'handle':handle})
  await a.nav('chats');await a.wait('document.querySelectorAll(".chatCard").length>0');await a.conversation(cid)
 

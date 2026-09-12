@@ -10,7 +10,9 @@
   raf:requestAnimationFrame.bind(window),caf:cancelAnimationFrame.bind(window),
   MutationObserver,ResizeObserver,IntersectionObserver,transaction:IDBDatabase.prototype.transaction};
  const timers=new Map(),frames=new Map(),listeners=[],targets=new WeakMap(),observers=[];
- const errors=[],idbEvents=[],quiet=new Map();let serial=0;
+ const errors=[],idbEvents=[],quiet=new Map(),quietNodeIds=new WeakMap();let serial=0,quietNodeSerial=0;
+ function quietNode(node){if(!node)return null;if(!quietNodeIds.has(node))quietNodeIds.set(node,++quietNodeSerial);return {identity:quietNodeIds.get(node),nodeType:node.nodeType,name:node.nodeName,id:node.id||null,classes:typeof node.className==='string'?node.className:null,conversationId:node.dataset?.conversationId||null,botId:node.dataset?.botId||null,text:(node.textContent||'').slice(0,160)}}
+ const quietChildren=node=>node?[...node.childNodes].map(quietNode):[];
  function source(){return(new Error().stack||'').split('\n').find(x=>/\/pablicus\//.test(x))?.trim()||'browser-or-test'}
  const ref=x=>new WeakRef(x);
  const counts=xs=>xs.reduce((out,x)=>{out[x]=(out[x]||0)+1;return out},{});
@@ -89,8 +91,8 @@
   holdWrite:spec=>{hold={used:false,entered:false,released:false,...spec};return true},
   held:()=>hold?{used:hold.used,entered:hold.entered,released:hold.released,timedOut:!!hold.timedOut}:null,
   releaseWrite:()=>{if(hold)hold.released=true},
-  observeQuiet(name,selector){quiet.get(name)?.observer.disconnect();const target=document.querySelector(selector);if(!target)throw Error('QUIET_TARGET_MISSING '+selector);const r={records:0,callbacks:0,target:ref(target)};r.observer=new native.MutationObserver(records=>{r.records+=records.length;r.callbacks++});r.observer.observe(target,{childList:true,subtree:true,characterData:true});quiet.set(name,r)},
-  quiet:name=>{const r=quiet.get(name);return r?{records:r.records,callbacks:r.callbacks,connected:!!r.target.deref()?.isConnected}:null},
+  observeQuiet(name,selector){quiet.get(name)?.observer.disconnect();const target=document.querySelector(selector);if(!target)throw Error('QUIET_TARGET_MISSING '+selector);const r={records:0,callbacks:0,target:ref(target),selector,started_epoch_ms:performance.timeOrigin+performance.now(),initial_target:quietNode(target),initial_children:quietChildren(target),events:[],dropped_records:0};r.observer=new native.MutationObserver(records=>{r.records+=records.length;r.callbacks++;const at=performance.now();for(const record of records){if(r.events.length>=500){r.dropped_records++;continue}r.events.push({callback:r.callbacks,at_performance_ms:at,at_epoch_ms:performance.timeOrigin+at,type:record.type,target:quietNode(record.target),added:[...record.addedNodes].map(quietNode),removed:[...record.removedNodes].map(quietNode),old_value:record.oldValue})}});r.observer.observe(target,{childList:true,subtree:true,characterData:true,characterDataOldValue:true});quiet.set(name,r)},
+  quiet:name=>{const r=quiet.get(name),target=r?.target.deref();return r?{records:r.records,callbacks:r.callbacks,connected:!!target?.isConnected,selector:r.selector,started_epoch_ms:r.started_epoch_ms,ended_epoch_ms:performance.timeOrigin+performance.now(),initial_target:r.initial_target,final_target:quietNode(target),initial_children:r.initial_children,final_children:quietChildren(target),events:r.events,dropped_records:r.dropped_records}:null},
   stopQuiet:name=>{quiet.get(name)?.observer.disconnect();quiet.delete(name)}
  };
 })();

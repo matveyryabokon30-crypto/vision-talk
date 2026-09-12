@@ -11,7 +11,9 @@ async def run(a):
  a.net.lose_ack=True;held=a.net.hold('/rest/v1/rpc/send_rich_message',A);a.net.offline=False;await a.ctx.set_offline(False);await a.page.evaluate('window.dispatchEvent(new Event("online"))')
  await asyncio.wait_for(held['entered'].wait(),10);q_pending=await a.fp('queue');check('1C-OUTBOX-NO-PREMATURE-DELETE',identity(q_pending)==identity(q0) and len(a.net.effects)==1,{'queue':q_pending,'effects':a.net.effects})
  a.net.offline=True;await a.ctx.set_offline(True);held['release'].set();await a.delay(400);q_lost=await a.fp('queue');check('1C-OUTBOX-ACK-LOST-DURABLE',identity(q_lost)==identity(q0),q_lost)
- await a.clear_toast();await a.page.locator('#reportBtn').click();await a.page.locator('#dialogContent button').filter(has_text='Повторить').first.click();a.net.offline=False;await a.ctx.set_offline(False)
+ # Real online recovery retries the durable queued operation; offline polling
+ # can keep an error toast visible, so hiding that toast is not a prerequisite.
+ stage('restore network; actual online handler retries lost ACK');a.net.offline=False;await a.ctx.set_offline(False)
  await a.queue_wait('rows.length===0',timeout=10000);sends=[x for x in a.net.calls if x['path'].endswith('send_rich_message')]
  check('1C-OUTBOX-IDEMPOTENT',len(a.net.effects)==1 and bool(sends) and all(x['operation_key']==a.net.effects[0]['key'] for x in sends),{'effects':a.net.effects,'send_calls':sends,'original_queue':identity(q0)})
  refusal_draft=await a.write(text='Explicit refusal then retry',files=FILES[2:],tail='');call_start=len(a.net.calls);a.net.deny_send=True;await a.page.locator('#send').click();denied=await a.queue_wait('rows.length===1 && rows[0].state==="error"')

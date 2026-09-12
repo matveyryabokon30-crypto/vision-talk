@@ -1,6 +1,6 @@
 """Finite 1C gates and scenarios; incomplete prerequisites never become PASS."""
 from __future__ import annotations
-import argparse, hashlib, json, os, signal, subprocess, sys, time, traceback
+import argparse, hashlib, json, os, re, signal, subprocess, sys, time, traceback
 from collections import Counter
 from pathlib import Path
 
@@ -9,6 +9,10 @@ CASES=['routes','quiet','lifecycle','durability','canvas','outbox','isolation','
 STATUSES=['PASS','FAIL','ERROR','TIMEOUT','NOT_RUN','BLOCKED']
 
 def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
+def process_log_failure(path):
+    content=Path(path).read_text(errors='replace')
+    found=re.search(r"RuntimeWarning: coroutine[^\n]*was never awaited|Error occurred in event listener|Task exception was never retrieved",content)
+    return found.group(0) if found else None
 def save(path,value):
     path.parent.mkdir(parents=True,exist_ok=True)
     temporary=path.with_suffix('.tmp')
@@ -65,6 +69,13 @@ def validate_pass(payload):
         if collector.get('inner_exit_code')!=1 or collector.get('inner_process_group_cleaned') is not True:
             raise ValueError('Collector expected inner failure/cleanup missing')
     elif payload.get('test_id')=='NETWORK-BOUNDARY-CONTRACT-01':checks(payload)
+    elif payload.get('test_id')=='NETWORK-BROWSER-BOUNDARY-01':
+        checks(payload);evidence(payload)
+        if payload.get('python_warnings') or payload.get('loop_errors'):raise ValueError('Browser boundary qualification contains callback errors')
+        if payload.get('cleanup')!={'context':'CLOSED','browser':'CLOSED'}:raise ValueError('Browser boundary cleanup incomplete')
+        network=payload.get('network',{})
+        if network.get('pending_websocket_jobs')!=0 or network.get('active_external_channels')!=[] or network.get('websocket_qualification_errors'):
+            raise ValueError('Browser boundary jobs, channels or callback errors remain')
     else:raise ValueError('Unknown PASS result shape')
 
 def execute(command,folder,payload_name,timeout,environment):
@@ -86,6 +97,7 @@ def execute(command,folder,payload_name,timeout,environment):
         elif not payload: status='ERROR';reason='Missing structured result'
         elif status not in STATUSES: status='ERROR';reason='Invalid result status '+str(status)
         elif status=='PASS' and code!=0: status='ERROR';reason='PASS payload with nonzero exit'
+        elif process_log_failure(log):status='ERROR';reason='HARNESS_CALLBACK_ERROR: '+process_log_failure(log)
         elif status=='PASS':validate_pass(payload)
         failure_payload=payload
         if payload.get('mode') in ['ab','preflight']:
@@ -138,6 +150,7 @@ def main(argv=None):
             'executed':0,'deduplicated_not_run':0,'independent_continued':0}
     save(out/'results.json',result)
     gates=[('boundary','boundary_selftests.py',['--output'],'results.json',20),
+           ('network-browser','network_browser_selftest.py',['--output'],'results.json',120),
            ('selftests','selftests.py',['--output'], 'results.json',180),
            ('ab','diagnostics.py',['--mode','ab','--output'],'summary.json',360),
            ('preflight','diagnostics.py',['--mode','preflight','--output'],'summary.json',150)]

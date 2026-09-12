@@ -1,5 +1,5 @@
 """Contract controls for synthetic routes; no external requests or product credit."""
-import argparse, asyncio, hashlib, json, traceback
+import argparse, asyncio, hashlib, inspect, json, traceback
 from pathlib import Path
 from network import Boundary, A, B, C1, CB, API_HOST, jwt
 
@@ -20,8 +20,12 @@ class Socket:
     def send(self,message):self.sent.append(json.loads(message))
     async def close(self,**kwargs):self.closed.append(kwargs)
     def on_message(self,handler):self.message_handler=handler
-    def on_close(self,handler):self.close_handler=handler
+    def on_close(self,handler):raise AssertionError('Do not install affected Playwright 1.57 close callback')
     def connect_to_server(self):raise AssertionError('External socket connection forbidden')
+    def emit(self,message):
+        # Match the real API: callback return value is NOT awaited by Playwright.
+        result=self.message_handler(message)
+        assert not inspect.isawaitable(result),'WebSocket callback must execute synchronously'
 
 UNSPECIFIED=object()
 async def run():
@@ -111,7 +115,7 @@ async def run():
         await boundary.websocket(socket)
         if frame is not None:
             assert socket.message_handler,(name,'message handler absent')
-            await socket.message_handler(json.dumps(frame))
+            socket.emit(json.dumps(frame));await boundary.drain()
         observed=boundary.ws_events[-1]
         assert observed['status']==expected,(name,observed)
         checks.append({'name':name,'status':'PASS','actual':observed})
@@ -120,25 +124,21 @@ async def run():
     net,socket=await socket_case('socket-inbox-join',join)
     assert socket.sent[-1][4]=={'status':'ok','response':{'postgres_changes':[dict(config['postgres_changes'][0],id=1)]}}
     assert len(net.ws_channels)==1 and net.ws_events[-1]['context']==config
-    await socket.message_handler(json.dumps([None,'2','phoenix','heartbeat',{}]))
+    socket.emit(json.dumps([None,'2','phoenix','heartbeat',{}]));await net.drain()
     assert net.ws_events[-1]['status']=='OK' and socket.sent[-1][4]['status']=='ok'
     checks.append({'name':'socket-heartbeat','status':'PASS'})
-    await socket.message_handler(json.dumps(['1','3',topic,'access_token',{'access_token':jwt(A)}]))
+    socket.emit(json.dumps(['1','3',topic,'access_token',{'access_token':jwt(A)}]));await net.drain()
     assert net.ws_events[-1]['status']=='TOKEN_REFRESHED' and len(net.ws_channels)==1
     checks.append({'name':'socket-same-user-token-refresh','status':'PASS'})
-    await socket.message_handler(json.dumps(['1','4',topic,'phx_leave',{}]))
+    socket.emit(json.dumps(['1','4',topic,'phx_leave',{}]));await net.drain()
     assert net.ws_events[-1]['status']=='LEFT' and not net.ws_channels
     checks.append({'name':'socket-leave-cleans','status':'PASS'})
-    net,socket=await socket_case('socket-close-initial',join)
-    await socket.close_handler(1000,'Fixture close')
-    assert not net.ws_channels and net.ws_events[-1]['status']=='CLOSED' and socket.closed
-    checks.append({'name':'socket-close-cleans','status':'PASS'})
     net,socket=await socket_case('socket-account-change-initial',join)
-    await socket.message_handler(json.dumps(['1','5',topic,'access_token',{'access_token':jwt(B)}]))
+    socket.emit(json.dumps(['1','5',topic,'access_token',{'access_token':jwt(B)}]));await net.drain()
     assert not net.ws_channels and net.ws_events[-1]['status']=='STALE_CHANNEL_REVOKED'
     checks.append({'name':'socket-account-change-revokes-old-channel','status':'PASS'})
     net,socket=await socket_case('socket-online-initial',join);net.offline=True
-    await socket.message_handler(json.dumps([None,'6','phoenix','heartbeat',{}]))
+    socket.emit(json.dumps([None,'6','phoenix','heartbeat',{}]));await net.drain()
     assert net.ws_events[-1]['status']=='NETWORK_UNAVAILABLE' and not net.ws_channels and socket.closed[-1]['code']==1013
     checks.append({'name':'socket-offline-frame-closes','status':'PASS'})
     await socket_case('socket-offline-connect',expected='NETWORK_UNAVAILABLE',offline=True)

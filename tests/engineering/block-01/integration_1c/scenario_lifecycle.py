@@ -1,4 +1,5 @@
 """Completed real route transitions and unchanged same-screen resource ownership."""
+import asyncio
 import time
 
 from integration_case import check, A, C1, BOT, RESULT, save
@@ -20,7 +21,8 @@ async def run(a):
     RESULT['resource_scope'] = {
         'APP_CONSTANT': 'Warm SDK/client/controller and top-level module handlers remain present.',
         'SCREEN_SCOPED': 'Listener/observer source and type, controller handlers/subscriptions, channels, message list and media ownership.',
-        'TRANSIENT_OPERATION': 'Native timers/rAF and RPCs continue normally. At each chats-home checkpoint, collect GC and up to six snapshots; require two consecutive identical complete resource projections, zero rAF and no unfinished boundary calls. Surviving timeout sources are compared exactly with the warm baseline, not excluded.',
+        'TRANSIENT_OPERATION': 'Native timers/rAF and RPCs continue normally. At each chats-home checkpoint, collect bounded GC first, then sample for up to three seconds; require two consecutive identical complete resource projections, zero rAF and no unfinished boundary calls. Surviving timeout sources are compared exactly with the warm baseline, not excluded. Failure to obtain observations is ERROR/TIMEOUT, not evidence of a product leak.',
+        'gc_limit_ms': 10000,
         'settling_limit_ms': 3000,
         'generation': 'Auxiliary evidence only; never counted as completed transitions.',
     }
@@ -86,12 +88,43 @@ async def run(a):
             await transition(f'{label}-{index:02d}-{name}', action, screen, section, selector, counted)
 
     async def settled(label):
-        started = time.monotonic()
         samples = []
-        entry = {'label': label, 'samples': samples, 'settled': False}
+        entry = {'label': label, 'gc': {'status': 'RUNNING', 'limit_ms': 10000},
+                 'samples': samples, 'settled': False, 'status': 'RUNNING'}
         RESULT['resource_snapshots']['settling'].append(entry)
-        for _ in range(6):
-            snapshot = await a.resources()
+        save()
+        gc_started = time.monotonic()
+        async def collect():
+            cd = await a.ctx.new_cdp_session(a.page)
+            try:
+                await cd.send('HeapProfiler.collectGarbage')
+            finally:
+                await cd.detach()
+        try:
+            await asyncio.wait_for(collect(), 10)
+            entry['gc']['status'] = 'PASS'
+        except BaseException as exc:
+            entry['gc'].update(status='TIMEOUT' if isinstance(exc, asyncio.TimeoutError) else 'ERROR',
+                               error=str(exc), elapsed_ms=round((time.monotonic()-gc_started)*1000))
+            entry['status'] = entry['gc']['status']
+            save()
+            raise
+        entry['gc']['elapsed_ms'] = round((time.monotonic()-gc_started)*1000)
+        save()
+        started = time.monotonic()
+        async def observe(awaitable, remaining):
+            try:
+                return await asyncio.wait_for(awaitable, remaining)
+            except BaseException as exc:
+                entry.update(status='TIMEOUT' if isinstance(exc, asyncio.TimeoutError) else 'ERROR',
+                             observation_error=str(exc))
+                save()
+                raise
+        for _ in range(10):
+            remaining = 3-(time.monotonic()-started)
+            if remaining <= 0:
+                break
+            snapshot = await observe(a.page.evaluate('__integration.snapshot()'), remaining)
             pending = [call for call in a.net.calls if 'status' not in call]
             samples.append({'elapsed_ms': round((time.monotonic()-started)*1000),
                             'resources': snapshot, 'pending_network': pending})
@@ -99,10 +132,20 @@ async def run(a):
                     and lasting_resources(samples[-2]['resources']) == lasting_resources(snapshot)):
                 entry['settled'] = True
                 break
-            if time.monotonic()-started >= 3:
+            remaining = 3-(time.monotonic()-started)
+            if remaining <= 0:
                 break
+            await observe(a.delay(min(250, remaining*1000)), remaining)
+        entry['status'] = 'PASS' if entry['settled'] else 'ERROR'
         save()
-        check('1C-RESOURCES-SETTLED-'+label, entry['settled'], entry)
+        if not entry['settled']:
+            RESULT.setdefault('observation_errors', []).append({
+                'name': '1C-RESOURCES-SETTLED-'+label,
+                'reason': 'RESOURCE_OBSERVATION_NOT_SETTLED', 'actual': entry,
+            })
+            save()
+            raise RuntimeError('RESOURCE_OBSERVATION_NOT_SETTLED '+label)
+        check('1C-RESOURCES-SETTLED-'+label, True, entry)
         return samples[-1]['resources']
 
     # Warm the same nine routes once; no warm transition contributes to the 50.

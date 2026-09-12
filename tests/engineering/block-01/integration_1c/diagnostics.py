@@ -50,6 +50,7 @@ async def variant(browser, root, origin, output, label, instrument, full_preflig
     await ctx.route('**/*', net.handle)
     await ctx.route_web_socket('**/*', net.websocket)
     page = await ctx.new_page()
+    await net.attach_page(page)
     page.set_default_timeout(8000)
     page.set_default_navigation_timeout(15000)
     collector = BrowserCollector(page, net, output)
@@ -97,6 +98,17 @@ async def variant(browser, root, origin, output, label, instrument, full_preflig
         await page.locator('[data-conversation-id="'+C1+'"] .chatMain').click()
         await page.wait_for_function('window.PablicusDebug?.current === "'+C1+'" && !!window.PablicusChat?.list && !!window.vault?.ready && !document.querySelector("#app").inert')
         await screen('WORKING-MESSAGE-LIST', 'conversation')
+        expected_topics={'realtime:pablicus-inbox-'+A,'realtime:pablicus-chat-'+C1}
+        async def joined():
+            while not expected_topics.issubset({topic for connection,topic in net.ws_channels}):
+                if net.ws_errors or net.unknown:raise RuntimeError('WEBSOCKET_QUALIFICATION_ERROR')
+                await asyncio.sleep(.02)
+        await asyncio.wait_for(joined(),8)
+        joins=[event for event in net.ws_events if event.get('status')=='JOINED' and event.get('topic') in expected_topics]
+        check('AUTHENTICATED-WEBSOCKET-JOINS',
+              expected_topics=={event.get('topic') for event in joins}
+              and all(event.get('uid')==A and event.get('source')=='playwright.WebSocketRoute.on_message'
+                      and event.get('context',{}).get('postgres_changes') for event in joins),joins)
         stores = await page.evaluate('async () => ({indexedDB:typeof indexedDB!=="undefined",databases:await indexedDB.databases(),vault:window.vault.public()})')
         check('INDEXEDDB-READY', stores['indexedDB'] and bool(stores['databases']), stores)
         if full_preflight:
@@ -108,7 +120,8 @@ async def variant(browser, root, origin, output, label, instrument, full_preflig
             await page.wait_for_function('window.PablicusController?.state().screen === "conversation" && !!window.PablicusChat?.list')
             await screen('RETURN-CONVERSATION', 'conversation')
         await asyncio.sleep(.2)
-        check('NETWORK-CONTRACT', not net.unknown and not net.blocked,
+        await net.drain()
+        check('NETWORK-CONTRACT', not net.unknown and not net.blocked and not net.ws_errors,
               {'unknown': net.unknown, 'blocked': net.blocked, 'calls': net.calls})
         if collector.events['page_errors']: raise RuntimeError('UNHANDLED_PAGE_ERROR')
         result['status'] = 'PASS'
@@ -123,6 +136,10 @@ async def variant(browser, root, origin, output, label, instrument, full_preflig
     finally:
         for hold in net.holds: hold['release'].set()
         try:
+            await net.drain()
+        except Exception as exc:
+            result.update(status='ERROR',reason='BOUNDARY_DRAIN_FAILURE: '+str(exc))
+        try:
             result.update(await collector.capture())
             collector.enforce_result(result)
             if result['status'] == 'PASS' and (net.unknown or net.blocked):
@@ -131,7 +148,10 @@ async def variant(browser, root, origin, output, label, instrument, full_preflig
             result.update(status='ERROR', reason='COLLECTOR_FAILURE: '+str(exc), mandatory_evidence_complete=False)
         try:
             await asyncio.wait_for(ctx.close(), 5)
+            await net.drain()
             result['context_closed'] = True
+            result['network_after_cleanup'] = net.summary()
+            if net.ws_channels or net.ws_jobs:raise RuntimeError('WEBSOCKET_CLEANUP_INCOMPLETE')
         except Exception as exc:
             result['context_closed'] = False
             result['cleanup_error'] = str(exc)
@@ -149,6 +169,8 @@ async def main(args):
     fixed = (HERE/'instrument.js').read_text()
     original = subprocess.check_output(['git','show', ORIGINAL_SHA+':tests/engineering/block-01/integration_1c/instrument.js'], cwd=root, timeout=5)
     assert hashlib.sha1(b'blob '+str(len(original)).encode()+b'\0'+original).hexdigest() == ORIGINAL_BLOB
+    output.mkdir(parents=True,exist_ok=True)
+    (output/'original-instrument.js').write_bytes(original)
     server = http.server.ThreadingHTTPServer(('127.0.0.1',0), functools.partial(QuietServer,directory=str(root)))
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
@@ -158,6 +180,10 @@ async def main(args):
                'synthetic_session_epoch': session_epoch,
                'working_tree_status': subprocess.check_output(['git','status','--porcelain'],cwd=root,text=True,timeout=5),
                'original_instrument_git_blob': ORIGINAL_BLOB,
+               'original_instrument_reference': 'original-instrument.js',
+               'original_instrument_sha256': digest(original),
+               'websocket_observer': {'native_lifecycle':True,'identical_across_variants':True,
+                    'constructor_proxy_identity_changed':True,'native_send_close_unchanged':True},
                'source_sha256': {str(p.relative_to(root)):digest(p.read_bytes()) for folder in [root/'pablicus', HERE] for p in folder.rglob('*') if p.is_file() and '__pycache__' not in p.parts},
                'status':'RUNNING'}
     try:
