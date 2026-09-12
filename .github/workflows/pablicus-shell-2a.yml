@@ -70,6 +70,16 @@ jobs:
           mkdir shell-2a-title-before
           git archive 6c01d8b0f30003be885b152b3e9e955607ba2abd pablicus | tar -x -C shell-2a-title-before
           set +e
+          python tests/engineering/block-02/ownership_checks.py --source-root shell-2a-title-before --output shell-2a-results/ownership-before.json > shell-2a-results/ownership-before.log 2>&1
+          ownership_code=$?
+          set -e
+          test "$ownership_code" -eq 1
+          python - <<'PY'
+          import json
+          d=json.load(open('shell-2a-results/ownership-before.json'))
+          assert any(c['id']=='2A-T02' and c['status']=='FAIL' for c in d['checks']),d
+          PY
+          set +e
           timeout --kill-after=10s 420s python tests/engineering/block-02/shell_probe.py --source-root shell-2a-title-before --output shell-2a-results/title-before > shell-2a-results/title-before.log 2>&1
           code=$?
           set -e

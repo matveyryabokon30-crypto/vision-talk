@@ -31,7 +31,7 @@ def main(args):
  check('2A-T01','One route state/controller export',exports==['app-controller.js'],exports)
  heading=[name for name,text in scripts.items() if re.search('brandTitle|sectionTitle',text) and 'textContent' in text]
  outer=[name for name,text in scripts.items() if re.search(r"app\.style\.(?:transform|width|height)\s*=",text)]
- css_owners=sorted(name for name,text in styles.items() if re.search(r'#app\s*>\s*header|\.homeHeader|#mainNav',text))
+ css_owners=sorted(name for name,text in styles.items() if re.search(r'#app\s*>\s*header|\.homeHeader|#mainNav|#(?:chatBack|chatTitle|chatHint|chatLibraryOpen|reportBtn|queueBtn)\b|\.chatHeading',text))
  check('2A-T02','One shared heading and outer geometry writer',heading==['app-shell.js'] and outer==['app-shell.js'] and css_owners==['shell.css'],{'headings':heading,'outer_geometry':outer,'shared_shell_styles':css_owners})
  dispatch=[name for name,text in scripts.items() if '#mainNav button' in text and 'b.onclick=' in text]
  forbidden=[name for name,text in scripts.items() if name not in ['app.js','app-shell.js'] and ('botButton.onclick=' in text or "nav.insertBefore(" in text)]
