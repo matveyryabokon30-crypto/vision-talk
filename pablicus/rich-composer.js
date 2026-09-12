@@ -80,6 +80,7 @@
     function bindText(element, block) {
       element.dataset.richBlock = block.id;
       element.classList.add('richText');
+      global.PablicusUI?.prepareControl?.(element,'input');
       if (element !== input) {
         element.rows = 1;
         element.placeholder = 'Продолжить сообщение…';
@@ -121,6 +122,7 @@
       const element = document.createElement('button');
       element.type = 'button';
       element.className = 'richAction';
+      global.PablicusUI?.prepareControl?.(element,'icon');
       element.setAttribute('aria-label', label);
       element.title = label;
       element.textContent = text;

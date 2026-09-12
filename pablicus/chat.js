@@ -239,7 +239,7 @@ if(!$('menuLayer').hidden)positionMenu();
 }
 function queueComposer(){if(composerFrame)return;composerPendingAnchor={a:list?.capture(),f:list?.follow??true};composerFrame=requestAnimationFrame(()=>{composerFrame=0;const x=composerPendingAnchor;composerPendingAnchor=null;syncComposer(x?.a,x?.f)})}
 function changeUI(fn){const a=list?.capture(),f=list?.follow??true;fn();syncComposer(a,f);draftChanged()}
-function toggleExpand(){closeMenu(false);const s=selection();changeUI(()=>{draft.expanded=!draft.expanded});restoreSelection(s);if(input.selectionStart!==s.start||input.selectionEnd!==s.end)cm.selection_failures++}
+function toggleExpand(){closeMenu(false);const s=selection();changeUI(()=>{draft.expanded=!draft.expanded});restoreSelection(s);if(!draft.expanded)$('expand').focus({preventScroll:true});if(input.selectionStart!==s.start||input.selectionEnd!==s.end)cm.selection_failures++}
 function keyboardOccludesViewport(v){
 const active=document.activeElement;
 const editable=active&&app.contains(active)&&!active.readOnly&&!active.disabled&&active.inputMode!=='none'&&(active.isContentEditable||active.tagName==='TEXTAREA'||(active.tagName==='INPUT'&&['text','search','email','url','tel','password','number'].includes(active.type)));
@@ -248,9 +248,9 @@ return !!(editable&&v&&Math.abs(v.scale-1)<.02&&Math.max(innerHeight,document.do
 function applyLayout(){if(simulating)return;const v=window.visualViewport,w=v?.width||innerWidth,h=v?.height||innerHeight,a=list?.lastAnchor,f=list?.follow??true;
 const width=Math.min(w,800),left=(v?.pageLeft??scrollX)+Math.max(0,(w-800)/2),top=v?.pageTop??scrollY;
 const keyboardOpen=keyboardOccludesViewport(v),keyboardChanged=app.classList.contains('keyboard-open')!==keyboardOpen;
-app.classList.toggle('keyboard-open',keyboardOpen);
+
 const changed=keyboardChanged||Math.abs(app.clientWidth-width)>.5||Math.abs(app.clientHeight-h)>.5;
-app.style.transform='translate3d('+left+'px,'+top+'px,0)';app.style.width=width+'px';app.style.height=h+'px';
+window.PablicusShell.viewport({width,height:h,left,top,keyboardOpen});
 if(changed)syncComposer(a,f);
 if(!running){const m=metrics();observations.resizes.push(m);if(observations.resizes.length>40)observations.resizes.shift();
 if(keyStart&&keyStart.height-m.height>100){report.manual.keyboard='SHRINK_OBSERVED_NOT_HUMAN_ACCEPTANCE';observations.keyboard.push({phase:'shrink',viewport:m,controls:controlsGeometry(),bottom_delta_px:list?round(list.bottomDistance()):null});if(observations.keyboard.length>20)observations.keyboard.shift()}
@@ -365,7 +365,7 @@ app.addEventListener('focusin',queueLayout);app.addEventListener('focusout',queu
 window.addEventListener('resize',queueLayout);window.visualViewport?.addEventListener('resize',queueLayout);window.visualViewport?.addEventListener('scroll',queueLayout);
 input.addEventListener('input',()=>{cm.inputs++;queueComposer();draftChanged()});input.addEventListener('compositionstart',()=>{draft.composing=true;$('send').disabled=true});input.addEventListener('compositionend',()=>{draft.composing=false;queueComposer()});
 input.addEventListener('focus',()=>{keyStart=metrics();queueComposer();queueLayout()});input.addEventListener('blur',()=>{setTimeout(()=>{if(document.activeElement!==input){if(keyStart&&!running)observations.keyboard.push({phase:'blur',viewport:metrics(),controls:controlsGeometry()});keyStart=null;queueComposer();queueLayout()}},400)});
-$('editor').addEventListener('keydown',e=>{if(e.key==='Escape'&&!e.isComposing&&!richComposer?.composing){if(!$('menuLayer').hidden){e.preventDefault();closeMenu(true)}else if(draft.expanded){e.preventDefault();toggleExpand()}}});
+$('composer').addEventListener('keydown',e=>{if(draft.expanded&&$('menuLayer').hidden)window.PablicusUI?.focusWithin?.(e,$('composer'));if(e.key==='Escape'&&!e.isComposing&&!richComposer?.composing){if(!$('menuLayer').hidden){e.preventDefault();closeMenu(true)}else if(draft.expanded){e.preventDefault();toggleExpand()}}});
 $('composeBox').addEventListener('pointerdown',e=>{if(e.target.closest('button')&&document.activeElement===input)e.preventDefault()});
 $('attach').onclick=e=>openMenu('attach',$('attach'),e.detail===0);$('mode').onclick=e=>openMenu('modes',$('mode'),e.detail===0);$('taskMenu').onclick=()=>window.PablicusHost.unavailable('Помощник');
 $('expand').onclick=toggleExpand;$('hideKey').onclick=()=>richComposer?richComposer.blur():input.blur();$('send').onclick=localSend;$('taskNext').onclick=()=>advanceTask();$('taskCancel').onclick=()=>advanceTask(true);$('outside').onpointerdown=e=>{if(menuWasTyping)e.preventDefault()};$('outside').onclick=()=>closeMenu(true);document.addEventListener('keydown',menuKeys);

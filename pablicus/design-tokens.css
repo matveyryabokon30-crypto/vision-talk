@@ -1,0 +1,32 @@
+/* Single global design-token source; approved palette and existing defaults retained. */
+/* Existing approved values from style.css */
+:root{color-scheme:dark;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#090b0e;color:#edf2f7;--text-size:17px}
+/* Existing approved values from pablicus.css */
+:root{--bg:#fafafa;--surface:#fff;--glass:rgb(255 255 255 / .82);--text:#24272a;--muted:#696d72;--line:rgb(36 39 42 / .075);--accent:#363a3e;--soft:rgb(36 39 42 / .045);--incoming:rgb(255 255 255 / .68);--outgoing:rgb(255 255 255 / .42);--control:rgb(36 39 42 / .045);--control-text:#363a3e;--bubble-edge:rgb(36 39 42 / .055);color-scheme:light;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16.5px;background:var(--bg);color:var(--text)}
+:root[data-theme=dark]{--bg:#141516;--surface:#202224;--glass:rgb(32 34 36 / .88);--text:#f1f2f3;--muted:#b2b5b9;--line:rgb(255 255 255 / .09);--accent:#e0e2e5;--soft:rgb(255 255 255 / .06);--incoming:rgb(255 255 255 / .045);--outgoing:rgb(255 255 255 / .07);--control:rgb(255 255 255 / .075);--control-text:#f1f2f3;--bubble-edge:rgb(255 255 255 / .065);color-scheme:dark}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#141516;--surface:#202224;--glass:rgb(32 34 36 / .88);--text:#f1f2f3;--muted:#b2b5b9;--line:rgb(255 255 255 / .09);--accent:#e0e2e5;--soft:rgb(255 255 255 / .06);--incoming:rgb(255 255 255 / .045);--outgoing:rgb(255 255 255 / .07);--control:rgb(255 255 255 / .075);--control-text:#f1f2f3;--bubble-edge:rgb(255 255 255 / .065);color-scheme:dark}}
+:root[data-theme=dark] .wordmark img{mix-blend-mode:screen}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .wordmark img{mix-blend-mode:screen}}
+/* Existing approved values from chat-actions.css */
+
+/* Existing approved values from chat-minimal.css */
+
+/* Existing approved values from profile-discovery.css */
+
+/* Existing approved values from public-ui-foundation.css */
+:root{--public-content-max:760px;--public-keyboard-bottom:0px;--public-vvh:100dvh}
+:root {
+ --color-accent:var(--accent); --surface-primary:var(--surface); --text-primary:var(--text);
+ --border-subtle:var(--line); --radius-control:16px; --radius-pill:999px;
+ --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-6:24px;
+ --font-family-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ --font-body:17px; --font-input:16.5px; --line-height-body:1.45;
+ --focus-width:2px; --focus-offset:2px; --disabled-opacity:.55; --viewport-height:100dvh; --viewport-top:0px;
+ --icon-size:22px; --control-size:44px; --elevation-overlay:0 8px 35px #0002;
+ --motion-duration:160ms; --motion-easing:ease-out;
+ --safe-area-top:env(safe-area-inset-top); --safe-area-bottom:env(safe-area-inset-bottom);
+ --safe-area-left:env(safe-area-inset-left); --safe-area-right:env(safe-area-inset-right);
+ --breakpoint-tablet:768px; --breakpoint-desktop:1024px; --shell-content-max:800px;
+ --layer-base:0; --layer-shell:10; --layer-popover:100; --layer-sheet:450; --layer-toast:3000;
+}
+@media(prefers-reduced-motion:reduce){:root{--motion-duration:0ms}}

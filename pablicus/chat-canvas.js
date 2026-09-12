@@ -11,7 +11,7 @@
     if (!document || typeof options.getContext !== 'function') throw new Error('Для полотна нужен открытый разговор.');
     const uid = 'pcc-' + (++instanceId);
     const el = (tag, className, text) => {
-      const node = document.createElement(tag);
+      const node = document.createElement(tag); window.PablicusUI?.prepareControl?.(node);
       if (className) node.className = className;
       if (text !== undefined) node.textContent = text;
       return node;
@@ -705,7 +705,7 @@
           scope.history.pushState({ ...scope.history.state, pccTaskSheet: uid }, '', scope.location.href);
           taskSheetHistory = true;
         } catch (_) { /* Keep the in-flight form until its response resolves. */ }
-      } else dismissTask();
+      } else if(!requestDismissTask())ensureSheetHistory();
     }
     function renderTaskForm() {
       const wasOpen = !!taskSheet?.open;
@@ -720,14 +720,14 @@
       taskSheet = el('dialog', 'pccTaskSheet');
       taskSheet.setAttribute('aria-modal', 'true');
       taskSheet.setAttribute('aria-labelledby', uid + '-task-heading');
-      taskSheet.oncancel = event => { event.preventDefault(); dismissTask(); };
-      taskSheet.onclick = event => { if (event.target === taskSheet) dismissTask(); };
+      taskSheet.oncancel = event => { event.preventDefault(); requestDismissTask(); };
+      taskSheet.onclick = event => { if (event.target === taskSheet) requestDismissTask(); };
       taskForm = el('form', 'pccTaskForm');
       taskForm.dataset.taskId = taskDraft.isNew ? 'new' : taskDraft.id;
       taskForm.setAttribute('aria-label', taskDraft.isNew ? 'Новое дело' : 'Редактирование дела');
       const heading = el('div', 'pccTaskSheetHead');
       const cancel = button('pccIcon pccTaskCancel', 'Закрыть дело', 'close');
-      cancel.onclick = dismissTask;
+      cancel.onclick = requestDismissTask;
       const caption = el('h4', 'pccFormTitle', taskDraft.isNew ? 'Новое дело' : 'Дело');
       caption.id = uid + '-task-heading';
       heading.append(cancel, caption);
@@ -913,6 +913,11 @@
       if (title) { title.classList.add('pccTaskTitle'); title.id = uid + '-task-title'; title.setAttribute('aria-label', 'Что нужно сделать?'); }
       renderCalendar(); updateTaskControls();
       if (wasOpen) showTaskSheet();
+    }
+    function requestDismissTask(){
+      if(taskBusy)return false;
+      if((taskDraft?.dirty||taskEditor?.recording||taskEditor?.pending)&&!scope.confirm('В деле есть несохранённые изменения. Закрыть без сохранения?'))return false;
+      dismissTask();return true;
     }
     function dismissTask() {
       if (taskBusy) return;
