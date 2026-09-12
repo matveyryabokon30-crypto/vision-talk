@@ -1,0 +1,1309 @@
+{
+  "status": "INCOMPLETE_EXACT_SOURCE_GAPS",
+  "checks": {
+    "unique_turns": 60,
+    "items": 105,
+    "visible_text_characters": 352135,
+    "source_attachments_byte_matches": 10,
+    "d0_exact_prefix_characters": 19973,
+    "d0_original_response_characters": 44612,
+    "video_frames_viewed": 98,
+    "contact_sheets_viewed": 8,
+    "local_manifest_files": 120,
+    "runtime_tests_workflows_unchanged": true,
+    "relative_links_checked": true
+  },
+  "source_thread": "6aa41e2c-4db8-83ed-adf5-ff2f4be59292",
+  "local_package": "/Users/artem/Documents/ChatGPT/Pablicus/context-recovery-sites-20260912",
+  "local_manifest_sha256": "1c6f249e7adc5577976c8d90be028726e7343367448b560a8d716b5415c292a2",
+  "coverage": {
+    "thread_title": "Проверка сайтов обучения",
+    "thread_id": "6aa41e2c-4db8-83ed-adf5-ff2f4be59292",
+    "status": "INCOMPLETE_EXACT_SOURCE_GAPS",
+    "pagination_pages": 6,
+    "last_page_has_more": false,
+    "turns_total": 60,
+    "items_total": 105,
+    "assembled_visible_characters": 352134,
+    "all_returned_text_read": true,
+    "attachments_declared": {
+      "image_occurrences": 153,
+      "file_occurrences": 6
+    },
+    "attachments_materialized": {
+      "images": 8,
+      "videos": 2
+    },
+    "truncated_messages": 3,
+    "d0_report_recovered_from_original_designer_rollout": true,
+    "remaining_text_gaps": [
+      "ccfea699-b47a-4f20-a1e3-e1d4502df677",
+      "f44b0cb5-dcc2-4134-928f-eb084b288c60"
+    ],
+    "source_incomplete_without_truncation_flag": [
+      "e4ac8c82-980c-44c2-a1f1-6b04d1e7d570 ends <FINAL_DECISION> D"
+    ],
+    "turns": [
+      {
+        "turn": 1,
+        "id": "b3c078f1-3e9f-45c0-9a25-89ccd16f0df3",
+        "started_at": "2026-09-11T15:28:44.035Z",
+        "items": [
+          {
+            "id": "b3c078f1-3e9f-45c0-9a25-89ccd16f0df3",
+            "type": "userMessage",
+            "characters": 322,
+            "truncated": false
+          },
+          {
+            "id": "f70e3258-855f-49ce-be4c-2bda58d07e1e",
+            "type": "agentMessage",
+            "characters": 5341,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 3,
+            "type": "images"
+          }
+        ]
+      },
+      {
+        "turn": 2,
+        "id": "7327ae54-ab32-4e91-850b-92035955da61",
+        "started_at": "2026-09-11T15:45:40.223Z",
+        "items": [
+          {
+            "id": "7327ae54-ab32-4e91-850b-92035955da61",
+            "type": "userMessage",
+            "characters": 429,
+            "truncated": false
+          },
+          {
+            "id": "508e47d9-f7a0-4a47-8655-c04143a700cb",
+            "type": "agentMessage",
+            "characters": 11452,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 3,
+        "id": "007ea72f-8906-4c79-8ff3-28cee406a2a4",
+        "started_at": "2026-09-11T16:42:56.748Z",
+        "items": [
+          {
+            "id": "007ea72f-8906-4c79-8ff3-28cee406a2a4",
+            "type": "userMessage",
+            "characters": 744,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 1,
+            "type": "file"
+          }
+        ]
+      },
+      {
+        "turn": 4,
+        "id": "1487c557-bac2-4e9c-9fe8-5e08d1483915",
+        "started_at": "2026-09-11T16:43:48.080Z",
+        "items": [
+          {
+            "id": "1487c557-bac2-4e9c-9fe8-5e08d1483915",
+            "type": "userMessage",
+            "characters": 744,
+            "truncated": false
+          },
+          {
+            "id": "ccfea699-b47a-4f20-a1e3-e1d4502df677",
+            "type": "agentMessage",
+            "characters": 20000,
+            "truncated": true
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 1,
+            "type": "file"
+          }
+        ]
+      },
+      {
+        "turn": 5,
+        "id": "01e2cddb-345f-438f-ae19-b2cf9f15c1f7",
+        "started_at": "2026-09-11T17:19:32.975Z",
+        "items": [
+          {
+            "id": "01e2cddb-345f-438f-ae19-b2cf9f15c1f7",
+            "type": "userMessage",
+            "characters": 1454,
+            "truncated": false
+          },
+          {
+            "id": "cd569b97-a054-4a0b-a951-7296353e89c0",
+            "type": "agentMessage",
+            "characters": 18455,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 6,
+        "id": "8a249fb0-db24-400b-998d-992e6cb5d01f",
+        "started_at": "2026-09-11T18:11:46.077Z",
+        "items": [
+          {
+            "id": "8a249fb0-db24-400b-998d-992e6cb5d01f",
+            "type": "userMessage",
+            "characters": 723,
+            "truncated": false
+          },
+          {
+            "id": "5bcd2e2e-92c4-44c3-b73f-3da379f86664",
+            "type": "agentMessage",
+            "characters": 8619,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 7,
+        "id": "c2f2cec2-18d4-434f-a596-eab45dec08c5",
+        "started_at": "2026-09-12T07:51:56.900Z",
+        "items": [
+          {
+            "id": "c2f2cec2-18d4-434f-a596-eab45dec08c5",
+            "type": "userMessage",
+            "characters": 338,
+            "truncated": false
+          },
+          {
+            "id": "e602ed22-3210-4857-a2ab-52746a714fff",
+            "type": "agentMessage",
+            "characters": 10901,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 8,
+        "id": "0f7dfab2-0b3b-4ccb-822d-90032365da4c",
+        "started_at": "2026-09-12T08:06:54.192Z",
+        "items": [
+          {
+            "id": "0f7dfab2-0b3b-4ccb-822d-90032365da4c",
+            "type": "userMessage",
+            "characters": 57,
+            "truncated": false
+          },
+          {
+            "id": "eb37a633-6dd3-4902-abba-8e928971985e",
+            "type": "agentMessage",
+            "characters": 385,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 9,
+        "id": "297ae096-85b3-4337-b8ec-cd791f002272",
+        "started_at": "2026-09-12T08:10:12.790Z",
+        "items": [
+          {
+            "id": "297ae096-85b3-4337-b8ec-cd791f002272",
+            "type": "userMessage",
+            "characters": 86,
+            "truncated": false
+          },
+          {
+            "id": "1b27648f-2546-44c8-a5bd-df4ce5d2715c",
+            "type": "agentMessage",
+            "characters": 2441,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 10,
+        "id": "eb87c706-226c-471b-ad3f-4c9602683e59",
+        "started_at": "2026-09-12T08:12:18.234Z",
+        "items": [
+          {
+            "id": "eb87c706-226c-471b-ad3f-4c9602683e59",
+            "type": "userMessage",
+            "characters": 57,
+            "truncated": false
+          },
+          {
+            "id": "fc323058-e352-40b9-bb77-8b19aef9579c",
+            "type": "agentMessage",
+            "characters": 4284,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 1,
+            "type": "image"
+          }
+        ]
+      },
+      {
+        "turn": 11,
+        "id": "4a0bcc00-c3bd-4d6d-9be7-a94ba8c3e24e",
+        "started_at": "2026-09-12T08:36:26.595Z",
+        "items": [
+          {
+            "id": "4a0bcc00-c3bd-4d6d-9be7-a94ba8c3e24e",
+            "type": "userMessage",
+            "characters": 1782,
+            "truncated": false
+          },
+          {
+            "id": "f44b0cb5-dcc2-4134-928f-eb084b288c60",
+            "type": "agentMessage",
+            "characters": 20000,
+            "truncated": true
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 12,
+        "id": "a0978345-a71d-4343-8629-cb9a89c1768c",
+        "started_at": "2026-09-12T08:51:59.563Z",
+        "items": [
+          {
+            "id": "a0978345-a71d-4343-8629-cb9a89c1768c",
+            "type": "userMessage",
+            "characters": 199,
+            "truncated": false
+          },
+          {
+            "id": "5562b858-bf5e-4a21-a59d-876b831544d8",
+            "type": "agentMessage",
+            "characters": 778,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 13,
+        "id": "3a4812c3-352f-4ddc-b321-ed17fccaef83",
+        "started_at": "2026-09-12T09:29:16.944Z",
+        "items": [
+          {
+            "id": "3a4812c3-352f-4ddc-b321-ed17fccaef83",
+            "type": "userMessage",
+            "characters": 601,
+            "truncated": false
+          },
+          {
+            "id": "ba1ed4fa-5517-456b-9b73-1eaf19533d67",
+            "type": "agentMessage",
+            "characters": 16183,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 14,
+        "id": "405f37f4-4597-4321-bb28-247868822081",
+        "started_at": "2026-09-12T09:48:08.848Z",
+        "items": [
+          {
+            "id": "405f37f4-4597-4321-bb28-247868822081",
+            "type": "userMessage",
+            "characters": 2145,
+            "truncated": false
+          },
+          {
+            "id": "b8b0b07f-4bda-4733-ba61-fe4fa1e24170",
+            "type": "agentMessage",
+            "characters": 13377,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 15,
+        "id": "fd0980c8-166e-4874-9cc8-b0716e78f181",
+        "started_at": "2026-09-12T10:02:28.314Z",
+        "items": [
+          {
+            "id": "fd0980c8-166e-4874-9cc8-b0716e78f181",
+            "type": "userMessage",
+            "characters": 432,
+            "truncated": false
+          },
+          {
+            "id": "4b652515-14ae-4491-9fe1-ee7e90d1b78f",
+            "type": "agentMessage",
+            "characters": 3037,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 16,
+        "id": "d64e4fdf-8e7a-4484-984a-eeab87426c6e",
+        "started_at": "2026-09-12T10:17:38.376Z",
+        "items": [
+          {
+            "id": "d64e4fdf-8e7a-4484-984a-eeab87426c6e",
+            "type": "userMessage",
+            "characters": 55,
+            "truncated": false
+          },
+          {
+            "id": "d941d8eb-d475-43fc-b23a-7eb61b94c2f9",
+            "type": "agentMessage",
+            "characters": 1873,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 17,
+        "id": "ff09429a-5485-461a-8d20-911d9375da6c",
+        "started_at": "2026-09-12T10:23:39.978Z",
+        "items": [
+          {
+            "id": "ff09429a-5485-461a-8d20-911d9375da6c",
+            "type": "userMessage",
+            "characters": 259,
+            "truncated": false
+          },
+          {
+            "id": "3eeb0463-b9ec-42dd-8426-1931203d6b3c",
+            "type": "agentMessage",
+            "characters": 2412,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 18,
+        "id": "68f57fde-4f1d-4382-babd-6712355ba307",
+        "started_at": "2026-09-12T10:28:38.803Z",
+        "items": [
+          {
+            "id": "68f57fde-4f1d-4382-babd-6712355ba307",
+            "type": "userMessage",
+            "characters": 140,
+            "truncated": false
+          },
+          {
+            "id": "11a11e80-509c-431b-9ab7-a1f0e78ea0d9",
+            "type": "agentMessage",
+            "characters": 1236,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 1,
+            "type": "image"
+          }
+        ]
+      },
+      {
+        "turn": 19,
+        "id": "ebfc3204-1874-4761-b617-675dc9591655",
+        "started_at": "2026-09-12T10:31:40.145Z",
+        "items": [
+          {
+            "id": "ebfc3204-1874-4761-b617-675dc9591655",
+            "type": "userMessage",
+            "characters": 146,
+            "truncated": false
+          },
+          {
+            "id": "612048b6-ac78-47d1-96c1-ea1d4df0f180",
+            "type": "agentMessage",
+            "characters": 1487,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 20,
+        "id": "335de5fc-14fd-494c-b0f0-7777ff2ae464",
+        "started_at": "2026-09-12T11:05:56.979Z",
+        "items": [
+          {
+            "id": "335de5fc-14fd-494c-b0f0-7777ff2ae464",
+            "type": "userMessage",
+            "characters": 718,
+            "truncated": false
+          },
+          {
+            "id": "52410019-dbdb-4302-a053-ca46193a9bf6",
+            "type": "agentMessage",
+            "characters": 1271,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 21,
+        "id": "5cfda94f-5fca-41f9-8be5-a5b252bb19fa",
+        "started_at": "2026-09-12T11:38:33.446Z",
+        "items": [
+          {
+            "id": "5cfda94f-5fca-41f9-8be5-a5b252bb19fa",
+            "type": "userMessage",
+            "characters": 57,
+            "truncated": false
+          },
+          {
+            "id": "552fcdd9-77a0-4c30-b0c8-a4d5167be0ba",
+            "type": "agentMessage",
+            "characters": 1095,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 1,
+            "type": "image"
+          }
+        ]
+      },
+      {
+        "turn": 22,
+        "id": "5ed6bdb0-c4b5-491f-a149-8bcad7d21eed",
+        "started_at": "2026-09-12T11:53:21.866Z",
+        "items": [
+          {
+            "id": "5ed6bdb0-c4b5-491f-a149-8bcad7d21eed",
+            "type": "userMessage",
+            "characters": 1172,
+            "truncated": false
+          },
+          {
+            "id": "0caddec2-f263-4dbc-96d1-2244a36973a0",
+            "type": "agentMessage",
+            "characters": 3263,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 1,
+            "type": "image"
+          }
+        ]
+      },
+      {
+        "turn": 23,
+        "id": "943b3ec6-e9f0-4da2-8841-90da47375486",
+        "started_at": "2026-09-12T12:02:21.778Z",
+        "items": [
+          {
+            "id": "943b3ec6-e9f0-4da2-8841-90da47375486",
+            "type": "userMessage",
+            "characters": 443,
+            "truncated": false
+          },
+          {
+            "id": "af8b838e-a5e8-4454-88b2-e92d36379081",
+            "type": "agentMessage",
+            "characters": 4062,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 24,
+        "id": "a76ae571-2f82-40e6-9aa0-d113f38e7ed8",
+        "started_at": "2026-09-12T12:30:55.749Z",
+        "items": [
+          {
+            "id": "a76ae571-2f82-40e6-9aa0-d113f38e7ed8",
+            "type": "userMessage",
+            "characters": 57,
+            "truncated": false
+          },
+          {
+            "id": "43d541d5-029e-4c3d-bf0f-48e1cb89a4b5",
+            "type": "agentMessage",
+            "characters": 2869,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 1,
+            "type": "image"
+          }
+        ]
+      },
+      {
+        "turn": 25,
+        "id": "67a4fea3-189f-4786-a13c-f52bd63aeba3",
+        "started_at": "2026-09-12T12:50:47.118Z",
+        "items": [
+          {
+            "id": "67a4fea3-189f-4786-a13c-f52bd63aeba3",
+            "type": "userMessage",
+            "characters": 2453,
+            "truncated": false
+          },
+          {
+            "id": "bf862e19-b64c-49d7-96d9-3dbe153c06c2",
+            "type": "agentMessage",
+            "characters": 4502,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 26,
+        "id": "6a4b431f-eb1c-4f7f-840f-3ed85895fc33",
+        "started_at": "2026-09-12T13:08:54.164Z",
+        "items": [
+          {
+            "id": "6a4b431f-eb1c-4f7f-840f-3ed85895fc33",
+            "type": "userMessage",
+            "characters": 3280,
+            "truncated": false
+          },
+          {
+            "id": "dfea7f53-14cb-4908-8224-8684171b11cd",
+            "type": "agentMessage",
+            "characters": 4474,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 27,
+        "id": "81f0f0ce-48ac-4f47-bfcb-d9b8e10bc01e",
+        "started_at": "2026-09-12T13:19:17.547Z",
+        "items": [
+          {
+            "id": "81f0f0ce-48ac-4f47-bfcb-d9b8e10bc01e",
+            "type": "userMessage",
+            "characters": 1120,
+            "truncated": false
+          },
+          {
+            "id": "23083bf0-59f1-4f21-942c-c521abff5642",
+            "type": "agentMessage",
+            "characters": 2868,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 28,
+        "id": "8bfdf5b3-c848-498b-84ef-260b37574382",
+        "started_at": "2026-09-12T13:40:56.333Z",
+        "items": [
+          {
+            "id": "8bfdf5b3-c848-498b-84ef-260b37574382",
+            "type": "userMessage",
+            "characters": 1120,
+            "truncated": false
+          },
+          {
+            "id": "b5c6a783-9c24-4f65-b779-daa662f5629c",
+            "type": "agentMessage",
+            "characters": 1580,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 29,
+        "id": "4c9ab26d-7d65-43da-8dcf-80cd662d4f2b",
+        "started_at": "2026-09-12T13:50:15.001Z",
+        "items": [
+          {
+            "id": "4c9ab26d-7d65-43da-8dcf-80cd662d4f2b",
+            "type": "userMessage",
+            "characters": 373,
+            "truncated": false
+          },
+          {
+            "id": "48a33934-80b8-43c9-8c4a-e1b658e1ef12",
+            "type": "agentMessage",
+            "characters": 9831,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 30,
+        "id": "a62bbf75-3c8c-43fe-90c2-abf003fd7c0f",
+        "started_at": "2026-09-12T14:17:13.074Z",
+        "items": [
+          {
+            "id": "a62bbf75-3c8c-43fe-90c2-abf003fd7c0f",
+            "type": "userMessage",
+            "characters": 491,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 10,
+            "type": "images"
+          }
+        ]
+      },
+      {
+        "turn": 31,
+        "id": "06b5b761-121e-4c64-8158-d8116121c44d",
+        "started_at": "2026-09-12T14:17:30.202Z",
+        "items": [
+          {
+            "id": "06b5b761-121e-4c64-8158-d8116121c44d",
+            "type": "userMessage",
+            "characters": 59,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 10,
+            "type": "images"
+          }
+        ]
+      },
+      {
+        "turn": 32,
+        "id": "35fccc14-9f19-41b5-9c6c-bc17e8509200",
+        "started_at": "2026-09-12T14:17:47.107Z",
+        "items": [
+          {
+            "id": "35fccc14-9f19-41b5-9c6c-bc17e8509200",
+            "type": "userMessage",
+            "characters": 59,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 10,
+            "type": "images"
+          }
+        ]
+      },
+      {
+        "turn": 33,
+        "id": "f0aade4d-2ab7-40a0-8b9a-30e6b89ed428",
+        "started_at": "2026-09-12T14:18:02.717Z",
+        "items": [
+          {
+            "id": "f0aade4d-2ab7-40a0-8b9a-30e6b89ed428",
+            "type": "userMessage",
+            "characters": 59,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 10,
+            "type": "images"
+          }
+        ]
+      },
+      {
+        "turn": 34,
+        "id": "962ff4f8-f14f-4dcd-99ac-31e985affd19",
+        "started_at": "2026-09-12T14:18:23.309Z",
+        "items": [
+          {
+            "id": "962ff4f8-f14f-4dcd-99ac-31e985affd19",
+            "type": "userMessage",
+            "characters": 59,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 10,
+            "type": "images"
+          }
+        ]
+      },
+      {
+        "turn": 35,
+        "id": "722dd80f-0bfd-4b56-8774-3bf3c6068047",
+        "started_at": "2026-09-12T14:18:40.415Z",
+        "items": [
+          {
+            "id": "722dd80f-0bfd-4b56-8774-3bf3c6068047",
+            "type": "userMessage",
+            "characters": 59,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 10,
+            "type": "images"
+          }
+        ]
+      },
+      {
+        "turn": 36,
+        "id": "4c18a1f8-abb6-4192-b138-995418a11847",
+        "started_at": "2026-09-12T14:18:54.494Z",
+        "items": [
+          {
+            "id": "4c18a1f8-abb6-4192-b138-995418a11847",
+            "type": "userMessage",
+            "characters": 59,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 10,
+            "type": "images"
+          }
+        ]
+      },
+      {
+        "turn": 37,
+        "id": "0b8e8248-424f-41fc-85cd-a0bcf2542e5c",
+        "started_at": "2026-09-12T14:19:15.892Z",
+        "items": [
+          {
+            "id": "0b8e8248-424f-41fc-85cd-a0bcf2542e5c",
+            "type": "userMessage",
+            "characters": 59,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 10,
+            "type": "images"
+          }
+        ]
+      },
+      {
+        "turn": 38,
+        "id": "122758f1-dd08-4e0f-a25f-b5a57e9e8eea",
+        "started_at": "2026-09-12T14:19:39.414Z",
+        "items": [
+          {
+            "id": "122758f1-dd08-4e0f-a25f-b5a57e9e8eea",
+            "type": "userMessage",
+            "characters": 59,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 10,
+            "type": "images"
+          }
+        ]
+      },
+      {
+        "turn": 39,
+        "id": "d0d66542-3f1d-439e-a615-9af9b76e184a",
+        "started_at": "2026-09-12T14:19:53.944Z",
+        "items": [
+          {
+            "id": "d0d66542-3f1d-439e-a615-9af9b76e184a",
+            "type": "userMessage",
+            "characters": 59,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 10,
+            "type": "images"
+          }
+        ]
+      },
+      {
+        "turn": 40,
+        "id": "23a98270-2107-4cd6-9353-a041c41137e8",
+        "started_at": "2026-09-12T14:20:19.931Z",
+        "items": [
+          {
+            "id": "23a98270-2107-4cd6-9353-a041c41137e8",
+            "type": "userMessage",
+            "characters": 59,
+            "truncated": false
+          },
+          {
+            "id": "ba863efc-9108-4040-b5b9-9dda0ab5350b",
+            "type": "agentMessage",
+            "characters": 2511,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 10,
+            "type": "images"
+          }
+        ]
+      },
+      {
+        "turn": 41,
+        "id": "e555ab3f-56d8-4bdb-bc0b-f3b572b7f4d0",
+        "started_at": "2026-09-12T14:25:59.251Z",
+        "items": [
+          {
+            "id": "e555ab3f-56d8-4bdb-bc0b-f3b572b7f4d0",
+            "type": "userMessage",
+            "characters": 59,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 10,
+            "type": "images"
+          }
+        ]
+      },
+      {
+        "turn": 42,
+        "id": "75605e78-d050-452e-b9b5-eed58a17a8a2",
+        "started_at": "2026-09-12T14:26:45.563Z",
+        "items": [
+          {
+            "id": "75605e78-d050-452e-b9b5-eed58a17a8a2",
+            "type": "userMessage",
+            "characters": 111,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 1,
+            "type": "image"
+          }
+        ]
+      },
+      {
+        "turn": 43,
+        "id": "d3102ff1-830b-4d42-bd65-19ae5232c339",
+        "started_at": "2026-09-12T14:28:16.481Z",
+        "items": [
+          {
+            "id": "d3102ff1-830b-4d42-bd65-19ae5232c339",
+            "type": "userMessage",
+            "characters": 47,
+            "truncated": false
+          },
+          {
+            "id": "61f45614-cce8-4b94-a1f6-afc6c2db38e9",
+            "type": "agentMessage",
+            "characters": 6653,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 44,
+        "id": "ba6e115e-008d-48fe-88b7-6a3a3f9df7bb",
+        "started_at": "2026-09-12T15:00:23.493Z",
+        "items": [
+          {
+            "id": "ba6e115e-008d-48fe-88b7-6a3a3f9df7bb",
+            "type": "userMessage",
+            "characters": 464,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 45,
+        "id": "4f54426f-65f6-4a95-b215-05253a76c1da",
+        "started_at": "2026-09-12T15:34:10.939Z",
+        "items": [
+          {
+            "id": "4f54426f-65f6-4a95-b215-05253a76c1da",
+            "type": "userMessage",
+            "characters": 36,
+            "truncated": false
+          },
+          {
+            "id": "ddece7de-1c7d-441f-8b26-c15552dd97e5",
+            "type": "agentMessage",
+            "characters": 15237,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 46,
+        "id": "c7087796-93de-46af-ba59-006905887550",
+        "started_at": "2026-09-12T16:28:14.969Z",
+        "items": [
+          {
+            "id": "c7087796-93de-46af-ba59-006905887550",
+            "type": "userMessage",
+            "characters": 572,
+            "truncated": false
+          },
+          {
+            "id": "f8b03a89-d61b-4c24-8e01-e00cadc8f151",
+            "type": "agentMessage",
+            "characters": 5842,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 10,
+            "type": "images"
+          }
+        ]
+      },
+      {
+        "turn": 47,
+        "id": "e8a4f62a-b969-4473-9227-7c67198f21a2",
+        "started_at": "2026-09-12T16:35:47.346Z",
+        "items": [
+          {
+            "id": "e8a4f62a-b969-4473-9227-7c67198f21a2",
+            "type": "userMessage",
+            "characters": 10,
+            "truncated": false
+          },
+          {
+            "id": "2e188313-6242-4993-81e2-d8747e8e192c",
+            "type": "agentMessage",
+            "characters": 2755,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 48,
+        "id": "e4f3dc60-8cca-419c-b735-3cdd72e700d1",
+        "started_at": "2026-09-12T16:39:10.665Z",
+        "items": [
+          {
+            "id": "e4f3dc60-8cca-419c-b735-3cdd72e700d1",
+            "type": "userMessage",
+            "characters": 12,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 49,
+        "id": "f7e73aea-ba68-49fc-994b-4779d9aa6d35",
+        "started_at": "2026-09-12T16:42:12.869Z",
+        "items": [
+          {
+            "id": "f7e73aea-ba68-49fc-994b-4779d9aa6d35",
+            "type": "userMessage",
+            "characters": 20000,
+            "truncated": true
+          },
+          {
+            "id": "7e234ce2-b8e4-4549-9e9a-a730def8df4f",
+            "type": "agentMessage",
+            "characters": 11357,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 50,
+        "id": "85c4e607-26dc-42f0-a9da-f8df5aba12fa",
+        "started_at": "2026-09-12T16:46:17.075Z",
+        "items": [
+          {
+            "id": "85c4e607-26dc-42f0-a9da-f8df5aba12fa",
+            "type": "userMessage",
+            "characters": 315,
+            "truncated": false
+          },
+          {
+            "id": "0f415bfa-fc0d-4b04-b55d-e5231ddd6d0d",
+            "type": "agentMessage",
+            "characters": 2884,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 51,
+        "id": "bc0a16c2-1adc-4abe-9aa2-d742f51fb499",
+        "started_at": "2026-09-12T16:48:52.383Z",
+        "items": [
+          {
+            "id": "bc0a16c2-1adc-4abe-9aa2-d742f51fb499",
+            "type": "userMessage",
+            "characters": 38,
+            "truncated": false
+          },
+          {
+            "id": "e4ac8c82-980c-44c2-a1f1-6b04d1e7d570",
+            "type": "agentMessage",
+            "characters": 16680,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 52,
+        "id": "9c8b74fb-f300-409c-8520-b20bba0c5d6e",
+        "started_at": "2026-09-12T16:51:05.966Z",
+        "items": [
+          {
+            "id": "9c8b74fb-f300-409c-8520-b20bba0c5d6e",
+            "type": "userMessage",
+            "characters": 107,
+            "truncated": false
+          },
+          {
+            "id": "c847368e-ddb1-415c-8cdb-18355db74a00",
+            "type": "agentMessage",
+            "characters": 388,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 1,
+            "type": "image"
+          }
+        ]
+      },
+      {
+        "turn": 53,
+        "id": "5e34c72e-bdca-4d37-ad91-db46c3064a17",
+        "started_at": "2026-09-12T16:54:33.541Z",
+        "items": [
+          {
+            "id": "5e34c72e-bdca-4d37-ad91-db46c3064a17",
+            "type": "userMessage",
+            "characters": 74,
+            "truncated": false
+          },
+          {
+            "id": "5ed048e1-8ff3-47ea-b146-ef13bba677f5",
+            "type": "agentMessage",
+            "characters": 9498,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 54,
+        "id": "1835a07b-7189-4e0b-9f1e-ea4fb3576008",
+        "started_at": "2026-09-12T18:18:52.222Z",
+        "items": [
+          {
+            "id": "1835a07b-7189-4e0b-9f1e-ea4fb3576008",
+            "type": "userMessage",
+            "characters": 286,
+            "truncated": false
+          },
+          {
+            "id": "2d0ff43b-9296-4979-965d-5c48e6ef6978",
+            "type": "agentMessage",
+            "characters": 1638,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 55,
+        "id": "72931036-ab2c-4324-bde4-d6a04e0aa6c2",
+        "started_at": "2026-09-12T18:20:05.849Z",
+        "items": [
+          {
+            "id": "72931036-ab2c-4324-bde4-d6a04e0aa6c2",
+            "type": "userMessage",
+            "characters": 80,
+            "truncated": false
+          },
+          {
+            "id": "922fdc25-05c7-4dfc-b475-06bc804b1de4",
+            "type": "agentMessage",
+            "characters": 6679,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 56,
+        "id": "62462200-d75d-4c09-8aef-1a1bde19bc7a",
+        "started_at": "2026-09-12T18:38:54.967Z",
+        "items": [
+          {
+            "id": "62462200-d75d-4c09-8aef-1a1bde19bc7a",
+            "type": "userMessage",
+            "characters": 2479,
+            "truncated": false
+          },
+          {
+            "id": "addf06b8-0b6c-4762-892e-a4132b08c071",
+            "type": "agentMessage",
+            "characters": 4115,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 57,
+        "id": "df533d4e-18d3-438c-b73f-f2d043eada00",
+        "started_at": "2026-09-12T18:56:36.127Z",
+        "items": [
+          {
+            "id": "df533d4e-18d3-438c-b73f-f2d043eada00",
+            "type": "userMessage",
+            "characters": 2861,
+            "truncated": false
+          },
+          {
+            "id": "ae5d0eea-76f5-4f97-8d30-32e269590f09",
+            "type": "agentMessage",
+            "characters": 12247,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 2,
+            "type": "files"
+          },
+          {
+            "count": 5,
+            "type": "images"
+          }
+        ]
+      },
+      {
+        "turn": 58,
+        "id": "2f636ac2-74cf-43ee-b591-37c531846610",
+        "started_at": "2026-09-12T19:17:37.597Z",
+        "items": [
+          {
+            "id": "2f636ac2-74cf-43ee-b591-37c531846610",
+            "type": "userMessage",
+            "characters": 659,
+            "truncated": false
+          },
+          {
+            "id": "cee6839f-e81f-4307-8e27-06c8cf7403d2",
+            "type": "agentMessage",
+            "characters": 5583,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": [
+          {
+            "count": 2,
+            "type": "files"
+          },
+          {
+            "count": 8,
+            "type": "images"
+          }
+        ]
+      },
+      {
+        "turn": 59,
+        "id": "13286eca-19ed-4f6c-b94b-3300811dd9cd",
+        "started_at": "2026-09-12T19:28:12.215Z",
+        "items": [
+          {
+            "id": "13286eca-19ed-4f6c-b94b-3300811dd9cd",
+            "type": "userMessage",
+            "characters": 2106,
+            "truncated": false
+          },
+          {
+            "id": "044c6f31-79bb-4a6e-a64e-5c5260fe2386",
+            "type": "agentMessage",
+            "characters": 3038,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      },
+      {
+        "turn": 60,
+        "id": "73c6bb18-0692-4031-b6ef-9cfa366d026e",
+        "started_at": "2026-09-12T19:31:38.950Z",
+        "items": [
+          {
+            "id": "73c6bb18-0692-4031-b6ef-9cfa366d026e",
+            "type": "userMessage",
+            "characters": 394,
+            "truncated": false
+          },
+          {
+            "id": "6ac777ea-bcb8-449d-b012-5863228c8569",
+            "type": "agentMessage",
+            "characters": 2814,
+            "truncated": false
+          }
+        ],
+        "attachment_declarations": []
+      }
+    ]
+  },
+  "runtime_changed": false,
+  "full_chat_complete": false,
+  "remaining_text_tails": [
+    "ccfea699-b47a-4f20-a1e3-e1d4502df677",
+    "f44b0cb5-dcc2-4134-928f-eb084b288c60"
+  ],
+  "attachment_occurrences_not_matched_to_original_bytes": {
+    "images": 145,
+    "files": 4
+  },
+  "notes": [
+    "D0 tail recovered from original designer response; pasted tail itself not exposed by reader",
+    "Source owner-correction prompt is incomplete without reader truncation flag",
+    "98 frames sampled at 2 fps; audio not listened to; exact motion not qualified",
+    "No recovery implementation, deploy or new design acceptance",
+    "Transcript file is assembled 352134 characters plus one terminal newline: 352135"
+  ]
+}
