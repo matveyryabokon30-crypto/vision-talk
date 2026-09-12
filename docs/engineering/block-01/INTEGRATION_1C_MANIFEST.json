@@ -1,160 +1,744 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "2.0",
   "task_id": "PABLICUS-BLOCK01-1C-INTEGRATION-20260911",
-  "revision": "R1-DIAGNOSIS",
-  "status": "SUBSTEP_1C_BLOCKED",
+  "revision": "R2-EXECUTION-20260912",
+  "status": "SUBSTEP_1C_READY_FOR_INDEPENDENT_REVIEW",
   "repository": "matveyryabokon30-crypto/vision-talk",
   "branch": "refactor/pablicus-foundation-20260911",
-  "historical_WORK_START_HEAD_1C": "dc4a6031e3a7b5248882f88dee11d83ccd88fd60",
-  "diagnosis_continuation_head": "c36e6c95e69f989a23711168fbb81e5e6f12efb5",
-  "CODE_SHA": "f00f253ca2adfe7afc07e64cc3a1dc8f53c5692d",
-  "TESTED_SHA": "f00f253ca2adfe7afc07e64cc3a1dc8f53c5692d",
-  "tested_sha_meaning": "Last executable 1C attempt; failed before behavioral assertions. No new executable correction was published or tested in R1-DIAGNOSIS.",
+  "CURRENT_REMOTE_HEAD_AT_START": "56a6ecf7b5ebdf0e8cc3529d4582707188124e29",
+  "WORK_START_HEAD": "56a6ecf7b5ebdf0e8cc3529d4582707188124e29",
+  "new_commits_at_start": 0,
+  "CODE_SHA": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+  "TESTED_SHA": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+  "HANDOFF_HEAD": "RESOLVE_DOCUMENTATION_COMMIT_AFTER_CREATION",
+  "handoff_resolution": {
+    "meaning": "The documentation-only commit containing this R2 status record, directly after CODE_SHA. Its exact SHA is resolved after creation in the delivered handoff receipt; this file cannot embed its own commit hash.",
+    "resolve_command": "git log -1 --format=%H --grep='docs(1c): hand off verified integration candidate for independent review' 4b886c1477c44752359ccc4b44f8ff5c072bb241..refactor/pablicus-foundation-20260911",
+    "CODE_SHA_is_tested_source": true,
+    "documentation_commit_is_not_retested_code": true
+  },
+  "canonical_documents_read": [
+    "PABLICUS_CONTEXT.md",
+    "docs/pablicus/approved/2026-09-11/Pablicus_Continuation_Plan_2026-09-11.md",
+    "docs/pablicus/approved/2026-09-11/OWNER_DECISION.md",
+    "docs/pablicus/approved/2026-09-11/AMENDMENT_01_UNIVERSAL_AI_ASSISTANT.md",
+    "docs/pablicus/approved/2026-09-11/OWNER_DECISION_AMENDMENT_01.md",
+    "docs/pablicus/approved/2026-09-11/AMENDMENT_02_COMPETITIVE_CAPABILITIES.md",
+    "docs/pablicus/approved/2026-09-11/OWNER_DECISION_AMENDMENT_02.md",
+    "docs/engineering/block-01/INTEGRATION_1C_EXECUTION_BLUEPRINT.md",
+    "docs/engineering/block-01/INTEGRATION_1C_REPORT.md",
+    "docs/engineering/block-01/INTEGRATION_1C_MANIFEST.json",
+    "docs/engineering/block-01/INTEGRATION_1C_EVIDENCE.json",
+    "docs/engineering/block-01/INTEGRATION_1C_SUPPORT_STATUS_R1.md",
+    "docs/engineering/block-01/INTEGRATION_1C_SUPPORT_ESCALATION_R1.md",
+    "docs/pablicus/reviews/2026-09-11/1C_BLOCKED_REVIEW_R1.md",
+    "docs/pablicus/reviews/2026-09-11/1C_BLOCKED_REVIEW_R1_RESULTS.json",
+    "docs/pablicus/reviews/2026-09-11/1C_BLUEPRINT_REVIEW_R1.md",
+    "docs/pablicus/tasks/1C_INTEGRATION_PROMPT.txt",
+    "docs/pablicus/tasks/1C_DIAGNOSIS_R1_PROMPT.txt"
+  ],
+  "accepted_1a": "SUBSTEP_1A_ACCEPTED_WITH_EXPLICIT_EXCLUSION",
   "accepted_1b": {
     "status": "SUBSTEP_1B_ACCEPTED",
     "CODE_SHA": "c5d82e96a236317f7a50530fb86da1a5d2bc4e26",
-    "regression_on_tested_sha": {"PASS":31,"FAIL":0,"ERROR":0,"TIMEOUT":0,"NOT_RUN":0},
-    "unchanged": true
+    "regression_on_tested_sha": {
+      "PASS": 31,
+      "FAIL": 0,
+      "ERROR": 0,
+      "TIMEOUT": 0,
+      "NOT_RUN": 0
+    },
+    "acceptance_not_reopened": true
   },
-  "review_r1": {
-    "head": "c36e6c95e69f989a23711168fbb81e5e6f12efb5",
-    "decision": "SUBSTEP_1C_BLOCKED",
-    "files": [
-      "docs/pablicus/reviews/2026-09-11/1C_BLOCKED_REVIEW_R1.md",
-      "docs/pablicus/reviews/2026-09-11/1C_BLOCKED_REVIEW_R1_RESULTS.json",
-      "docs/pablicus/tasks/1C_DIAGNOSIS_R1_PROMPT.txt"
-    ]
+  "safety_write": {
+    "current_environment_status": "CURRENT_ENV_NORMAL_SOURCE_WRITE_SUCCEEDED",
+    "current_refusals": 0,
+    "first_action": "mcp__codex_apps__github_create_tree",
+    "first_write_start_utc": "2026-09-12T08:31:51Z",
+    "first_write_end_utc": "2026-09-12T08:31:57Z",
+    "first_returned_tree_sha": "b202d0666ae8e2ea9ef0352cfb1f0819121f334d",
+    "support_status": "SENT_AND_ESCALATED",
+    "specialist_review": "PENDING_LAST_CANONICAL_RECORD",
+    "historical_gate_status": "NOT_RESOLVED",
+    "new_support_contact": false,
+    "bypass": false,
+    "interpretation": "Ordinary current-environment source writes actually succeeded. No new support decision or retroactive historical clearance is asserted."
   },
-  "diagnosis": {
-    "observations": [
-      "All nine browser processes ended ERROR before behavioral checks; checks=[] in every result.",
-      "#email exists in the DOM but remained hidden; fill timed out after 8000 ms.",
-      "Capture then failed because App.state referenced missing PablicusDebug.",
-      "__integration.releaseWrite() ran before App.state and did not produce the recorded capture_error, so the instrument global was present far enough for releaseWrite.",
-      "No final PNG or HTML was retained by the nine cases because one shared capture try stopped after App.state failed.",
-      "Initial probe without instrument reached real UI login, user A, conversation c1, active list=1 and empty vault before an unmodeled get_message_actions response blocked Canvas."
-    ],
-    "confirmed_harness_defects": [
+  "ci": {
+    "CODE_SHA": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+    "TESTED_SHA": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+    "run_id": 34688665398,
+    "job_id": 103540004753,
+    "run_status": "completed",
+    "run_conclusion": "success",
+    "job_conclusion": "success",
+    "run_attempt": 1,
+    "branch": "refactor/pablicus-foundation-20260911",
+    "run_created_at": "2026-09-12T10:31:19Z",
+    "run_updated_at": "2026-09-12T10:34:52Z",
+    "run_url": "https://github.com/matveyryabokon30-crypto/vision-talk/actions/runs/34688665398",
+    "artifact_id": 10297195136,
+    "artifact_name": "integration-1c-4b886c1477c44752359ccc4b44f8ff5c072bb241",
+    "artifact_url": "https://github.com/matveyryabokon30-crypto/vision-talk/actions/runs/34688665398/artifacts/10297195136",
+    "github_digest": "sha256:af0115ae7d0df2efbb1b910ef9d172b4e360bef936fdb9424444ec476950bcb8",
+    "zip_file": "integration-1c-4b886c-original.zip",
+    "zip_size_bytes": 2362292,
+    "zip_sha256": "af0115ae7d0df2efbb1b910ef9d172b4e360bef936fdb9424444ec476950bcb8",
+    "zip_crc": "PASS",
+    "original_zip_not_repacked": true,
+    "artifact_expires_at": "2026-09-26T10:34:49Z",
+    "job_decoded_log_sha256": "c2e5affe565d9f271cd6558aa8fb628814b950bd5e970777c56ee63cb73b4a82",
+    "job_log_note": "Decoded GitHub tool response saved as UTF-8 text with final newline. Original artifact process logs are independently hash-verified within ZIP.",
+    "foundation_run": 34688665370,
+    "foundation_job": 103540004648,
+    "foundation_conclusion": "success"
+  },
+  "browser_matrix": {
+    "PASS": 9,
+    "FAIL": 0,
+    "ERROR": 0,
+    "TIMEOUT": 0,
+    "NOT_RUN": 0,
+    "BLOCKED": 0
+  },
+  "cases": {
+    "routes": {
+      "status": "PASS",
+      "assertions": 14,
+      "result_member": "browser/routes/result.json",
+      "result_sha256": "ecc5147f70503c4d3c33c61cb6ab80ce847c657052c61a0a7c5f66ad9f9323ff",
+      "log_member": "browser/routes/process.log",
+      "log_sha256": "f4e48ee8a94928af15bd8e4b06f4597afa8ebbe4e5510743ce77460b5a0cfd42"
+    },
+    "quiet": {
+      "status": "PASS",
+      "assertions": 5,
+      "result_member": "browser/quiet/result.json",
+      "result_sha256": "8ada17a570c0203077dad4e8dd6839cc236e44801be150ae2fe4bcf5e8918a6b",
+      "log_member": "browser/quiet/process.log",
+      "log_sha256": "20f612181e0d73b813395429aa46d06c69dd34eba246c5dd778d8bf9b1245170"
+    },
+    "lifecycle": {
+      "status": "PASS",
+      "assertions": 76,
+      "result_member": "browser/lifecycle/result.json",
+      "result_sha256": "82ad4c1954d7530d173319ee2678bf8d580c70ac60204ade411e6fe3a5cd2cdd",
+      "log_member": "browser/lifecycle/process.log",
+      "log_sha256": "8fe264d5422d1de3e829bf60bdca546cb891dc0286f76af7788298a3f671fca2"
+    },
+    "durability": {
+      "status": "PASS",
+      "assertions": 7,
+      "result_member": "browser/durability/result.json",
+      "result_sha256": "254f7c885d5ccacf12d8d5fad551c8f3b6376a7990cbb3398c9ad27df221219f",
+      "log_member": "browser/durability/process.log",
+      "log_sha256": "4fa88ed93d751b3724b9ad9d47357410fad4ed0ef8044a135d9a8e85fd7cbda1"
+    },
+    "canvas": {
+      "status": "PASS",
+      "assertions": 7,
+      "result_member": "browser/canvas/result.json",
+      "result_sha256": "c5c1f8b7cfdd671640687fd993c26fa9f15744de6bc736878d6d0e9f727c56e7",
+      "log_member": "browser/canvas/process.log",
+      "log_sha256": "c9fc77b6741f9cea82d4b045030a80a8523ed15c2d63058d6aeba887cb283861"
+    },
+    "outbox": {
+      "status": "PASS",
+      "assertions": 10,
+      "result_member": "browser/outbox/result.json",
+      "result_sha256": "6188f882d40def105f74376f9457db2b1205f06656fa45b66497cddbdc982827",
+      "log_member": "browser/outbox/process.log",
+      "log_sha256": "8581b1fd456f86a8391b85d45cfb13e3190fe5c3e87c0a89369cfb8c78fd86f2"
+    },
+    "isolation": {
+      "status": "PASS",
+      "assertions": 11,
+      "result_member": "browser/isolation/result.json",
+      "result_sha256": "c8b0283461e7d6f61e412b995785d3d04420627f44007df7ba09ac28726d1946",
+      "log_member": "browser/isolation/process.log",
+      "log_sha256": "2b29959314ffe9eb1cff23e424a0a33a5110bfe93281883cd474cbea1e80f914"
+    },
+    "pending-send": {
+      "status": "PASS",
+      "assertions": 7,
+      "result_member": "browser/pending-send/result.json",
+      "result_sha256": "4180b2a3d1845cc8f36885c707f42339828e1f65f213b86fe138dff2faec5475",
+      "log_member": "browser/pending-send/process.log",
+      "log_sha256": "f5daa31df6a23370783f9886260521558100e50c14b2bef67a9fbb5d5590ba81"
+    },
+    "storage-errors": {
+      "status": "PASS",
+      "assertions": 8,
+      "result_member": "browser/storage-errors/result.json",
+      "result_sha256": "26202fc06fefcfbbf7f2a5ea3ee3b7f919a19997081b88a0dc2a6533108b20da",
+      "log_member": "browser/storage-errors/process.log",
+      "log_sha256": "f784b94afd994c335eb73fdfe008dced22f3924de37cd7340c43331dbbaca498"
+    }
+  },
+  "requirements_1_7": {
+    "1": {
+      "status": "PASS",
+      "requirement": "Real modules, routes and visible resources",
+      "cases": [
+        "routes"
+      ],
+      "evidence_members": [
+        "browser/routes/result.json"
+      ]
+    },
+    "2": {
+      "status": "PASS",
+      "requirement": "54 completed transitions; no measured resource accumulation or unchanged-list rerender",
+      "cases": [
+        "lifecycle",
+        "quiet"
+      ],
+      "evidence_members": [
+        "browser/lifecycle/result.json",
+        "browser/quiet/result.json"
+      ]
+    },
+    "3": {
+      "status": "PASS",
+      "requirement": "Draft text, order, stable IDs and original Blob bytes across close/open, reload and Canvas deny/accept",
+      "cases": [
+        "durability",
+        "canvas"
+      ],
+      "evidence_members": [
+        "browser/durability/result.json",
+        "browser/canvas/result.json"
+      ]
+    },
+    "4": {
+      "status": "PASS",
+      "requirement": "Durable outbox offline/reload/lost ACK/retry/idempotency and visible explicit failure",
+      "cases": [
+        "outbox"
+      ],
+      "evidence_members": [
+        "browser/outbox/result.json"
+      ]
+    },
+    "5": {
+      "status": "PASS",
+      "requirement": "A to B to A, late read/write/send, draft/files/outbox/selection and same-user refresh",
+      "cases": [
+        "isolation",
+        "pending-send"
+      ],
+      "evidence_members": [
+        "browser/isolation/result.json",
+        "browser/pending-send/result.json"
+      ]
+    },
+    "6": {
+      "status": "PASS",
+      "requirement": "Native storage write/enqueue/load failures and recovery",
+      "cases": [
+        "storage-errors"
+      ],
+      "evidence_members": [
+        "browser/storage-errors/result.json"
+      ]
+    },
+    "7": {
+      "status": "PASS",
+      "requirement": "Positive baseline plus concrete isolated negative controls",
+      "cases": [
+        "routes",
+        "quiet",
+        "lifecycle",
+        "durability",
+        "canvas",
+        "outbox",
+        "isolation",
+        "pending-send",
+        "storage-errors"
+      ],
+      "evidence_members": [
+        "browser/routes/result.json",
+        "browser/quiet/result.json",
+        "browser/lifecycle/result.json",
+        "browser/durability/result.json",
+        "browser/canvas/result.json",
+        "browser/outbox/result.json",
+        "browser/isolation/result.json",
+        "browser/pending-send/result.json",
+        "browser/storage-errors/result.json"
+      ],
+      "negative_controls_member": "negative-controls/results.json"
+    }
+  },
+  "selftests": {
+    "INSTRUMENT-NATIVE-RECEIVER-01": {
+      "status": "PASS",
+      "checks": 52,
+      "inner_exit_code": null
+    },
+    "COLLECTOR-EARLY-ERROR-01": {
+      "status": "PASS",
+      "checks": 12,
+      "inner_exit_code": 1
+    }
+  },
+  "ab": {
+    "status": "PASS",
+    "variants": {
+      "A": "PASS",
+      "B0": "ERROR",
+      "B1": "PASS"
+    },
+    "hypothesis": "H1_REPRODUCED_IN_CURRENT_EXPERIMENT",
+    "historical_first_error_recovered": false
+  },
+  "preflight": {
+    "status": "PASS",
+    "checks": 10
+  },
+  "negative_controls": {
+    "MUTATION_A_RESOURCE_LEAK": {
+      "outer": "PASS",
+      "inner": "FAIL",
+      "assertion": "1C-NO-RESOURCE-ACCUMULATION",
+      "exit_code": 1,
+      "candidate_unchanged": true
+    },
+    "MUTATION_B_LATE_ACCOUNT": {
+      "outer": "PASS",
+      "inner": "FAIL",
+      "assertion": "1C-LATE-ACCOUNT-ISOLATION",
+      "exit_code": 1,
+      "candidate_unchanged": true
+    },
+    "MUTATION_C_BYTE_OR_ORDER": {
+      "outer": "PASS",
+      "inner": "FAIL",
+      "assertion": "1C-DRAFT-BYTES",
+      "exit_code": 1,
+      "candidate_unchanged": true
+    },
+    "MUTATION_D_ROUTE_RESOURCE": {
+      "outer": "PASS",
+      "inner": "FAIL",
+      "assertion": "1C-SCENARIO-SURVIVES-POLL",
+      "exit_code": 1,
+      "candidate_unchanged": true
+    }
+  },
+  "runtime_changes": [
+    {
+      "file": "pablicus/app.js",
+      "line": 381,
+      "function": "loadDialogs",
+      "change": "Only rerender changed dialog data when actual controller route is chats/home; update dialog state and cache as before.",
+      "defect": "Polling destroyed the active Bot detail and replaced unchanged chats DOM.",
+      "before_sha": "e8d017be3a8c46f3dcc78910a2082e704a4fcaa5",
+      "before_ci": 34686928531,
+      "after_sha": "0cf9f714a50952c42c5b503b70fc7429e8b99588",
+      "after_ci": 34687327770,
+      "assertions": [
+        "1C-BOT-DETAIL-SURVIVES-POLL",
+        "1C-QUIET-LIST"
+      ],
+      "same_assertions": "BEFORE_FAIL_AFTER_PASS",
+      "unchanged_relevant_harness": [
+        "scenario_routes.py",
+        "scenario_quiet.py",
+        "instrument.js",
+        "network.py",
+        "case.py"
+      ]
+    },
+    {
+      "file": "pablicus/app-controller.js",
+      "line": 51,
+      "function": "applySessionIdentity",
+      "change": "On changed account identity clear resourceId/conversationId/canvas and select existing chats/home route after same-user early return; preserve generation, abort and cleanup semantics.",
+      "defect": "After A to B the visible screen was B home but controller retained A conversation.",
+      "before_sha": "9a60e778f7d51f79931b93ea886ad084846e572a",
+      "before_ci": 34687667191,
+      "after_sha": "1190098ee93abbc73997c5025bba25f18808e331",
+      "after_ci": 34688000446,
+      "assertions": [
+        "1C-ACCOUNT-SWITCH-HOME-ROUTE"
+      ],
+      "same_assertions": "BEFORE_FAIL_AFTER_PASS",
+      "same_entire_harness": true
+    }
+  ],
+  "source_commits": [
+    "a740230adc8b6c735f9c0d303479beca72a08839",
+    "45decd507ef998422b8272cf8e66cd844564b4f1",
+    "69bccb6d4cc6f5c2b970e5323fa99b950fa64c9d",
+    "f3816e85f8c60b4a4a230a1f18d9a0636111c90d",
+    "e8d017be3a8c46f3dcc78910a2082e704a4fcaa5",
+    "0cf9f714a50952c42c5b503b70fc7429e8b99588",
+    "9a60e778f7d51f79931b93ea886ad084846e572a",
+    "1190098ee93abbc73997c5025bba25f18808e331",
+    "cdea67965f9c5af6170effd30af74cbb053f1c0b",
+    "4b886c1477c44752359ccc4b44f8ff5c072bb241"
+  ],
+  "external_writes": {
+    "normal_github_operations": [
       {
-        "id": "1C-HARNESS-RECEIVER",
-        "finding": "instrument.js stores native timer/rAF functions as properties of object native and later invokes them as native.setTimeout/native.clearTimeout/native.setInterval/native.clearInterval/native.raf/native.caf, changing their receiver from window to native.",
-        "evidence": "Static source plus independent Node VM probe in review R1: all six receiver_is_window values change from true to false.",
-        "browser_root_cause_proven": false
+        "operation": "github_create_tree",
+        "sha": "b202d0666ae8e2ea9ef0352cfb1f0819121f334d"
       },
       {
-        "id": "1C-HARNESS-CAPTURE",
-        "finding": "case.py final capture uses one sequential try: releaseWrite -> App.state -> instrument snapshot -> screenshot -> HTML. Missing PablicusDebug in App.state prevents all later capture. There is no independent pageerror collector in case.py.",
-        "evidence": "case.py source and absence of PNG/HTML in the original latest artifact.",
-        "browser_root_cause_proven": true
+        "operation": "github_create_commit",
+        "sha": "a740230adc8b6c735f9c0d303479beca72a08839"
       },
       {
-        "id": "1C-BOUNDARY-SPECIAL-ROUTES",
-        "finding": "LocalBoundary already models get_message_actions/get_pinned_messages/factory_list_projects, but these branches occur before base host/auth logging. They match path suffixes, do not enforce method/host/auth context, do not enter Boundary.calls, and factory_list_projects does not honor offline.",
-        "evidence": "case.py/network.py static analysis; prior probe confirms real caller is POST /rest/v1/rpc/get_message_actions for user A.",
-        "product_defect": false
+        "operation": "github_update_ref",
+        "force": false,
+        "sha": "a740230adc8b6c735f9c0d303479beca72a08839"
+      },
+      {
+        "operation": "github_create_tree",
+        "sha": "ee76e18b0fda435cbee361bd8a7e680a59f2820b"
+      },
+      {
+        "operation": "github_create_commit",
+        "sha": "45decd507ef998422b8272cf8e66cd844564b4f1"
+      },
+      {
+        "operation": "github_update_ref",
+        "force": false,
+        "sha": "45decd507ef998422b8272cf8e66cd844564b4f1"
+      },
+      {
+        "operation": "github_create_tree",
+        "sha": "648f28669be7a2625f5029489fb6a5ad7d96d274"
+      },
+      {
+        "operation": "github_create_commit",
+        "sha": "69bccb6d4cc6f5c2b970e5323fa99b950fa64c9d"
+      },
+      {
+        "operation": "github_update_ref",
+        "force": false,
+        "sha": "69bccb6d4cc6f5c2b970e5323fa99b950fa64c9d"
+      },
+      {
+        "operation": "github_create_tree",
+        "sha": "b2fd1b9a361494e3b2021fff630ec563c2113030"
+      },
+      {
+        "operation": "github_create_commit",
+        "sha": "f3816e85f8c60b4a4a230a1f18d9a0636111c90d"
+      },
+      {
+        "operation": "github_update_ref",
+        "sha": "f3816e85f8c60b4a4a230a1f18d9a0636111c90d",
+        "force": false
+      },
+      {
+        "operation": "github_create_tree",
+        "sha": "0513f7445b812704e67f3345b150a313472b1cb1",
+        "time_utc": [
+          "2026-09-12 09:49:56",
+          "2026-09-12 09:50:35"
+        ]
+      },
+      {
+        "operation": "github_create_commit",
+        "sha": "e8d017be3a8c46f3dcc78910a2082e704a4fcaa5"
+      },
+      {
+        "operation": "github_update_ref",
+        "sha": "e8d017be3a8c46f3dcc78910a2082e704a4fcaa5",
+        "force": false
+      },
+      {
+        "operation": "github_create_tree",
+        "sha": "107ec185c4b05f29bc60d2365827bbef1a505321",
+        "time_utc": [
+          "2026-09-12 09:59:54",
+          "2026-09-12 10:00:02"
+        ]
+      },
+      {
+        "operation": "github_create_commit",
+        "sha": "0cf9f714a50952c42c5b503b70fc7429e8b99588"
+      },
+      {
+        "operation": "github_update_ref",
+        "sha": "0cf9f714a50952c42c5b503b70fc7429e8b99588",
+        "force": false
+      },
+      {
+        "operation": "github_create_tree",
+        "sha": "33a42d2a032d9a143957ae2d54ee6b42aae1f874",
+        "time_utc": [
+          "2026-09-12 10:07:46",
+          "2026-09-12 10:07:59"
+        ]
+      },
+      {
+        "operation": "github_create_commit",
+        "sha": "9a60e778f7d51f79931b93ea886ad084846e572a"
+      },
+      {
+        "operation": "github_update_ref",
+        "sha": "9a60e778f7d51f79931b93ea886ad084846e572a",
+        "force": false
+      },
+      {
+        "operation": "github_create_tree",
+        "sha": "300786a533198f78f1d97c8eb61342bb944d422b",
+        "time_utc": [
+          "2026-09-12 10:15:41",
+          "2026-09-12 10:15:50"
+        ]
+      },
+      {
+        "operation": "github_create_commit",
+        "sha": "1190098ee93abbc73997c5025bba25f18808e331"
+      },
+      {
+        "operation": "github_update_ref",
+        "sha": "1190098ee93abbc73997c5025bba25f18808e331",
+        "force": false
+      },
+      {
+        "operation": "github_create_tree",
+        "sha": "2fa71e6fcd257d77412b0025aaf35e36a0e4a023",
+        "time_utc": [
+          "2026-09-12 10:21:27",
+          "2026-09-12 10:21:33"
+        ]
+      },
+      {
+        "operation": "github_create_commit",
+        "sha": "cdea67965f9c5af6170effd30af74cbb053f1c0b"
+      },
+      {
+        "operation": "github_update_ref",
+        "sha": "cdea67965f9c5af6170effd30af74cbb053f1c0b",
+        "force": false
+      },
+      {
+        "operation": "github_create_tree",
+        "sha": "33d8b4a367c4dd71b606c39f7a7c152e1f0b046d",
+        "time_utc": [
+          "2026-09-12 10:30:44",
+          "2026-09-12 10:30:51"
+        ]
+      },
+      {
+        "operation": "github_create_commit",
+        "sha": "4b886c1477c44752359ccc4b44f8ff5c072bb241"
+      },
+      {
+        "operation": "github_update_ref",
+        "sha": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+        "force": false
       }
     ],
-    "hypotheses": [
-      {
-        "id": "H1",
-        "statement": "A receiver-sensitive native call introduced by the instrument may be the first browser exception.",
-        "support": "Before app.js can unhide #legacyLogin at line 275, it creates ChatCanvas at line 108; ChatCanvas.create calls reset(), which calls window.clearTimeout at chat-canvas.js line 1140. The instrumented clearTimeout forwards as native.clearTimeout(id) with receiver native. If Chromium rejects that receiver, the observed hidden login and missing PablicusDebug are explained.",
-        "status": "UNPROVEN_UNTIL_CONTROLLED_BROWSER_A_B"
-      },
-      {
-        "id": "H2",
-        "statement": "Another early exception before app.js line 275 may be responsible.",
-        "status": "OPEN because the first page error and console stack were not retained."
-      }
-    ],
-    "not_product_defects": [
-      "The nine ERROR results are not nine Pablicus defects.",
-      "Missing PablicusDebug is a secondary observation, not established root cause.",
-      "The previously missing get_message_actions model is already present in LocalBoundary; it should not be re-added."
-    ]
-  },
-  "planned_diagnostic_correction_not_published": {
-    "collector": [
-      "Attach pageerror, console and requestfailed listeners before page.goto and keep them independent of application globals.",
-      "Capture response failures for declared local/synthetic boundary without logging secrets.",
-      "Capture safe DOM/global state, instrument snapshot, screenshot and HTML in independent try blocks.",
-      "Use typeof/optional access; do not fabricate PablicusDebug.",
-      "An artificial early failure must retain primary error plus nonzero result and still save screenshot/HTML where the browser permits."
-    ],
-    "instrument": [
-      "Preserve native receiver/this when calling saved browser primitives.",
-      "Do not disable resource observation or alter standard API semantics just to pass counters."
-    ],
-    "network": [
-      "Keep existing special RPC responses but constrain them to exact API host, POST method, exact /rest/v1/rpc/<name> path, authenticated synthetic user and expected context.",
-      "Log special responses into the same boundary journal and honor offline for every special route.",
-      "Leave unknown requests as explicit 501/blocked evidence; never add a universal empty-success fallback."
-    ],
-    "publication_status": "NOT_PUBLISHED_OR_TESTED_DUE_TO_SAFETY_GATE"
-  },
-  "safety_gate": {
-    "status": "NOT_RESOLVED",
-    "service": "OpenAI tool safety gate on GitHub connector write",
-    "operation": "GitHub.create_tree for proposed integration-test instrument.js correction",
-    "exact_response": "Этот вызов инструмента был заблокирован OpenAI, поскольку мы не смогли определить статус безопасности запроса.",
-    "exact_timestamp": "NOT_AVAILABLE",
-    "observation_upper_bound": "2026-09-11T18:43:20Z",
-    "observation_upper_bound_timezone": "UTC",
-    "request_id": "NOT_AVAILABLE",
-    "tool_action": "GitHub.create_tree",
-    "tool_version": "NOT_AVAILABLE",
-    "http_status": "NOT_AVAILABLE",
-    "returned_tree_sha": null,
-    "branch_updated_by_blocked_call": false,
-    "exact_unpublished_payload": "NOT_AVAILABLE in preserved evidence",
-    "safe_change_description": "Integration-test-only correction intended to preserve native receiver semantics and make startup diagnostics durable; no product runtime/main/production/Supabase change.",
-    "repeat_or_bypass": false,
-    "document_writes_after_denial": "Allowed documentation only; they do not prove the source-write restriction is cleared.",
-    "support_contact_status": "NOT_SENT",
-    "owner_action_if_support_is_desired": "Explicitly authorize sending the prepared support request. No request has been sent."
-  },
-  "support_request_draft": {
-    "subject": "Safety gate blocked GitHub.create_tree for Pablicus integration-test instrumentation",
-    "body_points": [
-      "Repository: matveyryabokon30-crypto/vision-talk; branch refactor/pablicus-foundation-20260911.",
-      "Intended change was limited to integration-test instrumentation/diagnostics, not application runtime or production.",
-      "Exact safety response is recorded above.",
-      "Exact request ID, exact call timestamp and tool version were not exposed in retained evidence.",
-      "Observed no later than 2026-09-11T18:43:20Z UTC.",
-      "The blocked write was not retried, repackaged, split, encoded, moved to another tool/account or otherwise bypassed.",
-      "Repository reads and ordinary documentation writes still work; therefore a general GitHub permission failure is not established.",
-      "Request: review the safety classification through the normal support process; no bypass is requested."
-    ]
-  },
-  "required_1c": {
-    "1_routes": "OPEN",
-    "2_50_transitions_resources": "OPEN",
-    "3_draft_ids_original_bytes_reload": "OPEN",
-    "4_outbox_offline_lost_ack_retry": "OPEN",
-    "5_account_switch_late_operations": "OPEN",
-    "6_storage_failures_recovery": "OPEN",
-    "7_positive_negative_controls": "OPEN"
-  },
-  "latest_executable_evidence": {
-    "ci_run": 34634080287,
-    "job": 103377640278,
-    "artifact": 10277168648,
-    "zip_sha256": "dedb3704e36ced0537f901ec65ce2d36f6cc1ba32330bd386320861ca2cc8d65",
-    "browser": {"PASS":0,"FAIL":0,"ERROR":9,"TIMEOUT":0,"NOT_RUN":0},
-    "behavioral_checks_reached": 0
-  },
-  "boundaries": {
-    "application_changes_in_r1_diagnosis": [],
-    "test_or_workflow_changes_in_r1_diagnosis": [],
-    "main_write": false,
-    "production_write": false,
-    "supabase_write": false,
-    "server_auth_write": false,
-    "urlblocklist_changed_or_bypassed": false,
-    "merge": false,
+    "documentation_handoff": "This documentation-only commit, resolved after creation",
+    "ci_runs": "Normal branch push workflows and artifacts; run IDs retained in session history",
+    "main": false,
+    "force_push": false,
+    "reset": false,
     "deployment": false,
-    "1A_repeated": false,
-    "1B_reopened": false,
-    "1D_started": false
+    "production_supabase_auth_rls": false,
+    "real_user_data": false,
+    "support_messages": false
+  },
+  "artifact_verification": {
+    "status": "PASS",
+    "sections": {
+      "PASS": 16
+    },
+    "record": "INTEGRATION_1C_ARTIFACT_VERIFICATION_R2.json",
+    "source_git_tree_comparison": "PASS",
+    "independent_assistant_audit": "INTEGRATION_1C_AUDIT_R2.json",
+    "acceptance_assigned": false
+  },
+  "limitations": [
+    "Qualified Chromium 143.0.7499.4 / Playwright 1.57.0 on Ubuntu 24.04 CI; no cross-browser or physical-device claim.",
+    "Real local index, bundled SDK, application modules and IndexedDB; deterministic synthetic HTTP/Phoenix and native fault boundaries. No production backend, RLS/Auth, real-user or multi-device qualification.",
+    "Service Workers blocked; unchanged local static files supply the explicitly declared offline shell. Production Service Worker installation/caching is not qualified.",
+    "Resource conclusion covers the observed classes across 54 completed transitions after 9 warmup transitions; it is not an unlimited-lifetime or general heap-leak claim.",
+    "WebSocket observer preserves the routed pre-observer API/prototype/instanceof/constants but changes constructor identity; observer and Playwright WebSocket routing are identical in all A/B variants.",
+    "H1 reproduced in the current controlled A/B0/B1 experiment. The missing first pageerror from the historical f00f253 run was not recovered.",
+    "Historical safety refusal and pending specialist review are preserved. Current normal source writes succeeded; no historical policy-clearance decision is claimed.",
+    "Local macOS Chromium startup later timed out; executable final evidence comes from the normal isolated CI environment. Earlier failed/incomplete/unqualified attempts retain their original outcomes.",
+    "GitHub artifact retention is 14 days; the original ZIP is also supplied as a local deliverable. Package binary hashes are not recorded; pinned versions, source hashes and execution environment are recorded.",
+    "Initial snapshot chronology uses UTC and captured awaited source order; the separate stage monotonic clock is not cross-converted.",
+    "Normal 1B cases use bounded runner process cleanup; the intentional timeout probe additionally retains explicit parent/child PID verification. Final CI observes zero browser/driver processes."
+  ],
+  "historical_R1_manifest": {
+    "schema_version": "1.1",
+    "task_id": "PABLICUS-BLOCK01-1C-INTEGRATION-20260911",
+    "revision": "R1-DIAGNOSIS",
+    "status": "SUBSTEP_1C_BLOCKED",
+    "repository": "matveyryabokon30-crypto/vision-talk",
+    "branch": "refactor/pablicus-foundation-20260911",
+    "historical_WORK_START_HEAD_1C": "dc4a6031e3a7b5248882f88dee11d83ccd88fd60",
+    "diagnosis_continuation_head": "c36e6c95e69f989a23711168fbb81e5e6f12efb5",
+    "CODE_SHA": "f00f253ca2adfe7afc07e64cc3a1dc8f53c5692d",
+    "TESTED_SHA": "f00f253ca2adfe7afc07e64cc3a1dc8f53c5692d",
+    "tested_sha_meaning": "Last executable 1C attempt; failed before behavioral assertions. No new executable correction was published or tested in R1-DIAGNOSIS.",
+    "accepted_1b": {
+      "status": "SUBSTEP_1B_ACCEPTED",
+      "CODE_SHA": "c5d82e96a236317f7a50530fb86da1a5d2bc4e26",
+      "regression_on_tested_sha": {
+        "PASS": 31,
+        "FAIL": 0,
+        "ERROR": 0,
+        "TIMEOUT": 0,
+        "NOT_RUN": 0
+      },
+      "unchanged": true
+    },
+    "review_r1": {
+      "head": "c36e6c95e69f989a23711168fbb81e5e6f12efb5",
+      "decision": "SUBSTEP_1C_BLOCKED",
+      "files": [
+        "docs/pablicus/reviews/2026-09-11/1C_BLOCKED_REVIEW_R1.md",
+        "docs/pablicus/reviews/2026-09-11/1C_BLOCKED_REVIEW_R1_RESULTS.json",
+        "docs/pablicus/tasks/1C_DIAGNOSIS_R1_PROMPT.txt"
+      ]
+    },
+    "diagnosis": {
+      "observations": [
+        "All nine browser processes ended ERROR before behavioral checks; checks=[] in every result.",
+        "#email exists in the DOM but remained hidden; fill timed out after 8000 ms.",
+        "Capture then failed because App.state referenced missing PablicusDebug.",
+        "__integration.releaseWrite() ran before App.state and did not produce the recorded capture_error, so the instrument global was present far enough for releaseWrite.",
+        "No final PNG or HTML was retained by the nine cases because one shared capture try stopped after App.state failed.",
+        "Initial probe without instrument reached real UI login, user A, conversation c1, active list=1 and empty vault before an unmodeled get_message_actions response blocked Canvas."
+      ],
+      "confirmed_harness_defects": [
+        {
+          "id": "1C-HARNESS-RECEIVER",
+          "finding": "instrument.js stores native timer/rAF functions as properties of object native and later invokes them as native.setTimeout/native.clearTimeout/native.setInterval/native.clearInterval/native.raf/native.caf, changing their receiver from window to native.",
+          "evidence": "Static source plus independent Node VM probe in review R1: all six receiver_is_window values change from true to false.",
+          "browser_root_cause_proven": false
+        },
+        {
+          "id": "1C-HARNESS-CAPTURE",
+          "finding": "case.py final capture uses one sequential try: releaseWrite -> App.state -> instrument snapshot -> screenshot -> HTML. Missing PablicusDebug in App.state prevents all later capture. There is no independent pageerror collector in case.py.",
+          "evidence": "case.py source and absence of PNG/HTML in the original latest artifact.",
+          "browser_root_cause_proven": true
+        },
+        {
+          "id": "1C-BOUNDARY-SPECIAL-ROUTES",
+          "finding": "LocalBoundary already models get_message_actions/get_pinned_messages/factory_list_projects, but these branches occur before base host/auth logging. They match path suffixes, do not enforce method/host/auth context, do not enter Boundary.calls, and factory_list_projects does not honor offline.",
+          "evidence": "case.py/network.py static analysis; prior probe confirms real caller is POST /rest/v1/rpc/get_message_actions for user A.",
+          "product_defect": false
+        }
+      ],
+      "hypotheses": [
+        {
+          "id": "H1",
+          "statement": "A receiver-sensitive native call introduced by the instrument may be the first browser exception.",
+          "support": "Before app.js can unhide #legacyLogin at line 275, it creates ChatCanvas at line 108; ChatCanvas.create calls reset(), which calls window.clearTimeout at chat-canvas.js line 1140. The instrumented clearTimeout forwards as native.clearTimeout(id) with receiver native. If Chromium rejects that receiver, the observed hidden login and missing PablicusDebug are explained.",
+          "status": "UNPROVEN_UNTIL_CONTROLLED_BROWSER_A_B"
+        },
+        {
+          "id": "H2",
+          "statement": "Another early exception before app.js line 275 may be responsible.",
+          "status": "OPEN because the first page error and console stack were not retained."
+        }
+      ],
+      "not_product_defects": [
+        "The nine ERROR results are not nine Pablicus defects.",
+        "Missing PablicusDebug is a secondary observation, not established root cause.",
+        "The previously missing get_message_actions model is already present in LocalBoundary; it should not be re-added."
+      ]
+    },
+    "planned_diagnostic_correction_not_published": {
+      "collector": [
+        "Attach pageerror, console and requestfailed listeners before page.goto and keep them independent of application globals.",
+        "Capture response failures for declared local/synthetic boundary without logging secrets.",
+        "Capture safe DOM/global state, instrument snapshot, screenshot and HTML in independent try blocks.",
+        "Use typeof/optional access; do not fabricate PablicusDebug.",
+        "An artificial early failure must retain primary error plus nonzero result and still save screenshot/HTML where the browser permits."
+      ],
+      "instrument": [
+        "Preserve native receiver/this when calling saved browser primitives.",
+        "Do not disable resource observation or alter standard API semantics just to pass counters."
+      ],
+      "network": [
+        "Keep existing special RPC responses but constrain them to exact API host, POST method, exact /rest/v1/rpc/<name> path, authenticated synthetic user and expected context.",
+        "Log special responses into the same boundary journal and honor offline for every special route.",
+        "Leave unknown requests as explicit 501/blocked evidence; never add a universal empty-success fallback."
+      ],
+      "publication_status": "NOT_PUBLISHED_OR_TESTED_DUE_TO_SAFETY_GATE"
+    },
+    "safety_gate": {
+      "status": "NOT_RESOLVED",
+      "service": "OpenAI tool safety gate on GitHub connector write",
+      "operation": "GitHub.create_tree for proposed integration-test instrument.js correction",
+      "exact_response": "Этот вызов инструмента был заблокирован OpenAI, поскольку мы не смогли определить статус безопасности запроса.",
+      "exact_timestamp": "NOT_AVAILABLE",
+      "observation_upper_bound": "2026-09-11T18:43:20Z",
+      "observation_upper_bound_timezone": "UTC",
+      "request_id": "NOT_AVAILABLE",
+      "tool_action": "GitHub.create_tree",
+      "tool_version": "NOT_AVAILABLE",
+      "http_status": "NOT_AVAILABLE",
+      "returned_tree_sha": null,
+      "branch_updated_by_blocked_call": false,
+      "exact_unpublished_payload": "NOT_AVAILABLE in preserved evidence",
+      "safe_change_description": "Integration-test-only correction intended to preserve native receiver semantics and make startup diagnostics durable; no product runtime/main/production/Supabase change.",
+      "repeat_or_bypass": false,
+      "document_writes_after_denial": "Allowed documentation only; they do not prove the source-write restriction is cleared.",
+      "support_contact_status": "NOT_SENT",
+      "owner_action_if_support_is_desired": "Explicitly authorize sending the prepared support request. No request has been sent."
+    },
+    "support_request_draft": {
+      "subject": "Safety gate blocked GitHub.create_tree for Pablicus integration-test instrumentation",
+      "body_points": [
+        "Repository: matveyryabokon30-crypto/vision-talk; branch refactor/pablicus-foundation-20260911.",
+        "Intended change was limited to integration-test instrumentation/diagnostics, not application runtime or production.",
+        "Exact safety response is recorded above.",
+        "Exact request ID, exact call timestamp and tool version were not exposed in retained evidence.",
+        "Observed no later than 2026-09-11T18:43:20Z UTC.",
+        "The blocked write was not retried, repackaged, split, encoded, moved to another tool/account or otherwise bypassed.",
+        "Repository reads and ordinary documentation writes still work; therefore a general GitHub permission failure is not established.",
+        "Request: review the safety classification through the normal support process; no bypass is requested."
+      ]
+    },
+    "required_1c": {
+      "1_routes": "OPEN",
+      "2_50_transitions_resources": "OPEN",
+      "3_draft_ids_original_bytes_reload": "OPEN",
+      "4_outbox_offline_lost_ack_retry": "OPEN",
+      "5_account_switch_late_operations": "OPEN",
+      "6_storage_failures_recovery": "OPEN",
+      "7_positive_negative_controls": "OPEN"
+    },
+    "latest_executable_evidence": {
+      "ci_run": 34634080287,
+      "job": 103377640278,
+      "artifact": 10277168648,
+      "zip_sha256": "dedb3704e36ced0537f901ec65ce2d36f6cc1ba32330bd386320861ca2cc8d65",
+      "browser": {
+        "PASS": 0,
+        "FAIL": 0,
+        "ERROR": 9,
+        "TIMEOUT": 0,
+        "NOT_RUN": 0
+      },
+      "behavioral_checks_reached": 0
+    },
+    "boundaries": {
+      "application_changes_in_r1_diagnosis": [],
+      "test_or_workflow_changes_in_r1_diagnosis": [],
+      "main_write": false,
+      "production_write": false,
+      "supabase_write": false,
+      "server_auth_write": false,
+      "urlblocklist_changed_or_bypassed": false,
+      "merge": false,
+      "deployment": false,
+      "1A_repeated": false,
+      "1B_reopened": false,
+      "1D_started": false
+    }
   }
 }

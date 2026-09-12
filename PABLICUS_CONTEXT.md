@@ -6,6 +6,12 @@
 Рабочая ветка при фиксации: `refactor/pablicus-foundation-20260911`.
 Этот файл — точка входа после потери чата. Это не стенограмма и не подтверждение готовности приложения.
 
+## Актуальная передача 1C — 12 сентября 2026
+
+**SUBSTEP_1C_READY_FOR_INDEPENDENT_REVIEW**; ACCEPTED не присвоен. CODE_SHA = TESTED_SHA `4b886c1477c44752359ccc4b44f8ff5c072bb241`. [Свежий CI 34688665398](https://github.com/matveyryabokon30-crypto/vision-talk/actions/runs/34688665398) SUCCESS: 9/9 сценариев, 54 completed transitions, 4 конкретных mutation FAIL, 31/31 1B PASS; исходный artifact и hashes проверены. [Отчёт R2](docs/engineering/block-01/INTEGRATION_1C_REPORT.md), [манифест](docs/engineering/block-01/INTEGRATION_1C_MANIFEST.json), [evidence](docs/engineering/block-01/INTEGRATION_1C_EVIDENCE.json).
+
+Обычные source writes текущей среды прошли; исторический safety refusal и specialist PENDING сохранены, новая support clearance не заявляется. Следующий шаг — независимый review 1C. 1A/1B не переоткрыты; 1D/блок2 не начаты. Более старые сведения о незавершённой 1C ниже относятся к историческому раунду R1.
+
 ## Утверждённое дополнение 02 — конкурентный функциональный слой
 
 Владелец утвердил **Дополнение 02** со статусом `OWNER_APPROVED`, revision `1.0`: [AMENDMENT_02_COMPETITIVE_CAPABILITIES.md](docs/pablicus/approved/2026-09-11/AMENDMENT_02_COMPETITIVE_CAPABILITIES.md). Краткое неизменяемое решение владельца: [OWNER_DECISION_AMENDMENT_02.md](docs/pablicus/approved/2026-09-11/OWNER_DECISION_AMENDMENT_02.md).
@@ -16,7 +22,7 @@ CATEGORY_A обязательна к первому полноценному п�
 
 Дополнение 02 **не расширяет текущий 1C**, не переоткрывает 1A/1B, не разрешает обход safety gate и не запускает 1D или блок 2. Базовая концепция `Чаты / Дела / Вы` сохраняется; отдельные основные вкладки «Лента», «AI», «Marketplace» и «Communities» этим дополнением не утверждены.
 
-Текущий статус: **`SUBSTEP_1C_BLOCKED_AWAITING_SAFETY_REVIEW`**.
+Статус при фиксации Дополнения 02: **`SUBSTEP_1C_BLOCKED_AWAITING_SAFETY_REVIEW`**; актуальная передача R2 указана выше.
 
 ## Утверждённое дополнение 01 — универсальный ИИ-помощник
 
@@ -26,7 +32,7 @@ CATEGORY_A обязательна к первому полноценному п�
 
 Текущее задание 1C, оставшаяся приёмка блока 1 и принятые 1A/1B не меняются. Начинать помощника сейчас не разрешено. Название и четвёртая основная вкладка не утверждены. Первый просмотр на iPhone остаётся после реализации блока 2, в рамках его физической приёмки; промежуточный выпуск на 1D не добавляется.
 
-## Последняя проверка — незавершённая 1C и safety review
+## Историческая проверка R1 — незавершённая 1C и safety review
 
 **1C остаётся `SUBSTEP_1C_BLOCKED_AWAITING_SAFETY_REVIEW`; результат не принят.** [Независимая проверка передачи](docs/pablicus/reviews/2026-09-11/1C_BLOCKED_REVIEW_R1.md) и [ограниченное диагностическое задание](docs/pablicus/tasks/1C_DIAGNOSIS_R1_PROMPT.txt). Проверен TESTED_SHA `f00f253ca2adfe7afc07e64cc3a1dc8f53c5692d`: 31 регрессия 1B имеет PASS в CI, девять браузерных сценариев 1C имеют ERROR до проверок поведения. Все семь требований 1C остаются открытыми.
 
@@ -36,7 +42,7 @@ Safety-блокировка конкретной source-write операции �
 
 **1B принят: SUBSTEP_1B_ACCEPTED** на `c5d82e96a236317f7a50530fb86da1a5d2bc4e26`, документальная передача `4c8e045aaac051e7d1244fd9dfe23c5124b397eb`. Дефект 1B-LEAVE-RESUME закрыт. Основание: [решение по 1B](docs/engineering/block-01/REVIEW_1B_DECISION.md), [отчёт R3](docs/pablicus/reviews/2026-09-11/1B_HANDOFF_REVIEW_R3.md), [результаты](docs/pablicus/reviews/2026-09-11/1B_R3_RESULTS.json).
 
-Следующее исполняемое задание после штатного снятия блокировки остаётся **[1C: настоящая интеграция модулей и хранения](docs/pablicus/tasks/1C_INTEGRATION_PROMPT.txt)**. 1A/1B не повторять. Блок 1 целиком не принят. 1D и блоки 2–5 не начинаются автоматически. Main, production и Supabase не изменяются этим решением.
+В исторической передаче R1 следующее исполняемое задание после штатного снятия блокировки было **[1C: настоящая интеграция модулей и хранения](docs/pablicus/tasks/1C_INTEGRATION_PROMPT.txt)**. 1A/1B не повторять. Блок 1 целиком не принят. 1D и блоки 2–5 не начинаются автоматически. Main, production и Supabase не изменяются этим решением.
 
 Исторические NOT_ACCEPTED ниже и в предыдущих проверках относятся к прежним кандидатам. Они не отменяют более позднюю ограниченную приёмку нового кода и не переписываются задним числом.
 

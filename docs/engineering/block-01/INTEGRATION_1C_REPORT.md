@@ -1,3 +1,111 @@
+# Pablicus — 1C R2: интеграционная квалификация
+
+12 сентября 2026 года. **SUBSTEP_1C_READY_FOR_INDEPENDENT_REVIEW**. ACCEPTED не присвоен; независимая приёмка ещё требуется.
+
+CURRENT_REMOTE_HEAD в начале / WORK_START_HEAD: `56a6ecf7b5ebdf0e8cc3529d4582707188124e29`. Новых коммитов относительно переданного SHA на момент начала не было. Ветка: `refactor/pablicus-foundation-20260911`.
+CODE_SHA = TESTED_SHA: `4b886c1477c44752359ccc4b44f8ff5c072bb241`. HANDOFF_HEAD — следующий документальный commit; точный SHA фиксируется после его создания в handoff receipt. Команда разрешения приведена в манифесте.
+
+Свежий [CI 34688665398](https://github.com/matveyryabokon30-crypto/vision-talk/actions/runs/34688665398), job `103540004753`, artifact `10297195136`: SUCCESS. Исходный ZIP SHA-256 = GitHub digest: `af0115ae7d0df2efbb1b910ef9d172b4e360bef936fdb9424444ec476950bcb8`; CRC PASS.
+
+Пять gates PASS; **9/9 сценариев, 145 assertions PASS; 54 завершённых проверенных перехода; 4 изолированные mutations дали ожидаемый конкретный FAIL; 31/31 регрессия 1B PASS**. Проверены начальные снимки, неизменяемые actual в момент assertion, source/result/log hashes и cleanup.
+
+## Требования 1–7
+
+| № | Доказательство | Итог |
+|---|---|---|
+| 1 | Real modules, routes and visible resources; routes | PASS |
+| 2 | 54 completed transitions; no measured resource accumulation or unchanged-list rerender; lifecycle, quiet | PASS |
+| 3 | Draft text, order, stable IDs and original Blob bytes across close/open, reload and Canvas deny/accept; durability, canvas | PASS |
+| 4 | Durable outbox offline/reload/lost ACK/retry/idempotency and visible explicit failure; outbox | PASS |
+| 5 | A to B to A, late read/write/send, draft/files/outbox/selection and same-user refresh; isolation, pending-send | PASS |
+| 6 | Native storage write/enqueue/load failures and recovery; storage-errors | PASS |
+| 7 | Positive baseline plus concrete isolated negative controls; routes, quiet, lifecycle, durability, canvas, outbox, isolation, pending-send, storage-errors | PASS |
+
+Подробные поля и точные JSON pointers на исходные наблюдения: [primary evidence](INTEGRATION_1C_PRIMARY_EVIDENCE_R2.json). [Манифест](INTEGRATION_1C_MANIFEST.json), [evidence index](INTEGRATION_1C_EVIDENCE.json), [проверка artifact](INTEGRATION_1C_ARTIFACT_VERIFICATION_R2.json), [аудит другим агентом](INTEGRATION_1C_AUDIT_R2.json). Последний является внутренней проверкой передачи, не владельческой приёмкой.
+
+## Harness и причинность
+
+Сохранён native receiver для всех шести timers/rAF. Receiver self-test: 52/52 PASS. Collector self-test: 12/12 outer PASS; deliberate inner ERROR с exit 1, first pageerror/stack/location/PNG/HTML сохранены. Независимые collectors подключены до goto, отсутствие globals остаётся наблюдением. Начальные и итоговые снимки защищены; actual каждого assertion копируется при сохранении.
+
+Существующие special routes квалифицированы по exact host/method/path/auth/context/offline и Boundary.calls; UNKNOWN остаётся явным отказом. 100 unit contracts и 34 browser network controls PASS. Python callback/cleanup defects исправлены; никакие их ERROR не зачтены как продуктовые FAIL.
+
+A (без instrument) PASS; B0 (точный исходный published instrument) — ожидаемый TypeError: Illegal invocation в clearTimeout; B1 (исправленный instrument) PASS. H1_REPRODUCED_IN_CURRENT_EXPERIMENT: наблюдаемая цепочка clearTimeout → chat-canvas stopRequests/reset → app startup. Историческая первая ошибка старого CI не восстановлена. Preflight: index200 → intended login → SDK A → dialogs → A1/list → Canvas ready → return, без startup error/UNKNOWN.
+
+## Минимальные runtime исправления
+
+1. `pablicus/app.js`, `loadDialogs`: обновлять home DOM только при изменившихся данных и фактическом route chats/home. Это сохраняет активный Bot detail и неизменённые chat nodes. Те же assertions `1C-BOT-DETAIL-SURVIVES-POLL` и `1C-QUIET-LIST`: e8d017b / CI34686928531 FAIL → 0cf9f7 / CI34687327770 PASS; relevant harness files побайтово одинаковы. Changed-data positive control PASS.
+2. `pablicus/app-controller.js`, `applySessionIdentity`: одна очистка прежнего route к существующему chats/home после same-user early return. Counter/invalidation/abort/cleanup semantics сохранены. Тот же `1C-ACCOUNT-SWITCH-HOME-ROUTE`: 9a60e7 / CI34687667191 FAIL → 1190098 / CI34688000446 PASS; весь harness побайтово одинаков. На конечном SHA все три assertions PASS.
+
+Других runtime файлов не изменяли. [Before/after доказательства](INTEGRATION_1C_PRODUCT_PROOF_R2.json). Исторические 9 ERROR до assertions не объявляются девятью product bugs.
+
+## Negative controls
+
+| Mutation | Внутренний итог | Конкретный assertion |
+|---|---|---|
+| MUTATION_A_RESOURCE_LEAK | FAIL, exit 1; outer PASS | 1C-NO-RESOURCE-ACCUMULATION |
+| MUTATION_B_LATE_ACCOUNT | FAIL, exit 1; outer PASS | 1C-LATE-ACCOUNT-ISOLATION |
+| MUTATION_C_BYTE_OR_ORDER | FAIL, exit 1; outer PASS | 1C-DRAFT-BYTES |
+| MUTATION_D_ROUTE_RESOURCE | FAIL, exit 1; outer PASS | 1C-SCENARIO-SURVIVES-POLL |
+
+Каждая mutation выполнена в отдельной копии; positive candidate и assertions не изменялись. Startup ERROR/TIMEOUT не засчитываются. Копии удалены, candidate_unchanged=true.
+
+## Safety, история и внешние записи
+
+Исторический отказ GitHub.create_tree сохранён: NOT_RESOLVED, support SENT_AND_ESCALATED, specialist PENDING. Текущая обычная source-write фактически прошла 08:31:51–08:31:57 UTC и вернула tree b202d0666ae8e2ea9ef0352cfb1f0819121f334d. Последующие обычные записи также прошли; новых safety refusal не было. Это факт текущей среды, не решение специалиста по прошлому отказу. Обходов и новых обращений в Support не было.
+
+External writes: нормальные trees/commits/non-force updates только разрешённой ветки, CI и их artifacts; настоящая документальная передача. Main/reset/force-push/deploy/production Supabase/RLS/Auth/реальные данные не затрагивались. Полный журнал: [session history](INTEGRATION_1C_SESSION_HISTORY_R2.json).
+
+Промежуточные неуспешные и неполные попытки сохранены: исходные pre-assertion ERROR; invalid Python WebSocket callbacks; неудачная network qualification; квалифицированные product FAIL; 1190098 без initial snapshots; cdea679 с изменяемой ссылкой на ранний outbox effects. Их результаты не перенесены как готовность конечного SHA. Последний generic deepcopy исправил сохранение наблюдений, не runtime.
+
+1A и 1B остаются принятыми в прежних границах. План 1.0 + Amendments01/02 и последовательность пяти блоков сохранены. 1D и блок2 не начаты.
+
+## Прочитанные канонические документы
+
+- `PABLICUS_CONTEXT.md`
+- `docs/pablicus/approved/2026-09-11/Pablicus_Continuation_Plan_2026-09-11.md`
+- `docs/pablicus/approved/2026-09-11/OWNER_DECISION.md`
+- `docs/pablicus/approved/2026-09-11/AMENDMENT_01_UNIVERSAL_AI_ASSISTANT.md`
+- `docs/pablicus/approved/2026-09-11/OWNER_DECISION_AMENDMENT_01.md`
+- `docs/pablicus/approved/2026-09-11/AMENDMENT_02_COMPETITIVE_CAPABILITIES.md`
+- `docs/pablicus/approved/2026-09-11/OWNER_DECISION_AMENDMENT_02.md`
+- `docs/engineering/block-01/INTEGRATION_1C_EXECUTION_BLUEPRINT.md`
+- `docs/engineering/block-01/INTEGRATION_1C_REPORT.md`
+- `docs/engineering/block-01/INTEGRATION_1C_MANIFEST.json`
+- `docs/engineering/block-01/INTEGRATION_1C_EVIDENCE.json`
+- `docs/engineering/block-01/INTEGRATION_1C_SUPPORT_STATUS_R1.md`
+- `docs/engineering/block-01/INTEGRATION_1C_SUPPORT_ESCALATION_R1.md`
+- `docs/pablicus/reviews/2026-09-11/1C_BLOCKED_REVIEW_R1.md`
+- `docs/pablicus/reviews/2026-09-11/1C_BLOCKED_REVIEW_R1_RESULTS.json`
+- `docs/pablicus/reviews/2026-09-11/1C_BLUEPRINT_REVIEW_R1.md`
+- `docs/pablicus/tasks/1C_INTEGRATION_PROMPT.txt`
+- `docs/pablicus/tasks/1C_DIAGNOSIS_R1_PROMPT.txt`
+
+Дополнительно прочитаны принятые решения 1A/1B и review R3. Blueprint уточнён без расширения scope: A/B0/B1 причинность, completed validated transitions вместо generation proxy, различие outer/inner collector verdict и одинаковый assertion для mutations.
+
+## Воспроизведение и границы
+
+Checkout `4b886c1477c44752359ccc4b44f8ff5c072bb241`; pinned Playwright1.57.0/Chromium143.0.7499.4 и Python3.12.7. Выполнить шаги `.github/workflows/pablicus-integration.yml` в исходном порядке. Каждый запуск — новый output directory. Стенд не обращается к production. Original ZIP не перепаковывать; проверять digest из GitHub API и его SOURCE_MANIFEST против Git tree данного SHA.
+
+- Qualified Chromium 143.0.7499.4 / Playwright 1.57.0 on Ubuntu 24.04 CI; no cross-browser or physical-device claim.
+- Real local index, bundled SDK, application modules and IndexedDB; deterministic synthetic HTTP/Phoenix and native fault boundaries. No production backend, RLS/Auth, real-user or multi-device qualification.
+- Service Workers blocked; unchanged local static files supply the explicitly declared offline shell. Production Service Worker installation/caching is not qualified.
+- Resource conclusion covers the observed classes across 54 completed transitions after 9 warmup transitions; it is not an unlimited-lifetime or general heap-leak claim.
+- WebSocket observer preserves the routed pre-observer API/prototype/instanceof/constants but changes constructor identity; observer and Playwright WebSocket routing are identical in all A/B variants.
+- H1 reproduced in the current controlled A/B0/B1 experiment. The missing first pageerror from the historical f00f253 run was not recovered.
+- Historical safety refusal and pending specialist review are preserved. Current normal source writes succeeded; no historical policy-clearance decision is claimed.
+- Local macOS Chromium startup later timed out; executable final evidence comes from the normal isolated CI environment. Earlier failed/incomplete/unqualified attempts retain their original outcomes.
+- GitHub artifact retention is 14 days; the original ZIP is also supplied as a local deliverable. Package binary hashes are not recorded; pinned versions, source hashes and execution environment are recorded.
+- Initial snapshot chronology uses UTC and captured awaited source order; the separate stage monotonic clock is not cross-converted.
+- Normal 1B cases use bounded runner process cleanup; the intentional timeout probe additionally retains explicit parent/child PID verification. Final CI observes zero browser/driver processes.
+
+Следующий разрешённый шаг: независимая проверка 1C. **1D не начинать без отдельного задания.**
+
+---
+
+## Сохранённый исторический отчёт R1-DIAGNOSIS
+
+Ниже прежний отчёт сохранён дословно как исторический снимок. Его статусы и формулировки «не опубликовано/не отправлено/OPEN» относятся к тому раунду; актуальные факты приведены выше и в более позднем Support status.
+
 # Pablicus — 1C R1-DIAGNOSIS: диагностика стенда и сохранённая блокировка
 
 11 сентября 2026 года. `PABLICUS-BLOCK01-1C-INTEGRATION-20260911`, revision `R1-DIAGNOSIS`.

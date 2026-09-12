@@ -1,0 +1,2197 @@
+{
+  "status": "PASS",
+  "final_TESTED_SHA": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+  "defects": [
+    {
+      "id": "PABLICUS-1C-POLL-ROUTE-AND-QUIET",
+      "before_SHA": "e8d017be3a8c46f3dcc78910a2082e704a4fcaa5",
+      "after_SHA": "0cf9f714a50952c42c5b503b70fc7429e8b99588",
+      "before_run": "34686928531",
+      "after_run": "34687327770",
+      "before_zip_sha256": "999a2dd082517338ceb6049262a69c92e8a696c065d921054dc037e8c6735b23",
+      "after_zip_sha256": "3a9dcd5ee8f4fb717cc909051ee60f8ff745b9df85afccf5aad2c70cc29e1f7c",
+      "byte_identical_relevant_harness_files": [
+        "tests/engineering/block-01/integration_1c/case.py",
+        "tests/engineering/block-01/integration_1c/instrument.js",
+        "tests/engineering/block-01/integration_1c/network.py",
+        "tests/engineering/block-01/integration_1c/scenario_routes.py",
+        "tests/engineering/block-01/integration_1c/scenario_quiet.py"
+      ],
+      "assertions": [
+        {
+          "id": "1C-BOT-DETAIL-SURVIVES-POLL",
+          "before": {
+            "tested_sha": "e8d017be3a8c46f3dcc78910a2082e704a4fcaa5",
+            "status": "FAIL",
+            "assertion": {
+              "name": "1C-BOT-DETAIL-SURVIVES-POLL",
+              "status": "FAIL",
+              "actual": {
+                "before": {
+                  "route": {
+                    "section": "bots",
+                    "screen": "bots",
+                    "resourceId": null,
+                    "conversationId": null,
+                    "canvas": false,
+                    "generation": 6,
+                    "sessionGeneration": 1,
+                    "sessionUserId": "11111111-1111-4111-8111-111111111111"
+                  },
+                  "uid": "11111111-1111-4111-8111-111111111111",
+                  "current": null,
+                  "scope": {
+                    "user": "11111111-1111-4111-8111-111111111111",
+                    "chat": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"
+                  },
+                  "list": false,
+                  "ready": true,
+                  "vault": {
+                    "state": "empty",
+                    "error": null,
+                    "revision": 0,
+                    "restored_files": 0,
+                    "changes": 0,
+                    "failures": 0,
+                    "pending": false,
+                    "transaction_active": false,
+                    "storage": {
+                      "persistent": false,
+                      "quota": 911405181,
+                      "usage": 7536
+                    },
+                    "database_stats": {
+                      "commits": 0,
+                      "blob_puts": 0,
+                      "blob_deletes": 0,
+                      "aborts": 0,
+                      "conflicts": 0,
+                      "durability": null
+                    },
+                    "reload_check": null,
+                    "audit": null,
+                    "events": [
+                      {
+                        "state": "empty",
+                        "error": null,
+                        "at": "2026-09-12T09:52:15.456Z"
+                      }
+                    ],
+                    "scope": "THIS_ORIGIN_THIS_BROWSER_ONLY",
+                    "background_save_guaranteed": false
+                  },
+                  "homeVisible": true,
+                  "appVisible": false,
+                  "canvasVisible": false,
+                  "selected": [
+                    "bots"
+                  ],
+                  "cards": [],
+                  "text": "‹\nFixture Bot\n\nIsolated scenario\n\nОткрыть переписку\nЗаявки\nСценарий\nНастройки\nОстановить\n\nСейчас бот закрытый: доступен владельцу.",
+                  "toast": null
+                },
+                "after": {
+                  "route": {
+                    "section": "bots",
+                    "screen": "bots",
+                    "resourceId": null,
+                    "conversationId": null,
+                    "canvas": false,
+                    "generation": 6,
+                    "sessionGeneration": 1,
+                    "sessionUserId": "11111111-1111-4111-8111-111111111111"
+                  },
+                  "uid": "11111111-1111-4111-8111-111111111111",
+                  "current": null,
+                  "scope": {
+                    "user": "11111111-1111-4111-8111-111111111111",
+                    "chat": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"
+                  },
+                  "list": false,
+                  "ready": true,
+                  "vault": {
+                    "state": "empty",
+                    "error": null,
+                    "revision": 0,
+                    "restored_files": 0,
+                    "changes": 0,
+                    "failures": 0,
+                    "pending": false,
+                    "transaction_active": false,
+                    "storage": {
+                      "persistent": false,
+                      "quota": 911405181,
+                      "usage": 7536
+                    },
+                    "database_stats": {
+                      "commits": 0,
+                      "blob_puts": 0,
+                      "blob_deletes": 0,
+                      "aborts": 0,
+                      "conflicts": 0,
+                      "durability": null
+                    },
+                    "reload_check": null,
+                    "audit": null,
+                    "events": [
+                      {
+                        "state": "empty",
+                        "error": null,
+                        "at": "2026-09-12T09:52:15.456Z"
+                      }
+                    ],
+                    "scope": "THIS_ORIGIN_THIS_BROWSER_ONLY",
+                    "background_save_guaranteed": false
+                  },
+                  "homeVisible": true,
+                  "appVisible": false,
+                  "canvasVisible": false,
+                  "selected": [
+                    "bots"
+                  ],
+                  "cards": [
+                    "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                    "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2"
+                  ],
+                  "text": "A\nA conversation 1\nFixture conversation 1\n☆\nA\nA conversation 2\nFixture conversation 2\n☆",
+                  "toast": null
+                },
+                "visible": {
+                  "panel": false,
+                  "scenario_action": false
+                },
+                "actual_dialog_responses": [
+                  {
+                    "method": "POST",
+                    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                    "status": 200,
+                    "received_epoch_ms": 1789206741596.1562,
+                    "received_monotonic": 564.148850438,
+                    "body_capture": "PASS",
+                    "request_start_epoch_ms": 1789206741591.881,
+                    "response_start_epoch_ms": 1789206741594.644,
+                    "body_sha256": "d70c7627370a6b7c06c824e82b3813b4df8b37d5fad61edf5bafe31bb23099a7",
+                    "body_bytes": 306
+                  },
+                  {
+                    "method": "POST",
+                    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                    "status": 200,
+                    "received_epoch_ms": 1789206742895.6138,
+                    "received_monotonic": 565.448307886,
+                    "body_capture": "PASS",
+                    "request_start_epoch_ms": 1789206742891.606,
+                    "response_start_epoch_ms": 1789206742894.25,
+                    "body_sha256": "d70c7627370a6b7c06c824e82b3813b4df8b37d5fad61edf5bafe31bb23099a7",
+                    "body_bytes": 306
+                  }
+                ]
+              }
+            },
+            "member": "browser/routes/result.json",
+            "member_sha256": "a8ff8fdeeb7b28b5ad5aa57d0808dafbd280c5d414ff53b13bda8f09f28dc6a2",
+            "log_sha256": "d2728aaeee1c0c6cb24dbc8c56b9220efb60aca5d0f950d0daae0d167119b6c8",
+            "complete_evidence": true,
+            "all_five_gates": "PASS"
+          },
+          "after": {
+            "tested_sha": "0cf9f714a50952c42c5b503b70fc7429e8b99588",
+            "status": "PASS",
+            "assertion": {
+              "name": "1C-BOT-DETAIL-SURVIVES-POLL",
+              "status": "PASS",
+              "actual": {
+                "before": {
+                  "route": {
+                    "section": "bots",
+                    "screen": "bots",
+                    "resourceId": null,
+                    "conversationId": null,
+                    "canvas": false,
+                    "generation": 6,
+                    "sessionGeneration": 1,
+                    "sessionUserId": "11111111-1111-4111-8111-111111111111"
+                  },
+                  "uid": "11111111-1111-4111-8111-111111111111",
+                  "current": null,
+                  "scope": {
+                    "user": "11111111-1111-4111-8111-111111111111",
+                    "chat": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"
+                  },
+                  "list": false,
+                  "ready": true,
+                  "vault": {
+                    "state": "empty",
+                    "error": null,
+                    "revision": 0,
+                    "restored_files": 0,
+                    "changes": 0,
+                    "failures": 0,
+                    "pending": false,
+                    "transaction_active": false,
+                    "storage": {
+                      "persistent": false,
+                      "quota": 855658091,
+                      "usage": 7536
+                    },
+                    "database_stats": {
+                      "commits": 0,
+                      "blob_puts": 0,
+                      "blob_deletes": 0,
+                      "aborts": 0,
+                      "conflicts": 0,
+                      "durability": null
+                    },
+                    "reload_check": null,
+                    "audit": null,
+                    "events": [
+                      {
+                        "state": "empty",
+                        "error": null,
+                        "at": "2026-09-12T10:01:50.228Z"
+                      }
+                    ],
+                    "scope": "THIS_ORIGIN_THIS_BROWSER_ONLY",
+                    "background_save_guaranteed": false
+                  },
+                  "homeVisible": true,
+                  "appVisible": false,
+                  "canvasVisible": false,
+                  "selected": [
+                    "bots"
+                  ],
+                  "cards": [],
+                  "text": "‹\nFixture Bot\n\nIsolated scenario\n\nОткрыть переписку\nЗаявки\nСценарий\nНастройки\nОстановить\n\nСейчас бот закрытый: доступен владельцу.",
+                  "toast": null
+                },
+                "after": {
+                  "route": {
+                    "section": "bots",
+                    "screen": "bots",
+                    "resourceId": null,
+                    "conversationId": null,
+                    "canvas": false,
+                    "generation": 6,
+                    "sessionGeneration": 1,
+                    "sessionUserId": "11111111-1111-4111-8111-111111111111"
+                  },
+                  "uid": "11111111-1111-4111-8111-111111111111",
+                  "current": null,
+                  "scope": {
+                    "user": "11111111-1111-4111-8111-111111111111",
+                    "chat": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"
+                  },
+                  "list": false,
+                  "ready": true,
+                  "vault": {
+                    "state": "empty",
+                    "error": null,
+                    "revision": 0,
+                    "restored_files": 0,
+                    "changes": 0,
+                    "failures": 0,
+                    "pending": false,
+                    "transaction_active": false,
+                    "storage": {
+                      "persistent": false,
+                      "quota": 855658091,
+                      "usage": 7536
+                    },
+                    "database_stats": {
+                      "commits": 0,
+                      "blob_puts": 0,
+                      "blob_deletes": 0,
+                      "aborts": 0,
+                      "conflicts": 0,
+                      "durability": null
+                    },
+                    "reload_check": null,
+                    "audit": null,
+                    "events": [
+                      {
+                        "state": "empty",
+                        "error": null,
+                        "at": "2026-09-12T10:01:50.228Z"
+                      }
+                    ],
+                    "scope": "THIS_ORIGIN_THIS_BROWSER_ONLY",
+                    "background_save_guaranteed": false
+                  },
+                  "homeVisible": true,
+                  "appVisible": false,
+                  "canvasVisible": false,
+                  "selected": [
+                    "bots"
+                  ],
+                  "cards": [],
+                  "text": "‹\nFixture Bot\n\nIsolated scenario\n\nОткрыть переписку\nЗаявки\nСценарий\nНастройки\nОстановить\n\nСейчас бот закрытый: доступен владельцу.",
+                  "toast": null
+                },
+                "visible": {
+                  "panel": true,
+                  "scenario_action": true
+                },
+                "actual_dialog_responses": [
+                  {
+                    "method": "POST",
+                    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                    "status": 200,
+                    "received_epoch_ms": 1789207316340.0916,
+                    "received_monotonic": 565.703861337,
+                    "body_capture": "PASS",
+                    "request_start_epoch_ms": 1789207316336.025,
+                    "response_start_epoch_ms": 1789207316338.783,
+                    "body_sha256": "d70c7627370a6b7c06c824e82b3813b4df8b37d5fad61edf5bafe31bb23099a7",
+                    "body_bytes": 306
+                  },
+                  {
+                    "method": "POST",
+                    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                    "status": 200,
+                    "received_epoch_ms": 1789207317639.8696,
+                    "received_monotonic": 567.00363971,
+                    "body_capture": "PASS",
+                    "request_start_epoch_ms": 1789207317636.172,
+                    "response_start_epoch_ms": 1789207317638.6372,
+                    "body_sha256": "d70c7627370a6b7c06c824e82b3813b4df8b37d5fad61edf5bafe31bb23099a7",
+                    "body_bytes": 306
+                  }
+                ]
+              }
+            },
+            "member": "browser/routes/result.json",
+            "member_sha256": "1e82f4e242649abe0c8a1f2cf7b2e3320fdc00e4956c24318c559c73cdc5c9d0",
+            "log_sha256": "f4e48ee8a94928af15bd8e4b06f4597afa8ebbe4e5510743ce77460b5a0cfd42",
+            "complete_evidence": true,
+            "all_five_gates": "PASS"
+          },
+          "final_candidate": {
+            "tested_sha": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+            "status": "PASS",
+            "assertion": {
+              "name": "1C-BOT-DETAIL-SURVIVES-POLL",
+              "status": "PASS",
+              "actual": {
+                "before": {
+                  "route": {
+                    "section": "bots",
+                    "screen": "bots",
+                    "resourceId": null,
+                    "conversationId": null,
+                    "canvas": false,
+                    "generation": 6,
+                    "sessionGeneration": 1,
+                    "sessionUserId": "11111111-1111-4111-8111-111111111111"
+                  },
+                  "uid": "11111111-1111-4111-8111-111111111111",
+                  "current": null,
+                  "scope": {
+                    "user": "11111111-1111-4111-8111-111111111111",
+                    "chat": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"
+                  },
+                  "list": false,
+                  "ready": true,
+                  "vault": {
+                    "state": "empty",
+                    "error": null,
+                    "revision": 0,
+                    "restored_files": 0,
+                    "changes": 0,
+                    "failures": 0,
+                    "pending": false,
+                    "transaction_active": false,
+                    "storage": {
+                      "persistent": false,
+                      "quota": 1101522421,
+                      "usage": 7536
+                    },
+                    "database_stats": {
+                      "commits": 0,
+                      "blob_puts": 0,
+                      "blob_deletes": 0,
+                      "aborts": 0,
+                      "conflicts": 0,
+                      "durability": null
+                    },
+                    "reload_check": null,
+                    "audit": null,
+                    "events": [
+                      {
+                        "state": "empty",
+                        "error": null,
+                        "at": "2026-09-12T10:32:23.197Z"
+                      }
+                    ],
+                    "scope": "THIS_ORIGIN_THIS_BROWSER_ONLY",
+                    "background_save_guaranteed": false
+                  },
+                  "homeVisible": true,
+                  "appVisible": false,
+                  "canvasVisible": false,
+                  "selected": [
+                    "bots"
+                  ],
+                  "cards": [],
+                  "text": "‹\nFixture Bot\n\nIsolated scenario\n\nОткрыть переписку\nЗаявки\nСценарий\nНастройки\nОстановить\n\nСейчас бот закрытый: доступен владельцу.",
+                  "toast": null
+                },
+                "after": {
+                  "route": {
+                    "section": "bots",
+                    "screen": "bots",
+                    "resourceId": null,
+                    "conversationId": null,
+                    "canvas": false,
+                    "generation": 6,
+                    "sessionGeneration": 1,
+                    "sessionUserId": "11111111-1111-4111-8111-111111111111"
+                  },
+                  "uid": "11111111-1111-4111-8111-111111111111",
+                  "current": null,
+                  "scope": {
+                    "user": "11111111-1111-4111-8111-111111111111",
+                    "chat": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"
+                  },
+                  "list": false,
+                  "ready": true,
+                  "vault": {
+                    "state": "empty",
+                    "error": null,
+                    "revision": 0,
+                    "restored_files": 0,
+                    "changes": 0,
+                    "failures": 0,
+                    "pending": false,
+                    "transaction_active": false,
+                    "storage": {
+                      "persistent": false,
+                      "quota": 1101522421,
+                      "usage": 7536
+                    },
+                    "database_stats": {
+                      "commits": 0,
+                      "blob_puts": 0,
+                      "blob_deletes": 0,
+                      "aborts": 0,
+                      "conflicts": 0,
+                      "durability": null
+                    },
+                    "reload_check": null,
+                    "audit": null,
+                    "events": [
+                      {
+                        "state": "empty",
+                        "error": null,
+                        "at": "2026-09-12T10:32:23.197Z"
+                      }
+                    ],
+                    "scope": "THIS_ORIGIN_THIS_BROWSER_ONLY",
+                    "background_save_guaranteed": false
+                  },
+                  "homeVisible": true,
+                  "appVisible": false,
+                  "canvasVisible": false,
+                  "selected": [
+                    "bots"
+                  ],
+                  "cards": [],
+                  "text": "‹\nFixture Bot\n\nIsolated scenario\n\nОткрыть переписку\nЗаявки\nСценарий\nНастройки\nОстановить\n\nСейчас бот закрытый: доступен владельцу.",
+                  "toast": null
+                },
+                "visible": {
+                  "panel": true,
+                  "scenario_action": true
+                },
+                "actual_dialog_responses": [
+                  {
+                    "method": "POST",
+                    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                    "status": 200,
+                    "received_epoch_ms": 1789209149356.053,
+                    "received_monotonic": 107.833527753,
+                    "body_capture": "PASS",
+                    "request_start_epoch_ms": 1789209149352.615,
+                    "response_start_epoch_ms": 1789209149354.83,
+                    "body_sha256": "d70c7627370a6b7c06c824e82b3813b4df8b37d5fad61edf5bafe31bb23099a7",
+                    "body_bytes": 306
+                  },
+                  {
+                    "method": "POST",
+                    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                    "status": 200,
+                    "received_epoch_ms": 1789209150656.8044,
+                    "received_monotonic": 109.134279254,
+                    "body_capture": "PASS",
+                    "request_start_epoch_ms": 1789209150653.093,
+                    "response_start_epoch_ms": 1789209150655.626,
+                    "body_sha256": "d70c7627370a6b7c06c824e82b3813b4df8b37d5fad61edf5bafe31bb23099a7",
+                    "body_bytes": 306
+                  }
+                ]
+              }
+            },
+            "member": "browser/routes/result.json",
+            "member_sha256": "ecc5147f70503c4d3c33c61cb6ab80ce847c657052c61a0a7c5f66ad9f9323ff",
+            "log_sha256": "f4e48ee8a94928af15bd8e4b06f4597afa8ebbe4e5510743ce77460b5a0cfd42",
+            "complete_evidence": true,
+            "all_five_gates": "PASS"
+          }
+        },
+        {
+          "id": "1C-QUIET-LIST",
+          "before": {
+            "tested_sha": "e8d017be3a8c46f3dcc78910a2082e704a4fcaa5",
+            "status": "FAIL",
+            "assertion": {
+              "name": "1C-QUIET-LIST",
+              "status": "FAIL",
+              "actual": {
+                "records": 15,
+                "callbacks": 3,
+                "connected": true,
+                "selector": "#screenContent",
+                "started_epoch_ms": 1789206744620.4,
+                "ended_epoch_ms": 1789206748825.4,
+                "initial_target": {
+                  "identity": 1,
+                  "nodeType": 1,
+                  "name": "DIV",
+                  "id": "screenContent",
+                  "classes": "",
+                  "conversationId": null,
+                  "botId": null,
+                  "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                },
+                "final_target": {
+                  "identity": 1,
+                  "nodeType": 1,
+                  "name": "DIV",
+                  "id": "screenContent",
+                  "classes": "",
+                  "conversationId": null,
+                  "botId": null,
+                  "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                },
+                "initial_children": [
+                  {
+                    "identity": 2,
+                    "nodeType": 1,
+                    "name": "BUTTON",
+                    "id": null,
+                    "classes": "findPeople",
+                    "conversationId": null,
+                    "botId": null,
+                    "text": "Найти человека"
+                  },
+                  {
+                    "identity": 3,
+                    "nodeType": 1,
+                    "name": "BUTTON",
+                    "id": null,
+                    "classes": "savedConversation",
+                    "conversationId": null,
+                    "botId": null,
+                    "text": "ИзбранноеСообщения и материалы для себя"
+                  },
+                  {
+                    "identity": 4,
+                    "nodeType": 1,
+                    "name": "SECTION",
+                    "id": null,
+                    "classes": "chatCard",
+                    "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                    "botId": null,
+                    "text": "AA conversation 1Fixture conversation 1☆"
+                  },
+                  {
+                    "identity": 5,
+                    "nodeType": 1,
+                    "name": "SECTION",
+                    "id": null,
+                    "classes": "chatCard",
+                    "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
+                    "botId": null,
+                    "text": "AA conversation 2Fixture conversation 2☆"
+                  }
+                ],
+                "final_children": [
+                  {
+                    "identity": 14,
+                    "nodeType": 1,
+                    "name": "BUTTON",
+                    "id": null,
+                    "classes": "findPeople",
+                    "conversationId": null,
+                    "botId": null,
+                    "text": "Найти человека"
+                  },
+                  {
+                    "identity": 15,
+                    "nodeType": 1,
+                    "name": "BUTTON",
+                    "id": null,
+                    "classes": "savedConversation",
+                    "conversationId": null,
+                    "botId": null,
+                    "text": "ИзбранноеСообщения и материалы для себя"
+                  },
+                  {
+                    "identity": 16,
+                    "nodeType": 1,
+                    "name": "SECTION",
+                    "id": null,
+                    "classes": "chatCard",
+                    "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                    "botId": null,
+                    "text": "AA conversation 1Fixture conversation 1☆"
+                  },
+                  {
+                    "identity": 17,
+                    "nodeType": 1,
+                    "name": "SECTION",
+                    "id": null,
+                    "classes": "chatCard",
+                    "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
+                    "botId": null,
+                    "text": "AA conversation 2Fixture conversation 2☆"
+                  }
+                ],
+                "events": [
+                  {
+                    "callback": 1,
+                    "at_performance_ms": 1530.1000000000931,
+                    "at_epoch_ms": 1789206745617.6,
+                    "type": "childList",
+                    "target": {
+                      "identity": 1,
+                      "nodeType": 1,
+                      "name": "DIV",
+                      "id": "screenContent",
+                      "classes": "",
+                      "conversationId": null,
+                      "botId": null,
+                      "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                    },
+                    "added": [],
+                    "removed": [
+                      {
+                        "identity": 2,
+                        "nodeType": 1,
+                        "name": "BUTTON",
+                        "id": null,
+                        "classes": "findPeople",
+                        "conversationId": null,
+                        "botId": null,
+                        "text": "Найти человека"
+                      },
+                      {
+                        "identity": 3,
+                        "nodeType": 1,
+                        "name": "BUTTON",
+                        "id": null,
+                        "classes": "savedConversation",
+                        "conversationId": null,
+                        "botId": null,
+                        "text": "ИзбранноеСообщения и материалы для себя"
+                      },
+                      {
+                        "identity": 4,
+                        "nodeType": 1,
+                        "name": "SECTION",
+                        "id": null,
+                        "classes": "chatCard",
+                        "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                        "botId": null,
+                        "text": "AA conversation 1Fixture conversation 1☆"
+                      },
+                      {
+                        "identity": 5,
+                        "nodeType": 1,
+                        "name": "SECTION",
+                        "id": null,
+                        "classes": "chatCard",
+                        "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
+                        "botId": null,
+                        "text": "AA conversation 2Fixture conversation 2☆"
+                      }
+                    ],
+                    "old_value": null
+                  },
+                  {
+                    "callback": 1,
+                    "at_performance_ms": 1530.1000000000931,
+                    "at_epoch_ms": 1789206745617.6,
+                    "type": "childList",
+                    "target": {
+                      "identity": 1,
+                      "nodeType": 1,
+                      "name": "DIV",
+                      "id": "screenContent",
+                      "classes": "",
+                      "conversationId": null,
+                      "botId": null,
+                      "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                    },
+                    "added": [
+                      {
+                        "identity": 6,
+                        "nodeType": 1,
+                        "name": "BUTTON",
+                        "id": null,
+                        "classes": "findPeople",
+                        "conversationId": null,
+                        "botId": null,
+                        "text": "Найти человека"
+                      }
+                    ],
+                    "removed": [],
+                    "old_value": null
+                  },
+                  {
+                    "callback": 1,
+                    "at_performance_ms": 1530.1000000000931,
+                    "at_epoch_ms": 1789206745617.6,
+                    "type": "childList",
+                    "target": {
+                      "identity": 1,
+                      "nodeType": 1,
+                      "name": "DIV",
+                      "id": "screenContent",
+                      "classes": "",
+                      "conversationId": null,
+                      "botId": null,
+                      "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                    },
+                    "added": [
+                      {
+                        "identity": 7,
+                        "nodeType": 1,
+                        "name": "BUTTON",
+                        "id": null,
+                        "classes": "savedConversation",
+                        "conversationId": null,
+                        "botId": null,
+                        "text": "ИзбранноеСообщения и материалы для себя"
+                      }
+                    ],
+                    "removed": [],
+                    "old_value": null
+                  },
+                  {
+                    "callback": 1,
+                    "at_performance_ms": 1530.1000000000931,
+                    "at_epoch_ms": 1789206745617.6,
+                    "type": "childList",
+                    "target": {
+                      "identity": 1,
+                      "nodeType": 1,
+                      "name": "DIV",
+                      "id": "screenContent",
+                      "classes": "",
+                      "conversationId": null,
+                      "botId": null,
+                      "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                    },
+                    "added": [
+                      {
+                        "identity": 8,
+                        "nodeType": 1,
+                        "name": "SECTION",
+                        "id": null,
+                        "classes": "chatCard",
+                        "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                        "botId": null,
+                        "text": "AA conversation 1Fixture conversation 1☆"
+                      }
+                    ],
+                    "removed": [],
+                    "old_value": null
+                  },
+                  {
+                    "callback": 1,
+                    "at_performance_ms": 1530.1000000000931,
+                    "at_epoch_ms": 1789206745617.6,
+                    "type": "childList",
+                    "target": {
+                      "identity": 1,
+                      "nodeType": 1,
+                      "name": "DIV",
+                      "id": "screenContent",
+                      "classes": "",
+                      "conversationId": null,
+                      "botId": null,
+                      "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                    },
+                    "added": [
+                      {
+                        "identity": 9,
+                        "nodeType": 1,
+                        "name": "SECTION",
+                        "id": null,
+                        "classes": "chatCard",
+                        "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
+                        "botId": null,
+                        "text": "AA conversation 2Fixture conversation 2☆"
+                      }
+                    ],
+                    "removed": [],
+                    "old_value": null
+                  },
+                  {
+                    "callback": 2,
+                    "at_performance_ms": 2829.3000000000466,
+                    "at_epoch_ms": 1789206746916.8,
+                    "type": "childList",
+                    "target": {
+                      "identity": 1,
+                      "nodeType": 1,
+                      "name": "DIV",
+                      "id": "screenContent",
+                      "classes": "",
+                      "conversationId": null,
+                      "botId": null,
+                      "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                    },
+                    "added": [],
+                    "removed": [
+                      {
+                        "identity": 6,
+                        "nodeType": 1,
+                        "name": "BUTTON",
+                        "id": null,
+                        "classes": "findPeople",
+                        "conversationId": null,
+                        "botId": null,
+                        "text": "Найти человека"
+                      },
+                      {
+                        "identity": 7,
+                        "nodeType": 1,
+                        "name": "BUTTON",
+                        "id": null,
+                        "classes": "savedConversation",
+                        "conversationId": null,
+                        "botId": null,
+                        "text": "ИзбранноеСообщения и материалы для себя"
+                      },
+                      {
+                        "identity": 8,
+                        "nodeType": 1,
+                        "name": "SECTION",
+                        "id": null,
+                        "classes": "chatCard",
+                        "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                        "botId": null,
+                        "text": "AA conversation 1Fixture conversation 1☆"
+                      },
+                      {
+                        "identity": 9,
+                        "nodeType": 1,
+                        "name": "SECTION",
+                        "id": null,
+                        "classes": "chatCard",
+                        "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
+                        "botId": null,
+                        "text": "AA conversation 2Fixture conversation 2☆"
+                      }
+                    ],
+                    "old_value": null
+                  },
+                  {
+                    "callback": 2,
+                    "at_performance_ms": 2829.3000000000466,
+                    "at_epoch_ms": 1789206746916.8,
+                    "type": "childList",
+                    "target": {
+                      "identity": 1,
+                      "nodeType": 1,
+                      "name": "DIV",
+                      "id": "screenContent",
+                      "classes": "",
+                      "conversationId": null,
+                      "botId": null,
+                      "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                    },
+                    "added": [
+                      {
+                        "identity": 10,
+                        "nodeType": 1,
+                        "name": "BUTTON",
+                        "id": null,
+                        "classes": "findPeople",
+                        "conversationId": null,
+                        "botId": null,
+                        "text": "Найти человека"
+                      }
+                    ],
+                    "removed": [],
+                    "old_value": null
+                  },
+                  {
+                    "callback": 2,
+                    "at_performance_ms": 2829.3000000000466,
+                    "at_epoch_ms": 1789206746916.8,
+                    "type": "childList",
+                    "target": {
+                      "identity": 1,
+                      "nodeType": 1,
+                      "name": "DIV",
+                      "id": "screenContent",
+                      "classes": "",
+                      "conversationId": null,
+                      "botId": null,
+                      "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                    },
+                    "added": [
+                      {
+                        "identity": 11,
+                        "nodeType": 1,
+                        "name": "BUTTON",
+                        "id": null,
+                        "classes": "savedConversation",
+                        "conversationId": null,
+                        "botId": null,
+                        "text": "ИзбранноеСообщения и материалы для себя"
+                      }
+                    ],
+                    "removed": [],
+                    "old_value": null
+                  },
+                  {
+                    "callback": 2,
+                    "at_performance_ms": 2829.3000000000466,
+                    "at_epoch_ms": 1789206746916.8,
+                    "type": "childList",
+                    "target": {
+                      "identity": 1,
+                      "nodeType": 1,
+                      "name": "DIV",
+                      "id": "screenContent",
+                      "classes": "",
+                      "conversationId": null,
+                      "botId": null,
+                      "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                    },
+                    "added": [
+                      {
+                        "identity": 12,
+                        "nodeType": 1,
+                        "name": "SECTION",
+                        "id": null,
+                        "classes": "chatCard",
+                        "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                        "botId": null,
+                        "text": "AA conversation 1Fixture conversation 1☆"
+                      }
+                    ],
+                    "removed": [],
+                    "old_value": null
+                  },
+                  {
+                    "callback": 2,
+                    "at_performance_ms": 2829.3000000000466,
+                    "at_epoch_ms": 1789206746916.8,
+                    "type": "childList",
+                    "target": {
+                      "identity": 1,
+                      "nodeType": 1,
+                      "name": "DIV",
+                      "id": "screenContent",
+                      "classes": "",
+                      "conversationId": null,
+                      "botId": null,
+                      "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                    },
+                    "added": [
+                      {
+                        "identity": 13,
+                        "nodeType": 1,
+                        "name": "SECTION",
+                        "id": null,
+                        "classes": "chatCard",
+                        "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
+                        "botId": null,
+                        "text": "AA conversation 2Fixture conversation 2☆"
+                      }
+                    ],
+                    "removed": [],
+                    "old_value": null
+                  },
+                  {
+                    "callback": 3,
+                    "at_performance_ms": 4130,
+                    "at_epoch_ms": 1789206748217.5,
+                    "type": "childList",
+                    "target": {
+                      "identity": 1,
+                      "nodeType": 1,
+                      "name": "DIV",
+                      "id": "screenContent",
+                      "classes": "",
+                      "conversationId": null,
+                      "botId": null,
+                      "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                    },
+                    "added": [],
+                    "removed": [
+                      {
+                        "identity": 10,
+                        "nodeType": 1,
+                        "name": "BUTTON",
+                        "id": null,
+                        "classes": "findPeople",
+                        "conversationId": null,
+                        "botId": null,
+                        "text": "Найти человека"
+                      },
+                      {
+                        "identity": 11,
+                        "nodeType": 1,
+                        "name": "BUTTON",
+                        "id": null,
+                        "classes": "savedConversation",
+                        "conversationId": null,
+                        "botId": null,
+                        "text": "ИзбранноеСообщения и материалы для себя"
+                      },
+                      {
+                        "identity": 12,
+                        "nodeType": 1,
+                        "name": "SECTION",
+                        "id": null,
+                        "classes": "chatCard",
+                        "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                        "botId": null,
+                        "text": "AA conversation 1Fixture conversation 1☆"
+                      },
+                      {
+                        "identity": 13,
+                        "nodeType": 1,
+                        "name": "SECTION",
+                        "id": null,
+                        "classes": "chatCard",
+                        "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
+                        "botId": null,
+                        "text": "AA conversation 2Fixture conversation 2☆"
+                      }
+                    ],
+                    "old_value": null
+                  },
+                  {
+                    "callback": 3,
+                    "at_performance_ms": 4130,
+                    "at_epoch_ms": 1789206748217.5,
+                    "type": "childList",
+                    "target": {
+                      "identity": 1,
+                      "nodeType": 1,
+                      "name": "DIV",
+                      "id": "screenContent",
+                      "classes": "",
+                      "conversationId": null,
+                      "botId": null,
+                      "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                    },
+                    "added": [
+                      {
+                        "identity": 14,
+                        "nodeType": 1,
+                        "name": "BUTTON",
+                        "id": null,
+                        "classes": "findPeople",
+                        "conversationId": null,
+                        "botId": null,
+                        "text": "Найти человека"
+                      }
+                    ],
+                    "removed": [],
+                    "old_value": null
+                  },
+                  {
+                    "callback": 3,
+                    "at_performance_ms": 4130,
+                    "at_epoch_ms": 1789206748217.5,
+                    "type": "childList",
+                    "target": {
+                      "identity": 1,
+                      "nodeType": 1,
+                      "name": "DIV",
+                      "id": "screenContent",
+                      "classes": "",
+                      "conversationId": null,
+                      "botId": null,
+                      "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                    },
+                    "added": [
+                      {
+                        "identity": 15,
+                        "nodeType": 1,
+                        "name": "BUTTON",
+                        "id": null,
+                        "classes": "savedConversation",
+                        "conversationId": null,
+                        "botId": null,
+                        "text": "ИзбранноеСообщения и материалы для себя"
+                      }
+                    ],
+                    "removed": [],
+                    "old_value": null
+                  },
+                  {
+                    "callback": 3,
+                    "at_performance_ms": 4130,
+                    "at_epoch_ms": 1789206748217.5,
+                    "type": "childList",
+                    "target": {
+                      "identity": 1,
+                      "nodeType": 1,
+                      "name": "DIV",
+                      "id": "screenContent",
+                      "classes": "",
+                      "conversationId": null,
+                      "botId": null,
+                      "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                    },
+                    "added": [
+                      {
+                        "identity": 16,
+                        "nodeType": 1,
+                        "name": "SECTION",
+                        "id": null,
+                        "classes": "chatCard",
+                        "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                        "botId": null,
+                        "text": "AA conversation 1Fixture conversation 1☆"
+                      }
+                    ],
+                    "removed": [],
+                    "old_value": null
+                  },
+                  {
+                    "callback": 3,
+                    "at_performance_ms": 4130,
+                    "at_epoch_ms": 1789206748217.5,
+                    "type": "childList",
+                    "target": {
+                      "identity": 1,
+                      "nodeType": 1,
+                      "name": "DIV",
+                      "id": "screenContent",
+                      "classes": "",
+                      "conversationId": null,
+                      "botId": null,
+                      "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                    },
+                    "added": [
+                      {
+                        "identity": 17,
+                        "nodeType": 1,
+                        "name": "SECTION",
+                        "id": null,
+                        "classes": "chatCard",
+                        "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
+                        "botId": null,
+                        "text": "AA conversation 2Fixture conversation 2☆"
+                      }
+                    ],
+                    "removed": [],
+                    "old_value": null
+                  }
+                ],
+                "dropped_records": 0,
+                "baseline_response": {
+                  "method": "POST",
+                  "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                  "status": 200,
+                  "received_epoch_ms": 1789206744458.7024,
+                  "received_monotonic": 567.011396341,
+                  "body_capture": "PASS",
+                  "request_start_epoch_ms": 1789206744453.3447,
+                  "response_start_epoch_ms": 1789206744456.1638,
+                  "body_sha256": "d70c7627370a6b7c06c824e82b3813b4df8b37d5fad61edf5bafe31bb23099a7",
+                  "body_bytes": 306
+                },
+                "actual_responses": [
+                  {
+                    "method": "POST",
+                    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                    "status": 200,
+                    "received_epoch_ms": 1789206745617.501,
+                    "received_monotonic": 568.170195506,
+                    "body_capture": "PASS",
+                    "request_start_epoch_ms": 1789206745613.1008,
+                    "response_start_epoch_ms": 1789206745615.9998,
+                    "body_sha256": "d70c7627370a6b7c06c824e82b3813b4df8b37d5fad61edf5bafe31bb23099a7",
+                    "body_bytes": 306
+                  },
+                  {
+                    "method": "POST",
+                    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                    "status": 200,
+                    "received_epoch_ms": 1789206746917.0715,
+                    "received_monotonic": 569.469765356,
+                    "body_capture": "PASS",
+                    "request_start_epoch_ms": 1789206746912.668,
+                    "response_start_epoch_ms": 1789206746915.5,
+                    "body_sha256": "d70c7627370a6b7c06c824e82b3813b4df8b37d5fad61edf5bafe31bb23099a7",
+                    "body_bytes": 306
+                  },
+                  {
+                    "method": "POST",
+                    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                    "status": 200,
+                    "received_epoch_ms": 1789206748217.6768,
+                    "received_monotonic": 570.770370395,
+                    "body_capture": "PASS",
+                    "request_start_epoch_ms": 1789206748212.9998,
+                    "response_start_epoch_ms": 1789206748216.1287,
+                    "body_sha256": "d70c7627370a6b7c06c824e82b3813b4df8b37d5fad61edf5bafe31bb23099a7",
+                    "body_bytes": 306
+                  }
+                ],
+                "fixture_unchanged": true,
+                "boundary_calls": [
+                  {
+                    "host": "ctcoqgsztdtsazdiwcmd.supabase.co",
+                    "method": "POST",
+                    "path": "/rest/v1/rpc/my_conversations_v3",
+                    "uid": "11111111-1111-4111-8111-111111111111",
+                    "query": "",
+                    "at": 567.007356,
+                    "status": 200
+                  },
+                  {
+                    "host": "ctcoqgsztdtsazdiwcmd.supabase.co",
+                    "method": "POST",
+                    "path": "/rest/v1/rpc/my_conversations_v3",
+                    "uid": "11111111-1111-4111-8111-111111111111",
+                    "query": "",
+                    "at": 568.166909,
+                    "status": 200
+                  },
+                  {
+                    "host": "ctcoqgsztdtsazdiwcmd.supabase.co",
+                    "method": "POST",
+                    "path": "/rest/v1/rpc/my_conversations_v3",
+                    "uid": "11111111-1111-4111-8111-111111111111",
+                    "query": "",
+                    "at": 569.466514,
+                    "status": 200
+                  },
+                  {
+                    "host": "ctcoqgsztdtsazdiwcmd.supabase.co",
+                    "method": "POST",
+                    "path": "/rest/v1/rpc/my_conversations_v3",
+                    "uid": "11111111-1111-4111-8111-111111111111",
+                    "query": "",
+                    "at": 570.766932,
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            "member": "browser/quiet/result.json",
+            "member_sha256": "e9a4031cd3362e375969505962eba6f506ba8dc5b92c606f3f6f2759f5f03dc7",
+            "log_sha256": "1cba690c9635b85a6114d1e5f6f30c6ec093a6dae9255340846e408c3d2b891c",
+            "complete_evidence": true,
+            "all_five_gates": "PASS"
+          },
+          "after": {
+            "tested_sha": "0cf9f714a50952c42c5b503b70fc7429e8b99588",
+            "status": "PASS",
+            "assertion": {
+              "name": "1C-QUIET-LIST",
+              "status": "PASS",
+              "actual": {
+                "records": 0,
+                "callbacks": 0,
+                "connected": true,
+                "selector": "#screenContent",
+                "started_epoch_ms": 1789207322517.5999,
+                "ended_epoch_ms": 1789207326722.2,
+                "initial_target": {
+                  "identity": 1,
+                  "nodeType": 1,
+                  "name": "DIV",
+                  "id": "screenContent",
+                  "classes": "",
+                  "conversationId": null,
+                  "botId": null,
+                  "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                },
+                "final_target": {
+                  "identity": 1,
+                  "nodeType": 1,
+                  "name": "DIV",
+                  "id": "screenContent",
+                  "classes": "",
+                  "conversationId": null,
+                  "botId": null,
+                  "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                },
+                "initial_children": [
+                  {
+                    "identity": 2,
+                    "nodeType": 1,
+                    "name": "BUTTON",
+                    "id": null,
+                    "classes": "findPeople",
+                    "conversationId": null,
+                    "botId": null,
+                    "text": "Найти человека"
+                  },
+                  {
+                    "identity": 3,
+                    "nodeType": 1,
+                    "name": "BUTTON",
+                    "id": null,
+                    "classes": "savedConversation",
+                    "conversationId": null,
+                    "botId": null,
+                    "text": "ИзбранноеСообщения и материалы для себя"
+                  },
+                  {
+                    "identity": 4,
+                    "nodeType": 1,
+                    "name": "SECTION",
+                    "id": null,
+                    "classes": "chatCard",
+                    "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                    "botId": null,
+                    "text": "AA conversation 1Fixture conversation 1☆"
+                  },
+                  {
+                    "identity": 5,
+                    "nodeType": 1,
+                    "name": "SECTION",
+                    "id": null,
+                    "classes": "chatCard",
+                    "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
+                    "botId": null,
+                    "text": "AA conversation 2Fixture conversation 2☆"
+                  }
+                ],
+                "final_children": [
+                  {
+                    "identity": 2,
+                    "nodeType": 1,
+                    "name": "BUTTON",
+                    "id": null,
+                    "classes": "findPeople",
+                    "conversationId": null,
+                    "botId": null,
+                    "text": "Найти человека"
+                  },
+                  {
+                    "identity": 3,
+                    "nodeType": 1,
+                    "name": "BUTTON",
+                    "id": null,
+                    "classes": "savedConversation",
+                    "conversationId": null,
+                    "botId": null,
+                    "text": "ИзбранноеСообщения и материалы для себя"
+                  },
+                  {
+                    "identity": 4,
+                    "nodeType": 1,
+                    "name": "SECTION",
+                    "id": null,
+                    "classes": "chatCard",
+                    "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                    "botId": null,
+                    "text": "AA conversation 1Fixture conversation 1☆"
+                  },
+                  {
+                    "identity": 5,
+                    "nodeType": 1,
+                    "name": "SECTION",
+                    "id": null,
+                    "classes": "chatCard",
+                    "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
+                    "botId": null,
+                    "text": "AA conversation 2Fixture conversation 2☆"
+                  }
+                ],
+                "events": [],
+                "dropped_records": 0,
+                "baseline_response": {
+                  "method": "POST",
+                  "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                  "status": 200,
+                  "received_epoch_ms": 1789207322337.725,
+                  "received_monotonic": 571.701495058,
+                  "body_capture": "PASS",
+                  "request_start_epoch_ms": 1789207322334.302,
+                  "response_start_epoch_ms": 1789207322336.491,
+                  "body_sha256": "d70c7627370a6b7c06c824e82b3813b4df8b37d5fad61edf5bafe31bb23099a7",
+                  "body_bytes": 306
+                },
+                "actual_responses": [
+                  {
+                    "method": "POST",
+                    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                    "status": 200,
+                    "received_epoch_ms": 1789207323479.6428,
+                    "received_monotonic": 572.843412923,
+                    "body_capture": "PASS",
+                    "request_start_epoch_ms": 1789207323475.879,
+                    "response_start_epoch_ms": 1789207323478.3489,
+                    "body_sha256": "d70c7627370a6b7c06c824e82b3813b4df8b37d5fad61edf5bafe31bb23099a7",
+                    "body_bytes": 306
+                  },
+                  {
+                    "method": "POST",
+                    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                    "status": 200,
+                    "received_epoch_ms": 1789207324779.5872,
+                    "received_monotonic": 574.143356958,
+                    "body_capture": "PASS",
+                    "request_start_epoch_ms": 1789207324775.5442,
+                    "response_start_epoch_ms": 1789207324778.3953,
+                    "body_sha256": "d70c7627370a6b7c06c824e82b3813b4df8b37d5fad61edf5bafe31bb23099a7",
+                    "body_bytes": 306
+                  },
+                  {
+                    "method": "POST",
+                    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                    "status": 200,
+                    "received_epoch_ms": 1789207326079.6729,
+                    "received_monotonic": 575.44344276,
+                    "body_capture": "PASS",
+                    "request_start_epoch_ms": 1789207326075.619,
+                    "response_start_epoch_ms": 1789207326078.306,
+                    "body_sha256": "d70c7627370a6b7c06c824e82b3813b4df8b37d5fad61edf5bafe31bb23099a7",
+                    "body_bytes": 306
+                  }
+                ],
+                "fixture_unchanged": true,
+                "boundary_calls": [
+                  {
+                    "host": "ctcoqgsztdtsazdiwcmd.supabase.co",
+                    "method": "POST",
+                    "path": "/rest/v1/rpc/my_conversations_v3",
+                    "uid": "11111111-1111-4111-8111-111111111111",
+                    "query": "",
+                    "at": 571.698759,
+                    "status": 200
+                  },
+                  {
+                    "host": "ctcoqgsztdtsazdiwcmd.supabase.co",
+                    "method": "POST",
+                    "path": "/rest/v1/rpc/my_conversations_v3",
+                    "uid": "11111111-1111-4111-8111-111111111111",
+                    "query": "",
+                    "at": 572.840624,
+                    "status": 200
+                  },
+                  {
+                    "host": "ctcoqgsztdtsazdiwcmd.supabase.co",
+                    "method": "POST",
+                    "path": "/rest/v1/rpc/my_conversations_v3",
+                    "uid": "11111111-1111-4111-8111-111111111111",
+                    "query": "",
+                    "at": 574.140668,
+                    "status": 200
+                  },
+                  {
+                    "host": "ctcoqgsztdtsazdiwcmd.supabase.co",
+                    "method": "POST",
+                    "path": "/rest/v1/rpc/my_conversations_v3",
+                    "uid": "11111111-1111-4111-8111-111111111111",
+                    "query": "",
+                    "at": 575.440545,
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            "member": "browser/quiet/result.json",
+            "member_sha256": "327941585345405b19de9d35f5b576697d9c0457558c2145b950d51a0883008b",
+            "log_sha256": "20f612181e0d73b813395429aa46d06c69dd34eba246c5dd778d8bf9b1245170",
+            "complete_evidence": true,
+            "all_five_gates": "PASS"
+          },
+          "final_candidate": {
+            "tested_sha": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+            "status": "PASS",
+            "assertion": {
+              "name": "1C-QUIET-LIST",
+              "status": "PASS",
+              "actual": {
+                "records": 0,
+                "callbacks": 0,
+                "connected": true,
+                "selector": "#screenContent",
+                "started_epoch_ms": 1789209155107.0999,
+                "ended_epoch_ms": 1789209159311.9,
+                "initial_target": {
+                  "identity": 1,
+                  "nodeType": 1,
+                  "name": "DIV",
+                  "id": "screenContent",
+                  "classes": "",
+                  "conversationId": null,
+                  "botId": null,
+                  "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                },
+                "final_target": {
+                  "identity": 1,
+                  "nodeType": 1,
+                  "name": "DIV",
+                  "id": "screenContent",
+                  "classes": "",
+                  "conversationId": null,
+                  "botId": null,
+                  "text": "Найти человекаИзбранноеСообщения и материалы для себяAA conversation 1Fixture conversation 1☆AA conversation 2Fixture conversation 2☆"
+                },
+                "initial_children": [
+                  {
+                    "identity": 2,
+                    "nodeType": 1,
+                    "name": "BUTTON",
+                    "id": null,
+                    "classes": "findPeople",
+                    "conversationId": null,
+                    "botId": null,
+                    "text": "Найти человека"
+                  },
+                  {
+                    "identity": 3,
+                    "nodeType": 1,
+                    "name": "BUTTON",
+                    "id": null,
+                    "classes": "savedConversation",
+                    "conversationId": null,
+                    "botId": null,
+                    "text": "ИзбранноеСообщения и материалы для себя"
+                  },
+                  {
+                    "identity": 4,
+                    "nodeType": 1,
+                    "name": "SECTION",
+                    "id": null,
+                    "classes": "chatCard",
+                    "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                    "botId": null,
+                    "text": "AA conversation 1Fixture conversation 1☆"
+                  },
+                  {
+                    "identity": 5,
+                    "nodeType": 1,
+                    "name": "SECTION",
+                    "id": null,
+                    "classes": "chatCard",
+                    "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
+                    "botId": null,
+                    "text": "AA conversation 2Fixture conversation 2☆"
+                  }
+                ],
+                "final_children": [
+                  {
+                    "identity": 2,
+                    "nodeType": 1,
+                    "name": "BUTTON",
+                    "id": null,
+                    "classes": "findPeople",
+                    "conversationId": null,
+                    "botId": null,
+                    "text": "Найти человека"
+                  },
+                  {
+                    "identity": 3,
+                    "nodeType": 1,
+                    "name": "BUTTON",
+                    "id": null,
+                    "classes": "savedConversation",
+                    "conversationId": null,
+                    "botId": null,
+                    "text": "ИзбранноеСообщения и материалы для себя"
+                  },
+                  {
+                    "identity": 4,
+                    "nodeType": 1,
+                    "name": "SECTION",
+                    "id": null,
+                    "classes": "chatCard",
+                    "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                    "botId": null,
+                    "text": "AA conversation 1Fixture conversation 1☆"
+                  },
+                  {
+                    "identity": 5,
+                    "nodeType": 1,
+                    "name": "SECTION",
+                    "id": null,
+                    "classes": "chatCard",
+                    "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
+                    "botId": null,
+                    "text": "AA conversation 2Fixture conversation 2☆"
+                  }
+                ],
+                "events": [],
+                "dropped_records": 0,
+                "baseline_response": {
+                  "method": "POST",
+                  "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                  "status": 200,
+                  "received_epoch_ms": 1789209154913.5762,
+                  "received_monotonic": 113.391051158,
+                  "body_capture": "PASS",
+                  "request_start_epoch_ms": 1789209154910.8438,
+                  "response_start_epoch_ms": 1789209154912.5938,
+                  "body_sha256": "d70c7627370a6b7c06c824e82b3813b4df8b37d5fad61edf5bafe31bb23099a7",
+                  "body_bytes": 306
+                },
+                "actual_responses": [
+                  {
+                    "method": "POST",
+                    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                    "status": 200,
+                    "received_epoch_ms": 1789209156097.875,
+                    "received_monotonic": 114.575349502,
+                    "body_capture": "PASS",
+                    "request_start_epoch_ms": 1789209156094.2112,
+                    "response_start_epoch_ms": 1789209156096.662,
+                    "body_sha256": "d70c7627370a6b7c06c824e82b3813b4df8b37d5fad61edf5bafe31bb23099a7",
+                    "body_bytes": 306
+                  },
+                  {
+                    "method": "POST",
+                    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                    "status": 200,
+                    "received_epoch_ms": 1789209157398.3684,
+                    "received_monotonic": 115.875842537,
+                    "body_capture": "PASS",
+                    "request_start_epoch_ms": 1789209157393.908,
+                    "response_start_epoch_ms": 1789209157396.824,
+                    "body_sha256": "d70c7627370a6b7c06c824e82b3813b4df8b37d5fad61edf5bafe31bb23099a7",
+                    "body_bytes": 306
+                  },
+                  {
+                    "method": "POST",
+                    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                    "status": 200,
+                    "received_epoch_ms": 1789209158698.118,
+                    "received_monotonic": 117.175592183,
+                    "body_capture": "PASS",
+                    "request_start_epoch_ms": 1789209158694.198,
+                    "response_start_epoch_ms": 1789209158696.707,
+                    "body_sha256": "d70c7627370a6b7c06c824e82b3813b4df8b37d5fad61edf5bafe31bb23099a7",
+                    "body_bytes": 306
+                  }
+                ],
+                "fixture_unchanged": true,
+                "boundary_calls": [
+                  {
+                    "host": "ctcoqgsztdtsazdiwcmd.supabase.co",
+                    "method": "POST",
+                    "path": "/rest/v1/rpc/my_conversations_v3",
+                    "uid": "11111111-1111-4111-8111-111111111111",
+                    "query": "",
+                    "at": 113.388893,
+                    "status": 200
+                  },
+                  {
+                    "host": "ctcoqgsztdtsazdiwcmd.supabase.co",
+                    "method": "POST",
+                    "path": "/rest/v1/rpc/my_conversations_v3",
+                    "uid": "11111111-1111-4111-8111-111111111111",
+                    "query": "",
+                    "at": 114.572807,
+                    "status": 200
+                  },
+                  {
+                    "host": "ctcoqgsztdtsazdiwcmd.supabase.co",
+                    "method": "POST",
+                    "path": "/rest/v1/rpc/my_conversations_v3",
+                    "uid": "11111111-1111-4111-8111-111111111111",
+                    "query": "",
+                    "at": 115.872615,
+                    "status": 200
+                  },
+                  {
+                    "host": "ctcoqgsztdtsazdiwcmd.supabase.co",
+                    "method": "POST",
+                    "path": "/rest/v1/rpc/my_conversations_v3",
+                    "uid": "11111111-1111-4111-8111-111111111111",
+                    "query": "",
+                    "at": 117.172745,
+                    "status": 200
+                  }
+                ]
+              }
+            },
+            "member": "browser/quiet/result.json",
+            "member_sha256": "8ada17a570c0203077dad4e8dd6839cc236e44801be150ae2fe4bcf5e8918a6b",
+            "log_sha256": "20f612181e0d73b813395429aa46d06c69dd34eba246c5dd778d8bf9b1245170",
+            "complete_evidence": true,
+            "all_five_gates": "PASS"
+          }
+        }
+      ]
+    },
+    {
+      "id": "PABLICUS-1C-SESSION-ROUTE",
+      "before_SHA": "9a60e778f7d51f79931b93ea886ad084846e572a",
+      "after_SHA": "1190098ee93abbc73997c5025bba25f18808e331",
+      "before_run": "34687667191",
+      "after_run": "34688000446",
+      "before_zip_sha256": "098319bccd5d188383d35f79327fdc3dde15527b25104e84c9de18a173c18472",
+      "after_zip_sha256": "a30a5619d8bfa1a42922c54fa1095ee48918d6b5c4157032f4555f8dca88e9b3",
+      "byte_identical_relevant_harness_files": [
+        "tests/engineering/block-01/integration_1c/boundary_selftests.py",
+        "tests/engineering/block-01/integration_1c/case.py",
+        "tests/engineering/block-01/integration_1c/collector.py",
+        "tests/engineering/block-01/integration_1c/diagnostics.py",
+        "tests/engineering/block-01/integration_1c/instrument.js",
+        "tests/engineering/block-01/integration_1c/mutation_runner.py",
+        "tests/engineering/block-01/integration_1c/network.py",
+        "tests/engineering/block-01/integration_1c/network_browser_selftest.py",
+        "tests/engineering/block-01/integration_1c/probe.py",
+        "tests/engineering/block-01/integration_1c/qualified_runner.py",
+        "tests/engineering/block-01/integration_1c/receiver_selftest.js",
+        "tests/engineering/block-01/integration_1c/runner.py",
+        "tests/engineering/block-01/integration_1c/scenario_canvas.py",
+        "tests/engineering/block-01/integration_1c/scenario_durability.py",
+        "tests/engineering/block-01/integration_1c/scenario_isolation.py",
+        "tests/engineering/block-01/integration_1c/scenario_lifecycle.py",
+        "tests/engineering/block-01/integration_1c/scenario_outbox.py",
+        "tests/engineering/block-01/integration_1c/scenario_pending_send.py",
+        "tests/engineering/block-01/integration_1c/scenario_quiet.py",
+        "tests/engineering/block-01/integration_1c/scenario_routes.py",
+        "tests/engineering/block-01/integration_1c/scenario_storage_errors.py",
+        "tests/engineering/block-01/integration_1c/selftests.py"
+      ],
+      "assertions": [
+        {
+          "id": "1C-ACCOUNT-SWITCH-HOME-ROUTE",
+          "before": {
+            "tested_sha": "9a60e778f7d51f79931b93ea886ad084846e572a",
+            "status": "FAIL",
+            "assertion": {
+              "name": "1C-ACCOUNT-SWITCH-HOME-ROUTE",
+              "status": "FAIL",
+              "actual": {
+                "state": {
+                  "route": {
+                    "section": "chats",
+                    "screen": "conversation",
+                    "resourceId": null,
+                    "conversationId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+                    "canvas": false,
+                    "generation": 3,
+                    "sessionGeneration": 2,
+                    "sessionUserId": "22222222-2222-4222-8222-222222222222"
+                  },
+                  "uid": "22222222-2222-4222-8222-222222222222",
+                  "current": null,
+                  "scope": {
+                    "user": "11111111-1111-4111-8111-111111111111",
+                    "chat": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"
+                  },
+                  "list": false,
+                  "ready": true,
+                  "vault": {
+                    "state": "saved",
+                    "error": null,
+                    "revision": 1,
+                    "restored_files": 0,
+                    "changes": 4,
+                    "failures": 0,
+                    "pending": false,
+                    "transaction_active": false,
+                    "storage": {
+                      "persistent": false,
+                      "quota": 951253604,
+                      "usage": 7536
+                    },
+                    "database_stats": {
+                      "commits": 1,
+                      "blob_puts": 1,
+                      "blob_deletes": 0,
+                      "aborts": 0,
+                      "conflicts": 0,
+                      "durability": "strict"
+                    },
+                    "reload_check": null,
+                    "audit": null,
+                    "events": [
+                      {
+                        "state": "empty",
+                        "error": null,
+                        "at": "2026-09-12T10:10:50.842Z"
+                      },
+                      {
+                        "state": "dirty",
+                        "error": null,
+                        "at": "2026-09-12T10:10:50.994Z"
+                      },
+                      {
+                        "state": "dirty",
+                        "error": null,
+                        "at": "2026-09-12T10:10:51.005Z"
+                      },
+                      {
+                        "state": "dirty",
+                        "error": null,
+                        "at": "2026-09-12T10:10:51.006Z"
+                      },
+                      {
+                        "state": "dirty",
+                        "error": null,
+                        "at": "2026-09-12T10:10:51.017Z"
+                      },
+                      {
+                        "state": "saving",
+                        "error": null,
+                        "at": "2026-09-12T10:10:51.268Z"
+                      },
+                      {
+                        "state": "saved",
+                        "error": null,
+                        "at": "2026-09-12T10:10:51.270Z"
+                      }
+                    ],
+                    "scope": "THIS_ORIGIN_THIS_BROWSER_ONLY",
+                    "background_save_guaranteed": false
+                  },
+                  "homeVisible": true,
+                  "appVisible": false,
+                  "canvasVisible": false,
+                  "selected": [
+                    "chats"
+                  ],
+                  "cards": [],
+                  "text": "Разговоров пока нет. Найдите человека по имени или откройте его ссылку профиля.",
+                  "toast": "Офлайн-режим не установлен. Онлайн-переписка доступна.",
+                  "actual_home_visible": true,
+                  "actual_app_visible": false
+                },
+                "completed_B_dialog_response": {
+                  "request": {
+                    "method": "POST",
+                    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                    "synthetic_auth_uid": "22222222-2222-4222-8222-222222222222"
+                  },
+                  "response": {
+                    "status": 200,
+                    "finished": true,
+                    "completion_observation": "Actual response body plus public Request.timing.responseEnd and Request.failure",
+                    "body_sha256": "1fdf4da5341260a1b4b4acf9fbace95ab2ad36babd01d0dcecf5d890c3d94ed9",
+                    "body_bytes": 153,
+                    "finish_error": null,
+                    "request_failure": null,
+                    "timing": {
+                      "startTime": 1789207851301.466,
+                      "domainLookupStart": -1,
+                      "domainLookupEnd": -1,
+                      "connectStart": -1,
+                      "secureConnectionStart": -1,
+                      "connectEnd": -1,
+                      "requestStart": -1,
+                      "responseStart": 2.137,
+                      "responseEnd": 3.255
+                    }
+                  }
+                },
+                "dialog_ids": [
+                  "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1"
+                ]
+              }
+            },
+            "member": "browser/isolation/result.json",
+            "member_sha256": "7858f32ce3770ad3066ec84aaa0f9cb730b9029a3d9f74fa629e5543b1c13aed",
+            "log_sha256": "2f00a6f4007b55d0ca909c94b83cb0a5944eb1ebf7b3a99f6563a18e766782e7",
+            "complete_evidence": true,
+            "all_five_gates": "PASS"
+          },
+          "after": {
+            "tested_sha": "1190098ee93abbc73997c5025bba25f18808e331",
+            "status": "PASS",
+            "assertion": {
+              "name": "1C-ACCOUNT-SWITCH-HOME-ROUTE",
+              "status": "PASS",
+              "actual": {
+                "state": {
+                  "route": {
+                    "section": "chats",
+                    "screen": "home",
+                    "resourceId": null,
+                    "conversationId": null,
+                    "canvas": false,
+                    "generation": 3,
+                    "sessionGeneration": 2,
+                    "sessionUserId": "22222222-2222-4222-8222-222222222222"
+                  },
+                  "uid": "22222222-2222-4222-8222-222222222222",
+                  "current": null,
+                  "scope": {
+                    "user": "11111111-1111-4111-8111-111111111111",
+                    "chat": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"
+                  },
+                  "list": false,
+                  "ready": true,
+                  "vault": {
+                    "state": "saved",
+                    "error": null,
+                    "revision": 1,
+                    "restored_files": 0,
+                    "changes": 4,
+                    "failures": 0,
+                    "pending": false,
+                    "transaction_active": false,
+                    "storage": {
+                      "persistent": false,
+                      "quota": 898681203,
+                      "usage": 7536
+                    },
+                    "database_stats": {
+                      "commits": 1,
+                      "blob_puts": 1,
+                      "blob_deletes": 0,
+                      "aborts": 0,
+                      "conflicts": 0,
+                      "durability": "strict"
+                    },
+                    "reload_check": null,
+                    "audit": null,
+                    "events": [
+                      {
+                        "state": "empty",
+                        "error": null,
+                        "at": "2026-09-12T10:18:28.583Z"
+                      },
+                      {
+                        "state": "dirty",
+                        "error": null,
+                        "at": "2026-09-12T10:18:28.743Z"
+                      },
+                      {
+                        "state": "dirty",
+                        "error": null,
+                        "at": "2026-09-12T10:18:28.753Z"
+                      },
+                      {
+                        "state": "dirty",
+                        "error": null,
+                        "at": "2026-09-12T10:18:28.754Z"
+                      },
+                      {
+                        "state": "dirty",
+                        "error": null,
+                        "at": "2026-09-12T10:18:28.765Z"
+                      },
+                      {
+                        "state": "saving",
+                        "error": null,
+                        "at": "2026-09-12T10:18:29.015Z"
+                      },
+                      {
+                        "state": "saved",
+                        "error": null,
+                        "at": "2026-09-12T10:18:29.017Z"
+                      }
+                    ],
+                    "scope": "THIS_ORIGIN_THIS_BROWSER_ONLY",
+                    "background_save_guaranteed": false
+                  },
+                  "homeVisible": true,
+                  "appVisible": false,
+                  "canvasVisible": false,
+                  "selected": [
+                    "chats"
+                  ],
+                  "cards": [
+                    "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1"
+                  ],
+                  "text": "B\nB conversation 1\nFixture conversation 1\n☆",
+                  "toast": "Офлайн-режим не установлен. Онлайн-переписка доступна.",
+                  "actual_home_visible": true,
+                  "actual_app_visible": false
+                },
+                "completed_B_dialog_response": {
+                  "request": {
+                    "method": "POST",
+                    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                    "synthetic_auth_uid": "22222222-2222-4222-8222-222222222222"
+                  },
+                  "response": {
+                    "status": 200,
+                    "finished": true,
+                    "completion_observation": "Actual response body plus public Request.timing.responseEnd and Request.failure",
+                    "body_sha256": "1fdf4da5341260a1b4b4acf9fbace95ab2ad36babd01d0dcecf5d890c3d94ed9",
+                    "body_bytes": 153,
+                    "finish_error": null,
+                    "request_failure": null,
+                    "timing": {
+                      "startTime": 1789208309044.636,
+                      "domainLookupStart": -1,
+                      "domainLookupEnd": -1,
+                      "connectStart": -1,
+                      "secureConnectionStart": -1,
+                      "connectEnd": -1,
+                      "requestStart": -1,
+                      "responseStart": 2.196,
+                      "responseEnd": 3.312
+                    }
+                  }
+                },
+                "dialog_ids": [
+                  "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1"
+                ]
+              }
+            },
+            "member": "browser/isolation/result.json",
+            "member_sha256": "6bc746bd92e37155768745117012db17769d79b987d9f67700c110df416151e7",
+            "log_sha256": "2b29959314ffe9eb1cff23e424a0a33a5110bfe93281883cd474cbea1e80f914",
+            "complete_evidence": true,
+            "all_five_gates": "PASS"
+          },
+          "final_candidate": {
+            "tested_sha": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+            "status": "PASS",
+            "assertion": {
+              "name": "1C-ACCOUNT-SWITCH-HOME-ROUTE",
+              "status": "PASS",
+              "actual": {
+                "state": {
+                  "route": {
+                    "section": "chats",
+                    "screen": "home",
+                    "resourceId": null,
+                    "conversationId": null,
+                    "canvas": false,
+                    "generation": 3,
+                    "sessionGeneration": 2,
+                    "sessionUserId": "22222222-2222-4222-8222-222222222222"
+                  },
+                  "uid": "22222222-2222-4222-8222-222222222222",
+                  "current": null,
+                  "scope": {
+                    "user": "11111111-1111-4111-8111-111111111111",
+                    "chat": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"
+                  },
+                  "list": false,
+                  "ready": true,
+                  "vault": {
+                    "state": "saved",
+                    "error": null,
+                    "revision": 1,
+                    "restored_files": 0,
+                    "changes": 4,
+                    "failures": 0,
+                    "pending": false,
+                    "transaction_active": false,
+                    "storage": {
+                      "persistent": false,
+                      "quota": 1016203132,
+                      "usage": 7536
+                    },
+                    "database_stats": {
+                      "commits": 1,
+                      "blob_puts": 1,
+                      "blob_deletes": 0,
+                      "aborts": 0,
+                      "conflicts": 0,
+                      "durability": "strict"
+                    },
+                    "reload_check": null,
+                    "audit": null,
+                    "events": [
+                      {
+                        "state": "empty",
+                        "error": null,
+                        "at": "2026-09-12T10:33:41.177Z"
+                      },
+                      {
+                        "state": "dirty",
+                        "error": null,
+                        "at": "2026-09-12T10:33:41.328Z"
+                      },
+                      {
+                        "state": "dirty",
+                        "error": null,
+                        "at": "2026-09-12T10:33:41.339Z"
+                      },
+                      {
+                        "state": "dirty",
+                        "error": null,
+                        "at": "2026-09-12T10:33:41.339Z"
+                      },
+                      {
+                        "state": "dirty",
+                        "error": null,
+                        "at": "2026-09-12T10:33:41.347Z"
+                      },
+                      {
+                        "state": "saving",
+                        "error": null,
+                        "at": "2026-09-12T10:33:41.598Z"
+                      },
+                      {
+                        "state": "saved",
+                        "error": null,
+                        "at": "2026-09-12T10:33:41.600Z"
+                      }
+                    ],
+                    "scope": "THIS_ORIGIN_THIS_BROWSER_ONLY",
+                    "background_save_guaranteed": false
+                  },
+                  "homeVisible": true,
+                  "appVisible": false,
+                  "canvasVisible": false,
+                  "selected": [
+                    "chats"
+                  ],
+                  "cards": [
+                    "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1"
+                  ],
+                  "text": "B\nB conversation 1\nFixture conversation 1\n☆",
+                  "toast": "Офлайн-режим не установлен. Онлайн-переписка доступна.",
+                  "actual_home_visible": true,
+                  "actual_app_visible": false
+                },
+                "completed_B_dialog_response": {
+                  "request": {
+                    "method": "POST",
+                    "url": "https://ctcoqgsztdtsazdiwcmd.supabase.co/rest/v1/rpc/my_conversations_v3",
+                    "synthetic_auth_uid": "22222222-2222-4222-8222-222222222222"
+                  },
+                  "response": {
+                    "status": 200,
+                    "finished": true,
+                    "completion_observation": "Actual response body plus public Request.timing.responseEnd and Request.failure",
+                    "body_sha256": "1fdf4da5341260a1b4b4acf9fbace95ab2ad36babd01d0dcecf5d890c3d94ed9",
+                    "body_bytes": 153,
+                    "finish_error": null,
+                    "request_failure": null,
+                    "timing": {
+                      "startTime": 1789209221638.0422,
+                      "domainLookupStart": -1,
+                      "domainLookupEnd": -1,
+                      "connectStart": -1,
+                      "secureConnectionStart": -1,
+                      "connectEnd": -1,
+                      "requestStart": -1,
+                      "responseStart": 1.719,
+                      "responseEnd": 2.571
+                    }
+                  }
+                },
+                "dialog_ids": [
+                  "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1"
+                ]
+              }
+            },
+            "member": "browser/isolation/result.json",
+            "member_sha256": "c8b0283461e7d6f61e412b995785d3d04420627f44007df7ba09ac28726d1946",
+            "log_sha256": "2b29959314ffe9eb1cff23e424a0a33a5110bfe93281883cd474cbea1e80f914",
+            "complete_evidence": true,
+            "all_five_gates": "PASS"
+          }
+        }
+      ]
+    }
+  ]
+}

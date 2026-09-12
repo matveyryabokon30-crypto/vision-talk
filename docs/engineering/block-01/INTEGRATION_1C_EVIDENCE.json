@@ -1,80 +1,376 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "2.0",
   "task_id": "PABLICUS-BLOCK01-1C-INTEGRATION-20260911",
-  "revision": "R1-DIAGNOSIS",
-  "status": "SUBSTEP_1C_BLOCKED",
-  "diagnosis_continuation_head": "c36e6c95e69f989a23711168fbb81e5e6f12efb5",
-  "executable_TESTED_SHA": "f00f253ca2adfe7afc07e64cc3a1dc8f53c5692d",
-  "original_latest_run": {
-    "run": 34634080287,
-    "job": 103377640278,
-    "artifact": 10277168648,
-    "browser": {"PASS":0,"FAIL":0,"ERROR":9,"TIMEOUT":0,"NOT_RUN":0},
-    "checks_reached": 0
+  "revision": "R2-EXECUTION-20260912",
+  "status": "SUBSTEP_1C_READY_FOR_INDEPENDENT_REVIEW",
+  "WORK_START_HEAD": "56a6ecf7b5ebdf0e8cc3529d4582707188124e29",
+  "CODE_SHA": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+  "TESTED_SHA": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+  "HANDOFF_HEAD": "RESOLVE_DOCUMENTATION_COMMIT_AFTER_CREATION",
+  "handoff_resolution": {
+    "meaning": "The documentation-only commit containing this R2 status record, directly after CODE_SHA. Its exact SHA is resolved after creation in the delivered handoff receipt; this file cannot embed its own commit hash.",
+    "resolve_command": "git log -1 --format=%H --grep='docs(1c): hand off verified integration candidate for independent review' 4b886c1477c44752359ccc4b44f8ff5c072bb241..refactor/pablicus-foundation-20260911",
+    "CODE_SHA_is_tested_source": true,
+    "documentation_commit_is_not_retested_code": true
   },
-  "source_findings": {
-    "instrument_git_blob": "c489098780ef7bfe7ee4fbbfbe58884000fdc128",
-    "case_git_blob": "34ea9cd69bf6efa3a79315fd4e02a4f0bea1251c",
-    "receiver_calls": [
-      "native.setTimeout(...)",
-      "native.clearTimeout(...)",
-      "native.setInterval(...)",
-      "native.clearInterval(...)",
-      "native.raf(...)",
-      "native.caf(...)"
-    ],
-    "review_vm_receiver_before": [true,true,true,true,true,true],
-    "review_vm_receiver_after": [false,false,false,false,false,false],
-    "early_static_chain": [
-      "index.html starts #legacyLogin hidden",
-      "local test origin does not match configured production publicPasskey origin, so correct app.js should set legacyLogin.hidden=false at app.js:275",
-      "app.js creates PablicusChatCanvas at app.js:108",
-      "PablicusChatCanvas.create() calls reset() before returning",
-      "reset() calls scope.clearTimeout(planCopyTimer) at chat-canvas.js:1140",
-      "instrumented window.clearTimeout forwards to native.clearTimeout(id), changing receiver",
-      "PablicusDebug is only assigned at app.js:609"
-    ],
-    "interpretation": "The chain is a strong root-cause candidate but not browser causality proof; the first page exception was not retained."
+  "artifact": {
+    "CODE_SHA": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+    "TESTED_SHA": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+    "run_id": 34688665398,
+    "job_id": 103540004753,
+    "run_status": "completed",
+    "run_conclusion": "success",
+    "job_conclusion": "success",
+    "run_attempt": 1,
+    "branch": "refactor/pablicus-foundation-20260911",
+    "run_created_at": "2026-09-12T10:31:19Z",
+    "run_updated_at": "2026-09-12T10:34:52Z",
+    "run_url": "https://github.com/matveyryabokon30-crypto/vision-talk/actions/runs/34688665398",
+    "artifact_id": 10297195136,
+    "artifact_name": "integration-1c-4b886c1477c44752359ccc4b44f8ff5c072bb241",
+    "artifact_url": "https://github.com/matveyryabokon30-crypto/vision-talk/actions/runs/34688665398/artifacts/10297195136",
+    "github_digest": "sha256:af0115ae7d0df2efbb1b910ef9d172b4e360bef936fdb9424444ec476950bcb8",
+    "zip_file": "integration-1c-4b886c-original.zip",
+    "zip_size_bytes": 2362292,
+    "zip_sha256": "af0115ae7d0df2efbb1b910ef9d172b4e360bef936fdb9424444ec476950bcb8",
+    "zip_crc": "PASS",
+    "original_zip_not_repacked": true,
+    "artifact_expires_at": "2026-09-26T10:34:49Z",
+    "job_decoded_log_sha256": "c2e5affe565d9f271cd6558aa8fb628814b950bd5e970777c56ee63cb73b4a82",
+    "job_log_note": "Decoded GitHub tool response saved as UTF-8 text with final newline. Original artifact process logs are independently hash-verified within ZIP.",
+    "foundation_run": 34688665370,
+    "foundation_job": 103540004648,
+    "foundation_conclusion": "success"
   },
-  "capture_findings": {
-    "case_finally_sequence": ["__integration.releaseWrite()","app.state()","__integration.snapshot()","screenshot","HTML"],
-    "recorded_capture_error": "ReferenceError: PablicusDebug is not defined",
-    "instrument_global_presence_inference": "releaseWrite precedes app.state and the recorded failure is app.state, so __integration was available at that point",
-    "screenshots_or_html_in_latest_nine": 0,
-    "outer_pageerror_listener_in_case": false,
-    "outer_pageerror_listener_in_probe": true
-  },
-  "network_findings": {
-    "get_message_actions_existing_in_LocalBoundary": true,
-    "prior_probe_actual_call": {
-      "method": "POST",
-      "path": "/rest/v1/rpc/get_message_actions",
-      "uid": "11111111-1111-4111-8111-111111111111",
-      "status": 501
+  "primary_evidence": "INTEGRATION_1C_PRIMARY_EVIDENCE_R2.json",
+  "primary_evidence_sha256": "5ff42d1cdf2e996f7d1327d72d6533ba793da2b926d87cbef85964e605065428",
+  "requirements_1_7": {
+    "1": {
+      "status": "PASS",
+      "requirement": "Real modules, routes and visible resources",
+      "cases": [
+        "routes"
+      ],
+      "evidence_members": [
+        "browser/routes/result.json"
+      ]
     },
-    "special_route_issues": [
-      "suffix-only match",
-      "no explicit host check",
-      "no explicit method check",
-      "auth/context bypass before base handler",
-      "not added to Boundary.calls",
-      "factory_list_projects ignores offline"
-    ],
-    "unknown_requests_remain_required_to_fail": true
+    "2": {
+      "status": "PASS",
+      "requirement": "54 completed transitions; no measured resource accumulation or unchanged-list rerender",
+      "cases": [
+        "lifecycle",
+        "quiet"
+      ],
+      "evidence_members": [
+        "browser/lifecycle/result.json",
+        "browser/quiet/result.json"
+      ]
+    },
+    "3": {
+      "status": "PASS",
+      "requirement": "Draft text, order, stable IDs and original Blob bytes across close/open, reload and Canvas deny/accept",
+      "cases": [
+        "durability",
+        "canvas"
+      ],
+      "evidence_members": [
+        "browser/durability/result.json",
+        "browser/canvas/result.json"
+      ]
+    },
+    "4": {
+      "status": "PASS",
+      "requirement": "Durable outbox offline/reload/lost ACK/retry/idempotency and visible explicit failure",
+      "cases": [
+        "outbox"
+      ],
+      "evidence_members": [
+        "browser/outbox/result.json"
+      ]
+    },
+    "5": {
+      "status": "PASS",
+      "requirement": "A to B to A, late read/write/send, draft/files/outbox/selection and same-user refresh",
+      "cases": [
+        "isolation",
+        "pending-send"
+      ],
+      "evidence_members": [
+        "browser/isolation/result.json",
+        "browser/pending-send/result.json"
+      ]
+    },
+    "6": {
+      "status": "PASS",
+      "requirement": "Native storage write/enqueue/load failures and recovery",
+      "cases": [
+        "storage-errors"
+      ],
+      "evidence_members": [
+        "browser/storage-errors/result.json"
+      ]
+    },
+    "7": {
+      "status": "PASS",
+      "requirement": "Positive baseline plus concrete isolated negative controls",
+      "cases": [
+        "routes",
+        "quiet",
+        "lifecycle",
+        "durability",
+        "canvas",
+        "outbox",
+        "isolation",
+        "pending-send",
+        "storage-errors"
+      ],
+      "evidence_members": [
+        "browser/routes/result.json",
+        "browser/quiet/result.json",
+        "browser/lifecycle/result.json",
+        "browser/durability/result.json",
+        "browser/canvas/result.json",
+        "browser/outbox/result.json",
+        "browser/isolation/result.json",
+        "browser/pending-send/result.json",
+        "browser/storage-errors/result.json"
+      ],
+      "negative_controls_member": "negative-controls/results.json"
+    }
   },
-  "safety_gate": {
-    "status": "NOT_RESOLVED",
-    "response": "Этот вызов инструмента был заблокирован OpenAI, поскольку мы не смогли определить статус безопасности запроса.",
-    "exact_timestamp": "NOT_AVAILABLE",
-    "upper_bound": "2026-09-11T18:43:20Z",
-    "timezone": "UTC",
-    "request_id": "NOT_AVAILABLE",
-    "tool_version": "NOT_AVAILABLE",
-    "http_status": "NOT_AVAILABLE",
-    "repeat_or_bypass": false,
-    "support_sent": false
+  "cases": {
+    "routes": {
+      "status": "PASS",
+      "assertions": 14,
+      "result_member": "browser/routes/result.json",
+      "result_sha256": "ecc5147f70503c4d3c33c61cb6ab80ce847c657052c61a0a7c5f66ad9f9323ff",
+      "log_member": "browser/routes/process.log",
+      "log_sha256": "f4e48ee8a94928af15bd8e4b06f4597afa8ebbe4e5510743ce77460b5a0cfd42"
+    },
+    "quiet": {
+      "status": "PASS",
+      "assertions": 5,
+      "result_member": "browser/quiet/result.json",
+      "result_sha256": "8ada17a570c0203077dad4e8dd6839cc236e44801be150ae2fe4bcf5e8918a6b",
+      "log_member": "browser/quiet/process.log",
+      "log_sha256": "20f612181e0d73b813395429aa46d06c69dd34eba246c5dd778d8bf9b1245170"
+    },
+    "lifecycle": {
+      "status": "PASS",
+      "assertions": 76,
+      "result_member": "browser/lifecycle/result.json",
+      "result_sha256": "82ad4c1954d7530d173319ee2678bf8d580c70ac60204ade411e6fe3a5cd2cdd",
+      "log_member": "browser/lifecycle/process.log",
+      "log_sha256": "8fe264d5422d1de3e829bf60bdca546cb891dc0286f76af7788298a3f671fca2"
+    },
+    "durability": {
+      "status": "PASS",
+      "assertions": 7,
+      "result_member": "browser/durability/result.json",
+      "result_sha256": "254f7c885d5ccacf12d8d5fad551c8f3b6376a7990cbb3398c9ad27df221219f",
+      "log_member": "browser/durability/process.log",
+      "log_sha256": "4fa88ed93d751b3724b9ad9d47357410fad4ed0ef8044a135d9a8e85fd7cbda1"
+    },
+    "canvas": {
+      "status": "PASS",
+      "assertions": 7,
+      "result_member": "browser/canvas/result.json",
+      "result_sha256": "c5c1f8b7cfdd671640687fd993c26fa9f15744de6bc736878d6d0e9f727c56e7",
+      "log_member": "browser/canvas/process.log",
+      "log_sha256": "c9fc77b6741f9cea82d4b045030a80a8523ed15c2d63058d6aeba887cb283861"
+    },
+    "outbox": {
+      "status": "PASS",
+      "assertions": 10,
+      "result_member": "browser/outbox/result.json",
+      "result_sha256": "6188f882d40def105f74376f9457db2b1205f06656fa45b66497cddbdc982827",
+      "log_member": "browser/outbox/process.log",
+      "log_sha256": "8581b1fd456f86a8391b85d45cfb13e3190fe5c3e87c0a89369cfb8c78fd86f2"
+    },
+    "isolation": {
+      "status": "PASS",
+      "assertions": 11,
+      "result_member": "browser/isolation/result.json",
+      "result_sha256": "c8b0283461e7d6f61e412b995785d3d04420627f44007df7ba09ac28726d1946",
+      "log_member": "browser/isolation/process.log",
+      "log_sha256": "2b29959314ffe9eb1cff23e424a0a33a5110bfe93281883cd474cbea1e80f914"
+    },
+    "pending-send": {
+      "status": "PASS",
+      "assertions": 7,
+      "result_member": "browser/pending-send/result.json",
+      "result_sha256": "4180b2a3d1845cc8f36885c707f42339828e1f65f213b86fe138dff2faec5475",
+      "log_member": "browser/pending-send/process.log",
+      "log_sha256": "f5daa31df6a23370783f9886260521558100e50c14b2bef67a9fbb5d5590ba81"
+    },
+    "storage-errors": {
+      "status": "PASS",
+      "assertions": 8,
+      "result_member": "browser/storage-errors/result.json",
+      "result_sha256": "26202fc06fefcfbbf7f2a5ea3ee3b7f919a19997081b88a0dc2a6533108b20da",
+      "log_member": "browser/storage-errors/process.log",
+      "log_sha256": "f784b94afd994c335eb73fdfe008dced22f3924de37cd7340c43331dbbaca498"
+    }
   },
-  "new_executable_runs_in_R1_diagnosis": 0,
-  "application_changes_in_R1_diagnosis": [],
-  "remaining_requirements": [1,2,3,4,5,6,7]
+  "artifact_verification": "INTEGRATION_1C_ARTIFACT_VERIFICATION_R2.json",
+  "verification_sha256": "0431d96c0638e5f69afa0be539d9abd0f862304a5770e491324d7302cbb06bf1",
+  "independent_assistant_audit": "INTEGRATION_1C_AUDIT_R2.json",
+  "independent_audit_sha256": "3f2146caea4fe6d4cf0cf7971933db9697d79de0e6ff6dbae35667e9439dcfba",
+  "product_defect_before_after": "INTEGRATION_1C_PRODUCT_PROOF_R2.json",
+  "product_proof_sha256": "2e3d50926c8cf04bc4834f01936a4968aebb2c65723b8a58ab254e335948420e",
+  "first_B0_pageerror": {
+    "at": "2026-09-12T10:32:13.438287+00:00",
+    "name": "TypeError",
+    "message": "Illegal invocation",
+    "stack": "TypeError: Illegal invocation\n    at window.clearTimeout (<anonymous>:35:67)\n    at stopRequests (http://127.0.0.1:32943/pablicus/chat-canvas.js:1064:13)\n    at close (http://127.0.0.1:32943/pablicus/chat-canvas.js:1119:7)\n    at reset (http://127.0.0.1:32943/pablicus/chat-canvas.js:1122:7)\n    at Object.create (http://127.0.0.1:32943/pablicus/chat-canvas.js:1229:5)\n    at http://127.0.0.1:32943/pablicus/app.js:108:38\n    at http://127.0.0.1:32943/pablicus/app.js:610:3",
+    "location": {
+      "url": "http://127.0.0.1:32943/pablicus/chat-canvas.js",
+      "line": 1064,
+      "column": 13
+    }
+  },
+  "selftests": {
+    "INSTRUMENT-NATIVE-RECEIVER-01": {
+      "status": "PASS",
+      "checks": 52,
+      "inner_exit_code": null
+    },
+    "COLLECTOR-EARLY-ERROR-01": {
+      "status": "PASS",
+      "checks": 12,
+      "inner_exit_code": 1
+    }
+  },
+  "safety_write": {
+    "current_environment_status": "CURRENT_ENV_NORMAL_SOURCE_WRITE_SUCCEEDED",
+    "current_refusals": 0,
+    "first_action": "mcp__codex_apps__github_create_tree",
+    "first_write_start_utc": "2026-09-12T08:31:51Z",
+    "first_write_end_utc": "2026-09-12T08:31:57Z",
+    "first_returned_tree_sha": "b202d0666ae8e2ea9ef0352cfb1f0819121f334d",
+    "support_status": "SENT_AND_ESCALATED",
+    "specialist_review": "PENDING_LAST_CANONICAL_RECORD",
+    "historical_gate_status": "NOT_RESOLVED",
+    "new_support_contact": false,
+    "bypass": false,
+    "interpretation": "Ordinary current-environment source writes actually succeeded. No new support decision or retroactive historical clearance is asserted."
+  },
+  "session_history": "INTEGRATION_1C_SESSION_HISTORY_R2.json",
+  "remaining_requirements": [],
+  "acceptance_status": "NOT_ASSIGNED",
+  "historical_R1_evidence": {
+    "schema_version": "1.1",
+    "task_id": "PABLICUS-BLOCK01-1C-INTEGRATION-20260911",
+    "revision": "R1-DIAGNOSIS",
+    "status": "SUBSTEP_1C_BLOCKED",
+    "diagnosis_continuation_head": "c36e6c95e69f989a23711168fbb81e5e6f12efb5",
+    "executable_TESTED_SHA": "f00f253ca2adfe7afc07e64cc3a1dc8f53c5692d",
+    "original_latest_run": {
+      "run": 34634080287,
+      "job": 103377640278,
+      "artifact": 10277168648,
+      "browser": {
+        "PASS": 0,
+        "FAIL": 0,
+        "ERROR": 9,
+        "TIMEOUT": 0,
+        "NOT_RUN": 0
+      },
+      "checks_reached": 0
+    },
+    "source_findings": {
+      "instrument_git_blob": "c489098780ef7bfe7ee4fbbfbe58884000fdc128",
+      "case_git_blob": "34ea9cd69bf6efa3a79315fd4e02a4f0bea1251c",
+      "receiver_calls": [
+        "native.setTimeout(...)",
+        "native.clearTimeout(...)",
+        "native.setInterval(...)",
+        "native.clearInterval(...)",
+        "native.raf(...)",
+        "native.caf(...)"
+      ],
+      "review_vm_receiver_before": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "review_vm_receiver_after": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "early_static_chain": [
+        "index.html starts #legacyLogin hidden",
+        "local test origin does not match configured production publicPasskey origin, so correct app.js should set legacyLogin.hidden=false at app.js:275",
+        "app.js creates PablicusChatCanvas at app.js:108",
+        "PablicusChatCanvas.create() calls reset() before returning",
+        "reset() calls scope.clearTimeout(planCopyTimer) at chat-canvas.js:1140",
+        "instrumented window.clearTimeout forwards to native.clearTimeout(id), changing receiver",
+        "PablicusDebug is only assigned at app.js:609"
+      ],
+      "interpretation": "The chain is a strong root-cause candidate but not browser causality proof; the first page exception was not retained."
+    },
+    "capture_findings": {
+      "case_finally_sequence": [
+        "__integration.releaseWrite()",
+        "app.state()",
+        "__integration.snapshot()",
+        "screenshot",
+        "HTML"
+      ],
+      "recorded_capture_error": "ReferenceError: PablicusDebug is not defined",
+      "instrument_global_presence_inference": "releaseWrite precedes app.state and the recorded failure is app.state, so __integration was available at that point",
+      "screenshots_or_html_in_latest_nine": 0,
+      "outer_pageerror_listener_in_case": false,
+      "outer_pageerror_listener_in_probe": true
+    },
+    "network_findings": {
+      "get_message_actions_existing_in_LocalBoundary": true,
+      "prior_probe_actual_call": {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_message_actions",
+        "uid": "11111111-1111-4111-8111-111111111111",
+        "status": 501
+      },
+      "special_route_issues": [
+        "suffix-only match",
+        "no explicit host check",
+        "no explicit method check",
+        "auth/context bypass before base handler",
+        "not added to Boundary.calls",
+        "factory_list_projects ignores offline"
+      ],
+      "unknown_requests_remain_required_to_fail": true
+    },
+    "safety_gate": {
+      "status": "NOT_RESOLVED",
+      "response": "Этот вызов инструмента был заблокирован OpenAI, поскольку мы не смогли определить статус безопасности запроса.",
+      "exact_timestamp": "NOT_AVAILABLE",
+      "upper_bound": "2026-09-11T18:43:20Z",
+      "timezone": "UTC",
+      "request_id": "NOT_AVAILABLE",
+      "tool_version": "NOT_AVAILABLE",
+      "http_status": "NOT_AVAILABLE",
+      "repeat_or_bypass": false,
+      "support_sent": false
+    },
+    "new_executable_runs_in_R1_diagnosis": 0,
+    "application_changes_in_R1_diagnosis": [],
+    "remaining_requirements": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ]
+  }
 }

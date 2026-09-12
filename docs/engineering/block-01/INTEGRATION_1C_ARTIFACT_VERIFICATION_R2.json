@@ -1,0 +1,248 @@
+{
+  "status": "PASS",
+  "verification": "ORIGINAL_CI_ARTIFACT_OFFLINE_INTEGRITY",
+  "expected_sha": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+  "original_zip": "integration-1c-4b886c-original.zip",
+  "github_digest_supplied": "sha256:af0115ae7d0df2efbb1b910ef9d172b4e360bef936fdb9424444ec476950bcb8",
+  "started_at": "2026-09-12T10:36:50.440724+00:00",
+  "sections": {
+    "github_digest": {
+      "status": "PASS",
+      "details": null
+    },
+    "zip_crc": {
+      "status": "PASS",
+      "details": null
+    },
+    "source_provenance": {
+      "status": "PASS",
+      "details": {
+        "files": 166,
+        "runtime_harness_files": 110,
+        "CAPTURE_SHA": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+        "WORK_START_HEAD": "56a6ecf7b5ebdf0e8cc3529d4582707188124e29",
+        "run_id": "34688665398",
+        "run_attempt": "1",
+        "python": "3.12.7",
+        "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+        "node": "v22.23.2",
+        "playwright_declared_pin": "1.57.0"
+      }
+    },
+    "evidence_hash_manifests": {
+      "status": "PASS",
+      "details": {
+        "manifests_verified": [
+          "browser/gates/selftests/results.json",
+          "browser/results.json",
+          "negative-controls/MUTATION_A_RESOURCE_LEAK/qualification.json",
+          "negative-controls/MUTATION_B_LATE_ACCOUNT/qualification.json",
+          "negative-controls/MUTATION_C_BYTE_OR_ORDER/qualification.json",
+          "negative-controls/MUTATION_D_ROUTE_RESOURCE/qualification.json",
+          "negative-controls/results.json"
+        ]
+      }
+    },
+    "process_log_errors": {
+      "status": "PASS",
+      "details": {
+        "logs_checked": 57,
+        "runtime_warning_or_unawaited_coroutine": 0
+      }
+    },
+    "boundary_contract_selftests": {
+      "status": "PASS",
+      "details": {
+        "checks": 100,
+        "behavioral_product_credit": 0
+      }
+    },
+    "native_network_browser": {
+      "status": "PASS",
+      "details": {
+        "status": "PASS",
+        "checks": 34,
+        "native_callbacks": 11,
+        "isolated_connections": 5,
+        "python_warnings": 0,
+        "loop_errors": 0,
+        "reported_playwright_version": "1.57.0"
+      }
+    },
+    "receiver_collector_selftests": {
+      "status": "PASS",
+      "details": {
+        "receiver": "PASS",
+        "collector_outer": "PASS",
+        "collector_inner": "ERROR",
+        "collector_inner_exit": 1,
+        "product_credit": 0
+      }
+    },
+    "ab_browser": {
+      "status": "PASS",
+      "details": {
+        "variants": {
+          "A": "PASS",
+          "B0": "ERROR",
+          "B1": "PASS"
+        },
+        "hypothesis": "H1_REPRODUCED_IN_CURRENT_EXPERIMENT"
+      }
+    },
+    "preflight": {
+      "status": "PASS",
+      "details": {
+        "variants": {
+          "B1": "PASS"
+        },
+        "hypothesis": null
+      }
+    },
+    "positive_nine_case_matrix": {
+      "status": "PASS",
+      "details": {
+        "counts": {
+          "PASS": 9,
+          "FAIL": 0,
+          "ERROR": 0,
+          "TIMEOUT": 0,
+          "NOT_RUN": 0,
+          "BLOCKED": 0
+        },
+        "gates": 5,
+        "behavioral_checks": {
+          "routes": 14,
+          "quiet": 5,
+          "lifecycle": 76,
+          "durability": 7,
+          "canvas": 7,
+          "outbox": 10,
+          "isolation": 11,
+          "pending-send": 7,
+          "storage-errors": 8
+        }
+      }
+    },
+    "completed_transitions_resources": {
+      "status": "PASS",
+      "details": {
+        "completed_transitions": 54,
+        "cycles": 6,
+        "all_resource_source_types_compared": [
+          "listeners",
+          "listener_sources",
+          "detached_listeners",
+          "observers",
+          "observer_sources",
+          "controller",
+          "channels",
+          "timers",
+          "timer_sources",
+          "frames",
+          "media"
+        ]
+      }
+    },
+    "negative_controls": {
+      "status": "PASS",
+      "details": {
+        "MUTATION_A_RESOURCE_LEAK": {
+          "outer": "PASS",
+          "inner": "FAIL",
+          "assertion": "1C-NO-RESOURCE-ACCUMULATION",
+          "exit_code": 1,
+          "candidate_unchanged": true
+        },
+        "MUTATION_B_LATE_ACCOUNT": {
+          "outer": "PASS",
+          "inner": "FAIL",
+          "assertion": "1C-LATE-ACCOUNT-ISOLATION",
+          "exit_code": 1,
+          "candidate_unchanged": true
+        },
+        "MUTATION_C_BYTE_OR_ORDER": {
+          "outer": "PASS",
+          "inner": "FAIL",
+          "assertion": "1C-DRAFT-BYTES",
+          "exit_code": 1,
+          "candidate_unchanged": true
+        },
+        "MUTATION_D_ROUTE_RESOURCE": {
+          "outer": "PASS",
+          "inner": "FAIL",
+          "assertion": "1C-SCENARIO-SURVIVES-POLL",
+          "exit_code": 1,
+          "candidate_unchanged": true
+        }
+      }
+    },
+    "accepted_1b_regressions": {
+      "status": "PASS",
+      "details": {
+        "PASS": 31,
+        "FAIL": 0,
+        "ERROR": 0,
+        "TIMEOUT": 0,
+        "source_span_hashes_verified": 283,
+        "intentional_timeout_probe": "TIMEOUT",
+        "probe_parent_and_child_stopped": true,
+        "normal_case_cleanup_evidence": "Runner finally kills process group; only timeout probe retains a post-cleanup PID check."
+      }
+    },
+    "environment_execution_order": {
+      "status": "PASS",
+      "details": {
+        "browser_version": "143.0.7499.4",
+        "gates_in_required_order": true,
+        "preflight_before_scenarios": true,
+        "positive_baseline_before_mutations": true,
+        "no_extraction_or_archived_code_execution": true
+      }
+    },
+    "final_ci_job_process_cleanup": {
+      "status": "PASS",
+      "details": {
+        "status": "PASS",
+        "remaining_active_processes": 0,
+        "observed_zombies": 0,
+        "time_utc": "2026-09-12T10:34:48.901131+00:00",
+        "sha256": "b034205fa6caf3385c6857e5fc0c2bc1f72872c50f9b5a8321fca3ae5586c1b0"
+      }
+    }
+  },
+  "acceptance_status": "NOT_ASSIGNED",
+  "external_checks_required": [
+    "GitHub run and job completed successfully on expected SHA/branch.",
+    "Supplied digest belongs to this original artifact ID/run, downloaded without repacking."
+  ],
+  "limitations": [
+    "Offline bytes cannot independently prove GitHub API authenticity or historical live process state.",
+    "Captured source hashes bind evidence bytes; a Git commit tree comparison requires separately trusted repository/API data.",
+    "Playwright reported version and workflow pin are checked; package binary hashes are not recorded.",
+    "Raw assertions and retained observations are checked; browser behavior is not re-executed.",
+    "Recorded synthetic network/storage scope does not qualify production services or Service Worker behavior."
+  ],
+  "zip_sha256": "af0115ae7d0df2efbb1b910ef9d172b4e360bef936fdb9424444ec476950bcb8",
+  "zip_size_bytes": 2362292,
+  "archive_root_prefix": "",
+  "archive_file_count": 344,
+  "hash_reference_checks": 364,
+  "distinct_files_sha256_checked": 170,
+  "evidence_limits": [
+    "Initial snapshot chronology uses UTC around the real index response and captured awaited source order; stages use a separate monotonic clock and are not cross-converted."
+  ],
+  "root_file_sha256": {
+    "BOUNDARY.txt": "a1c6d4f72e1541f65083452dab8c4c27b64f04c66c186432c77f6f94a56f8ce4",
+    "PROCESS_CLEANUP.json": "b034205fa6caf3385c6857e5fc0c2bc1f72872c50f9b5a8321fca3ae5586c1b0",
+    "SOURCE_MANIFEST.json": "036d684548f9936ee6068f5042c90517ad07447a471e8a14098b8649b7249771",
+    "browser.log": "7f4b640481ae592a46174bc83d96c908d46ad0a37062419b53dba280dbc4b9f8",
+    "negative-controls.log": "c8e7acc40dac74ad6086e6a9b855cfbae4d17fdd18be165100819cc2713935a0",
+    "regression-1b.environment.json": "4d4e62d3b9c64786b5c31fbf016d7e77e32bd9ad3ea25210e47da40d6b862837",
+    "regression-1b.json": "ec6ab2d3e464304b3d0ec5c35f4e7c161226aa34b062f0e1c62eaf8b8e0bfc50"
+  },
+  "ended_at": "2026-09-12T10:36:51.535879+00:00",
+  "section_totals": {
+    "PASS": 16
+  }
+}
