@@ -4,12 +4,18 @@
   "figma-sds_files_verified": 9,
   "video_verified": true,
   "source_references": 22,
-  "plan_word_count": 4031,
+  "plan_word_count": 4065,
   "pdf_pages": 10,
-  "pdf_sha256": "7125b68b96d2b69f051cd887653fd574144d7f7c4545c5066a6d0fba90a9d159",
-  "pdf_visual_review": "All first-render pages inspected; revised final page inspected; no clipping or missing text observed. Last-page orphan removed.",
+  "pdf_sha256": "88670ba73e634faeda42d1e995b45cefd42de10834d0eaf08f869f49136d5d43",
+  "pdf_visual_review": "All 10 final revised pages rendered and visually inspected; no clipping or missing text observed; numbered pages and complete sources verified.",
   "runtime_unchanged": true,
   "status": "PASS",
   "errors": [],
-  "auth_implementation": "IN_PROGRESS; not covered by research-document verification"
+  "auth_implementation": "EXISTING_IMPLEMENTATION_CONFIRMED; owner clarification; real new signup probe passed; no runtime changes",
+  "auth_evidence": "AUTH_EXISTING_SIGNUP_VERIFICATION.json",
+  "limitations": [
+    "Full historical chat not recovered without omissions; missing sources documented",
+    "Exact editable uiux.build kit not identified",
+    "Physical phone cache and multi-device/full security audit not verified"
+  ]
 }

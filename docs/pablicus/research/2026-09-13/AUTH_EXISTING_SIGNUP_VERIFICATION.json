@@ -1,0 +1,71 @@
+{
+  "test": "real production signup with Chrome virtual WebAuthn authenticator",
+  "physicalDevice": false,
+  "started": "2026-09-12T21:59:37.691Z",
+  "browser": "153.0.8010.36",
+  "checks": [
+    {
+      "stage": "before",
+      "path": "/vision-talk/pablicus/",
+      "visibleText": "Чат\nВход в Pablicus\nВойти с ключом доступа\n\nПодтвердите вход через Face ID, отпечаток или код устройства.\n\nПри первом входе укажите имя и создайте ключ доступа.\n\nДобавить на iPhone\n\n0.1.0-rc5"
+    },
+    {
+      "stage": "registration page",
+      "path": "/vision-talk/pablicus/passkey-start.html",
+      "createEnabled": true
+    },
+    {
+      "stage": "returned",
+      "path": "/vision-talk/pablicus/",
+      "visibleText": "◈\nЧаты\nВсе\nФокус\n\nРазговоров пока нет. Найдите человека по имени или откройте его ссылку профиля.\n\nЧаты\nДела\nВы"
+    }
+  ],
+  "responses": [
+    {
+      "path": "/auth/v1/authorize",
+      "status": 302
+    },
+    {
+      "path": "/functions/v1/pablicus-passkey/authorize",
+      "status": 303
+    },
+    {
+      "path": "/functions/v1/pablicus-passkey/registration/options",
+      "status": 200
+    },
+    {
+      "path": "/functions/v1/pablicus-passkey/registration/verify",
+      "status": 200
+    },
+    {
+      "path": "/auth/v1/callback",
+      "status": 302
+    },
+    {
+      "path": "/auth/v1/token",
+      "status": 200
+    },
+    {
+      "path": "/auth/v1/user",
+      "status": 200
+    },
+    {
+      "path": "/rest/v1/profiles",
+      "status": 200
+    },
+    {
+      "path": "/rest/v1/rpc/my_conversations_v3",
+      "status": 200
+    }
+  ],
+  "status": "SESSION_CREATED",
+  "virtualCredentialsCreated": 1,
+  "server_profile_check": {
+    "is_approved": true,
+    "passkey_activation_pending": false,
+    "identities": 1,
+    "linked_subjects": 1
+  },
+  "owner_confirmation": "Existing key and Face ID login on the owner phone",
+  "runtime_changes": false
+}

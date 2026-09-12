@@ -26,7 +26,7 @@ styles = {
     'title': ParagraphStyle('title', fontName='BodyBold', fontSize=20, leading=25, spaceAfter=17, keepWithNext=True),
     'h2': ParagraphStyle('h2', fontName='BodyBold', fontSize=13, leading=17, spaceBefore=12, spaceAfter=8, keepWithNext=True),
     'cell': ParagraphStyle('cell', fontName='Body', fontSize=8.5, leading=11.5, splitLongWords=True),
-    'note': ParagraphStyle('note', fontName='Body', fontSize=8.2, leading=11, spaceAfter=4, splitLongWords=True),
+    'note': ParagraphStyle('note', fontName='Body', fontSize=8.2, leading=10, spaceAfter=3, splitLongWords=True),
 }
 
 def inline(s):
@@ -79,5 +79,12 @@ while i < len(lines):
     i += 1
 flush()
 doc=SimpleDocTemplate(str(OUT),pagesize=(595.28,841.89),leftMargin=40,rightMargin=40,topMargin=38,bottomMargin=38,title='Пабликус: план развития действующего приложения',author='')
-doc.build(story)
+def page_footer(canvas, document):
+    canvas.saveState()
+    canvas.setFont('Body', 8)
+    canvas.setFillColor(colors.HexColor('#666666'))
+    canvas.drawRightString(555, 20, str(document.page))
+    canvas.restoreState()
+
+doc.build(story, onFirstPage=page_footer, onLaterPages=page_footer)
 print(OUT)
