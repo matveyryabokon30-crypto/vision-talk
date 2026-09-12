@@ -1,0 +1,70 @@
+"""2B existing controls/overlays, real entrypoint, synthetic 1C network boundary.
+Same file runs against WORK_START and candidate; behavior FAIL differs from ERROR.
+"""
+from __future__ import annotations
+import argparse,asyncio,functools,hashlib,http.server,json,os,platform,sys,threading,traceback
+from pathlib import Path
+from shell_probe import Boundary,A,C1,Server,write,BrowserCollector,utc_now
+from playwright.async_api import async_playwright
+FLAGS=['--disable-dev-shm-usage','--disable-background-networking','--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1']
+KEYBOARD="""{const native=visualViewport;window.__keyboard={height:null,top:0};if(native)Object.defineProperty(window,'visualViewport',{configurable:true,value:new Proxy(native,{get(target,key){if(key==='height'&&__keyboard.height!==null)return __keyboard.height;if((key==='offsetTop'||key==='pageTop')&&__keyboard.height!==null)return __keyboard.top;const v=Reflect.get(target,key,target);return typeof v==='function'?v.bind(target):v;}})});} """
+SNAP="""async()=>{const c=PablicusChat.rich.capture();return{text:c.text,blocks:c.blocks,files:await Promise.all(c.files.map(async f=>({id:f.id,name:f.name,type:f.type,size:f.size,sha256:[...new Uint8Array(await crypto.subtle.digest('SHA-256',await f.file.arrayBuffer()))].map(x=>x.toString(16).padStart(2,'0')).join('')})))}}"""
+async def probe(browser,origin,out,width,height):
+ out.mkdir(parents=True,exist_ok=True);r={'status':'RUNNING','checks':[],'viewport':{'width':width,'height':height},'start':utc_now()}
+ n=Boundary(origin);ctx=await browser.new_context(viewport=r['viewport'],service_workers='block',has_touch=True);await ctx.add_init_script(KEYBOARD);await ctx.route('**/*',n.handle);await ctx.route_web_socket('**/*',n.websocket)
+ p=await ctx.new_page();p.set_default_timeout(10000);await n.attach_page(p);collector=BrowserCollector(p,n,out)
+ def check(id,name,ok,actual):r['checks'].append({'id':id,'name':name,'status':'PASS' if ok else 'FAIL','actual':actual});write(out/'result.json',r)
+ async def frames():await p.evaluate('()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))')
+ async def geometry(name,selectors):
+  await frames();v=await p.evaluate("""sels=>sels.map(sel=>{const n=document.querySelector(sel);if(!n)return{sel,missing:true};const r=n.getBoundingClientRect(),s=getComputedStyle(n);return{sel,x:r.x,y:r.y,right:r.right,bottom:r.bottom,width:r.width,height:r.height,visible:!!n.getClientRects().length&&s.visibility!=='hidden',hit:n.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)),overflow:s.overflowY,client:n.clientHeight,scroll:n.scrollHeight}})""",selectors);vh=await p.evaluate('visualViewport.height');top=await p.evaluate('visualViewport.offsetTop');check('2B-T05',name,all(not x.get('missing') and x['visible'] and x['x']>=-1 and x['right']<=width+1 and x['y']>=top-1 and x['bottom']<=top+vh+1 and x['hit'] for x in v),v);await p.screenshot(path=str(out/(name+'.png')))
+ try:
+  response=await p.goto(origin+'/pablicus/',wait_until='load',timeout=20000);check('PREFLIGHT','real-index',response.status==200,response.status)
+  await p.locator('#email').fill('a@fixture.invalid');await p.locator('#password').fill('fixture-only-password');await p.locator('#loginSubmit').click();await p.wait_for_function('PablicusDebug.user==="'+A+'" && document.querySelectorAll(".chatCard").length>0');await p.wait_for_function("[...document.scripts].some(s=>s.src.endsWith('/bot-scenario-bridge.js'))");await p.locator('#toast').wait_for(state='hidden',timeout=8000)
+  for section,title in [('tasks','Дела'),('profile','Вы'),('chats','Чаты')]:
+   await p.locator('#mainNav [data-page='+section+']').tap();await p.wait_for_function('(s)=>PablicusController.state().section===s',arg=section);v=await p.evaluate("()=>({route:PablicusController.state(),title:document.getElementById('brandTitle').textContent,home:!document.getElementById('home').hidden})");check('2B-T02','root-'+section,v['route']['screen']=='home' and v['title']==title and v['home'],v)
+  await p.locator('#openBots').click();await p.locator('.botCard').first.wait_for();await p.get_by_role('button',name='Создать бота',exact=True).click();await p.get_by_role('button',name='Новый проект',exact=True).wait_for();v=await p.evaluate("()=>({route:PablicusController.state(),title:document.getElementById('brandTitle').textContent,visible:document.getElementById('screenContent').innerText})");check('2B-T02','nested-factory',v['route']['screen']=='factory' and v['title']=='Фабрика' and 'Новый проект' in v['visible'],v)
+  await p.locator('#mainNav [data-page=chats]').click();await p.locator('#chatFilters [data-filter=all]').focus();await p.keyboard.press('ArrowRight');v=await p.locator('#chatFilters [data-filter=focus]').get_attribute('aria-pressed');check('2B-T03','segmented-keyboard',v=='true',v);await p.locator('#chatFilters [data-filter=all]').click()
+  await p.locator('[data-conversation-id="'+C1+'"] .chatMain').click();await p.wait_for_function('PablicusDebug.current==="'+C1+'" && !!PablicusChat.list && !!window.vault?.ready && !document.getElementById("app").inert')
+  v=await p.evaluate("""()=>{const ids=['chatBack','chatTitle','chatLibraryOpen','reportBtn','attach','expand','send','input'];return ids.map(id=>{const n=document.getElementById(id),r=n.getBoundingClientRect();return{id,contract:n.dataset.uiControl,name:n.getAttribute('aria-label')||n.textContent,width:r.width,height:r.height,disabled:n.disabled}})}""");check('2B-T01','live-controls-contract',all(x.get('contract') and x['name'] and x['height']>=44 for x in v),v)
+  disabled=await p.locator('#send').is_disabled();check('2B-T03','empty-send-native-disabled',disabled,disabled)
+  await p.locator('#input').fill('2B сохранённый текст');await p.locator('#documentInput').set_input_files([{'name':'fixture-2b.bin','mimeType':'application/octet-stream','buffer':bytes(range(256))}]);await p.wait_for_function('PablicusChat.rich.capture().files.length===1');before=await p.evaluate(SNAP)
+  await p.locator('#expand').click();await p.locator('#expand').focus();await p.keyboard.press('Escape');expanded=await p.locator('#expand').get_attribute('aria-expanded');check('2B-T04','fullscreen-Escape-from-control',expanded=='false',expanded)
+  if expanded=='true':await p.locator('#input').focus();await p.keyboard.press('Escape')
+  v=await p.evaluate('document.activeElement.id');check('2B-T04','fullscreen-focus-return',v=='expand',v);check('2B-T06','collapse-keeps-bytes-order-ids',await p.evaluate(SNAP)==before,await p.evaluate(SNAP))
+  await p.locator('#expand').click();await p.locator('#send').focus();await p.keyboard.press('Tab');v=await p.evaluate("document.getElementById('composer').contains(document.activeElement)");check('2B-T04','fullscreen-focus-contained',v,v);await p.locator('#input').focus();await p.keyboard.press('Escape')
+  await p.locator('#attach').focus();await p.keyboard.press('Tab');v=await p.evaluate("()=>({id:document.activeElement.id,focus:document.activeElement.matches(':focus-visible'),outline:getComputedStyle(document.activeElement).outlineWidth})");check('2B-T03','keyboard-visible-focus',v['focus'] and float(v['outline'].replace('px',''))>=2,v)
+  await p.locator('#reportBtn').click();v=await p.evaluate('document.activeElement.id');check('2B-T04','modal-initial-focus',v=='dialogClose',v);await geometry('modal-controls',['#dialogClose']);await p.keyboard.press('Escape');v=await p.evaluate('document.activeElement.id');check('2B-T04','modal-return-focus',v=='reportBtn',v)
+  await p.locator('#chatLibraryOpen').click();v=await p.locator('.pclClose').evaluate('(n)=>n===document.activeElement');check('2B-T04','library-initial-focus',v,v);await p.locator('.pclSearchInput').focus();await p.keyboard.press('a');v=await p.locator('.pclSearchInput').evaluate("n=>({focus:n.matches(':focus-visible'),outline:getComputedStyle(n).outlineWidth})");check('2B-T03','library-input-focus',v['focus'] and float(v['outline'].replace('px',''))>=2,v);await p.locator('.pclClose').focus();await p.keyboard.press('Escape');await p.locator('.pablicusChatLibrary').wait_for(state='hidden');v=await p.evaluate('document.activeElement.id');check('2B-T04','library-return-focus',v=='chatLibraryOpen',v)
+  # Existing MediaViewer module and real native dialog, synthetic Blob resolver only.
+  await p.locator('#reportBtn').focus();await p.evaluate("""async()=>{window.__mediaBlob=URL.createObjectURL(new Blob(['<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><rect width="20" height="20" fill="blue"/></svg>'],{type:'image/svg+xml'}));window.__viewer=PablicusMediaViewer.create({resolveUrl:async()=>__mediaBlob});await __viewer.open([{type:'image'}],0)}""");count=await p.locator('.pmvClose').count();check('2B-T04','media-explicit-close',count==1,count)
+  if count:await geometry('media-close',['.pmvClose']);await p.locator('.pmvClose').tap()
+  else:await p.keyboard.press('Escape')
+  v=await p.evaluate('document.activeElement.id');check('2B-T04','media-focus-return',v=='reportBtn',v);await p.evaluate('__viewer.destroy();URL.revokeObjectURL(__mediaBlob)')
+  await p.locator('#canvasTab').click();await p.locator('.pccTaskAdd').click();await p.locator('.pccTaskSheet[open]').wait_for();text=p.locator('.pccTaskSheet textarea').first;await text.fill('2B dirty task must survive denied close');await p.locator('.pccTaskSheet .workspaceEditorExpand').click();await geometry('task-fullscreen',['.pccTaskSheet .workspaceEditorAttach','.pccTaskSheet .workspaceEditorDone','.pccTaskSheet .workspaceEditorExpand']);await p.locator('.pccTaskSheet textarea').first.focus();await p.keyboard.press('Escape');v=await p.locator('.pccTaskSheet[open]').count();check('2B-T04','workspace-Escape-collapses-only',v==1,v)
+  p.once('dialog',lambda d:d.dismiss());await p.locator('.pccTaskCancel').click();opened=await p.locator('.pccTaskSheet[open]').count();check('2B-T04','dirty-sheet-denied-close-preserves',opened==1 and await text.input_value()=='2B dirty task must survive denied close',{'open':opened})
+  if opened:p.once('dialog',lambda d:d.accept());await p.locator('.pccTaskCancel').click()
+  await p.locator('#conversationTab').click();check('2B-T06','Canvas-roundtrip-keeps-draft',await p.evaluate(SNAP)==before,await p.evaluate(SNAP))
+  await p.locator('#chatBack').click();await p.locator('[data-conversation-id="'+C1+'"] .chatMain').click();await p.wait_for_function('!!PablicusChat.list && !!window.vault?.ready');check('2B-T06','reopen-keeps-draft',await p.evaluate(SNAP)==before,await p.evaluate(SNAP))
+  for mode in ['reduced','safe-long-large']:
+   await p.locator('#input').focus();await p.evaluate("""mode=>{__keyboard.height=360;__keyboard.top=12;if(mode==='safe-long-large'){document.documentElement.style.setProperty('--safe-area-top','47px');document.documentElement.style.setProperty('--safe-area-bottom','34px');document.getElementById('input').style.fontSize='32px';PablicusShell.conversationTitle('Очень длинный заголовок '.repeat(12));}visualViewport.dispatchEvent(new Event('resize'))}""",mode);await geometry(mode+'-composer',['#attach','#send','#input']);await p.locator('#reportBtn').click();await p.evaluate("()=>{document.getElementById('dialogTitle').textContent='Длинный заголовок '.repeat(12);document.getElementById('dialogContent').textContent='Длинное содержимое '.repeat(500)}");await geometry(mode+'-modal',['#dialogClose']);await p.keyboard.press('Escape');await p.locator('#chatLibraryOpen').click();await geometry(mode+'-library',['.pclClose','.pclSearchInput']);await p.keyboard.press('Escape')
+  check('PREFLIGHT','no-pageerror',not collector.events['page_errors'],collector.events['page_errors']);check('PREFLIGHT','network-qualified',not n.unknown and not n.blocked,n.summary());r['status']='FAIL' if any(x['status']=='FAIL' for x in r['checks']) else 'PASS'
+ except BaseException as e:r.update(status='ERROR',error=str(e),traceback=traceback.format_exc())
+ finally:
+  r.update(await collector.capture());collector.enforce_result(r);await ctx.close();await n.drain();r.update(context_closed=True,network=n.summary(),end=utc_now());write(out/'result.json',r)
+ return r
+async def main(args):
+ root=args.source_root.resolve();out=args.output.resolve();out.mkdir(parents=True,exist_ok=False)
+ s={'status':'RUNNING','tested_sha':os.environ.get('GITHUB_SHA'),'environment':{'python':platform.python_version(),'platform':platform.platform(),'flags':FLAGS,'chromium_sandbox':True},'variants':{},'sources':{str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in (root/'pablicus').rglob('*') if p.is_file()}}
+ server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(Server,directory=str(root)));thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
+ try:
+  async with async_playwright() as pw:
+   b=await pw.chromium.launch(headless=True,chromium_sandbox=True,args=FLAGS,timeout=60000);s['environment']['browser']=b.version
+   for name,w,h in [('mobile',390,844),('tablet',768,1024),('desktop',1280,900),('small-mobile',320,568)]:
+    s['variants'][name]=await asyncio.wait_for(probe(b,'http://127.0.0.1:'+str(server.server_port),out/name,w,h),180);write(out/'summary.json',s)
+    if s['variants'][name]['status']=='ERROR':break
+   await b.close();s['browser_closed']=True;s['status']='ERROR' if any(v['status']=='ERROR' for v in s['variants'].values()) else ('PASS' if len(s['variants'])==4 and all(v['status']=='PASS' for v in s['variants'].values()) else 'FAIL')
+ except BaseException as e:s.update(status='ERROR',error=str(e),traceback=traceback.format_exc())
+ finally:server.shutdown();server.server_close();thread.join(2);s['server_closed']=not thread.is_alive();write(out/'summary.json',s)
+ print(json.dumps({'status':s['status'],'variants':{k:v['status'] for k,v in s['variants'].items()}}));return 0 if s['status']=='PASS' else 1
+if __name__=='__main__':
+ a=argparse.ArgumentParser();a.add_argument('--source-root',type=Path,required=True);a.add_argument('--output',type=Path,required=True);raise SystemExit(asyncio.run(main(a.parse_args())))

@@ -39,6 +39,8 @@
  }
  function viewport({width,height,left,top,keyboardOpen}){
   const app=$('app');if(!app)return;
+  document.documentElement.style.setProperty('--viewport-height',height+'px');
+  document.documentElement.style.setProperty('--viewport-top',top+'px');
   app.classList.toggle('keyboard-open',keyboardOpen);
   app.style.transform='translate3d('+left+'px,'+top+'px,0)';app.style.width=width+'px';app.style.height=height+'px';
  }

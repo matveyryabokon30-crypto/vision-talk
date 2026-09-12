@@ -3,7 +3,7 @@
    tasks are conversation-scoped. Feed/AI and video transcoding remain separate. */
 (() => {'use strict';
  const URL='https://ctcoqgsztdtsazdiwcmd.supabase.co',KEY='sb_publishable_kMGqZAM2vadfXbBr8r5uzw_l9EiBtIw',BUCKET='message-media',VERSION='0.1.0-rc5';
- const $=x=>document.getElementById(x),el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n};
+ const $=x=>document.getElementById(x),el=(tag,cls,text)=>{const n=document.createElement(tag); window.PablicusUI?.prepareControl?.(n);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n};
  const safeGet=k=>{try{return JSON.parse(localStorage.getItem(k))}catch{return null}},safeSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
  const timeoutFetch=async(u,opts={},ms=25000)=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);const abort=()=>c.abort();opts.signal?.addEventListener('abort',abort,{once:true});try{return await fetch(u,{...opts,signal:c.signal})}finally{clearTimeout(t);opts.signal?.removeEventListener('abort',abort)}};
  const authStorageKey='sb-ctcoqgsztdtsazdiwcmd-auth-token';
@@ -150,7 +150,7 @@
   await showCanvasView({id:message.id,blockId:blockId||null,text:String(text||'').slice(0,500)});
  }
  $('conversationTab').onclick=()=>window.PablicusController?window.PablicusController.navigate({section:'chats',screen:'conversation',conversationId:current?.id,canvas:false}).catch(problem):showConversationView().catch(problem);$('canvasTab').onclick=()=>window.PablicusController?window.PablicusController.navigate({section:'chats',screen:'canvas',conversationId:current?.id,canvas:true}).catch(problem):showCanvasView().catch(problem);
- $('chatViewTabs').onkeydown=event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();const target=event.key==='Home'?'conversationTab':event.key==='End'?'canvasTab':event.target.id==='conversationTab'?'canvasTab':'conversationTab';$(target).focus();$(target).click();};
+ $('chatViewTabs').onkeydown=event=>window.PablicusUI.tabKey(event,$('chatViewTabs').querySelectorAll('[role=tab]'));
  let tasksEpoch=0;
  const tasksContext=()=>({userId:user?.id,epoch:tasksEpoch,active:!!user&&!current&&page==='tasks'});
  const tasksCurrent=context=>!!context?.userId&&user?.id===context.userId&&tasksEpoch===context.epoch&&!current&&page==='tasks';
@@ -240,7 +240,7 @@
  function toast(text){$('toast').textContent=text;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,5000)}
  function problem(e){console.warn(e?.name||'Pablicus error');toast(e?.message||'Не удалось выполнить действие. Черновик сохранён.')}
  function connection(){const offline=!navigator.onLine;$('connection').hidden=!offline;$('connection').textContent=offline?'Нет сети · исходящие сохраняются на устройстве':'';if(current){$('chatHint').textContent=offline?'Нет сети · очередь сохранена':'';$('chatHint').hidden=!offline}}
- function dialog(title){const d=$('productDialog');$('dialogTitle').textContent=title;$('dialogContent').replaceChildren();if(!d.open)d.showModal();return $('dialogContent')}
+ function dialog(title){const d=$('productDialog');$('dialogTitle').textContent=title;$('dialogContent').replaceChildren();if(!d.open)d.showModal();$('dialogClose').focus({preventScroll:true});return $('dialogContent')}
  function unavailable(name){const c=dialog(name);c.append(el('p','',name+' пока не включён в эту версию. Ваш текст и вложения не отправлены помощнику.'))}
  function install(){const c=dialog('Pablicus на iPhone');c.append(el('p','','В Safari нажмите «Поделиться» → «На экран “Домой”» → включите «Открывать как веб-приложение» → «Добавить».'),el('p','muted','На главном экране появится утверждённая иконка. Обновления приходят по этому же адресу.'))}
  $('dialogClose').onclick=()=>$('productDialog').close();$('installLogin').onclick=install;
@@ -420,7 +420,7 @@
   window.PablicusController.subscribe(state=>{if(state.screen==='home')page=state.section;});
  }
 
- document.querySelectorAll('#chatFilters button').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll('#chatFilters button').forEach(x=>x.classList.toggle('selected',x===b));renderHome()});$('searchChats').oninput=renderHome;
+ document.querySelectorAll('#chatFilters button').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll('#chatFilters button').forEach(x=>{x.classList.toggle('selected',x===b);x.setAttribute('aria-pressed',String(x===b))});renderHome()});document.getElementById('chatFilters').onkeydown=event=>PablicusUI.tabKey(event,document.querySelectorAll('#chatFilters button'));$('searchChats').oninput=renderHome;
  $('newChat').onclick=()=>people.open($('searchChats').value);
  function mapped(m){return{id:m.id,number:m.server_seq,mine:m.sender_id===user?.id,text:PablicusChatActions.effective(m).body||'',revision:messageTools.revision(m),remote:m}}
  function openConversation(d,options={}){return goConversation(d,options)}

@@ -8,7 +8,7 @@
   TopBar:{owner:'PablicusShell',implementation:'app-shell.js',region:'.homeHeader / #app > header'},
   BottomNavigation:{owner:'PablicusShell',implementation:'app-shell.js',region:'#mainNav'},
   'Tab/SegmentedControl':{owner:'view instance',implementation:'index.html',region:'#chatViewTabs / #chatFilters'},
-  Button:{owner:'mounting view',implementation:'index.html',contract:'semantic button, type, accessible name, focus-visible, disabled'},
+  Button:{owner:'mounting view',implementation:'controls.css',contract:'semantic button, type, accessible name, focus-visible, disabled'},
   IconButton:{owner:'mounting view',implementation:'message-menu.js',contract:'shared icon, accessible name, 44px target'},
   Input:{owner:'mounting view',implementation:'index.html',contract:'label, input type, composition, error description'},
   Composer:{owner:'PablicusChat',implementation:'rich-composer.js',adapter:'chat.js'},
@@ -72,7 +72,34 @@
   typography:['--font-family-ui','--font-body','--font-input','--line-height-body'],iconSizes:['--icon-size'],controlSizes:['--control-size'],
   elevation:['--elevation-overlay'],motion:['--motion-duration','--motion-easing'],safeArea:['--safe-area-top','--safe-area-bottom','--safe-area-left','--safe-area-right'],
   breakpoints:['--breakpoint-tablet','--breakpoint-desktop'],zIndex:['--layer-base','--layer-shell','--layer-popover','--layer-sheet','--layer-toast']};
+ // Stateless native-control helpers. Mounting views retain state and listeners.
+ function prepareControl(node,kind){
+  if(!node)return node;
+  const tag=node.tagName?.toLowerCase();
+  if(!['button','input','textarea','select'].includes(tag))return node;
+  node.dataset.uiControl=kind||(tag==='button'?'button':'input');
+  if(tag==='button'&&!node.hasAttribute('type'))node.type='button';
+  return node;
+ }
+ function tabKey(event,buttons){
+  if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return false;
+  const items=[...buttons].filter(n=>!n.disabled&&!n.hidden);
+  if(!items.length)return false;
+  const index=items.indexOf(event.target);if(index<0)return false;
+  event.preventDefault();
+  const next=event.key==='Home'?0:event.key==='End'?items.length-1:(index+(event.key==='ArrowRight'?1:items.length-1))%items.length;
+  items[next].focus({preventScroll:true});items[next].click();return true;
+ }
+ function focusWithin(event,region){
+  if(event.key!=='Tab')return false;
+  const items=[...region.querySelectorAll('button,input,textarea,select,a[href],[tabindex]')].filter(n=>!n.disabled&&n.tabIndex>=0&&!n.closest('[hidden],[inert]')&&n.getClientRects().length&&getComputedStyle(n).visibility!=='hidden');
+  const first=items[0],last=items.at(-1);if(!first)return false;
+  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus({preventScroll:true});return true;}
+  if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus({preventScroll:true});return true;}
+  return false;
+ }
+ const controlContract={implementation:'native controls + controls.css',owner:'mounting view',minimumTargetToken:'--control-size',focusToken:'--focus-width',disabledToken:'--disabled-opacity',states:['idle','hover','focus-visible','active','disabled','busy','invalid'],rules:['native disabled prevents activation','accessible name supplied by view','no global listener or observer','tabs invoke existing owner action'],overlayRules:['initial focus','Escape/close through owner guard','focus return to connected opener','bounded scrolling and viewport']};
  function rootSection(section){return parentRoots[section]||null}
  function get(name){if(!Object.hasOwn(components,name))throw Error('UNKNOWN_COMPONENT: '+name);return components[name]}
- root.PablicusUI=freeze({version:1,components,roots,parentRoots,informationArchitecture,composer,calls,tokenGroups,get,rootSection});
+ root.PablicusUI=freeze({version:1,components,roots,parentRoots,informationArchitecture,composer,calls,tokenGroups,controlContract,prepareControl,tabKey,focusWithin,get,rootSection});
 })(window);

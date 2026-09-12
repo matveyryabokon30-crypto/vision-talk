@@ -1,0 +1,8 @@
+/* Native shared controls. Views own values, disabled/busy state and activation. */
+[data-ui-control]{box-sizing:border-box;min-height:var(--control-size);touch-action:manipulation;font-family:var(--font-family-ui)}
+[data-ui-control="button"],[data-ui-control="icon"]{min-width:var(--control-size);min-height:var(--control-size);flex-shrink:0}
+[data-ui-control]:focus-visible{outline:var(--focus-width) solid var(--accent);outline-offset:var(--focus-offset)}
+[data-ui-control]:disabled{cursor:default;opacity:var(--disabled-opacity)}
+[data-ui-control="input"]:read-only{cursor:default}
+[data-ui-control][aria-invalid="true"]{border-color:var(--text);border-style:dashed}
+[data-ui-control="button"]:not(:disabled),[data-ui-control="icon"]:not(:disabled){cursor:pointer}

@@ -14,7 +14,7 @@
     }
     const uid = 'pth-' + (++instanceId);
     const el = (tag, className, text) => {
-      const node = document.createElement(tag);
+      const node = document.createElement(tag); window.PablicusUI?.prepareControl?.(node);
       if (className) node.className = className;
       if (text !== undefined) node.textContent = text;
       return node;

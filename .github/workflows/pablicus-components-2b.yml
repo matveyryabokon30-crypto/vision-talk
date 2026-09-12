@@ -1,0 +1,129 @@
+name: Pablicus shared components 2B qualification
+on:
+  push:
+    branches: [refactor/pablicus-foundation-20260911]
+    paths:
+      - 'pablicus/**'
+      - 'tests/engineering/block-02/**'
+      - '.github/workflows/pablicus-components-2b.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+  COMPONENTS_2B_WORK_START_HEAD: 6822a58a7a632fcfc182e4a8e2f02eea37d55afb
+  COMPONENTS_2B_PHASE: candidate
+jobs:
+  shell:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@v5.6.0
+        with:
+          python-version: '3.12.7'
+      - name: Bind exact sources before execution
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,pathlib,platform,shutil,subprocess
+          root=pathlib.Path.cwd(); out=root/'components-2b-results'; out.mkdir()
+          sources={}
+          for name in subprocess.check_output(['git','ls-files'],text=True).splitlines():
+              p=root/name; target=out/'source'/name
+              target.parent.mkdir(parents=True,exist_ok=True); shutil.copyfile(p,target)
+              sources[name]=hashlib.sha256(p.read_bytes()).hexdigest()
+          (out/'SOURCE_MANIFEST.json').write_text(json.dumps({'tested_sha':os.environ['GITHUB_SHA'],'work_start_head':os.environ['COMPONENTS_2B_WORK_START_HEAD'],'phase':os.environ['COMPONENTS_2B_PHASE'],'run_id':os.environ['GITHUB_RUN_ID'],'python':platform.python_version(),'platform':platform.platform(),'sources':sources},indent=2))
+          PY
+      - name: Install pinned browser
+        run: |
+          python -m pip install --disable-pip-version-check playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Structural ownership and component contracts
+        run: |
+          python tests/engineering/block-02/ownership_checks.py --source-root . --output components-2b-results/ownership.json > components-2b-results/ownership.log 2>&1
+      - name: Same 2B probe before correction must reach behavioral FAIL
+        run: |
+          mkdir components-2b-before
+          git archive "$COMPONENTS_2B_WORK_START_HEAD" pablicus | tar -x -C components-2b-before
+          set +e
+          timeout --kill-after=10s 600s python tests/engineering/block-02/components_probe.py --source-root components-2b-before --output components-2b-results/before > components-2b-results/before.log 2>&1
+          code=$?
+          set -e
+          test "$code" -eq 1
+          python - <<'PYCODE'
+          import json
+          d=json.load(open('components-2b-results/before/summary.json'))
+          assert d['status']=='FAIL' and d['browser_closed'] and d['server_closed'],d
+          for name in ['mobile','tablet','desktop']:
+              v=d['variants'][name];assert v['status']=='FAIL',v
+              for check in ['fullscreen-Escape-from-control','media-explicit-close','dirty-sheet-denied-close-preserves']:
+                  assert any(c['name']==check and c['status']=='FAIL' for c in v['checks']),(name,check,v)
+          PYCODE
+      - name: Existing components and overlays on exact candidate
+        run: |
+          timeout --kill-after=10s 600s python tests/engineering/block-02/components_probe.py --source-root . --output components-2b-results/components > components-2b-results/components.log 2>&1
+          python - <<'PYCODE'
+          import json
+          d=json.load(open('components-2b-results/components/summary.json'))
+          assert d['status']=='PASS' and d['browser_closed'] and d['server_closed'],d
+          assert len(d['variants'])==4 and all(v['context_closed'] for v in d['variants'].values()),d
+          PYCODE
+      - name: Observe actual shell and duplicate-listener negative control
+        shell: bash
+        run: |
+          set +e
+          timeout --kill-after=10s 420s python tests/engineering/block-02/shell_probe.py --source-root . --output components-2b-results/browser > components-2b-results/browser.log 2>&1
+          code=$?
+          set -e
+          export SHELL_PROBE_EXIT="$code"
+          python - <<'PY'
+          import json,os
+          d=json.load(open('components-2b-results/browser/summary.json'))
+          expected='FAIL' if os.environ['COMPONENTS_2B_PHASE']=='baseline' else 'PASS'
+          assert d['status']==expected,d
+          assert int(os.environ['SHELL_PROBE_EXIT'])==(1 if expected=='FAIL' else 0)
+          assert d['browser_closed'] and d['server_closed'],d
+          for name in ['mobile','tablet','desktop']:
+              v=d['variants'][name]
+              assert v['status'] in ['PASS','FAIL'] and v['context_closed'],v
+              assert not v.get('page_errors') and not v['network_after_cleanup']['unknown'],v
+              if expected=='FAIL':
+                  assert any(c['name']=='2A-ROOT-TABS' and c['status']=='FAIL' for c in v['checks']),v
+          assert d['negative_control_qualified'],d
+          PY
+      - name: Accepted 1B regression contracts
+        if: always()
+        run: |
+          timeout --kill-after=5s 120s python tests/engineering/block-01/test_controller_1b.py --source-root . --output components-2b-results/1b.json > components-2b-results/1b.log 2>&1
+          python - <<'PY'
+          import json
+          d=json.load(open('components-2b-results/1b.json'))
+          assert len(d)==31 and all(v['status']=='PASS' for v in d.values()),d
+          PY
+      - name: Exact-SHA Block 1 integration and its four negative controls
+        run: |
+          timeout --kill-after=10s 900s python tests/engineering/block-01/integration_1c/runner.py --source-root . --output-dir components-2b-results/integration > components-2b-results/integration.log 2>&1
+          timeout --kill-after=10s 780s python tests/engineering/block-01/integration_1c/mutation_runner.py --source-root . --positive-results components-2b-results/integration/results.json --output-dir components-2b-results/integration-negative-controls > components-2b-results/integration-negative-controls.log 2>&1
+      - name: Record process cleanup and result hashes
+        if: always()
+        run: |
+          python - <<'PY'
+          import hashlib,json,pathlib,subprocess
+          out=pathlib.Path('components-2b-results')
+          rows=subprocess.check_output(['ps','-eo','pid=,comm=,args='],text=True).splitlines()
+          remaining=[r for r in rows if ('chrome-headless-shell' in r or '/playwright/driver/node' in r) and '<defunct>' not in r]
+          (out/'cleanup.json').write_text(json.dumps({'remaining':remaining,'status':'FAIL' if remaining else 'PASS'},indent=2))
+          hashes={str(p.relative_to(out)):hashlib.sha256(p.read_bytes()).hexdigest() for p in out.rglob('*') if p.is_file()}
+          (out/'HASHES.json').write_text(json.dumps(hashes,indent=2))
+          assert not remaining,remaining
+          PY
+      - uses: actions/upload-artifact@v4.6.2
+        if: always()
+        with:
+          name: components-2b-${{ github.sha }}
+          path: components-2b-results/
+          retention-days: 14
+          include-hidden-files: true

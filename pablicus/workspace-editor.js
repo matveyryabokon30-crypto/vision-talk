@@ -8,7 +8,7 @@
   const MAX_TEXT = 20000, MAX_BLOCKS = 100, MAX_FILE = 25 * 1024 * 1024, MAX_TOTAL = 100 * 1024 * 1024;
   const uid = () => scope.crypto?.randomUUID?.() || `workspace-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const element = (tag, className, text) => {
-    const node = document.createElement(tag);
+    const node = document.createElement(tag); window.PablicusUI?.prepareControl?.(node);
     if (className) node.className = className;
     if (text != null) node.textContent = text;
     return node;
@@ -210,11 +210,15 @@
       if (destroyed) return;
       expanded = !!value; root.classList.toggle('is-expanded', expanded); done.hidden = !expanded;
       expand.setAttribute('aria-expanded', String(expanded)); expand.setAttribute('aria-label', expanded ? 'Свернуть поле' : 'Развернуть поле');
+      if(expanded){root.setAttribute('role','dialog');root.setAttribute('aria-modal','true');rich.focus();}
+      else{root.removeAttribute('role');root.removeAttribute('aria-modal');expand.focus({preventScroll:true});}
       viewport(); options.onGeometry?.();
     }
     function onOutside(event) { if (!root.contains(event.target)) { menu.hidden = true; attach.setAttribute('aria-expanded', 'false'); } }
     function onKey(event) {
-      if (!root.contains(event.target) || event.key !== 'Escape') return;
+      if(!root.contains(event.target))return;
+      if(expanded)scope.PablicusUI?.focusWithin?.(event,root);
+      if(event.key!=='Escape'||event.isComposing)return;
       if (!menu.hidden || !linkRow.hidden || expanded) { event.preventDefault(); event.stopPropagation(); menu.hidden = true; linkRow.hidden = true; attach.setAttribute('aria-expanded', 'false'); setExpanded(false); }
     }
     async function addFiles(incoming) {

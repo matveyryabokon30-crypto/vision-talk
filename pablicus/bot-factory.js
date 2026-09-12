@@ -1,6 +1,6 @@
 /* Public Bot Factory: Stage 1 intake + Stage 2 capability registry / builder planner. */
 (function(global){'use strict';
-const el=(t,c,x)=>{const n=document.createElement(t);if(c)n.className=c;if(x!==undefined)n.textContent=x;return n;};
+const el=(t,c,x)=>{const n=document.createElement(t);window.PablicusUI?.prepareControl?.(n);if(c)n.className=c;if(x!==undefined)n.textContent=x;return n;};
 const clean=(x,n=4000)=>String(x??'').trim().slice(0,n);
 function infer(d){const brief=clean(d.brief,12000),aud=clean(d.audience,2000),out=clean(d.desired_result,4000),con=clean(d.constraints_text,4000),all=(brief+' '+aud+' '+out+' '+con).toLowerCase(),caps=[];const add=x=>{if(!caps.includes(x))caps.push(x)};
  if(/видео|монтаж|ролик|mp4|субтитр|reels|рилс/.test(all)){add('file_upload');add('video_processing');add('speech_to_text');add('media_render');add('result_delivery');}
