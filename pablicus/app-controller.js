@@ -48,6 +48,7 @@
  function applySessionIdentity(userId){
   const normalized=userId||null;if(state.sessionUserId===normalized)return (releasePromise||Promise.resolve()).then(()=>false);
   state.sessionUserId=normalized;state.sessionGeneration++;state.generation++;latestRequest=++requestSerial;
+  Object.assign(state,{section:'chats',screen:'home',resourceId:null,conversationId:null,canvas:false});
   if(activeTransition){activeTransition.abort.abort();void activeTransition.scope.dispose();activeTransition=null}
   emit();return releaseCurrentScope().then(()=>true);
  }
