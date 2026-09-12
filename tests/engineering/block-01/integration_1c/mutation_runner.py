@@ -28,6 +28,8 @@ A = '11111111-1111-4111-8111-111111111111'
 B = '22222222-2222-4222-8222-222222222222'
 C1 = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1'
 CB = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1'
+BOT = 'dddddddd-dddd-4ddd-8ddd-ddddddddddd1'
+CORRUPT_RESOURCE = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee1'
 MUTATIONS = [
     {'id': 'MUTATION_A_RESOURCE_LEAK', 'case': 'lifecycle', 'path': 'pablicus/chat.js',
      'assertion': '1C-NO-RESOURCE-ACCUMULATION', 'prior': ['1C-50-TRANSITIONS'],
@@ -43,6 +45,12 @@ MUTATIONS = [
      'before': 'file:new File([row.blob],meta.name,{type:meta.type,lastModified:meta.lastModified})',
      'after': 'file:new File(meta.id===doc.files[0].id && row.blob.size ? [new Uint8Array([0]),row.blob.slice(1)] : [row.blob],meta.name,{type:meta.type,lastModified:meta.lastModified})',
      'purpose': 'Replace the first restored attachment byte after native IDB read; preserve original store bytes, size, metadata, IDs and order.'},
+    {'id': 'MUTATION_D_ROUTE_RESOURCE', 'case': 'routes', 'path': 'pablicus/app-controller.js',
+     'assertion': '1C-SCENARIO-SURVIVES-POLL',
+     'prior': ['1C-ROUTE-BOTS', '1C-BOT-DETAIL-SURVIVES-POLL'],
+     'before': 'if(activeTransition===transition)activeTransition=null;return true}\n  catch(error)',
+     'after': "if(activeTransition===transition)activeTransition=null;if(target.screen==='scenario')state.resourceId='eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee1';return true}\n  catch(error)",
+     'purpose': 'Corrupt only scenario resourceId after the real handler mounted and passed its final currentness gate; preserve the valid BOT request, visible scenario, successful navigation result and cleanup.'},
 ]
 
 
@@ -224,6 +232,18 @@ def concrete_failure(mutation, actual):
                 'Expected late A scope/draft over the established B screen was not observed')
         return {'failure_class': 'LATE_ACCOUNT_CONTAMINATION', 'before_scope': before['scope'],
                 'after_scope': after['scope'], 'after_store': after['store']}
+    if mutation['id'] == 'MUTATION_D_ROUTE_RESOURCE':
+        route = actual['route']
+        control_require(route['screen'] == 'scenario' and route['section'] == 'bots'
+                and route['resourceId'] == CORRUPT_RESOURCE and route['conversationId'] is None
+                and actual['uid'] == A and actual['homeVisible'] and not actual['appVisible']
+                and actual['selected'] == ['bots'] and actual['current'] is None and not actual['list']
+                and actual['scenario_visible'] is True
+                and actual['scenario_text'] == ['Fixture greeting', 'Done'],
+                'Expected resourceId corruption over the correctly mounted visible scenario was not observed')
+        return {'failure_class': 'ROUTE_RESOURCE_MISMATCH', 'expected_resource_id': BOT,
+                'observed_resource_id': route['resourceId'], 'observed_route': route,
+                'scenario_visible': actual['scenario_visible'], 'scenario_text': actual['scenario_text']}
     live, stored = actual['live'], actual['stored']
     control_require({key: value for key, value in live.items() if key != 'files'} ==
             {key: value for key, value in stored.items() if key != 'files'}, 'Mutation changed non-file content')
@@ -270,7 +290,15 @@ def qualify(mutation, execution, payload, output, positive):
                 'Mutation screenshot/HTML hash mismatch')
     events = (output/payload['browser_events_reference']).resolve()
     require(events.is_relative_to(output) and events.is_file(), 'Mutation event journal absent')
-    return {**concrete_failure(mutation, failed[0]['actual']), 'assertion': mutation['assertion'],
+    concrete = concrete_failure(mutation, failed[0]['actual'])
+    if mutation['id'] == 'MUTATION_D_ROUTE_RESOURCE':
+        calls = [entry for entry in payload['instrument']['navigations']
+                 if entry.get('target', {}).get('screen') == 'scenario']
+        control_require(len(calls) == 1 and calls[0]['target'].get('resourceId') == BOT
+                and calls[0].get('status') == 'fulfilled' and calls[0].get('result') is True,
+                'Scenario did not complete its original valid BOT navigation before route corruption')
+        concrete['completed_scenario_navigation'] = calls[0]
+    return {**concrete, 'assertion': mutation['assertion'],
             'behavioral_checks_reached': len(checks), 'inner_status': payload['status'],
             'inner_exit_code': execution['exit_code'], 'event_log_sha256': digest(events)}
 
@@ -371,7 +399,7 @@ def main(argv=None):
         parser.error('Use a new empty output directory; earlier evidence is preserved')
     out.mkdir(parents=True, exist_ok=True)
     summary = {'test_id': '1C-NEGATIVE-CONTROLS', 'status': 'RUNNING', 'start_time_utc': utc_now(),
-               'scope': 'Same positive assertions on three separately mutated temporary copies. Outer PASS qualifies expected inner FAIL, never startup/environment failure.',
+               'scope': 'Same positive assertions on four separately mutated temporary copies. Outer PASS qualifies expected inner FAIL, never startup/environment failure.',
                'mutations': {mutation['id']: {'status': 'NOT_RUN'} for mutation in MUTATIONS}}
     save(out/'results.json', summary)
     try:

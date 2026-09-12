@@ -59,12 +59,31 @@ jobs:
       - name: Qualify harness and preflight before real browser scenarios
         run: |
           timeout --kill-after=5s 1800s python tests/engineering/block-01/integration_1c/runner.py --source-root . --output-dir integration-1c-results/browser > integration-1c-results/browser.log 2>&1
-      - name: Qualify three isolated negative controls after positive baseline
+      - name: Qualify isolated resource, account, bytes and route negative controls
         run: |
-          timeout --kill-after=5s 600s python tests/engineering/block-01/integration_1c/mutation_runner.py --source-root . --positive-results integration-1c-results/browser/results.json --output-dir integration-1c-results/negative-controls > integration-1c-results/negative-controls.log 2>&1
+          timeout --kill-after=5s 780s python tests/engineering/block-01/integration_1c/mutation_runner.py --source-root . --positive-results integration-1c-results/browser/results.json --output-dir integration-1c-results/negative-controls > integration-1c-results/negative-controls.log 2>&1
       - name: Preserve accepted 1B regressions
         run: |
           timeout --kill-after=5s 120s python tests/engineering/block-01/test_controller_1b.py --source-root . --output integration-1c-results/regression-1b.json
+      - name: Verify no browser or driver process remains
+        if: always()
+        run: |
+          python - <<'PY'
+          import datetime,json,pathlib,platform,subprocess,sys
+          rows=subprocess.check_output(['ps','-eo','pid=,ppid=,pgid=,stat=,args='],text=True,timeout=5).splitlines()
+          observed=[]
+          for row in rows:
+              parts=row.split(None,4)
+              if len(parts)!=5:continue
+              command=parts[4]
+              if '/.cache/ms-playwright/' not in command and '/site-packages/playwright/driver/node' not in command:continue
+              observed.append({'pid':int(parts[0]),'ppid':int(parts[1]),'pgid':int(parts[2]),'state':parts[3],'command':command})
+          active=[row for row in observed if not row['state'].startswith('Z')]
+          result={'status':'PASS' if not active else 'ERROR','time_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'platform':platform.platform(),'observed_playwright_processes':observed,'remaining_active_processes':active,'scope':'Fresh isolated CI job; Playwright browser and Python driver processes. Remaining processes invalidate qualification and are retained for GitHub runner cleanup.'}
+          out=pathlib.Path('integration-1c-results');out.mkdir(exist_ok=True)
+          (out/'PROCESS_CLEANUP.json').write_text(json.dumps(result,indent=2)+'\n')
+          print(json.dumps(result));sys.exit(0 if not active else 1)
+          PY
       - name: Record integration scope
         if: always()
         run: |

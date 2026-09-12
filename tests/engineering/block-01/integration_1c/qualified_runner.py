@@ -11,7 +11,7 @@ STATUSES=['PASS','FAIL','ERROR','TIMEOUT','NOT_RUN','BLOCKED']
 def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
 def process_log_failure(path):
     content=Path(path).read_text(errors='replace')
-    found=re.search(r"RuntimeWarning: coroutine[^\n]*was never awaited|Error occurred in event listener|Task exception was never retrieved",content)
+    found=re.search(r"RuntimeWarning: coroutine[^\n]*was never awaited|Error occurred in event listener|(?:Task|Future) exception was never retrieved",content)
     return found.group(0) if found else None
 def save(path,value):
     path.parent.mkdir(parents=True,exist_ok=True)

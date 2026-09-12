@@ -40,6 +40,7 @@ def session(uid,epoch=None):
 class Boundary:
     def __init__(self, origin, session_epoch=None):
         self.session_epoch=session_epoch
+        self.issued_session_epochs={}
         self.origin=origin; self.calls=[]; self.unknown=[]; self.blocked=[]
         self.offline=False; self.deny_send=False; self.lose_ack=False
         self.holds=[]; self.messages={}; self.effects=[]; self.objects={}; self.ws_channels=set();self.ws_events=[]
@@ -110,7 +111,13 @@ class Boundary:
                     if q['grant_type']==['refresh_token']:who=body.get('refresh_token','').removeprefix('fixture-refresh-')
                     elif q['grant_type']==['password'] and body.get('password')=='fixture-only-password':who={'a@fixture.invalid':A,'b@fixture.invalid':B}.get(body.get('email'))
                 if who not in [A,B]:await reply({'msg':'Invalid fixture credentials'},400);return
-                await self.wait_holds(path,who);await reply(session(who,self.session_epoch));return
+                base=int(time.time()) if self.session_epoch is None else self.session_epoch
+                previous=self.issued_session_epochs.get(who,base-1)
+                issued=max(base,previous+1) if q['grant_type']==['refresh_token'] else base
+                self.issued_session_epochs[who]=max(previous,issued)
+                entry['grant_type']=q['grant_type'][0];entry['issued_epoch']=issued
+                response=session(who,issued)
+                await self.wait_holds(path,who);await reply(response);return
             if path.endswith('/user'):await reply(user(uid) if uid else {'msg':'Unauthorized'},200 if uid else 401);return
             if path.endswith('/logout'):await reply(None,204);return
             if path.endswith('/settings'):await reply({});return
@@ -310,6 +317,11 @@ class Boundary:
         await page.expose_binding('__integrationBoundarySocketEvent',observed)
         await page.add_init_script(script='''(() => {
           const Native=window.WebSocket, report=window.__integrationBoundarySocketEvent;
+          // Capture the API exposed by this browser BEFORE our observer. With
+          // Playwright routing enabled, send/close are already routing methods;
+          // their source strings are not a test of observer transparency.
+          const before={prototype:Native.prototype,send:Native.prototype.send,close:Native.prototype.close,
+            constants:[Native.CONNECTING,Native.OPEN,Native.CLOSING,Native.CLOSED]};
           const pageId=PAGE_ID, documentId=crypto.randomUUID(); let serial=0;
           const notify=event=>{report(event).catch(error=>{setTimeout(()=>{throw error},0)})};
           window.WebSocket=new Proxy(Native,{construct(target,args,newTarget){
@@ -320,6 +332,16 @@ class Boundary:
             socket.addEventListener('error',()=>notify({token,event:'error'}),{once:true});
             return socket;
           }});
+          window.__integrationBoundarySocketAPI=Object.freeze({compare:socket=>({
+            constructorIdentityChanged:window.WebSocket!==Native,
+            prototypePreserved:window.WebSocket.prototype===before.prototype,
+            instancePrototypePreserved:Object.getPrototypeOf(socket)===before.prototype,
+            instanceofBefore:socket instanceof Native,
+            sendPreserved:window.WebSocket.prototype.send===before.send&&socket.send===before.send,
+            closePreserved:window.WebSocket.prototype.close===before.close&&socket.close===before.close,
+            constantsPreserved:[WebSocket.CONNECTING,WebSocket.OPEN,WebSocket.CLOSING,WebSocket.CLOSED]
+              .every((value,index)=>value===before.constants[index])
+          })});
         })();'''.replace('PAGE_ID',json.dumps(str(page_id))))
         def dispose_document(source):
             for item in self.ws_lifecycle.values():
