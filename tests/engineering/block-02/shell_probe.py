@@ -139,6 +139,7 @@ async def probe(browser,root,origin,out,width,height,mutation=False):
               if(safe){document.documentElement.style.setProperty('--safe-area-top','47px');document.documentElement.style.setProperty('--safe-area-bottom','34px');
                 window.PablicusShell?.conversationTitle('Очень длинный заголовок разговора — проверка переполнения '.repeat(4));}
             }''',{'height':h,'reduced':name!='conversation','safe':name=='safe-area-and-long-title','large':name=='large-text'})
+            if name=='large-text':await page.locator('#input').fill('Large text draft — visible editing baseline')
             await page.evaluate('()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))')
             observation=await page.evaluate('''()=>{
               const ids=['app','chatBack','chatTitle','chatLibraryOpen','reportBtn','composer','input','attach','send'];
@@ -146,7 +147,7 @@ async def probe(browser,root,origin,out,width,height,mutation=False):
                 const n=document.getElementById(id),r=n.getBoundingClientRect(),s=getComputedStyle(n);
                 return [id,{x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom,
                   visible:r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none',
-                  pointerEvents:s.pointerEvents,label:n.getAttribute('aria-label'),fontSize:s.fontSize,
+                  clientHeight:n.clientHeight,scrollHeight:n.scrollHeight,pointerEvents:s.pointerEvents,label:n.getAttribute('aria-label'),fontSize:s.fontSize,
                   hit:n.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))}]
               })),overflow:document.documentElement.scrollWidth>innerWidth,
                 safeArea:getComputedStyle(document.getElementById('composer')).paddingBottom,
@@ -157,6 +158,7 @@ async def probe(browser,root,origin,out,width,height,mutation=False):
             check('2A-CONTROLS-VISIBLE-'+name,all(x['visible'] and x['x']>=-1 and x['y']>=-1 and x['right']<=width+1 and x['bottom']<=h+1 and x['pointerEvents']!='none' for x in critical),observation)
             if name!='conversation':check('2A-KEYBOARD-STATE-'+name,observation['keyboardOpen'] and observation['visualHeight']==h,observation)
             if result.get('registry'):
+                if name=='large-text':check('2A-LARGE-TEXT-EDITABLE-LINE',observation['elements']['input']['clientHeight']>=float(observation['elements']['input']['fontSize'].replace('px','')),observation['elements']['input'])
                 title=observation['elements']['chatTitle']; back=observation['elements']['chatBack']; search=observation['elements']['chatLibraryOpen']
                 check('2A-HEADER-TITLE-BOUNDS-'+name,title['width']>=44 and title['height']>=44 and title['x']>=back['right'] and title['right']<=search['x'] and title['hit'],observation['elements'])
                 check('2A-NO-HORIZONTAL-OVERFLOW-'+name,not observation['overflow'],observation['overflow'])

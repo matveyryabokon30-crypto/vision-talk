@@ -16,7 +16,7 @@ env:
 jobs:
   shell:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4.2.2
         with:
@@ -115,6 +115,10 @@ jobs:
           d=json.load(open('shell-2a-results/1b.json'))
           assert len(d)==31 and all(v['status']=='PASS' for v in d.values()),d
           PY
+      - name: Exact-SHA Block 1 integration and its four negative controls
+        run: |
+          timeout --kill-after=10s 900s python tests/engineering/block-01/integration_1c/runner.py --source-root . --output-dir shell-2a-results/integration > shell-2a-results/integration.log 2>&1
+          timeout --kill-after=10s 780s python tests/engineering/block-01/integration_1c/mutation_runner.py --source-root . --positive-results shell-2a-results/integration/results.json --output-dir shell-2a-results/integration-negative-controls > shell-2a-results/integration-negative-controls.log 2>&1
       - name: Record process cleanup and result hashes
         if: always()
         run: |
