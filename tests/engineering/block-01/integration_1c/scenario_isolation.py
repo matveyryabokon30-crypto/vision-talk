@@ -110,7 +110,15 @@ async def profile_ui(a,uid,cid,label):
  await a.nav('chats');await a.wait('document.querySelectorAll(".chatCard").length>0');await a.conversation(cid)
 
 async def run(a):
- await a.login();await a.conversation();own_a=await a.write(text='Account A private marker',files=FILES[:1],tail='A tail');await a.switch(B);await a.wait(f'!!document.querySelector("[data-conversation-id={CB}]")');await a.conversation(CB);own_b=await a.write(text='Account B private marker',files=FILES[1:2],tail='B tail')
+ await a.login();await a.conversation();own_a=await a.write(text='Account A private marker',files=FILES[:1],tail='A tail')
+ async with a.page.expect_response(lambda r:owned_request(r.request,'POST','/rest/v1/rpc/my_conversations_v3',B),timeout=8000) as switch_info:
+  await a.switch(B)
+ switch_response=await switch_info.value;switch_evidence={};RESULT['first_account_switch']=switch_evidence;save()
+ switch_dialogs=await completed_response(switch_response.request,switch_evidence)
+ await a.delay(0)
+ switched=await a.state();switched['actual_home_visible']=await a.page.locator('#home').is_visible();switched['actual_app_visible']=await a.page.locator('#app').is_visible()
+ check('1C-ACCOUNT-SWITCH-HOME-ROUTE',switched['uid']==B and switched['route']['sessionUserId']==B and switched['route']['screen']=='home' and switched['route']['section']=='chats' and switched['route']['conversationId'] is None and switched['route']['resourceId'] is None and not switched['list'] and switched['current'] is None and switched['actual_home_visible'] and not switched['actual_app_visible'],{'state':switched,'completed_B_dialog_response':switch_evidence,'dialog_ids':[row['id'] for row in switch_dialogs]})
+ await a.wait(f'!!document.querySelector("[data-conversation-id={CB}]")');await a.conversation(CB);own_b=await a.write(text='Account B private marker',files=FILES[1:2],tail='B tail')
  await a.switch(A);await a.wait(f'!!document.querySelector("[data-conversation-id={C1}]")');await a.conversation();check('1C-ACCOUNT-A-RESTORED',await a.fp()==own_a and await a.fp('stored',A,C1)==own_a,{'A':await a.fp(),'stored_A':await a.fp('stored',A,C1),'expected':own_a});await a.back()
  # Old actual conversation read is paused at its HTTP response boundary.
  held=a.net.hold('/rest/v1/messages',A);navigation_index=await a.page.evaluate('__integration.controllerStats.navigations.length')
