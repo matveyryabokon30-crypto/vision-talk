@@ -1,0 +1,117 @@
+{
+  "review_id": "PABLICUS-1C-INDEPENDENT-REVIEW-R1-20260912",
+  "status": "SUBSTEP_1C_ACCEPTED",
+  "owner_acceptance_scope": "SUBSTEP_1C_ONLY",
+  "repository": "matveyryabokon30-crypto/vision-talk",
+  "branch": "refactor/pablicus-foundation-20260911",
+  "reviewed_code_sha": "4b886c1477c44752359ccc4b44f8ff5c072bb241",
+  "executor_handoff_head": "2d610c10cdd2be62ae2193965cd4d5a6c869f09c",
+  "ci": {
+    "run_id": 34688665398,
+    "job_id": 103540004753,
+    "conclusion": "success",
+    "artifact_id": 10297195136,
+    "artifact_name": "integration-1c-4b886c1477c44752359ccc4b44f8ff5c072bb241",
+    "artifact_size_bytes": 2362292,
+    "artifact_sha256": "af0115ae7d0df2efbb1b910ef9d172b4e360bef936fdb9424444ec476950bcb8"
+  },
+  "independent_checks": {
+    "exact_tested_sha": "PASS",
+    "handoff_docs_only_after_tested_sha": "PASS",
+    "runtime_change_scope": "PASS",
+    "harness_qualification": "PASS",
+    "browser_ab_receiver_causality": "PASS_CURRENT_CONTROLLED_EXPERIMENT",
+    "preflight": "PASS",
+    "requirements_1_7": "PASS",
+    "negative_control_sensitivity": "PASS",
+    "accepted_1b_regression_31_of_31": "PASS",
+    "artifact_integrity_evidence": "PASS",
+    "process_cleanup": "PASS"
+  },
+  "browser_matrix": {
+    "PASS": 9,
+    "FAIL": 0,
+    "ERROR": 0,
+    "TIMEOUT": 0,
+    "NOT_RUN": 0,
+    "BLOCKED": 0,
+    "behavioral_assertions_pass": 145,
+    "completed_transitions": 54
+  },
+  "requirements": {
+    "1_real_routes_modules_resources": "PASS",
+    "2_resource_accumulation_and_quiet_ui": "PASS",
+    "3_durability_text_ids_original_blob_bytes": "PASS",
+    "4_durable_outbox_offline_lost_ack_retry_idempotency": "PASS",
+    "5_account_isolation_late_operations_same_user_refresh": "PASS",
+    "6_storage_failures_and_recovery": "PASS",
+    "7_positive_and_negative_controls": "PASS"
+  },
+  "negative_controls": {
+    "MUTATION_A_RESOURCE_LEAK": {
+      "expected_assertion": "1C-NO-RESOURCE-ACCUMULATION",
+      "inner_result": "FAIL",
+      "qualification": "PASS"
+    },
+    "MUTATION_B_LATE_ACCOUNT": {
+      "expected_assertion": "1C-LATE-ACCOUNT-ISOLATION",
+      "inner_result": "FAIL",
+      "qualification": "PASS"
+    },
+    "MUTATION_C_BYTE_OR_ORDER": {
+      "expected_assertion": "1C-DRAFT-BYTES",
+      "inner_result": "FAIL",
+      "qualification": "PASS"
+    },
+    "MUTATION_D_ROUTE_RESOURCE": {
+      "expected_assertion": "1C-SCENARIO-SURVIVES-POLL",
+      "inner_result": "FAIL",
+      "qualification": "PASS"
+    }
+  },
+  "runtime_fixes": [
+    {
+      "file": "pablicus/app.js",
+      "purpose": "preserve active non-home route and avoid rerender on unchanged dialog polling",
+      "before_sha": "e8d017be3a8c46f3dcc78910a2082e704a4fcaa5",
+      "after_sha": "0cf9f714a50952c42c5b503b70fc7429e8b99588",
+      "before": "FAIL",
+      "after": "PASS"
+    },
+    {
+      "file": "pablicus/app-controller.js",
+      "purpose": "clear previous-account route on session identity change",
+      "before_sha": "9a60e778f7d51f79931b93ea886ad084846e572a",
+      "after_sha": "1190098ee93abbc73997c5025bba25f18808e331",
+      "before": "FAIL",
+      "after": "PASS",
+      "diff_scope": "ONE_ADDED_LINE_ONLY"
+    }
+  ],
+  "accepted_1b_regression": {
+    "PASS": 31,
+    "FAIL": 0,
+    "ERROR": 0,
+    "TIMEOUT": 0
+  },
+  "limitations": [
+    "Chromium 143.0.7499.4 / Playwright 1.57.0 / Ubuntu 24.04 only",
+    "No physical iPhone or Safari/WebKit/Firefox qualification",
+    "Synthetic deterministic HTTP/Phoenix boundary, not production backend/RLS/Auth",
+    "Production Service Worker caching not qualified",
+    "No real-user or multi-device qualification",
+    "Resource conclusion bounded to measured resource classes and 54 completed transitions"
+  ],
+  "safety_history": {
+    "historical_gate": "NOT_RESOLVED_LAST_CANONICAL_RECORD",
+    "support": "SENT_AND_ESCALATED",
+    "specialist_review": "PENDING_LAST_CANONICAL_RECORD",
+    "current_environment_source_writes": "SUCCEEDED_WITHOUT_NEW_REFUSAL",
+    "historical_clearance_claimed": false
+  },
+  "next": {
+    "1D": "NOT_STARTED",
+    "BLOCK_2": "NOT_STARTED",
+    "automatic_transition": false
+  }
+}
