@@ -62,6 +62,24 @@ jobs:
               for check in ['fullscreen-Escape-from-control','media-explicit-close','dirty-sheet-denied-close-preserves','project-fullscreen-owner','task-fullscreen-opaque-surface','reduced-short-modal']:
                   assert any(c['name']==check and c['status']=='FAIL' for c in v['checks']),(name,check,v)
           PYCODE
+      - name: Long modal title must expose the prior overlay-scroll defect
+        run: |
+          mkdir components-2b-scroll-before
+          git archive f1460551abbd4e7e4f8ddfa7e5023f4bb727d2e5 pablicus | tar -x -C components-2b-scroll-before
+          set +e
+          timeout --kill-after=10s 600s python tests/engineering/block-02/components_probe.py --source-root components-2b-scroll-before --output components-2b-results/scroll-before > components-2b-results/scroll-before.log 2>&1
+          code=$?
+          set -e
+          test "$code" -eq 1
+          python - <<'PYCODE'
+          import json
+          d=json.load(open('components-2b-results/scroll-before/summary.json'))
+          assert d['status']=='FAIL' and d['browser_closed'] and d['server_closed'],d
+          for name in ['mobile','small-mobile']:
+              v=d['variants'][name];assert v['status']=='FAIL',v
+              assert any(c['name']=='safe-long-large-modal-scroll-content' and c['status']=='FAIL' for c in v['checks']),v
+              assert all(c['status']=='PASS' or c['name'].endswith('-modal-scroll-content') for c in v['checks']),v
+          PYCODE
       - name: Existing components and overlays on exact candidate
         run: |
           timeout --kill-after=10s 600s python tests/engineering/block-02/components_probe.py --source-root . --output components-2b-results/components > components-2b-results/components.log 2>&1
