@@ -6,7 +6,31 @@
 Рабочая ветка при фиксации: `refactor/pablicus-foundation-20260911`.
 Этот файл — точка входа после потери чата. Это не стенограмма и не подтверждение готовности приложения.
 
-## Актуальный пакет 1D — Block 1 closeout, 12 сентября 2026
+## Текущая передача 2A — 12 сентября 2026
+
+В задании `PABLICUS-BLOCK02-2A-SHELL-ARCHITECTURE-20260912`, R1 владелец прямо подтвердил независимую приёмку **BLOCK_1_ACCEPTED**, включая 1A/1B/1C/1D, и разрешил начать Block 2. Исторический пакет Исполнителя 1D ниже сохранён; отдельный файл решения Проверяющего 1D на WORK_START_HEAD не найден. Новое решение здесь не выдаётся за такой файл.
+
+**2A — SUBSTEP_2A_READY_FOR_INDEPENDENT_REVIEW**, `review_required=true`. Это квалифицированная архитектурная база с ограниченными foundation changes, не приёмка 2A и не завершение Block 2.
+
+WORK_START_HEAD: `abfc878896d8b10acc540d27ed370bbfaf2e8b70`. CODE_SHA = TESTED_SHA: `9ee215300ac97b3c48bf5184f414f28333429a1c`. Основной exact-SHA CI: `34698093479` (shell + 1B + полный 1C + negative controls). SHA/document handoff и artifact binding — в манифесте и итоговой квитанции передачи.
+
+Канонические документы:
+
+- [Архитектура](docs/engineering/block-02/SHELL_2A_ARCHITECTURE.md).
+- [Манифест](docs/engineering/block-02/SHELL_2A_MANIFEST.json).
+- [Карта ownership](docs/engineering/block-02/SHELL_2A_OWNERSHIP_MAP.json).
+- [Реестр компонентов](docs/engineering/block-02/SHELL_2A_COMPONENT_REGISTRY.md).
+- [Результаты T01–T13](docs/engineering/block-02/SHELL_2A_TEST_RESULTS.json).
+
+Один PablicusController владеет маршрутом/identity/lifecycle; stateless AppShell — общей проекцией и внешней геометрией; shell.css — общей геометрией шапки/оболочки; design-tokens.css — глобальными токенами; PablicusUI — общим реестром и Composer contract. Корневые вкладки: **Чаты / Дела / Вы**. Bots/Factory — вложенный вход. Spaces/Threads/Search/Saved/AI/Public Identity и calls отражены в IA/контрактах с явными границами реализации.
+
+Результаты Chromium/synthetic boundary не доказывают physical iPhone, Safari, production backend, multi-device или WCAG compliance. Принятые основания Block 1 и exclusion 1A сохранены. Plan 1.0 + Amendments 01/02 не изменены.
+
+Первоначальный source-write отказ 2A по лимиту review 200000 bytes сохранён как исторический факт. После явного одобрения владельца исходная полная операция create_tree прошла штатно; payload не дробился и транспорт не менялся. Это не общая safety/support clearance.
+
+Следующий шаг: **независимая проверка 2A**. 2B самостоятельно НЕ начинать. Block 3 и engine Block 5 не начаты; main/production/deployment не изменены.
+
+## Исторический пакет 1D — до последующего подтверждения владельца
 
 - **1A — SUBSTEP_1A_ACCEPTED_WITH_EXPLICIT_EXCLUSION**: [решение](docs/engineering/block-01/REVIEW_1A_DECISION.md); `NOT_RECOVERED` / `EXCLUDED_FROM_BASELINE` сохранены.
 - **1B — SUBSTEP_1B_ACCEPTED**: [решение](docs/engineering/block-01/REVIEW_1B_DECISION.md).
