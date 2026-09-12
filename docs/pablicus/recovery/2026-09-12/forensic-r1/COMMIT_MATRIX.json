@@ -1,0 +1,383 @@
+[
+  {
+    "sha": "55754de80a74b45ddd8aef7d2a2a9e95f132aa40",
+    "date": "2026-09-12T17:09:49+03:00",
+    "author": "matveyryabokon30-crypto",
+    "purpose": "docs(2a): hand off qualified shell architecture for independent review",
+    "changes": [
+      {
+        "path": "PABLICUS_CONTEXT.md",
+        "added": "25",
+        "removed": "1"
+      },
+      {
+        "path": "docs/engineering/block-02/SHELL_2A_ARCHITECTURE.md",
+        "added": "102",
+        "removed": "0"
+      },
+      {
+        "path": "docs/engineering/block-02/SHELL_2A_COMPONENT_REGISTRY.md",
+        "added": "283",
+        "removed": "0"
+      },
+      {
+        "path": "docs/engineering/block-02/SHELL_2A_MANIFEST.json",
+        "added": "568",
+        "removed": "0"
+      },
+      {
+        "path": "docs/engineering/block-02/SHELL_2A_OWNERSHIP_MAP.json",
+        "added": "5517",
+        "removed": "0"
+      },
+      {
+        "path": "docs/engineering/block-02/SHELL_2A_TEST_RESULTS.json",
+        "added": "1129",
+        "removed": "0"
+      }
+    ]
+  },
+  {
+    "sha": "6822a58a7a632fcfc182e4a8e2f02eea37d55afb",
+    "date": "2026-09-12T17:25:41+03:00",
+    "author": "Pablicus Reviewer",
+    "purpose": "docs(2a): record independent acceptance and review evidence [skip ci]",
+    "changes": [
+      {
+        "path": "PABLICUS_CONTEXT.md",
+        "added": "13",
+        "removed": "1"
+      },
+      {
+        "path": "docs/pablicus/reviews/2026-09-12/2A_HANDOFF_REVIEW_R1.md",
+        "added": "64",
+        "removed": "0"
+      },
+      {
+        "path": "docs/pablicus/reviews/2026-09-12/2A_R1_PROBES.txt",
+        "added": "81",
+        "removed": "0"
+      },
+      {
+        "path": "docs/pablicus/reviews/2026-09-12/2A_R1_RESULTS.json",
+        "added": "17663",
+        "removed": "0"
+      }
+    ]
+  },
+  {
+    "sha": "f5eec611c93cb5477258e934935cc1c5cbfde2f9",
+    "date": "2026-09-12T17:51:41+03:00",
+    "author": "matveyryabokon30-crypto",
+    "purpose": "Implement shared native controls and guarded overlay behavior for Block 2B",
+    "changes": [
+      {
+        "path": ".github/workflows/pablicus-components-2b.yml",
+        "added": "129",
+        "removed": "0"
+      },
+      {
+        "path": "pablicus/app-shell.js",
+        "added": "2",
+        "removed": "0"
+      },
+      {
+        "path": "pablicus/app.js",
+        "added": "4",
+        "removed": "4"
+      },
+      {
+        "path": "pablicus/bot-factory.js",
+        "added": "1",
+        "removed": "1"
+      },
+      {
+        "path": "pablicus/bots.js",
+        "added": "1",
+        "removed": "1"
+      },
+      {
+        "path": "pablicus/chat-canvas.js",
+        "added": "10",
+        "removed": "5"
+      },
+      {
+        "path": "pablicus/chat-library.css",
+        "added": "7",
+        "removed": "4"
+      },
+      {
+        "path": "pablicus/chat-library.js",
+        "added": "1",
+        "removed": "1"
+      },
+      {
+        "path": "pablicus/chat.js",
+        "added": "2",
+        "removed": "2"
+      },
+      {
+        "path": "pablicus/component-registry.js",
+        "added": "29",
+        "removed": "2"
+      },
+      {
+        "path": "pablicus/controls.css",
+        "added": "8",
+        "removed": "0"
+      },
+      {
+        "path": "pablicus/design-tokens.css",
+        "added": "1",
+        "removed": "0"
+      },
+      {
+        "path": "pablicus/index.html",
+        "added": "9",
+        "removed": "9"
+      },
+      {
+        "path": "pablicus/media-viewer.css",
+        "added": "8",
+        "removed": "4"
+      },
+      {
+        "path": "pablicus/media-viewer.js",
+        "added": "5",
+        "removed": "4"
+      },
+      {
+        "path": "pablicus/pablicus.css",
+        "added": "4",
+        "removed": "1"
+      },
+      {
+        "path": "pablicus/rich-composer.css",
+        "added": "6",
+        "removed": "6"
+      },
+      {
+        "path": "pablicus/rich-composer.js",
+        "added": "2",
+        "removed": "0"
+      },
+      {
+        "path": "pablicus/sw.js",
+        "added": "2",
+        "removed": "2"
+      },
+      {
+        "path": "pablicus/tasks-home.js",
+        "added": "1",
+        "removed": "1"
+      },
+      {
+        "path": "pablicus/workspace-editor.css",
+        "added": "7",
+        "removed": "7"
+      },
+      {
+        "path": "pablicus/workspace-editor.js",
+        "added": "6",
+        "removed": "2"
+      },
+      {
+        "path": "tests/engineering/block-02/components_probe.py",
+        "added": "70",
+        "removed": "0"
+      }
+    ]
+  },
+  {
+    "sha": "532690560395a0778b59dc5c4aae846db29d6db9",
+    "date": "2026-09-12T17:53:43+03:00",
+    "author": "matveyryabokon30-crypto",
+    "purpose": "Run sandboxed 2B browser qualification on compatible Ubuntu 22.04 runner",
+    "changes": [
+      {
+        "path": ".github/workflows/pablicus-components-2b.yml",
+        "added": "1",
+        "removed": "1"
+      }
+    ]
+  },
+  {
+    "sha": "f1e5d825b0a26fa351a57f9b17e3687dbb5627e1",
+    "date": "2026-09-12T18:02:00+03:00",
+    "author": "matveyryabokon30-crypto",
+    "purpose": "docs(pablicus): add owner-approved design authority amendment 03",
+    "changes": [
+      {
+        "path": "docs/pablicus/approved/2026-09-12/AMENDMENT_03_DESIGN_AUTHORITY_AND_ORIGINAL_ASSETS.md",
+        "added": "230",
+        "removed": "0"
+      }
+    ]
+  },
+  {
+    "sha": "39ee3c01797a568d5455ff19576b061a34d1d136",
+    "date": "2026-09-12T18:02:13+03:00",
+    "author": "matveyryabokon30-crypto",
+    "purpose": "docs(pablicus): record owner decision for amendment 03",
+    "changes": [
+      {
+        "path": "docs/pablicus/approved/2026-09-12/OWNER_DECISION_AMENDMENT_03.md",
+        "added": "44",
+        "removed": "0"
+      }
+    ]
+  },
+  {
+    "sha": "8ea1c7b03b1dabd26f449e48c751eabe75344b25",
+    "date": "2026-09-12T18:02:43+03:00",
+    "author": "matveyryabokon30-crypto",
+    "purpose": "docs(pablicus): add design reference register for chief designer",
+    "changes": [
+      {
+        "path": "docs/pablicus/design/2026-09-12/DESIGN_REFERENCE_REGISTER.md",
+        "added": "105",
+        "removed": "0"
+      }
+    ]
+  },
+  {
+    "sha": "ccfdd90e05bb5f98dba4ee339b04cf2f00df391c",
+    "date": "2026-09-12T18:03:46+03:00",
+    "author": "matveyryabokon30-crypto",
+    "purpose": "Qualify workspace fullscreen surfaces while preserving parallel Amendment 03 decisions",
+    "changes": [
+      {
+        "path": ".github/workflows/pablicus-components-2b.yml",
+        "added": "1",
+        "removed": "1"
+      },
+      {
+        "path": "pablicus/public-ui-foundation.css",
+        "added": "10",
+        "removed": "10"
+      },
+      {
+        "path": "pablicus/workspace-editor.css",
+        "added": "1",
+        "removed": "1"
+      },
+      {
+        "path": "pablicus/workspace-editor.js",
+        "added": "3",
+        "removed": "0"
+      },
+      {
+        "path": "tests/engineering/block-02/components_probe.py",
+        "added": "4",
+        "removed": "1"
+      }
+    ]
+  },
+  {
+    "sha": "f1460551abbd4e7e4f8ddfa7e5023f4bb727d2e5",
+    "date": "2026-09-12T18:13:18+03:00",
+    "author": "matveyryabokon30-crypto",
+    "purpose": "Preserve short and long modal viewport checks in reproducible 2B before/after proof",
+    "changes": [
+      {
+        "path": ".github/workflows/pablicus-components-2b.yml",
+        "added": "1",
+        "removed": "1"
+      },
+      {
+        "path": "tests/engineering/block-02/components_probe.py",
+        "added": "1",
+        "removed": "1"
+      }
+    ]
+  },
+  {
+    "sha": "c5e26c2f85ef1f6d1f8ab4684d033de4f3b0d3c9",
+    "date": "2026-09-12T18:17:48+03:00",
+    "author": "matveyryabokon30-crypto",
+    "purpose": "Keep long modal headings and scrolled content independently reachable",
+    "changes": [
+      {
+        "path": ".github/workflows/pablicus-components-2b.yml",
+        "added": "18",
+        "removed": "0"
+      },
+      {
+        "path": "pablicus/index.html",
+        "added": "1",
+        "removed": "1"
+      },
+      {
+        "path": "pablicus/pablicus.css",
+        "added": "3",
+        "removed": "1"
+      },
+      {
+        "path": "tests/engineering/block-02/components_probe.py",
+        "added": "1",
+        "removed": "1"
+      }
+    ]
+  },
+  {
+    "sha": "d791adc19aade1015f4ba34cf4beb5ce2069c93f",
+    "date": "2026-09-12T18:28:03+03:00",
+    "author": "matveyryabokon30-crypto",
+    "purpose": "Document exact-SHA 2B qualification and hand off for independent review",
+    "changes": [
+      {
+        "path": "PABLICUS_CONTEXT.md",
+        "added": "13",
+        "removed": "1"
+      },
+      {
+        "path": "docs/engineering/block-02/COMPONENTS_2B_IMPLEMENTATION.md",
+        "added": "46",
+        "removed": "0"
+      },
+      {
+        "path": "docs/engineering/block-02/COMPONENTS_2B_MANIFEST.json",
+        "added": "279",
+        "removed": "0"
+      },
+      {
+        "path": "docs/engineering/block-02/COMPONENTS_2B_MAP.json",
+        "added": "211",
+        "removed": "0"
+      },
+      {
+        "path": "docs/engineering/block-02/COMPONENTS_2B_TEST_RESULTS.json",
+        "added": "5811",
+        "removed": "0"
+      }
+    ]
+  },
+  {
+    "sha": "883003ebe9ae25d3c97b657234d0b6cab72414dd",
+    "date": "2026-09-12T18:55:49+03:00",
+    "author": "Pablicus Reviewer",
+    "purpose": "docs(2b): record independent component acceptance and evidence [skip ci]",
+    "changes": [
+      {
+        "path": "PABLICUS_CONTEXT.md",
+        "added": "11",
+        "removed": "1"
+      },
+      {
+        "path": "docs/pablicus/reviews/2026-09-12/2B_HANDOFF_REVIEW_R1.md",
+        "added": "67",
+        "removed": "0"
+      },
+      {
+        "path": "docs/pablicus/reviews/2026-09-12/2B_R1_PROBES.txt",
+        "added": "137",
+        "removed": "0"
+      },
+      {
+        "path": "docs/pablicus/reviews/2026-09-12/2B_R1_RESULTS.json",
+        "added": "5947",
+        "removed": "0"
+      }
+    ]
+  }
+]

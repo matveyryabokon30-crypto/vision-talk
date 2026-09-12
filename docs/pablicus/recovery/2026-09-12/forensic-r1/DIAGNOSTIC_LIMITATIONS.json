@@ -1,0 +1,252 @@
+{
+  "current-probe": {
+    "error.json": {
+      "error": "Page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to \"http://127.0.0.1:56275/pablicus/\", waiting until \"load\"\n"
+    },
+    "collector.json": {
+      "mandatory_evidence_complete": false,
+      "page_errors": [],
+      "capture_steps": {
+        "release_write": {
+          "status": "ERROR",
+          "mandatory": false,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "dom_global_state": {
+          "status": "ERROR",
+          "mandatory": true,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "final_state": {
+          "status": "ERROR",
+          "mandatory": true,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "instrument": {
+          "status": "ERROR",
+          "mandatory": true,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "screenshots": {
+          "status": "ERROR",
+          "mandatory": true,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "html_reference": {
+          "status": "PASS",
+          "mandatory": true
+        },
+        "network": {
+          "status": "PASS",
+          "mandatory": true
+        }
+      }
+    }
+  },
+  "current-mobile-probe": {
+    "error.json": {
+      "error": "Locator.fill: Timeout 10000ms exceeded.\nCall log:\n  - waiting for locator(\"#email\")\n    - locator resolved to <input id=\"email\" required=\"\" name=\"email\" type=\"email\" spellcheck=\"false\" autocapitalize=\"none\" data-ui-control=\"input\" autocomplete=\"username\"/>\n"
+    },
+    "collector.json": {
+      "mandatory_evidence_complete": false,
+      "page_errors": [],
+      "capture_steps": {
+        "release_write": {
+          "status": "ERROR",
+          "mandatory": false,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "dom_global_state": {
+          "status": "PASS",
+          "mandatory": true
+        },
+        "final_state": {
+          "status": "PASS",
+          "mandatory": true
+        },
+        "instrument": {
+          "status": "PASS",
+          "mandatory": true
+        },
+        "screenshots": {
+          "status": "ERROR",
+          "mandatory": true,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "html_reference": {
+          "status": "PASS",
+          "mandatory": true
+        },
+        "network": {
+          "status": "PASS",
+          "mandatory": true
+        }
+      }
+    }
+  },
+  "current-webkit-probe": {
+    "error.json": {
+      "error": "Locator.click: Timeout 10000ms exceeded.\nCall log:\n  - waiting for locator(\"[data-conversation-id=\\\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1\\\"] .chatMain\")\n    - locator resolved to <button type=\"button\" class=\"chatMain\" data-ui-control=\"button\">…</button>\n  - attempting click action\n    - waiting for element to be visible, enabled and stable\n    - element is visible, enabled and stable\n    - scrolling into view if needed\n    - done scrolling\n    - performing click action\n"
+    },
+    "collector.json": {
+      "mandatory_evidence_complete": false,
+      "page_errors": [],
+      "capture_steps": {
+        "release_write": {
+          "status": "ERROR",
+          "mandatory": false,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "dom_global_state": {
+          "status": "PASS",
+          "mandatory": true
+        },
+        "final_state": {
+          "status": "PASS",
+          "mandatory": true
+        },
+        "instrument": {
+          "status": "ERROR",
+          "mandatory": true,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "screenshots": {
+          "status": "ERROR",
+          "mandatory": true,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "html_reference": {
+          "status": "PASS",
+          "mandatory": true
+        },
+        "network": {
+          "status": "PASS",
+          "mandatory": true
+        }
+      }
+    }
+  },
+  "current-geometry": {
+    "geometry.json": {
+      "errors": [
+        {
+          "step": "scenario",
+          "error": "Page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://127.0.0.1:56986/pablicus/\", waiting until \"load\"\n",
+          "traceback": "Traceback (most recent call last):\n  File \"/Users/artem/Documents/Codex/2026-09-12/1c-codex-astra-1d-2-role/work/vision-talk/../iphone_correction/geometry_probe.py\", line 21, in main\n    print('goto',flush=True);await p.goto(origin+'/pablicus/',wait_until='load',timeout=90000)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/artem/Documents/Codex/2026-09-12/1c-codex-astra-1d-2-role/work/venv/lib/python3.12/site-packages/playwright/async_api/_generated.py\", line 9041, in goto\n    await self._impl_obj.goto(\n  File \"/Users/artem/Documents/Codex/2026-09-12/1c-codex-astra-1d-2-role/work/venv/lib/python3.12/site-packages/playwright/_impl/_page.py\", line 552, in goto\n    return await self._main_frame.goto(**locals_to_params(locals()))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/artem/Documents/Codex/2026-09-12/1c-codex-astra-1d-2-role/work/venv/lib/python3.12/site-packages/playwright/_impl/_frame.py\", line 153, in goto\n    await self._channel.send(\n  File \"/Users/artem/Documents/Codex/2026-09-12/1c-codex-astra-1d-2-role/work/venv/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 69, in send\n    return await self._connection.wrap_api_call(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/artem/Documents/Codex/2026-09-12/1c-codex-astra-1d-2-role/work/venv/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 559, in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nplaywright._impl._errors.TimeoutError: Page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://127.0.0.1:56986/pablicus/\", waiting until \"load\"\n\n"
+        }
+      ],
+      "browser": "26.0",
+      "browser_closed": true,
+      "server_closed": true
+    },
+    "collector.json": {
+      "mandatory_evidence_complete": false,
+      "page_errors": [],
+      "capture_steps": {
+        "release_write": {
+          "status": "ERROR",
+          "mandatory": false,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "dom_global_state": {
+          "status": "ERROR",
+          "mandatory": true,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "final_state": {
+          "status": "ERROR",
+          "mandatory": true,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "instrument": {
+          "status": "ERROR",
+          "mandatory": true,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "screenshots": {
+          "status": "ERROR",
+          "mandatory": true,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "html_reference": {
+          "status": "ERROR",
+          "mandatory": true,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "network": {
+          "status": "PASS",
+          "mandatory": true
+        }
+      }
+    }
+  },
+  "flex-diagnostic": {
+    "result.json": {
+      "status": "ERROR",
+      "error": "Page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://127.0.0.1:57052/pablicus/\", waiting until \"load\"\n",
+      "browser": "26.0"
+    },
+    "collector.json": {
+      "mandatory_evidence_complete": false,
+      "page_errors": [],
+      "capture_steps": {
+        "release_write": {
+          "status": "ERROR",
+          "mandatory": false,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "dom_global_state": {
+          "status": "ERROR",
+          "mandatory": true,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "final_state": {
+          "status": "ERROR",
+          "mandatory": true,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "instrument": {
+          "status": "ERROR",
+          "mandatory": true,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "screenshots": {
+          "status": "ERROR",
+          "mandatory": true,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "html_reference": {
+          "status": "ERROR",
+          "mandatory": true,
+          "error": "",
+          "error_type": "TimeoutError"
+        },
+        "network": {
+          "status": "PASS",
+          "mandatory": true
+        }
+      }
+    }
+  }
+}

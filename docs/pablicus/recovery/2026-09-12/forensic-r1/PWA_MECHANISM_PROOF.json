@@ -1,0 +1,50 @@
+{
+  "scope": "Algorithm reproduction with real unchanged worker sources; NOT observation of owner device cache",
+  "checks": [
+    {
+      "id": "PWA-QUERY-MIX",
+      "status": "REPRODUCED",
+      "html": {
+        "ok": true,
+        "generation": "new",
+        "url": "https://fixture.invalid/pablicus/?conversation=fixture"
+      },
+      "app": {
+        "ok": true,
+        "generation": "old",
+        "url": "https://fixture.invalid/pablicus/app.js"
+      },
+      "newShell": {
+        "ok": true,
+        "generation": "new",
+        "url": "https://fixture.invalid/pablicus/app-shell.js"
+      },
+      "html_intercepted": false
+    },
+    {
+      "id": "PWA-INSTALL-NO-REVISION-BINDING",
+      "status": "REPRODUCED",
+      "cache": "pablicus-shell-block02-2b-candidate",
+      "generations": [
+        "old",
+        "new"
+      ]
+    },
+    {
+      "id": "PWA-UNCHANGED-WORKER-AFTER-RUNTIME-CHANGES",
+      "status": "CONFIRMED",
+      "hashes": {
+        "f5eec61": "538916a82c6025678cd847a47ae1ff048d31316ad82d3834c06d01ddfed068aa",
+        "ccfdd90": "538916a82c6025678cd847a47ae1ff048d31316ad82d3834c06d01ddfed068aa",
+        "f146055": "538916a82c6025678cd847a47ae1ff048d31316ad82d3834c06d01ddfed068aa",
+        "c5e26c2": "538916a82c6025678cd847a47ae1ff048d31316ad82d3834c06d01ddfed068aa",
+        "883003e": "538916a82c6025678cd847a47ae1ff048d31316ad82d3834c06d01ddfed068aa"
+      }
+    },
+    {
+      "id": "PWA-ACTIVATION-CLAIMS-CLIENTS-AND-DELETES-OLD",
+      "status": "CONFIRMED",
+      "claims": 1
+    }
+  ]
+}

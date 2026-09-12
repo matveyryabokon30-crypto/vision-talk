@@ -1,0 +1,87 @@
+{
+  "schema_version": "1.0",
+  "task_id": "PABLICUS-2B-FORENSIC-RECOVERY-AND-NEXT-STEP-20260912",
+  "status": "BLOCK_2_FORENSIC_INCOMPLETE_WITH_EXACT_GAPS",
+  "recorded_at_utc": "2026-09-12T17:33:36.509193+00:00",
+  "head": "883003ebe9ae25d3c97b657234d0b6cab72414dd",
+  "source_changes": false,
+  "published": false,
+  "new_ci": null,
+  "files": [
+    {
+      "path": "2a-ci-mobile-chats.png",
+      "bytes": 25886,
+      "sha256": "4d066abec868d3bba07b66cd56cedf0c7781447ff99ff39c6f6744df2cf03011"
+    },
+    {
+      "path": "2b-ci-mobile-chats.png",
+      "bytes": 23732,
+      "sha256": "baa95382216758f74876fdf776a3f8307c886bc44a2f9e559f3cae0bb3903173"
+    },
+    {
+      "path": "COMMIT_MATRIX.json",
+      "bytes": 9885,
+      "sha256": "60c426437fd5ea7618c934f1be843a403ade15f42ac4b7a65edd2712aed2ea93"
+    },
+    {
+      "path": "DIAGNOSTIC_LIMITATIONS.json",
+      "bytes": 8866,
+      "sha256": "3a2d71f8d9b59840de51236af4b70c75fdc2b2cbce829ce5b2f6ec1a80a90ab0"
+    },
+    {
+      "path": "ORIGINS.json",
+      "bytes": 2064,
+      "sha256": "133d62e0e34fccfde3fffc5d209a473960b312fcd8c8a9396b0b3a0e1c73466c"
+    },
+    {
+      "path": "PABLICUS_BLOCK_2_FORENSIC_RECOVERY_REPORT_R1.md",
+      "bytes": 35317,
+      "sha256": "ae6904f6a61d9f84068f8ae62a7759491def5de9a7a360dba6feed9156f371ff"
+    },
+    {
+      "path": "PUBLIC_STATIC_BINDING.json",
+      "bytes": 451,
+      "sha256": "e538ec1414c6be12762adaff206c457266b267d06333d4011c3e88664dd90b3c"
+    },
+    {
+      "path": "PWA_MECHANISM_PROOF.json",
+      "bytes": 1538,
+      "sha256": "ab7ffd93021d1a3ee917a26fe4dc1be6eaf1faa2c91a8b2109a4da1664c38bf2"
+    },
+    {
+      "path": "RUNTIME_HISTORY_HASHES.json",
+      "bytes": 55458,
+      "sha256": "4347f6eecb1e2a9d0c086ba2b78e08df6fe4763b0ed43a40ff66cef94c51ebdd"
+    },
+    {
+      "path": "head-local-webkit-chats-320.json",
+      "bytes": 853,
+      "sha256": "550b663d795345d2bf36aa1893709ad7c2e47aeded646d6b33670bedbe4e4223"
+    },
+    {
+      "path": "head-local-webkit-chats-320.png",
+      "bytes": 29508,
+      "sha256": "e06bc8ceaa7ed8d1afc5fa75c02c7d47ad556cb323b77a686a601d86633e659c"
+    },
+    {
+      "path": "head-local-webkit-profile-320.json",
+      "bytes": 1061,
+      "sha256": "68d6f42ed1f3323711cf28aa6aece37788783a659d5d7ca6691884bd64d3aeed"
+    },
+    {
+      "path": "head-local-webkit-profile-320.png",
+      "bytes": 30267,
+      "sha256": "43831e72cf4cbe1ce447d6f9e0eb87c2b9091224e1a3d400a4b66cd10b447a4b"
+    },
+    {
+      "path": "screenshot-provenance.json",
+      "bytes": 1632,
+      "sha256": "7cd49eab9afe7dd8233713f458f48febd5a00e7ac4d7b9105f4c4b88baae555f"
+    },
+    {
+      "path": "sw_mechanism_probe.cjs",
+      "bytes": 3609,
+      "sha256": "a7e8d10d0daab8ed13b8dfcbfcc9a13756dd4e0d39e969559f846c38a7ae7b4a"
+    }
+  ]
+}

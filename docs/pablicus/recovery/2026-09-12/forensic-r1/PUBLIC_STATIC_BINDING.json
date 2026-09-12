@@ -1,0 +1,12 @@
+{
+  "pablicus/index.html": {
+    "local_sha256": "029103a74e2c74d46745d24e0e75ee64b34f4142a757591fa877810911924e8a",
+    "public_sha256": "029103a74e2c74d46745d24e0e75ee64b34f4142a757591fa877810911924e8a",
+    "match": true
+  },
+  "pablicus/sw.js": {
+    "local_sha256": "538916a82c6025678cd847a47ae1ff048d31316ad82d3834c06d01ddfed068aa",
+    "public_sha256": "538916a82c6025678cd847a47ae1ff048d31316ad82d3834c06d01ddfed068aa",
+    "match": true
+  }
+}

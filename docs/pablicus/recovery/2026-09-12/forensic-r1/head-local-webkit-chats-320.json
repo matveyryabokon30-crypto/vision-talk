@@ -1,0 +1,54 @@
+{
+  "viewport": {
+    "width": 320,
+    "height": 568,
+    "client": 320,
+    "scroll": 320,
+    "x": 0,
+    "y": 0,
+    "vw": 320,
+    "vh": 568,
+    "left": 0,
+    "top": 0,
+    "scale": 1
+  },
+  "nodes": [
+    {
+      "id": "home",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 568,
+        "right": 320,
+        "bottom": 568
+      },
+      "style": {
+        "position": "fixed",
+        "transform": "none",
+        "grid": "none",
+        "areas": "none",
+        "font": "16.5px",
+        "minWidth": "0px"
+      },
+      "client": 320,
+      "scroll": 320
+    }
+  ],
+  "overflow": [
+    {
+      "tag": "BUTTON",
+      "id": "",
+      "cls": "focusBtn",
+      "w": 44,
+      "x": 300
+    },
+    {
+      "tag": "BUTTON",
+      "id": "",
+      "cls": "focusBtn",
+      "w": 44,
+      "x": 300
+    }
+  ]
+}

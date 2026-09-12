@@ -1,0 +1,66 @@
+[
+  {
+    "path": "pablicus/chat.js",
+    "needle": "pageLeft",
+    "changes": [
+      "491ec319e1f5ebfb3cf0e577c9dba175dcbf64ec Publish Pablicus 0.1.0-rc2 from checked 4fcf345 at /pablicus/"
+    ]
+  },
+  {
+    "path": "pablicus/app.js",
+    "needle": "VERSION='0.1.0-rc5'",
+    "changes": [
+      "8900e72bec6a1002a4f93915bf5d513208c5d75f Publish checked Pablicus RC5 visible password login and recovery"
+    ]
+  },
+  {
+    "path": "pablicus/ux-refinement.js",
+    "needle": "function decorateProfile",
+    "changes": [
+      "fa3218fcee618529a5c085c4b20de44acded3d29 Add pre Stage 3 UX refinement layer",
+      "1527cc1e0af229d04864dad4882e214b42985feb refactor(block-01): unify application ownership and lifecycle"
+    ]
+  },
+  {
+    "path": "pablicus/public-ui-foundation.css",
+    "needle": ".richMediaHead{display:none",
+    "changes": [
+      "a9b3604c515d0abc5bc6dda83375293e5b512b5c Unify Public shell and isolate chat canvas editors"
+    ]
+  },
+  {
+    "path": "pablicus/public-ui-foundation.css",
+    "needle": "#screenContent .findPeople",
+    "changes": [
+      "a9b3604c515d0abc5bc6dda83375293e5b512b5c Unify Public shell and isolate chat canvas editors"
+    ]
+  },
+  {
+    "path": "pablicus/rich-composer.js",
+    "needle": "label.textContent = block.pending",
+    "changes": [
+      "ef302c8a7b508676d35bc3dcff2327e07b17fa36 Publish checked Pablicus RC5 passkey login and recovery"
+    ]
+  },
+  {
+    "path": "pablicus/style.css",
+    "needle": "grid-template-rows:40px minmax(0,1fr)",
+    "changes": [
+      "491ec319e1f5ebfb3cf0e577c9dba175dcbf64ec Publish Pablicus 0.1.0-rc2 from checked 4fcf345 at /pablicus/"
+    ]
+  },
+  {
+    "path": "pablicus/sw.js",
+    "needle": "urls.includes(u.href)",
+    "changes": [
+      "491ec319e1f5ebfb3cf0e577c9dba175dcbf64ec Publish Pablicus 0.1.0-rc2 from checked 4fcf345 at /pablicus/"
+    ]
+  },
+  {
+    "path": "pablicus/app.js",
+    "needle": "approveUpdate=true",
+    "changes": [
+      "491ec319e1f5ebfb3cf0e577c9dba175dcbf64ec Publish Pablicus 0.1.0-rc2 from checked 4fcf345 at /pablicus/"
+    ]
+  }
+]

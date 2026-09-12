@@ -1,0 +1,32 @@
+[
+  {
+    "copy": "2a-ci-mobile-chats.png",
+    "source": "/Users/artem/Documents/Codex/2026-09-12/1c-codex-astra-1d-2-role/work/shell_2a/final-34698093479/browser/mobile/home.png",
+    "sha256": "4d066abec868d3bba07b66cd56cedf0c7781447ff99ff39c6f6744df2cf03011"
+  },
+  {
+    "copy": "2b-ci-mobile-chats.png",
+    "source": "/Users/artem/Documents/Codex/2026-09-12/1c-codex-astra-1d-2-role/work/components_2b/final/browser/mobile/home.png",
+    "sha256": "baa95382216758f74876fdf776a3f8307c886bc44a2f9e559f3cae0bb3903173"
+  },
+  {
+    "copy": "head-local-webkit-chats-320.png",
+    "source": "/Users/artem/Documents/Codex/2026-09-12/1c-codex-astra-1d-2-role/work/iphone_correction/current-webkit-probe/chats.png",
+    "sha256": "e06bc8ceaa7ed8d1afc5fa75c02c7d47ad556cb323b77a686a601d86633e659c"
+  },
+  {
+    "copy": "head-local-webkit-profile-320.png",
+    "source": "/Users/artem/Documents/Codex/2026-09-12/1c-codex-astra-1d-2-role/work/iphone_correction/current-webkit-probe/profile.png",
+    "sha256": "43831e72cf4cbe1ce447d6f9e0eb87c2b9091224e1a3d400a4b66cd10b447a4b"
+  },
+  {
+    "copy": "head-local-webkit-chats-320.json",
+    "source": "/Users/artem/Documents/Codex/2026-09-12/1c-codex-astra-1d-2-role/work/iphone_correction/current-webkit-probe/chats.json",
+    "sha256": "550b663d795345d2bf36aa1893709ad7c2e47aeded646d6b33670bedbe4e4223"
+  },
+  {
+    "copy": "head-local-webkit-profile-320.json",
+    "source": "/Users/artem/Documents/Codex/2026-09-12/1c-codex-astra-1d-2-role/work/iphone_correction/current-webkit-probe/profile.json",
+    "sha256": "68d6f42ed1f3323711cf28aa6aece37788783a659d5d7ca6691884bd64d3aeed"
+  }
+]

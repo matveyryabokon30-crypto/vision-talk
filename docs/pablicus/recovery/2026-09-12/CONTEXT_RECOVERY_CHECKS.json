@@ -1,0 +1,80 @@
+{
+  "forensic_files": [
+    {
+      "path": "2a-ci-mobile-chats.png",
+      "pass": true
+    },
+    {
+      "path": "2b-ci-mobile-chats.png",
+      "pass": true
+    },
+    {
+      "path": "COMMIT_MATRIX.json",
+      "pass": true
+    },
+    {
+      "path": "DIAGNOSTIC_LIMITATIONS.json",
+      "pass": true
+    },
+    {
+      "path": "ORIGINS.json",
+      "pass": true
+    },
+    {
+      "path": "PABLICUS_BLOCK_2_FORENSIC_RECOVERY_REPORT_R1.md",
+      "pass": true
+    },
+    {
+      "path": "PUBLIC_STATIC_BINDING.json",
+      "pass": true
+    },
+    {
+      "path": "PWA_MECHANISM_PROOF.json",
+      "pass": true
+    },
+    {
+      "path": "RUNTIME_HISTORY_HASHES.json",
+      "pass": true
+    },
+    {
+      "path": "head-local-webkit-chats-320.json",
+      "pass": true
+    },
+    {
+      "path": "head-local-webkit-chats-320.png",
+      "pass": true
+    },
+    {
+      "path": "head-local-webkit-profile-320.json",
+      "pass": true
+    },
+    {
+      "path": "head-local-webkit-profile-320.png",
+      "pass": true
+    },
+    {
+      "path": "screenshot-provenance.json",
+      "pass": true
+    },
+    {
+      "path": "sw_mechanism_probe.cjs",
+      "pass": true
+    }
+  ],
+  "runtime_count": 93,
+  "runtime_equals_tested_candidate": true,
+  "scope": "Context recovery verification, not a new product qualification",
+  "base_head": "883003ebe9ae25d3c97b657234d0b6cab72414dd",
+  "commit_matrix_sha_and_path_sets": "12/12 PASS",
+  "design_payload_hashes": "181/181 PASS",
+  "design_manifest_hashes": "2/2 PASS",
+  "structural_checks": "10/10 PASS earlier in this recovery conversation",
+  "fresh_full_regression_run": false,
+  "physical_device_test": false,
+  "latest_executor_task": {
+    "thread_id": "01a094b5-376b-73e2-87a6-f89c4f41ca2e",
+    "message_timestamp": "2026-09-12T16:57:20.200Z",
+    "text_sha256": "9df05bf16b499141dcb3a403aecf369520ad4be20f3c0e13bbb44b7fadeb7441"
+  },
+  "archived_evidence_index_sha256": "e39e3a5ab0fb20464e99232220010af3b2e97a751f3c9d5c38540e49429162bc"
+}

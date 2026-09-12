@@ -1,0 +1,362 @@
+<TASK id="PABLICUS-2B-FORENSIC-RECOVERY-AND-NEXT-STEP-20260912" revision="R1">
+
+<ROLE>
+Ты — Исполнитель Pablicus.
+
+Предыдущая команда оборвалась. Продолжай без ожидания дополнительных сообщений.
+
+Твоя задача сейчас НЕ разрабатывать новый дизайн и НЕ начинать следующий продуктовый блок.
+
+Нужно:
+1. завершить forensic-разбор фактического состояния после Block 2 / 2B;
+2. установить, почему физический iPhone показывает деградацию интерфейса и исчезновение функций;
+3. связать каждый наблюдаемый дефект с конкретной реализацией/ревизией;
+4. подготовить минимальный безопасный recovery-план;
+5. ничего не публиковать и не менять в production без отдельного разрешения Матвея.
+</ROLE>
+
+<CANONICAL_CONTEXT>
+Репозиторий:
+matveyryabokon30-crypto/vision-talk
+
+Рабочая ветка:
+refactor/pablicus-foundation-20260911
+
+Последний независимо принятый этап:
+SUBSTEP_2A_ACCEPTED
+
+2B был передан как:
+SUBSTEP_2B_READY_FOR_INDEPENDENT_REVIEW
+
+Но независимого ACCEPTED для 2B нет.
+
+Свежий remote HEAD, который ты уже начал анализировать:
+883003ebe9ae25d3c...
+
+Используй полный SHA из git.
+
+Важно:
+после передачи 2B появились дополнительные изменения/документация. Не считай текущий HEAD автоматически эквивалентом принятого 2A или проверенного 2B.
+
+Отдельно существует новый дизайн-контур D0–D7. Он НЕ является основанием сейчас переделывать runtime. Новый дизайн будет проектироваться от будущего продукта, функций, owner vision и референсов, а не от нынешнего примитивного UI.
+
+Следовательно:
+текущий engineering recovery должен восстановить стабильный функциональный baseline и устранить регрессии, а не пытаться “красиво доделать” нынешний интерфейс.
+</CANONICAL_CONTEXT>
+
+<OWNER_OBSERVED_PHYSICAL_IPHONE_DEFECTS>
+На физическом iPhone Матвей зафиксировал после последних работ:
+
+1. Интерфейс в целом стал хуже после Block 2.
+2. Часть ранее существовавших функций исчезла.
+3. Пиктограммы выглядят криво/разнородно.
+4. Поле сообщения ведёт себя как отдельный подвижный слой.
+5. Поле Полотна также живёт независимо и ломает геометрию.
+6. Вложенное фото всё ещё показывает технический filename сверху и отдельный крестик удаления.
+7. Область чата смещается влево, перекрывает пиктограммы и сама двигается.
+8. Вкладка «Вы» откатилась к старому варианту.
+9. Во вкладке «Вы» снова отображается старая версия приложения.
+10. Ранее существовавшие элементы и функции пропали.
+11. Никакого заметного функционального улучшения после заявленных работ Block 2 владелец не увидел.
+12. Composer при клавиатуре и fullscreen/expand режимах имеет нестабильную геометрию.
+13. Полотно/редактор может разрастаться и отрываться от нормальной страницы.
+14. Некоторые экраны выглядят как смесь старых и новых реализаций.
+
+Эти наблюдения являются физическим evidence владельца и имеют больший вес, чем desktop-only PASS.
+</OWNER_OBSERVED_PHYSICAL_IPHONE_DEFECTS>
+
+<PRIMARY_TASK>
+Выполни forensic recovery audit.
+
+Не ограничивайся описанием.
+
+Нужно определить точную причинность по коду и истории git.
+</PRIMARY_TASK>
+
+<STEP_1_BASELINE_RECONSTRUCTION>
+Определи и зафиксируй:
+
+A. HEAD текущей ветки.
+B. SHA независимого принятого 2A.
+C. SHA кандидата 2B.
+D. Все commits после 2A до текущего HEAD.
+E. Какие из них меняли:
+- app shell;
+- chat;
+- composer;
+- canvas;
+- tasks;
+- profile/«Вы»;
+- icons;
+- CSS/layout;
+- responsive/mobile;
+- media attachments;
+- version/release labels;
+- entrypoint/index;
+- feature registration/import graph.
+
+Сделай таблицу:
+commit → files → intended purpose → possible user-visible effect.
+</STEP_1_BASELINE_RECONSTRUCTION>
+
+<STEP_2_FEATURE_REGRESSION_AUDIT>
+Сравни:
+
+accepted 2A
+vs
+2B candidate
+vs
+current HEAD
+
+по фактическому feature surface.
+
+Проверь минимум:
+
+Чаты:
+- список разговоров;
+- поиск;
+- Фокус;
+- Избранное;
+- создание/доступные старые действия;
+- вход в разговор.
+
+Разговор:
+- история;
+- reply/reaction/menu;
+- attachments;
+- audio;
+- composer;
+- expand/fullscreen;
+- сохранение draft;
+- outgoing state.
+
+Полотно:
+- проекты;
+- editor;
+- attachments;
+- tasks;
+- reminders;
+- archive;
+- save/cancel;
+- fullscreen/expand.
+
+Дела:
+- Все;
+- Мне;
+- Просрочено;
+- Готово;
+- Архив;
+- поиск;
+- переход к источнику.
+
+Вы:
+- username/profile;
+- share profile;
+- theme;
+- storage;
+- notifications;
+- passkeys/access;
+- logout;
+- release label/version.
+
+Bots/Factory:
+- доступность входов;
+- сохранность существующих функций.
+
+Media:
+- фото;
+- видео;
+- viewer;
+- remove attachment;
+- filename rendering.
+
+Для каждого:
+PRESENT / MISSING / BROKEN / LEGACY_REAPPEARED / UNKNOWN.
+
+Если функция исчезла, найди точный commit/import/CSS/conditional-rendering, из-за которого это произошло.
+</STEP_2_FEATURE_REGRESSION_AUDIT>
+
+<STEP_3_MOBILE_GEOMETRY_FORENSICS>
+Проверь код, отвечающий за:
+
+- viewport;
+- visualViewport;
+- safe-area;
+- keyboard-open;
+- position fixed/sticky/absolute;
+- transforms;
+- overflow;
+- body/html scroll;
+- nested scroll containers;
+- composer fullscreen;
+- canvas fullscreen;
+- overlays;
+- z-index;
+- width: 100vw;
+- min/max-width;
+- translate/scale;
+- container queries/media queries.
+
+Особенно ищи:
+- двойную компенсацию keyboard offset;
+- layout, привязанный к window.innerHeight вместо visualViewport;
+- fixed элемент внутри transformed ancestor;
+- независимый horizontal scroll;
+- container шире viewport;
+- left/right offsets одновременно;
+- nested overflow auto;
+- старый fullscreen CSS, который снова попал в graph;
+- конкурирующие CSS selectors;
+- legacy rules ниже по каскаду;
+- mobile breakpoint conflicts 768/800/1024.
+
+Для каждого физического симптома владельца дай:
+симптом → CSS/JS причина → файл → строки/селектор/функция → commit происхождения.
+</STEP_3_MOBILE_GEOMETRY_FORENSICS>
+
+<STEP_4_ATTACHMENT_FORENSICS>
+Отдельно разберись с фото во вложении.
+
+Требуемое поведение:
+в conversation/composer/canvas пользователь видит само изображение и релевантные действия интерфейса.
+
+Не должно быть технического мусора:
+- IMG_4793.jpeg как визуальный заголовок, если это не осознанный file-detail режим;
+- отдельного грубого X поверх контента, если удаление должно жить в unified attachment action;
+- дублирующей информации о размере/типе без необходимости.
+
+Найди:
+- где filename вставляется в DOM;
+- где X создаётся;
+- какие component paths используются;
+- есть ли старый attachment renderer параллельно новому.
+
+Пока ничего не переделывай. Зафиксируй точную причину.
+</STEP_4_ATTACHMENT_FORENSICS>
+
+<STEP_5_PROFILE_ROLLBACK_FORENSICS>
+Установи, почему «Вы» выглядит как старая версия.
+
+Проверь:
+- renderProfile;
+- feature flags;
+- imports;
+- old/new profile components;
+- cached service worker assets;
+- release label;
+- manifest/app version;
+- stale PWA shell;
+- route ownership;
+- conditional fallback.
+
+Ответ должен установить:
+это source regression,
+cache/service-worker mismatch,
+или оба фактора.
+
+Если версия в UI hardcoded — покажи место.
+</STEP_5_PROFILE_ROLLBACK_FORENSICS>
+
+<STEP_6_PWA_AND_CACHE_CHECK>
+Проверь:
+
+- service worker version/cache keys;
+- cache invalidation;
+- skipWaiting/clientsClaim;
+- stale index/app.js/css possibility;
+- HTML cache policy;
+- asset hash/versioning;
+- manifest;
+- whether same URL can serve mixed generations.
+
+Нужно ответить:
+может ли физический iPhone получить смесь старого shell + новых модулей?
+
+Если да — докажи механизм.
+</STEP_6_PWA_AND_CACHE_CHECK>
+
+<STEP_7_DO_NOT_FIX_YET_EXCEPT_DIAGNOSTICALLY_SAFE>
+На этом проходе запрещено:
+
+- массово переписывать UI;
+- внедрять новый дизайн;
+- менять IA;
+- добавлять новые функции;
+- удалять старые функции “для упрощения”;
+- публиковать;
+- push в production;
+- менять main;
+- объявлять Block 2 завершённым.
+
+Разрешены только:
+- чтение;
+- diff;
+- локальный checkout/worktree;
+- локальные тесты;
+- screenshots;
+- временные диагностические инструменты, не попадающие в production;
+- локальное воспроизведение.
+</STEP_7_DO_NOT_FIX_YET_EXCEPT_DIAGNOSTICALLY_SAFE>
+
+<STEP_8_RECOVERY_PLAN>
+После доказательной части предложи минимальный recovery plan.
+
+Цель recovery:
+не сделать нынешний UI финальным.
+
+Цель:
+получить стабильный функциональный baseline, на который затем можно будет внедрить новый утверждённый дизайн.
+
+Recovery должен предпочитать:
+1. восстановление исчезнувших функций;
+2. единого shell ownership;
+3. стабильной mobile geometry;
+4. composer/canvas containment;
+5. правильного attachment rendering;
+6. актуальной вкладки «Вы»;
+7. правильного release/version state;
+8. deterministic PWA update;
+9. отсутствие смешения legacy/new components.
+
+Не делай recovery patch до отдельного разрешения Матвея.
+</STEP_8_RECOVERY_PLAN>
+
+<REQUIRED_OUTPUT>
+Ответ одним отчётом:
+
+PABLICUS BLOCK 2 FORENSIC RECOVERY REPORT R1
+
+1. Current HEAD.
+2. Accepted 2A SHA.
+3. Candidate 2B SHA.
+4. Commit range.
+5. Feature regression matrix.
+6. Physical iPhone defect → code cause matrix.
+7. Missing functions list.
+8. Legacy components that re-entered runtime.
+9. Composer geometry root cause.
+10. Canvas geometry root cause.
+11. Attachment filename/X root cause.
+12. «Вы» rollback root cause.
+13. Version label root cause.
+14. PWA/cache finding.
+15. Exact files requiring repair.
+16. Minimal recovery sequence.
+17. Risks.
+18. What must NOT be touched.
+19. Proposed next task ID.
+
+Статус в конце может быть только одним из:
+
+BLOCK_2_FORENSIC_COMPLETE_RECOVERY_NOT_STARTED
+
+или
+
+BLOCK_2_FORENSIC_INCOMPLETE_WITH_EXACT_GAPS
+
+Не присваивай ACCEPTED.
+Не начинай следующий блок.
+Не жди ещё одного фрагмента этого задания.
+
+Начинай сейчас.
+</TASK>
