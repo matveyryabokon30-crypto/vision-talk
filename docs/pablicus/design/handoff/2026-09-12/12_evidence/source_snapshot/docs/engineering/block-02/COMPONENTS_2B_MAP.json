@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "substep": "2B",
+  "work_start_head": "6822a58a7a632fcfc182e4a8e2f02eea37d55afb",
+  "code_sha": "c5e26c2f85ef1f6d1f8ab4684d033de4f3b0d3c9",
+  "ownership": {
+    "navigation": "PablicusController unchanged",
+    "shell_header_geometry": "PablicusShell",
+    "tokens": "design-tokens.css",
+    "registry": "PablicusUI; stateless helpers only"
+  },
+  "components": [
+    {
+      "component": "Button",
+      "implementation": "native button; controls.css; PablicusUI.prepareControl",
+      "owner": "mounting view",
+      "usage": "index.html/app.js/tasks-home.js/bots.js/bot-factory.js/chat-canvas.js/chat-library.js/workspace-editor.js",
+      "lifecycle": "View creates button and owns activation/busy/disabled; event handlers are removed with owning surface; registry mounts nothing.",
+      "states_and_limits": "Native type=button default for dynamic controls; semantic text/aria-label; focus-visible; minimum control-size token; disabled is native. Explicit local compact calendar styles remain a qualified exception, not a claim of all targets being 44px.",
+      "status": "IMPLEMENTED_OR_QUALIFIED_EXISTING"
+    },
+    {
+      "component": "IconButton",
+      "implementation": "native button + PablicusMessageMenu.icon; controls.css",
+      "owner": "mounting view",
+      "usage": "conversation header; attach/expand/send; media close; workspace toolbar",
+      "lifecycle": "Same lifetime as owning surface. Existing icon assets and MessageMenu icon provider retained.",
+      "states_and_limits": "44px shared minimum for marked icon controls. Media close has white visible-focus outline on dark viewer. No new icon library.",
+      "status": "IMPLEMENTED_OR_QUALIFIED_EXISTING"
+    },
+    {
+      "component": "Input",
+      "implementation": "native input/textarea/select; rich-composer.js bindText; controls.css",
+      "owner": "mounting view / RichComposer for ordered text",
+      "usage": "login/search; conversation richText; workspace editor; Factory fields",
+      "lifecycle": "Existing composition/input/selection and pending upload handling retained.",
+      "states_and_limits": "Names supplied by existing labels/aria-label. Search library removes outline suppression. Native disabled/readOnly behavior retained. No universal validation engine; aria-invalid styling is conditional only.",
+      "status": "IMPLEMENTED_OR_QUALIFIED_EXISTING"
+    },
+    {
+      "component": "Tab/SegmentedControl",
+      "implementation": "existing buttons; PablicusUI.tabKey where needed",
+      "owner": "app.js filter and conversation owner; ChatLibrary instance for library tabs",
+      "usage": "chatFilters; chatViewTabs; pclTabs",
+      "lifecycle": "Listeners belong to current view. Helper adds no global listeners. Existing native tab selection action is reused.",
+      "states_and_limits": "Filters expose aria-pressed; conversation uses role=tab/aria-selected/roving tabindex and controller leave guard. Library already has arrow/Home/End behavior and is preserved.",
+      "status": "IMPLEMENTED_OR_QUALIFIED_EXISTING"
+    },
+    {
+      "component": "Modal",
+      "implementation": "native #productDialog in index.html; app.js; pablicus.css",
+      "owner": "existing app composition",
+      "usage": "outbox and existing general dialogs",
+      "lifecycle": "showModal initializes focus on close; native close/Escape; native connected opener focus return; existing close handler releases media.",
+      "states_and_limits": "Labelled by dialogTitle; viewport bounds from AppShell; sticky header and native scrolling. Qualification covers outbox plus synthetic long title/content geometry, not every domain form.",
+      "status": "IMPLEMENTED_OR_QUALIFIED_EXISTING"
+    },
+    {
+      "component": "Sheet",
+      "implementation": "native .pccTaskSheet; chat-canvas.js",
+      "owner": "Canvas view instance",
+      "usage": "new/edit existing Canvas task",
+      "lifecycle": "Existing showModal/history/viewport callbacks; user close/backdrop/cancel/history call requestDismissTask; internal successful-save/context cleanup paths remain separate.",
+      "states_and_limits": "Busy blocks close. Dirty/recording/pending user dismissal requires existing browser confirm; denied close preserves editor. Approved discard remains explicit. Existing full route leave guard unchanged.",
+      "status": "IMPLEMENTED_OR_QUALIFIED_EXISTING"
+    },
+    {
+      "component": "Composer",
+      "implementation": "rich-composer.js + chat.js + existing vault/outbox",
+      "owner": "PablicusChat / existing RichComposer instance",
+      "usage": "conversation composer inline/fullscreen",
+      "lifecycle": "Expanded toggles existing draft flag and inert regions without remounting text/files. Scoped keydown on composer, shared stateless focus boundary, Escape collapses, expand receives focus.",
+      "states_and_limits": "Same ordered blocks/IDs/original Blobs. Menu handler and composition protection retained. No MessageDoc v2, backend or agent invocation implementation.",
+      "status": "IMPLEMENTED_OR_QUALIFIED_EXISTING"
+    },
+    {
+      "component": "Workspace Composer",
+      "implementation": "workspace-editor.js/css + existing RichComposer",
+      "owner": "mounting Canvas task/project view",
+      "usage": "Canvas task sheet/project editor",
+      "lifecycle": "Existing instance, viewport and document key handler removed on destroy. Expanded state uses the same DOM node in native manual-popover top layer with labelled dialog semantics, opaque surface and focus initialization/trap/return; no persistent repair observer.",
+      "states_and_limits": "Expand/collapse retains live editor; dirty sheet guard is in Canvas owner. Task text, project/task fullscreen ownership and geometry tested; existing 1C adds broader Canvas persistence/identity evidence.",
+      "status": "IMPLEMENTED_OR_QUALIFIED_EXISTING"
+    },
+    {
+      "component": "Media Modal",
+      "implementation": "PablicusMediaViewer.create; media-viewer.js/css",
+      "owner": "existing MediaViewer instance",
+      "usage": "photo/video viewer",
+      "lifecycle": "Existing single active viewer/epoch/release remains; explicit close and Escape use existing close; restore only connected non-hidden/non-inert opener; destroy releases node.",
+      "states_and_limits": "New accessible close supplements existing gestures. Probe mounts actual module/native dialog with synthetic Blob resolver; not a production storage integration proof.",
+      "status": "IMPLEMENTED_OR_QUALIFIED_EXISTING"
+    },
+    {
+      "component": "Search Modal",
+      "implementation": "PablicusChatLibrary.create; chat-library.js/css",
+      "owner": "existing ChatLibrary instance",
+      "usage": "conversation search/materials",
+      "lifecycle": "Existing initial close focus, Escape/nativecancel, abort/generation cleanup, native modal and explicit focus return retained.",
+      "states_and_limits": "Viewport/safe-area tokens; search keyboard focus visible. Native search Escape can first clear a nonempty query; close-control Escape/close returns focus. No new global search implementation.",
+      "status": "IMPLEMENTED_OR_QUALIFIED_EXISTING"
+    }
+  ],
+  "source_changes": [
+    {
+      "path": ".github/workflows/pablicus-components-2b.yml",
+      "sha256": "d1e39a6b3cbabc77c3d42ee4405f02ca6c546fef4edec9533ce000282c923c67"
+    },
+    {
+      "path": "pablicus/app-shell.js",
+      "sha256": "35e7db8a635e8a1d0a7c3218c6b3e8fc4538c4320fd1ca0b91e18ae39dbe8ca8"
+    },
+    {
+      "path": "pablicus/app.js",
+      "sha256": "46a69885c288e7ab137c2c9fc79d9408554fcf4945bf5b50818bd397b76d7407"
+    },
+    {
+      "path": "pablicus/bot-factory.js",
+      "sha256": "82e69963963d012c2008855ea5d22babd7693e48bc86dceef2c07c898aefd4ab"
+    },
+    {
+      "path": "pablicus/bots.js",
+      "sha256": "cfd12f085b59bcc8e88d73898bd148a6f49de6cfcfb111d9b6a3786ae808b569"
+    },
+    {
+      "path": "pablicus/chat-canvas.js",
+      "sha256": "f2ef004e99d523b0d4328806170208bf343896d96a856b22a18c902cb50750ca"
+    },
+    {
+      "path": "pablicus/chat-library.css",
+      "sha256": "c7db6f3b0e88ce289d653c969545c07ec012f40339b46f559297a91d13083226"
+    },
+    {
+      "path": "pablicus/chat-library.js",
+      "sha256": "bf5c7f10c53c85132795e2583944b97985ba8fda8a9e8667c5c62e1babaebff0"
+    },
+    {
+      "path": "pablicus/chat.js",
+      "sha256": "513dab818cc6e8e2df82ff944b5d72dc3066cfe0a7e98845d0c72a79d64c0d58"
+    },
+    {
+      "path": "pablicus/component-registry.js",
+      "sha256": "71f50b44dba1187e690706541204cf25ce5aab7c340e717ef05db580e5d4680c"
+    },
+    {
+      "path": "pablicus/controls.css",
+      "sha256": "4a2fe5171cce102ae3ec95a154334e44e3bac9a0f945893f4f3a78ec9626c11a"
+    },
+    {
+      "path": "pablicus/design-tokens.css",
+      "sha256": "6f4288f6007cbee2a465865feea31b143b63ff18a1ff341dfb23dd4e84857bfe"
+    },
+    {
+      "path": "pablicus/index.html",
+      "sha256": "029103a74e2c74d46745d24e0e75ee64b34f4142a757591fa877810911924e8a"
+    },
+    {
+      "path": "pablicus/media-viewer.css",
+      "sha256": "cb6cc79d5f3481b96e90f23bf20718582241d6f22e242099ef32808d48f70dd1"
+    },
+    {
+      "path": "pablicus/media-viewer.js",
+      "sha256": "5bc722f2d0df2ac682b2ca4c6aae189851595fee8ae661c4dadf48b228a858e9"
+    },
+    {
+      "path": "pablicus/pablicus.css",
+      "sha256": "edf8d8e8a4b2af4bae5d9cd882799e9bc2439d2c550ec2eaed0f9dbca3515a81"
+    },
+    {
+      "path": "pablicus/public-ui-foundation.css",
+      "sha256": "5d438c12400cf496fa2a6b4adc43295df2f5be78e0cacefb6815917f57d36943"
+    },
+    {
+      "path": "pablicus/rich-composer.css",
+      "sha256": "02508818ede9523f102a9125ca624d8806da1bf64d2dbb0682841270e1e210b8"
+    },
+    {
+      "path": "pablicus/rich-composer.js",
+      "sha256": "319f1e176216385432edbb46b296179e670135c55423f1fc00c1c0d8803db628"
+    },
+    {
+      "path": "pablicus/sw.js",
+      "sha256": "538916a82c6025678cd847a47ae1ff048d31316ad82d3834c06d01ddfed068aa"
+    },
+    {
+      "path": "pablicus/tasks-home.js",
+      "sha256": "315573a540160b1b5a415bcba949bff1d9c680596f932adef3162a0d945cfe8c"
+    },
+    {
+      "path": "pablicus/workspace-editor.css",
+      "sha256": "74ca37640dab5962e7aa33553e0a9e4e90ec430890d4f977e81e5656ba655d10"
+    },
+    {
+      "path": "pablicus/workspace-editor.js",
+      "sha256": "78d04bbad140a8834ae99d66fc013aa20febcda38ac6b7dc7d24785137c7a8da"
+    },
+    {
+      "path": "tests/engineering/block-02/components_probe.py",
+      "sha256": "1fad214fa07d1c3e6e6735e543719e51852a544816e0972d3972d85efe070e20"
+    }
+  ],
+  "future_contracts_only": [
+    "SidePanel",
+    "FullScreenObjectView",
+    "AgentTaskCard",
+    "PrivateAgentResult",
+    "ActionConfirmation",
+    "WorkObjectPreview"
+  ],
+  "compact_controls_exception": "Existing Canvas calendar cells keep their compact local geometry; all-control 44px targets and WCAG compliance are not claimed. Critical header/composer/close controls are measured in the browser."
+}

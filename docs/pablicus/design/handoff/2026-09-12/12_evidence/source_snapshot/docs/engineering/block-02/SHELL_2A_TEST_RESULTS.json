@@ -1,0 +1,1129 @@
+{
+  "schema_version": "1.0",
+  "block_id": "02",
+  "substep": "2A",
+  "status": "PASS_WITH_EXPLICIT_SCOPE",
+  "code_sha": "9ee215300ac97b3c48bf5184f414f28333429a1c",
+  "tested_sha": "9ee215300ac97b3c48bf5184f414f28333429a1c",
+  "primary_ci": {
+    "run": 34698093479,
+    "job": 103564952160,
+    "artifact": 10299632187
+  },
+  "tests": [
+    {
+      "id": "2A-T01",
+      "criterion": "Single navigation owner",
+      "status": "PASS",
+      "evidence": [
+        {
+          "artifact_path": "ownership.json",
+          "check_id": "2A-T01",
+          "sha256": "ff2fdbd9ae316def2f0e120667550674fe6520497df442f47a6b8d31b3df91d7"
+        },
+        {
+          "artifact_path": "browser/mobile/result.json",
+          "sha256": "f0803b7a2a550577587acaa6239f05a31f14a4c8a7c0ed11c7129cb229b29d4a",
+          "check_names": [
+            "2A-SINGLE-NAVIGATION-DISPATCH-tasks",
+            "2A-SINGLE-NAVIGATION-DISPATCH-profile",
+            "2A-SINGLE-NAVIGATION-DISPATCH-chats"
+          ]
+        },
+        {
+          "artifact_path": "browser/tablet/result.json",
+          "sha256": "9ab70b15bed41a2a63fdc32999ff96c4e5e13479fb821acfa15f09a5aba51be4",
+          "check_names": [
+            "2A-SINGLE-NAVIGATION-DISPATCH-tasks",
+            "2A-SINGLE-NAVIGATION-DISPATCH-profile",
+            "2A-SINGLE-NAVIGATION-DISPATCH-chats"
+          ]
+        },
+        {
+          "artifact_path": "browser/desktop/result.json",
+          "sha256": "dc225fa5c6c6e9ebb462da72c24aea6afa95fec1f82aaa2f06f6f13d3dc8089a",
+          "check_names": [
+            "2A-SINGLE-NAVIGATION-DISPATCH-tasks",
+            "2A-SINGLE-NAVIGATION-DISPATCH-profile",
+            "2A-SINGLE-NAVIGATION-DISPATCH-chats"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2A-T02",
+      "criterion": "Single shell/header/layout owner, including header control IDs",
+      "status": "PASS",
+      "evidence": [
+        {
+          "artifact_path": "ownership.json",
+          "check_id": "2A-T02",
+          "sha256": "ff2fdbd9ae316def2f0e120667550674fe6520497df442f47a6b8d31b3df91d7"
+        },
+        {
+          "artifact_path": "browser/mobile/result.json",
+          "sha256": "f0803b7a2a550577587acaa6239f05a31f14a4c8a7c0ed11c7129cb229b29d4a",
+          "check_names": [
+            "2A-SINGLE-HEADER-WRITER",
+            "2A-HEADER-TITLE-BOUNDS-conversation",
+            "2A-HEADER-TITLE-BOUNDS-keyboard-viewport",
+            "2A-HEADER-TITLE-BOUNDS-safe-area-and-long-title",
+            "2A-HEADER-TITLE-BOUNDS-large-text"
+          ]
+        },
+        {
+          "artifact_path": "browser/tablet/result.json",
+          "sha256": "9ab70b15bed41a2a63fdc32999ff96c4e5e13479fb821acfa15f09a5aba51be4",
+          "check_names": [
+            "2A-SINGLE-HEADER-WRITER",
+            "2A-HEADER-TITLE-BOUNDS-conversation",
+            "2A-HEADER-TITLE-BOUNDS-keyboard-viewport",
+            "2A-HEADER-TITLE-BOUNDS-safe-area-and-long-title",
+            "2A-HEADER-TITLE-BOUNDS-large-text"
+          ]
+        },
+        {
+          "artifact_path": "browser/desktop/result.json",
+          "sha256": "dc225fa5c6c6e9ebb462da72c24aea6afa95fec1f82aaa2f06f6f13d3dc8089a",
+          "check_names": [
+            "2A-SINGLE-HEADER-WRITER",
+            "2A-HEADER-TITLE-BOUNDS-conversation",
+            "2A-HEADER-TITLE-BOUNDS-keyboard-viewport",
+            "2A-HEADER-TITLE-BOUNDS-safe-area-and-long-title",
+            "2A-HEADER-TITLE-BOUNDS-large-text"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2A-T03",
+      "criterion": "No duplicate global root navigation listeners",
+      "status": "PASS",
+      "evidence": [
+        {
+          "artifact_path": "ownership.json",
+          "check_id": "2A-T03",
+          "sha256": "ff2fdbd9ae316def2f0e120667550674fe6520497df442f47a6b8d31b3df91d7"
+        },
+        {
+          "artifact_path": "browser/mobile/result.json",
+          "sha256": "f0803b7a2a550577587acaa6239f05a31f14a4c8a7c0ed11c7129cb229b29d4a",
+          "check_names": [
+            "2A-SINGLE-NAVIGATION-DISPATCH-tasks",
+            "2A-SINGLE-NAVIGATION-DISPATCH-profile",
+            "2A-SINGLE-NAVIGATION-DISPATCH-chats"
+          ]
+        },
+        {
+          "artifact_path": "browser/tablet/result.json",
+          "sha256": "9ab70b15bed41a2a63fdc32999ff96c4e5e13479fb821acfa15f09a5aba51be4",
+          "check_names": [
+            "2A-SINGLE-NAVIGATION-DISPATCH-tasks",
+            "2A-SINGLE-NAVIGATION-DISPATCH-profile",
+            "2A-SINGLE-NAVIGATION-DISPATCH-chats"
+          ]
+        },
+        {
+          "artifact_path": "browser/desktop/result.json",
+          "sha256": "dc225fa5c6c6e9ebb462da72c24aea6afa95fec1f82aaa2f06f6f13d3dc8089a",
+          "check_names": [
+            "2A-SINGLE-NAVIGATION-DISPATCH-tasks",
+            "2A-SINGLE-NAVIGATION-DISPATCH-profile",
+            "2A-SINGLE-NAVIGATION-DISPATCH-chats"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2A-T04",
+      "criterion": "No permanent global shell-correction MutationObserver",
+      "status": "PASS",
+      "evidence": [
+        {
+          "artifact_path": "ownership.json",
+          "check_id": "2A-T04",
+          "sha256": "ff2fdbd9ae316def2f0e120667550674fe6520497df442f47a6b8d31b3df91d7"
+        },
+        {
+          "artifact_path": "browser/mobile/result.json",
+          "sha256": "f0803b7a2a550577587acaa6239f05a31f14a4c8a7c0ed11c7129cb229b29d4a",
+          "check_names": [
+            "2A-NO-STARTUP-ERROR"
+          ]
+        },
+        {
+          "artifact_path": "browser/tablet/result.json",
+          "sha256": "9ab70b15bed41a2a63fdc32999ff96c4e5e13479fb821acfa15f09a5aba51be4",
+          "check_names": [
+            "2A-NO-STARTUP-ERROR"
+          ]
+        },
+        {
+          "artifact_path": "browser/desktop/result.json",
+          "sha256": "dc225fa5c6c6e9ebb462da72c24aea6afa95fec1f82aaa2f06f6f13d3dc8089a",
+          "check_names": [
+            "2A-NO-STARTUP-ERROR"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2A-T05",
+      "criterion": "Single global token source and qualified 14-group registry",
+      "status": "PASS",
+      "evidence": [
+        {
+          "artifact_path": "ownership.json",
+          "check_id": "2A-T05",
+          "sha256": "ff2fdbd9ae316def2f0e120667550674fe6520497df442f47a6b8d31b3df91d7"
+        },
+        {
+          "artifact_path": "browser/mobile/result.json",
+          "sha256": "f0803b7a2a550577587acaa6239f05a31f14a4c8a7c0ed11c7129cb229b29d4a",
+          "check_names": [
+            "2A-TOKENS-RESOLVED",
+            "2A-TOKEN-TEXT-CONTRAST-light",
+            "2A-REDUCED-MOTION-TOKEN-light",
+            "2A-TOKEN-TEXT-CONTRAST-dark",
+            "2A-REDUCED-MOTION-TOKEN-dark"
+          ]
+        },
+        {
+          "artifact_path": "browser/tablet/result.json",
+          "sha256": "9ab70b15bed41a2a63fdc32999ff96c4e5e13479fb821acfa15f09a5aba51be4",
+          "check_names": [
+            "2A-TOKENS-RESOLVED",
+            "2A-TOKEN-TEXT-CONTRAST-light",
+            "2A-REDUCED-MOTION-TOKEN-light",
+            "2A-TOKEN-TEXT-CONTRAST-dark",
+            "2A-REDUCED-MOTION-TOKEN-dark"
+          ]
+        },
+        {
+          "artifact_path": "browser/desktop/result.json",
+          "sha256": "dc225fa5c6c6e9ebb462da72c24aea6afa95fec1f82aaa2f06f6f13d3dc8089a",
+          "check_names": [
+            "2A-TOKENS-RESOLVED",
+            "2A-TOKEN-TEXT-CONTRAST-light",
+            "2A-REDUCED-MOTION-TOKEN-light",
+            "2A-TOKEN-TEXT-CONTRAST-dark",
+            "2A-REDUCED-MOTION-TOKEN-dark"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2A-T06",
+      "criterion": "Unique evaluated component registry without duplicate mounting",
+      "status": "PASS",
+      "evidence": [
+        {
+          "artifact_path": "ownership.json",
+          "check_id": "2A-T06",
+          "sha256": "ff2fdbd9ae316def2f0e120667550674fe6520497df442f47a6b8d31b3df91d7"
+        },
+        {
+          "artifact_path": "browser/mobile/result.json",
+          "sha256": "f0803b7a2a550577587acaa6239f05a31f14a4c8a7c0ed11c7129cb229b29d4a",
+          "check_names": [
+            "2A-TOKENS-RESOLVED"
+          ]
+        },
+        {
+          "artifact_path": "browser/tablet/result.json",
+          "sha256": "9ab70b15bed41a2a63fdc32999ff96c4e5e13479fb821acfa15f09a5aba51be4",
+          "check_names": [
+            "2A-TOKENS-RESOLVED"
+          ]
+        },
+        {
+          "artifact_path": "browser/desktop/result.json",
+          "sha256": "dc225fa5c6c6e9ebb462da72c24aea6afa95fec1f82aaa2f06f6f13d3dc8089a",
+          "check_names": [
+            "2A-TOKENS-RESOLVED"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2A-T07",
+      "criterion": "Three roots reachable with route/visible-screen consistency",
+      "status": "PASS",
+      "evidence": [
+        {
+          "artifact_path": "browser/mobile/result.json",
+          "sha256": "f0803b7a2a550577587acaa6239f05a31f14a4c8a7c0ed11c7129cb229b29d4a",
+          "check_names": [
+            "2A-ROOT-TABS",
+            "2A-ROUTE-VISIBLE-tasks",
+            "2A-ROUTE-VISIBLE-profile",
+            "2A-ROUTE-VISIBLE-chats",
+            "2A-BOTS-NESTED-UNDER-TASKS"
+          ]
+        },
+        {
+          "artifact_path": "browser/tablet/result.json",
+          "sha256": "9ab70b15bed41a2a63fdc32999ff96c4e5e13479fb821acfa15f09a5aba51be4",
+          "check_names": [
+            "2A-ROOT-TABS",
+            "2A-ROUTE-VISIBLE-tasks",
+            "2A-ROUTE-VISIBLE-profile",
+            "2A-ROUTE-VISIBLE-chats",
+            "2A-BOTS-NESTED-UNDER-TASKS"
+          ]
+        },
+        {
+          "artifact_path": "browser/desktop/result.json",
+          "sha256": "dc225fa5c6c6e9ebb462da72c24aea6afa95fec1f82aaa2f06f6f13d3dc8089a",
+          "check_names": [
+            "2A-ROOT-TABS",
+            "2A-ROUTE-VISIBLE-tasks",
+            "2A-ROUTE-VISIBLE-profile",
+            "2A-ROUTE-VISIBLE-chats",
+            "2A-BOTS-NESTED-UNDER-TASKS"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2A-T08",
+      "criterion": "Keyboard/safe-area/large-text critical controls visible in bounded Chromium fixture",
+      "status": "PASS",
+      "evidence": [
+        {
+          "artifact_path": "browser/mobile/result.json",
+          "sha256": "f0803b7a2a550577587acaa6239f05a31f14a4c8a7c0ed11c7129cb229b29d4a",
+          "check_names": [
+            "2A-KEYBOARD-FOCUS",
+            "2A-CONTROLS-VISIBLE-conversation",
+            "2A-NO-HORIZONTAL-OVERFLOW-conversation",
+            "2A-CONTROL-TARGET-SIZE-conversation",
+            "2A-ICON-CONTROLS-ACCESSIBLE-conversation",
+            "2A-CONTROLS-VISIBLE-keyboard-viewport",
+            "2A-KEYBOARD-STATE-keyboard-viewport",
+            "2A-NO-HORIZONTAL-OVERFLOW-keyboard-viewport",
+            "2A-CONTROL-TARGET-SIZE-keyboard-viewport",
+            "2A-ICON-CONTROLS-ACCESSIBLE-keyboard-viewport",
+            "2A-CONTROLS-VISIBLE-safe-area-and-long-title",
+            "2A-KEYBOARD-STATE-safe-area-and-long-title",
+            "2A-NO-HORIZONTAL-OVERFLOW-safe-area-and-long-title",
+            "2A-CONTROL-TARGET-SIZE-safe-area-and-long-title",
+            "2A-ICON-CONTROLS-ACCESSIBLE-safe-area-and-long-title",
+            "2A-CONTROLS-VISIBLE-large-text",
+            "2A-KEYBOARD-STATE-large-text",
+            "2A-LARGE-TEXT-EDITABLE-LINE",
+            "2A-NO-HORIZONTAL-OVERFLOW-large-text",
+            "2A-CONTROL-TARGET-SIZE-large-text",
+            "2A-ICON-CONTROLS-ACCESSIBLE-large-text"
+          ]
+        },
+        {
+          "artifact_path": "browser/tablet/result.json",
+          "sha256": "9ab70b15bed41a2a63fdc32999ff96c4e5e13479fb821acfa15f09a5aba51be4",
+          "check_names": [
+            "2A-KEYBOARD-FOCUS",
+            "2A-CONTROLS-VISIBLE-conversation",
+            "2A-NO-HORIZONTAL-OVERFLOW-conversation",
+            "2A-CONTROL-TARGET-SIZE-conversation",
+            "2A-ICON-CONTROLS-ACCESSIBLE-conversation",
+            "2A-CONTROLS-VISIBLE-keyboard-viewport",
+            "2A-KEYBOARD-STATE-keyboard-viewport",
+            "2A-NO-HORIZONTAL-OVERFLOW-keyboard-viewport",
+            "2A-CONTROL-TARGET-SIZE-keyboard-viewport",
+            "2A-ICON-CONTROLS-ACCESSIBLE-keyboard-viewport",
+            "2A-CONTROLS-VISIBLE-safe-area-and-long-title",
+            "2A-KEYBOARD-STATE-safe-area-and-long-title",
+            "2A-NO-HORIZONTAL-OVERFLOW-safe-area-and-long-title",
+            "2A-CONTROL-TARGET-SIZE-safe-area-and-long-title",
+            "2A-ICON-CONTROLS-ACCESSIBLE-safe-area-and-long-title",
+            "2A-CONTROLS-VISIBLE-large-text",
+            "2A-KEYBOARD-STATE-large-text",
+            "2A-LARGE-TEXT-EDITABLE-LINE",
+            "2A-NO-HORIZONTAL-OVERFLOW-large-text",
+            "2A-CONTROL-TARGET-SIZE-large-text",
+            "2A-ICON-CONTROLS-ACCESSIBLE-large-text"
+          ]
+        },
+        {
+          "artifact_path": "browser/desktop/result.json",
+          "sha256": "dc225fa5c6c6e9ebb462da72c24aea6afa95fec1f82aaa2f06f6f13d3dc8089a",
+          "check_names": [
+            "2A-KEYBOARD-FOCUS",
+            "2A-CONTROLS-VISIBLE-conversation",
+            "2A-NO-HORIZONTAL-OVERFLOW-conversation",
+            "2A-CONTROL-TARGET-SIZE-conversation",
+            "2A-ICON-CONTROLS-ACCESSIBLE-conversation",
+            "2A-CONTROLS-VISIBLE-keyboard-viewport",
+            "2A-KEYBOARD-STATE-keyboard-viewport",
+            "2A-NO-HORIZONTAL-OVERFLOW-keyboard-viewport",
+            "2A-CONTROL-TARGET-SIZE-keyboard-viewport",
+            "2A-ICON-CONTROLS-ACCESSIBLE-keyboard-viewport",
+            "2A-CONTROLS-VISIBLE-safe-area-and-long-title",
+            "2A-KEYBOARD-STATE-safe-area-and-long-title",
+            "2A-NO-HORIZONTAL-OVERFLOW-safe-area-and-long-title",
+            "2A-CONTROL-TARGET-SIZE-safe-area-and-long-title",
+            "2A-ICON-CONTROLS-ACCESSIBLE-safe-area-and-long-title",
+            "2A-CONTROLS-VISIBLE-large-text",
+            "2A-KEYBOARD-STATE-large-text",
+            "2A-LARGE-TEXT-EDITABLE-LINE",
+            "2A-NO-HORIZONTAL-OVERFLOW-large-text",
+            "2A-CONTROL-TARGET-SIZE-large-text",
+            "2A-ICON-CONTROLS-ACCESSIBLE-large-text"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2A-T09",
+      "criterion": "Same semantic route/component contracts across viewport sizes",
+      "status": "PASS",
+      "evidence": [
+        {
+          "artifact_path": "ownership.json",
+          "check_id": "2A-T09",
+          "sha256": "ff2fdbd9ae316def2f0e120667550674fe6520497df442f47a6b8d31b3df91d7"
+        },
+        {
+          "artifact_path": "browser/mobile/result.json",
+          "sha256": "f0803b7a2a550577587acaa6239f05a31f14a4c8a7c0ed11c7129cb229b29d4a",
+          "check_names": [
+            "2A-ROOT-TABS",
+            "2A-ROUTE-VISIBLE-tasks",
+            "2A-ROUTE-VISIBLE-profile",
+            "2A-ROUTE-VISIBLE-chats"
+          ]
+        },
+        {
+          "artifact_path": "browser/tablet/result.json",
+          "sha256": "9ab70b15bed41a2a63fdc32999ff96c4e5e13479fb821acfa15f09a5aba51be4",
+          "check_names": [
+            "2A-ROOT-TABS",
+            "2A-ROUTE-VISIBLE-tasks",
+            "2A-ROUTE-VISIBLE-profile",
+            "2A-ROUTE-VISIBLE-chats"
+          ]
+        },
+        {
+          "artifact_path": "browser/desktop/result.json",
+          "sha256": "dc225fa5c6c6e9ebb462da72c24aea6afa95fec1f82aaa2f06f6f13d3dc8089a",
+          "check_names": [
+            "2A-ROOT-TABS",
+            "2A-ROUTE-VISIBLE-tasks",
+            "2A-ROUTE-VISIBLE-profile",
+            "2A-ROUTE-VISIBLE-chats"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2A-T10",
+      "criterion": "Extensible existing Composer contract, no MessageDoc v2",
+      "status": "PASS",
+      "evidence": [
+        {
+          "artifact_path": "ownership.json",
+          "check_id": "2A-T10",
+          "sha256": "ff2fdbd9ae316def2f0e120667550674fe6520497df442f47a6b8d31b3df91d7"
+        },
+        {
+          "artifact_path": "browser/mobile/result.json",
+          "sha256": "f0803b7a2a550577587acaa6239f05a31f14a4c8a7c0ed11c7129cb229b29d4a",
+          "check_names": [
+            "2A-LIVE-COMPOSER-ADAPTER"
+          ]
+        },
+        {
+          "artifact_path": "browser/tablet/result.json",
+          "sha256": "9ab70b15bed41a2a63fdc32999ff96c4e5e13479fb821acfa15f09a5aba51be4",
+          "check_names": [
+            "2A-LIVE-COMPOSER-ADAPTER"
+          ]
+        },
+        {
+          "artifact_path": "browser/desktop/result.json",
+          "sha256": "dc225fa5c6c6e9ebb462da72c24aea6afa95fec1f82aaa2f06f6f13d3dc8089a",
+          "check_names": [
+            "2A-LIVE-COMPOSER-ADAPTER"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2A-T11",
+      "criterion": "Amendment 02 IA represented without unauthorized roots",
+      "status": "PASS",
+      "evidence": [
+        {
+          "artifact_path": "ownership.json",
+          "check_id": "2A-T11",
+          "sha256": "ff2fdbd9ae316def2f0e120667550674fe6520497df442f47a6b8d31b3df91d7"
+        },
+        {
+          "artifact_path": "browser/mobile/result.json",
+          "sha256": "f0803b7a2a550577587acaa6239f05a31f14a4c8a7c0ed11c7129cb229b29d4a",
+          "check_names": [
+            "2A-ROOT-TABS",
+            "2A-BOTS-NESTED-UNDER-TASKS"
+          ]
+        },
+        {
+          "artifact_path": "browser/tablet/result.json",
+          "sha256": "9ab70b15bed41a2a63fdc32999ff96c4e5e13479fb821acfa15f09a5aba51be4",
+          "check_names": [
+            "2A-ROOT-TABS",
+            "2A-BOTS-NESTED-UNDER-TASKS"
+          ]
+        },
+        {
+          "artifact_path": "browser/desktop/result.json",
+          "sha256": "dc225fa5c6c6e9ebb462da72c24aea6afa95fec1f82aaa2f06f6f13d3dc8089a",
+          "check_names": [
+            "2A-ROOT-TABS",
+            "2A-BOTS-NESTED-UNDER-TASKS"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2A-T12",
+      "criterion": "Calls interface readiness without runtime call implementation",
+      "status": "PASS",
+      "evidence": [
+        {
+          "artifact_path": "ownership.json",
+          "check_id": "2A-T12",
+          "sha256": "ff2fdbd9ae316def2f0e120667550674fe6520497df442f47a6b8d31b3df91d7"
+        }
+      ]
+    },
+    {
+      "id": "2A-T13",
+      "criterion": "Accepted Block 1 regression contracts retained",
+      "status": "PASS",
+      "evidence": [
+        {
+          "artifact_path": "1b.json",
+          "sha256": "8a9738aff61fa1771a4a137c1def73a1ce402bfc8622a17e492a17ba953a97ce"
+        },
+        {
+          "artifact_path": "integration/results.json",
+          "sha256": "d5b2dd1412458899bc5555bd554f7dd3f4e36390991d4078f0e3a2e31259e702"
+        },
+        {
+          "artifact_path": "integration-negative-controls/results.json",
+          "sha256": "619f42e9ef2b89b61dda3c2f6ced904827f98e9639d1f0d745441a854934b0b8"
+        },
+        {
+          "artifact_path": "cleanup.json",
+          "sha256": "c25bc068e565239e22c671b9a075f8b26e1bc6a91335c1e267b431f19a229665"
+        }
+      ]
+    }
+  ],
+  "structural_before_at_work_start": {
+    "execution": "Local read-only archived Git source; same final ownership_checks.py; exit 1 expected",
+    "source_sha": "abfc878896d8b10acc540d27ed370bbfaf2e8b70",
+    "test_source_sha256": "9ae2701d2f3fba7163f95d92bdc1a9ec83d4afb8c6b2c15eed75ca1c6ec6b91b",
+    "checks": [
+      {
+        "id": "2A-T01",
+        "name": "One route state/controller export",
+        "status": "PASS",
+        "actual": [
+          "app-controller.js"
+        ]
+      },
+      {
+        "id": "2A-T02",
+        "name": "One shared heading and outer geometry writer",
+        "status": "FAIL",
+        "actual": {
+          "headings": [
+            "app-controller.js",
+            "app.js"
+          ],
+          "outer_geometry": [
+            "chat.js"
+          ],
+          "shared_shell_styles": [
+            "chat-actions.css",
+            "chat-minimal.css",
+            "pablicus.css",
+            "profile-discovery.css",
+            "public-ui-foundation.css",
+            "style.css"
+          ]
+        }
+      },
+      {
+        "id": "2A-T03",
+        "name": "One root click binding, no legacy root insertion",
+        "status": "FAIL",
+        "actual": {
+          "dispatch": [
+            "app.js"
+          ],
+          "legacy": [
+            "bots-nav.js"
+          ]
+        }
+      },
+      {
+        "id": "2A-T04",
+        "name": "No loaded permanent shell-correction MutationObserver",
+        "status": "PASS",
+        "actual": {
+          "observed": [
+            "inbox-monitor.js",
+            "rich-message.js"
+          ],
+          "qualified_boundaries": {
+            "rich-message.js": "detached-media disposal only",
+            "inbox-monitor.js": "own notification positioning only"
+          }
+        }
+      },
+      {
+        "id": "2A-T05",
+        "name": "One global token source",
+        "status": "FAIL",
+        "actual": [
+          "pablicus.css",
+          "public-ui-foundation.css",
+          "style.css"
+        ]
+      },
+      {
+        "id": "2A-T06",
+        "name": "Registry evaluated, unique, frozen and complete",
+        "status": "FAIL",
+        "actual": null
+      },
+      {
+        "id": "2A-T09",
+        "name": "One semantic registry for all responsive surfaces",
+        "status": "FAIL",
+        "actual": {
+          "entrypoint": [
+            "vendor/supabase.js",
+            "app-controller.js",
+            "chat-list-view.js",
+            "vault.js",
+            "outbox.js",
+            "transport-store.js",
+            "rich-store.js",
+            "rich-composer.js",
+            "message-menu.js",
+            "rich-message.js",
+            "chat.js",
+            "auth-local.js",
+            "auth-config.js",
+            "oauth-login.js",
+            "oauth-session.js",
+            "passkey-login.js",
+            "public-passkey.js",
+            "workspace-editor.js",
+            "media-viewer.js",
+            "inbox-monitor.js",
+            "people.js",
+            "chat-actions.js",
+            "push-notifications.js",
+            "chat-library.js",
+            "chat-canvas.js",
+            "tasks-home.js",
+            "workspace-quick.js",
+            "bots.js",
+            "app.js",
+            "bots-nav.js"
+          ],
+          "physical_layout_proof": "Separate browser variants required"
+        }
+      },
+      {
+        "id": "2A-T10",
+        "name": "Existing composer with declared extension slots; no v2 engine",
+        "status": "FAIL",
+        "actual": {}
+      },
+      {
+        "id": "2A-T11",
+        "name": "Amendment 02 IA fits approved roots",
+        "status": "FAIL",
+        "actual": {}
+      },
+      {
+        "id": "2A-T12",
+        "name": "Calls slots without call implementation",
+        "status": "FAIL",
+        "actual": {}
+      }
+    ]
+  },
+  "ci_structural_before": {
+    "source_sha": "6c01d8b0f30003be885b152b3e9e955607ba2abd",
+    "artifact_path": "ownership-before.json",
+    "sha256": "65fefa6f378ac2198c24e40e41e4a8401046aa4cf1627d8494039c6278f0c37b",
+    "T02": "EXPECTED_FAIL"
+  },
+  "browser_before_after": [
+    {
+      "source_sha": "abfc878896d8b10acc540d27ed370bbfaf2e8b70",
+      "artifact_path": "before/summary.json",
+      "sha256": "0c55d60494d54bb26d98f393be7a57ceda8218d76118b8263b2a7d511e27221a",
+      "status": "FAIL",
+      "expected_failure": "2A-ROOT-TABS"
+    },
+    {
+      "source_sha": "6c01d8b0f30003be885b152b3e9e955607ba2abd",
+      "artifact_path": "title-before/summary.json",
+      "sha256": "7e27e1c276e8988bd11bce633691dc25cdd68dc1bf6a0026c13fdd5741a003b6",
+      "status": "FAIL",
+      "expected_failure": "2A-HEADER-TITLE-BOUNDS-*"
+    },
+    {
+      "source_sha": "9ee215300ac97b3c48bf5184f414f28333429a1c",
+      "artifact_path": "browser/summary.json",
+      "sha256": "e6a1ad9f63b3e500f352ca76bb12451ded9af982f85feeeda89ad9031ab3964f",
+      "status": "PASS",
+      "expected_failure": null
+    }
+  ],
+  "negative_control": {
+    "id": "DUPLICATE_NAVIGATION_LISTENER",
+    "status": "QUALIFIED_EXPECTED_FAIL",
+    "candidate_positive_status": "PASS",
+    "mutated_inner_status": "FAIL",
+    "artifact_path": "browser/duplicate-navigation/result.json",
+    "sha256": "448eb2522bb844fcc6c2c83f269d6e2f60fe121580270f90ccd68ae998b7db16",
+    "failures": [
+      {
+        "name": "2A-SINGLE-NAVIGATION-DISPATCH-tasks",
+        "status": "FAIL",
+        "actual": {
+          "route": {
+            "section": "tasks",
+            "screen": "home",
+            "resourceId": null,
+            "conversationId": null,
+            "canvas": false,
+            "generation": 3,
+            "sessionGeneration": 1,
+            "sessionUserId": "11111111-1111-4111-8111-111111111111"
+          },
+          "calls": [
+            {
+              "section": "tasks",
+              "screen": "home",
+              "resourceId": null
+            },
+            {
+              "section": "tasks",
+              "screen": "home"
+            }
+          ],
+          "selected": [
+            "tasks"
+          ],
+          "home": true,
+          "app": false,
+          "heading": "Дела"
+        }
+      },
+      {
+        "name": "2A-SINGLE-NAVIGATION-DISPATCH-profile",
+        "status": "FAIL",
+        "actual": {
+          "route": {
+            "section": "profile",
+            "screen": "home",
+            "resourceId": null,
+            "conversationId": null,
+            "canvas": false,
+            "generation": 5,
+            "sessionGeneration": 1,
+            "sessionUserId": "11111111-1111-4111-8111-111111111111"
+          },
+          "calls": [
+            {
+              "section": "profile",
+              "screen": "home",
+              "resourceId": null
+            },
+            {
+              "section": "profile",
+              "screen": "home"
+            }
+          ],
+          "selected": [
+            "profile"
+          ],
+          "home": true,
+          "app": false,
+          "heading": "Вы"
+        }
+      },
+      {
+        "name": "2A-SINGLE-NAVIGATION-DISPATCH-chats",
+        "status": "FAIL",
+        "actual": {
+          "route": {
+            "section": "chats",
+            "screen": "home",
+            "resourceId": null,
+            "conversationId": null,
+            "canvas": false,
+            "generation": 7,
+            "sessionGeneration": 1,
+            "sessionUserId": "11111111-1111-4111-8111-111111111111"
+          },
+          "calls": [
+            {
+              "section": "chats",
+              "screen": "home",
+              "resourceId": null
+            },
+            {
+              "section": "chats",
+              "screen": "home"
+            }
+          ],
+          "selected": [
+            "chats"
+          ],
+          "home": true,
+          "app": false,
+          "heading": "Чаты"
+        }
+      }
+    ],
+    "mutation_scope": "Isolated browser context only, candidate source unchanged"
+  },
+  "regressions": {
+    "1B": {
+      "pass": 31,
+      "fail": 0,
+      "artifact_path": "1b.json",
+      "sha256": "8a9738aff61fa1771a4a137c1def73a1ce402bfc8622a17e492a17ba953a97ce"
+    },
+    "1C": {
+      "counts": {
+        "PASS": 9,
+        "FAIL": 0,
+        "ERROR": 0,
+        "TIMEOUT": 0,
+        "NOT_RUN": 0,
+        "BLOCKED": 0
+      },
+      "assertions_pass": 145,
+      "counted_completed_transitions": 54,
+      "gates": {
+        "boundary": "PASS",
+        "network-browser": "PASS",
+        "selftests": "PASS",
+        "ab": "PASS",
+        "preflight": "PASS"
+      },
+      "artifact_path": "integration/results.json",
+      "sha256": "d5b2dd1412458899bc5555bd554f7dd3f4e36390991d4078f0e3a2e31259e702"
+    },
+    "1C_negative_controls": {
+      "MUTATION_A_RESOURCE_LEAK": {
+        "status": "PASS",
+        "inner_status": "FAIL",
+        "expected_assertion": "1C-NO-RESOURCE-ACCUMULATION",
+        "qualification": {
+          "failure_class": "RESOURCE_ACCUMULATION",
+          "touch_listener_growth": {
+            "at new NaturalList (http://127.0.0.1:38971/pablicus/chat.js:49:4) | touchstart": 6
+          },
+          "assertion": "1C-NO-RESOURCE-ACCUMULATION",
+          "behavioral_checks_reached": 72,
+          "inner_status": "FAIL",
+          "inner_exit_code": 1,
+          "event_log_sha256": "f89d226118cd4c7891cbe71a8c4e3d7719bca2bebdf1f68cc9afa426f46609ab"
+        },
+        "candidate_unchanged": true,
+        "isolated_copy_removed": true
+      },
+      "MUTATION_B_LATE_ACCOUNT": {
+        "status": "PASS",
+        "inner_status": "FAIL",
+        "expected_assertion": "1C-LATE-ACCOUNT-ISOLATION",
+        "qualification": {
+          "failure_class": "LATE_ACCOUNT_CONTAMINATION",
+          "before_scope": {
+            "user": "22222222-2222-4222-8222-222222222222",
+            "chat": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1"
+          },
+          "after_scope": {
+            "user": "11111111-1111-4111-8111-111111111111",
+            "chat": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"
+          },
+          "after_store": {
+            "account": "11111111-1111-4111-8111-111111111111",
+            "conversation": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+            "name": "pablicus-v1:11111111-1111-4111-8111-111111111111:aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"
+          },
+          "assertion": "1C-LATE-ACCOUNT-ISOLATION",
+          "behavioral_checks_reached": 3,
+          "inner_status": "FAIL",
+          "inner_exit_code": 1,
+          "event_log_sha256": "e314aa68455fb245432c40e638c6acd3b7da2cf33e29edd2e8eb4f0c36208ec5"
+        },
+        "candidate_unchanged": true,
+        "isolated_copy_removed": true
+      },
+      "MUTATION_C_BYTE_OR_ORDER": {
+        "status": "PASS",
+        "inner_status": "FAIL",
+        "expected_assertion": "1C-DRAFT-BYTES",
+        "qualification": {
+          "failure_class": "BYTE_HASH_MISMATCH",
+          "changed_file_indices": [
+            0
+          ],
+          "original_sha256": "9ce81549ae7afaa854078ba74b305266d12a7d0d816e4ac45a2d82f5465e54af",
+          "restored_sha256": "7763b3f664eefec9aa1e759e374986f204a73ca3e655ec6fc8db88c9e8412adc",
+          "assertion": "1C-DRAFT-BYTES",
+          "behavioral_checks_reached": 3,
+          "inner_status": "FAIL",
+          "inner_exit_code": 1,
+          "event_log_sha256": "fdedc0c0177758d573d9a77407a6f26c156984247296edc4fba2bfa4b7927b80"
+        },
+        "candidate_unchanged": true,
+        "isolated_copy_removed": true
+      },
+      "MUTATION_D_ROUTE_RESOURCE": {
+        "status": "PASS",
+        "inner_status": "FAIL",
+        "expected_assertion": "1C-SCENARIO-SURVIVES-POLL",
+        "qualification": {
+          "failure_class": "ROUTE_RESOURCE_MISMATCH",
+          "expected_resource_id": "dddddddd-dddd-4ddd-8ddd-ddddddddddd1",
+          "observed_resource_id": "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee1",
+          "observed_route": {
+            "section": "bots",
+            "screen": "scenario",
+            "resourceId": "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee1",
+            "conversationId": null,
+            "canvas": false,
+            "generation": 7,
+            "sessionGeneration": 1,
+            "sessionUserId": "11111111-1111-4111-8111-111111111111"
+          },
+          "scenario_visible": true,
+          "scenario_text": [
+            "Fixture greeting",
+            "Done"
+          ],
+          "completed_scenario_navigation": {
+            "target": {
+              "section": "bots",
+              "screen": "scenario",
+              "resourceId": "dddddddd-dddd-4ddd-8ddd-ddddddddddd1"
+            },
+            "started": 8104.700000000012,
+            "status": "fulfilled",
+            "result": true,
+            "finished": 8125.799999999988
+          },
+          "assertion": "1C-SCENARIO-SURVIVES-POLL",
+          "behavioral_checks_reached": 7,
+          "inner_status": "FAIL",
+          "inner_exit_code": 1,
+          "event_log_sha256": "6872c24b04f28c3c7929af5255fb26bd1edcb9825da449166a90184e7cf053d3"
+        },
+        "candidate_unchanged": true,
+        "isolated_copy_removed": true
+      }
+    }
+  },
+  "responsive": {
+    "mobile": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "positive_checks": 43,
+      "modes": [
+        "conversation",
+        "keyboard-viewport",
+        "safe-area-and-long-title",
+        "large-text"
+      ],
+      "contrast": {
+        "light": {
+          "colors": {
+            "--text": "#24272a",
+            "--muted": "#696d72",
+            "--bg": "#fafafa",
+            "--surface": "#fff",
+            "--motion-duration": "0ms"
+          },
+          "ratios": {
+            "--text/--bg": 14.384871176953737,
+            "--text/--surface": 15.014428252016073,
+            "--muted/--bg": 4.991075867618691,
+            "--muted/--surface": 5.209511409096904
+          },
+          "scope": "Opaque text/background token pairs only; not all rendered controls or WCAG compliance"
+        },
+        "dark": {
+          "colors": {
+            "--text": "#f1f2f3",
+            "--muted": "#b2b5b9",
+            "--bg": "#141516",
+            "--surface": "#202224",
+            "--motion-duration": "0ms"
+          },
+          "ratios": {
+            "--text/--bg": 16.311407622588547,
+            "--text/--surface": 14.239722409432913,
+            "--muted/--bg": 8.883106199633643,
+            "--muted/--surface": 7.754877405008518
+          },
+          "scope": "Opaque text/background token pairs only; not all rendered controls or WCAG compliance"
+        }
+      },
+      "screenshots": [
+        "browser/mobile/home.png",
+        "browser/mobile/conversation.png",
+        "browser/mobile/keyboard-viewport.png",
+        "browser/mobile/safe-area-and-long-title.png",
+        "browser/mobile/large-text.png"
+      ]
+    },
+    "tablet": {
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "positive_checks": 43,
+      "modes": [
+        "conversation",
+        "keyboard-viewport",
+        "safe-area-and-long-title",
+        "large-text"
+      ],
+      "contrast": {
+        "light": {
+          "colors": {
+            "--text": "#24272a",
+            "--muted": "#696d72",
+            "--bg": "#fafafa",
+            "--surface": "#fff",
+            "--motion-duration": "0ms"
+          },
+          "ratios": {
+            "--text/--bg": 14.384871176953737,
+            "--text/--surface": 15.014428252016073,
+            "--muted/--bg": 4.991075867618691,
+            "--muted/--surface": 5.209511409096904
+          },
+          "scope": "Opaque text/background token pairs only; not all rendered controls or WCAG compliance"
+        },
+        "dark": {
+          "colors": {
+            "--text": "#f1f2f3",
+            "--muted": "#b2b5b9",
+            "--bg": "#141516",
+            "--surface": "#202224",
+            "--motion-duration": "0ms"
+          },
+          "ratios": {
+            "--text/--bg": 16.311407622588547,
+            "--text/--surface": 14.239722409432913,
+            "--muted/--bg": 8.883106199633643,
+            "--muted/--surface": 7.754877405008518
+          },
+          "scope": "Opaque text/background token pairs only; not all rendered controls or WCAG compliance"
+        }
+      },
+      "screenshots": [
+        "browser/tablet/home.png",
+        "browser/tablet/conversation.png",
+        "browser/tablet/keyboard-viewport.png",
+        "browser/tablet/safe-area-and-long-title.png",
+        "browser/tablet/large-text.png"
+      ]
+    },
+    "desktop": {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "positive_checks": 43,
+      "modes": [
+        "conversation",
+        "keyboard-viewport",
+        "safe-area-and-long-title",
+        "large-text"
+      ],
+      "contrast": {
+        "light": {
+          "colors": {
+            "--text": "#24272a",
+            "--muted": "#696d72",
+            "--bg": "#fafafa",
+            "--surface": "#fff",
+            "--motion-duration": "0ms"
+          },
+          "ratios": {
+            "--text/--bg": 14.384871176953737,
+            "--text/--surface": 15.014428252016073,
+            "--muted/--bg": 4.991075867618691,
+            "--muted/--surface": 5.209511409096904
+          },
+          "scope": "Opaque text/background token pairs only; not all rendered controls or WCAG compliance"
+        },
+        "dark": {
+          "colors": {
+            "--text": "#f1f2f3",
+            "--muted": "#b2b5b9",
+            "--bg": "#141516",
+            "--surface": "#202224",
+            "--motion-duration": "0ms"
+          },
+          "ratios": {
+            "--text/--bg": 16.311407622588547,
+            "--text/--surface": 14.239722409432913,
+            "--muted/--bg": 8.883106199633643,
+            "--muted/--surface": 7.754877405008518
+          },
+          "scope": "Opaque text/background token pairs only; not all rendered controls or WCAG compliance"
+        }
+      },
+      "screenshots": [
+        "browser/desktop/home.png",
+        "browser/desktop/conversation.png",
+        "browser/desktop/keyboard-viewport.png",
+        "browser/desktop/safe-area-and-long-title.png",
+        "browser/desktop/large-text.png"
+      ]
+    }
+  },
+  "environment": {
+    "python": "3.12.7",
+    "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+    "flags": [
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-background-networking",
+      "--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1"
+    ],
+    "service_workers": "block",
+    "browser": "143.0.7499.4"
+  },
+  "limitations": [
+    "Chromium 143.0.7499.4 / Playwright 1.57.0, synthetic API/Phoenix and local IndexedDB only; no production forwarding.",
+    "No physical iPhone, Safari, native keyboard, Dynamic Type, browser zoom, multi-device or production backend/RLS qualification.",
+    "VisualViewport proxy and injected safe-area tokens exercise real layout branches; they are controlled geometry fixtures, not device certification.",
+    "Accessibility checks are bounded: focus, names/hit targets, critical 44px controls, opaque light/dark text-token pairs and reduced-motion token; not WCAG compliance.",
+    "Existing modal/sheet behavior is retained; full overlay accessibility and interface-only SidePanel/FullScreenObjectView implementation are deferred.",
+    "Component-local literals and inert historical CSS remain migration debt; one qualified global token source does not mean all component design work is complete.",
+    "Contract-only Spaces/Threads/global Search/AI/calls/agent entries are not implemented features.",
+    "Owner acceptance statement authorizes Block 2; historical 1D executor READY package is unchanged, and no separate 1D reviewer record was found at WORK_START.",
+    "Service workers are blocked during browser tests; updated cache asset registration is not deployment or production offline qualification.",
+    "Initial source-write approval failed on review byte limit; identical full payload later succeeded after explicit user approval. No general safety clearance is inferred."
+  ]
+}

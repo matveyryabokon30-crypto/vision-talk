@@ -1,0 +1,22 @@
+/* A small contextual menu; rows deliberately share one surface. */
+.pablicusMessageMenu{position:fixed;inset:auto;z-index:6000;display:flex;flex-direction:column;width:220px;max-width:calc(100vw - 16px);max-height:calc(100dvh - 16px);margin:0;padding:5px;border:1px solid var(--line,#e4e5e6);border-radius:18px;background:var(--glass,rgba(255,255,255,.88));-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);color:var(--text,#17171b);box-shadow:0 12px 44px #0000001c,0 2px 8px #00000008;overflow:hidden;box-sizing:border-box;font-family:inherit;text-align:left;isolation:isolate}
+.pablicusMessageMenu[hidden]{display:none}
+.pablicusMessageMenu::backdrop{background:transparent;backdrop-filter:none}
+.pablicusMessageMenu .pmmReactions{display:flex;flex:none;gap:0;overflow-x:auto;overscroll-behavior:contain;scrollbar-width:none;padding:2px 0 7px;margin:0 3px 3px;border-bottom:1px solid var(--line,#e4e5e6)}
+.pablicusMessageMenu .pmmReactions[hidden]{display:none}
+.pablicusMessageMenu .pmmReactions::-webkit-scrollbar{display:none}
+.pablicusMessageMenu .pmmReaction{display:grid;place-items:center;flex:1 0 36px;min-width:36px;min-height:40px;margin:0;padding:0;border:0;border-radius:11px;background:transparent;color:inherit;font-size:25px;line-height:1;touch-action:manipulation;cursor:pointer}
+.pablicusMessageMenu .pmmReaction[aria-pressed="true"]{background:var(--soft,#f0f1f2);box-shadow:inset 0 0 0 1px var(--line,#dfe1e3)}
+.pablicusMessageMenu .pmmActions{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;min-height:0;padding:0;-webkit-overflow-scrolling:touch}
+.pablicusMessageMenu .pmmContent{min-height:0;overflow:auto;overscroll-behavior:contain;padding:8px;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+.pablicusMessageMenu .pmmContent[hidden]{display:none}
+.pablicusMessageMenu .pmmAction{display:flex;align-items:center;gap:12px;width:100%;min-height:43px;margin:0;padding:10px 12px;border:0;border-radius:11px;background:transparent;color:inherit;font-family:inherit;font-size:15px;line-height:21px;font-weight:400;text-align:left;touch-action:manipulation;cursor:pointer;-webkit-tap-highlight-color:transparent;box-sizing:border-box}
+.pablicusMessageMenu .pmmAction svg{flex:none;width:20px;height:20px;pointer-events:none}
+.pablicusMessageMenu .pmmLabel{min-width:0;overflow-wrap:anywhere;pointer-events:none}
+.pablicusMessageMenu .pmmDanger{color:var(--danger,#ef414c)}
+.pablicusMessageMenu .pmmSeparated{border-top:1px solid var(--line,#e4e5e6);border-top-left-radius:0;border-top-right-radius:0;margin-top:4px;padding-top:13px}
+.pablicusMessageMenu button:active{background:var(--soft,#f0f1f2)}
+.pablicusMessageMenu button:focus{outline:none}
+.pablicusMessageMenu button:focus-visible{outline:2px solid var(--accent,#363a3e);outline-offset:-2px;background:var(--soft,#f0f1f2)}
+@media(hover:hover){.pablicusMessageMenu button:hover{background:var(--soft,#f0f1f2)}}
+@media(prefers-reduced-motion:no-preference){.pablicusMessageMenu:popover-open{animation:pmmAppear 100ms ease-out}@keyframes pmmAppear{from{opacity:0}to{opacity:1}}}

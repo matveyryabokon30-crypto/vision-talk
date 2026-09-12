@@ -1,0 +1,54 @@
+{
+  "mobile_ids": {
+    "A": true,
+    "B": true,
+    "C": true
+  },
+  "icon_counts": {
+    "A": 21,
+    "B": 21,
+    "C": 21
+  },
+  "xml_valid": true,
+  "font_cmap": [
+    {
+      "file": "sourceserif4-SourceSerif4[opsz,wght].ttf",
+      "missing": [],
+      "sha256": "97b2d4da6e3cb494b5a1e66ae176914d852ccabef49e0c02c0df25f3e39aca0b"
+    },
+    {
+      "file": "golostext-GolosText[wght].ttf",
+      "missing": [],
+      "sha256": "17bb58fb69aec2dfb047a2ebf52534023e9b688c97a6b7ac795b0a72912c2063"
+    },
+    {
+      "file": "inter-Inter[opsz,wght].ttf",
+      "missing": [],
+      "sha256": "29160a80ff49ddcab2c97711247e08b1fab27a484a329ce8b813d820dc559031"
+    },
+    {
+      "file": "manrope-Manrope[wght].ttf",
+      "missing": [],
+      "sha256": "d0639be45d0af36e798172419d7bd173c4bd4f29e2b76cbb69db1d11bf8b0a40"
+    }
+  ],
+  "links_missing": [],
+  "scenario_rows": 26,
+  "report_embedded": true,
+  "copy_button_present": true,
+  "runtime_browser_qa": "Not completed: CUA timeouts; isolated Opera headless also failed to capture. HTTP200 and structural validation only.",
+  "contrast_pairs": {
+    "A": {
+      "text_on_base": 12.74,
+      "white_on_primary": 7.54
+    },
+    "B": {
+      "text_on_base": 12.69,
+      "white_on_primary": 7.6
+    },
+    "C": {
+      "text_on_base": 12.65,
+      "white_on_primary": 7.34
+    }
+  }
+}

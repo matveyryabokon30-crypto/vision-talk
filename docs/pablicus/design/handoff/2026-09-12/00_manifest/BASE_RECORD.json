@@ -1,0 +1,11 @@
+{
+  "repository": "matveyryabokon30-crypto/vision-talk",
+  "branch": "design/pablicus-design-handoff-20260912",
+  "base_ref": "origin/refactor/pablicus-foundation-20260911",
+  "BASE_SHA": "883003ebe9ae25d3c97b657234d0b6cab72414dd",
+  "design_source_sha": "d791adc19aade1015f4ba34cf4beb5ce2069c93f",
+  "fresh_fetch_completed": true,
+  "recorded_utc": "2026-09-12T18:25:52.245914+00:00",
+  "runtime_changed": false,
+  "deployed": false
+}

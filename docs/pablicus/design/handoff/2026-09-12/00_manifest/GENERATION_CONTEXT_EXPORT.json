@@ -1,0 +1,35 @@
+{
+  "kind": "NON_VERBATIM_CONTEXT_EXPORT",
+  "new_design_created": false,
+  "source": "Earlier D1 conversation/tool calls; this is a structured record, not the original verbatim tool log",
+  "image_generation_tool": "image_gen.imagegen",
+  "reference_supplied_to_each_call": "09_references/RonDesignLab/my-notes-ui.jpg",
+  "reference_policy": "Observed mobile collage supplied for principles only; prompts prohibited copying brand, logo, palette, fonts, layout and glyphs",
+  "requested_board_dimensions": "1800x1200 with three mobile app-content frames at390x844 logical aspect; requested dimensions not a verified output dimension",
+  "common_fixture_date": "2026-09-12",
+  "concepts": [
+    {
+      "direction": "A / ORBIT",
+      "output_original": "exec-d3392557-09a2-43f1-8673-2b59b1d4316d.png",
+      "prompt_context": "Suspended object, porcelain/evergreen surfaces, limited translucent controls, opaque work content; same Север conversation → expanded scenario → result."
+    },
+    {
+      "direction": "B / FOLIO",
+      "output_original": "exec-f589e838-f7e6-4049-98ae-a4dda0373e19.png",
+      "prompt_context": "Opaque editorial surface, spine and margins, no glass, document insert→workspace; same Север scenario. Generated board contains serif character beyond initial sans instruction; subsequent report distinguishes interim display serif."
+    },
+    {
+      "direction": "C / RELAY",
+      "output_original": "exec-08a5c754-9d85-4067-b3bd-99aead6ff6cd.png",
+      "prompt_context": "Opaque precise modules, phase rails and ports, offwhite/navy/blue, explicit approval; same Север scenario."
+    }
+  ],
+  "earlier_observed_limitations": [
+    "No completed browser visual QA: CUA timed out and isolated Opera headless screenshot did not materialize.",
+    "No real iPhone/VoiceOver validation.",
+    "Hero images approximate labels/fonts/targets; contract and static HTML were separately authored.",
+    "No recorded motion video, Figma source, PDF or production implementation.",
+    "No full verbatim generation tool-log file existed locally. This record exports known context without inventing missing requests."
+  ],
+  "owner_gate": "Direction selection pending; no new stage authorised by this packaging task"
+}

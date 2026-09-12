@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "task_id": "PABLICUS-BLOCK02-2B-SHARED-COMPONENTS-20260912",
+  "revision": "R1",
+  "substep": "2B",
+  "status": "SUBSTEP_2B_READY_FOR_INDEPENDENT_REVIEW",
+  "review_required": true,
+  "repository": "matveyryabokon30-crypto/vision-talk",
+  "branch": "refactor/pablicus-foundation-20260911",
+  "current_remote_head_at_start": "6822a58a7a632fcfc182e4a8e2f02eea37d55afb",
+  "work_start_head": "6822a58a7a632fcfc182e4a8e2f02eea37d55afb",
+  "accepted_2a_code_sha": "9ee215300ac97b3c48bf5184f414f28333429a1c",
+  "accepted_2a_decision_commit": "6822a58a7a632fcfc182e4a8e2f02eea37d55afb",
+  "code_sha": "c5e26c2f85ef1f6d1f8ab4684d033de4f3b0d3c9",
+  "tested_sha": "c5e26c2f85ef1f6d1f8ab4684d033de4f3b0d3c9",
+  "handoff_head": null,
+  "handoff_head_binding": "Exact enclosing package commit is reported in the final response and local HANDOFF_RECEIPT.json; no impossible self-referential commit SHA is embedded.",
+  "ci": {
+    "run": 34701805783,
+    "job": 103574775764,
+    "status": "success",
+    "url": "https://github.com/matveyryabokon30-crypto/vision-talk/actions/runs/34701805783",
+    "additional_same_sha_runs": [
+      {
+        "run": 34701805792,
+        "name": "Pablicus foundation Block 01",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "run": 34701805831,
+        "name": "Pablicus integration 1C",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "run": 34701805810,
+        "name": "Pablicus shell 2A qualification",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "artifact": {
+    "status": "PASS",
+    "code_sha": "c5e26c2f85ef1f6d1f8ab4684d033de4f3b0d3c9",
+    "tested_sha": "c5e26c2f85ef1f6d1f8ab4684d033de4f3b0d3c9",
+    "run_id": "34701805783",
+    "job_id": 103574775764,
+    "artifact_id": 10299754595,
+    "github_digest": "sha256:b55508278727f1aa81e0d215ee96dde5e3ff631801c4e50c6c0dcb80db3353b6",
+    "zip_sha256": "b55508278727f1aa81e0d215ee96dde5e3ff631801c4e50c6c0dcb80db3353b6",
+    "zip_size": 9437953,
+    "crc": "PASS",
+    "source_hashes_verified": 249,
+    "artifact_hashes_verified": 681,
+    "job_steps": "ALL_SUCCESS",
+    "cleanup": "PASS",
+    "artifact_expires_at": "2026-09-26T15:24:07Z",
+    "source_manifest_sha256": "7232d188321f007442e9ad8e009a534bf93a162abcc6be1f3f99db8cfd27ff29",
+    "hash_manifest_sha256": "b18ac7281a292d48902b8581de658853a52fc25732dcee5c0b84bdc572859f81",
+    "job_log_sha256": "6e19d95eb270cc1828c5e3ed028e402beed9fba11a3581b4eea39e17450aad4b"
+  },
+  "changed_source_paths": [
+    {
+      "path": ".github/workflows/pablicus-components-2b.yml",
+      "sha256": "d1e39a6b3cbabc77c3d42ee4405f02ca6c546fef4edec9533ce000282c923c67"
+    },
+    {
+      "path": "pablicus/app-shell.js",
+      "sha256": "35e7db8a635e8a1d0a7c3218c6b3e8fc4538c4320fd1ca0b91e18ae39dbe8ca8"
+    },
+    {
+      "path": "pablicus/app.js",
+      "sha256": "46a69885c288e7ab137c2c9fc79d9408554fcf4945bf5b50818bd397b76d7407"
+    },
+    {
+      "path": "pablicus/bot-factory.js",
+      "sha256": "82e69963963d012c2008855ea5d22babd7693e48bc86dceef2c07c898aefd4ab"
+    },
+    {
+      "path": "pablicus/bots.js",
+      "sha256": "cfd12f085b59bcc8e88d73898bd148a6f49de6cfcfb111d9b6a3786ae808b569"
+    },
+    {
+      "path": "pablicus/chat-canvas.js",
+      "sha256": "f2ef004e99d523b0d4328806170208bf343896d96a856b22a18c902cb50750ca"
+    },
+    {
+      "path": "pablicus/chat-library.css",
+      "sha256": "c7db6f3b0e88ce289d653c969545c07ec012f40339b46f559297a91d13083226"
+    },
+    {
+      "path": "pablicus/chat-library.js",
+      "sha256": "bf5c7f10c53c85132795e2583944b97985ba8fda8a9e8667c5c62e1babaebff0"
+    },
+    {
+      "path": "pablicus/chat.js",
+      "sha256": "513dab818cc6e8e2df82ff944b5d72dc3066cfe0a7e98845d0c72a79d64c0d58"
+    },
+    {
+      "path": "pablicus/component-registry.js",
+      "sha256": "71f50b44dba1187e690706541204cf25ce5aab7c340e717ef05db580e5d4680c"
+    },
+    {
+      "path": "pablicus/controls.css",
+      "sha256": "4a2fe5171cce102ae3ec95a154334e44e3bac9a0f945893f4f3a78ec9626c11a"
+    },
+    {
+      "path": "pablicus/design-tokens.css",
+      "sha256": "6f4288f6007cbee2a465865feea31b143b63ff18a1ff341dfb23dd4e84857bfe"
+    },
+    {
+      "path": "pablicus/index.html",
+      "sha256": "029103a74e2c74d46745d24e0e75ee64b34f4142a757591fa877810911924e8a"
+    },
+    {
+      "path": "pablicus/media-viewer.css",
+      "sha256": "cb6cc79d5f3481b96e90f23bf20718582241d6f22e242099ef32808d48f70dd1"
+    },
+    {
+      "path": "pablicus/media-viewer.js",
+      "sha256": "5bc722f2d0df2ac682b2ca4c6aae189851595fee8ae661c4dadf48b228a858e9"
+    },
+    {
+      "path": "pablicus/pablicus.css",
+      "sha256": "edf8d8e8a4b2af4bae5d9cd882799e9bc2439d2c550ec2eaed0f9dbca3515a81"
+    },
+    {
+      "path": "pablicus/public-ui-foundation.css",
+      "sha256": "5d438c12400cf496fa2a6b4adc43295df2f5be78e0cacefb6815917f57d36943"
+    },
+    {
+      "path": "pablicus/rich-composer.css",
+      "sha256": "02508818ede9523f102a9125ca624d8806da1bf64d2dbb0682841270e1e210b8"
+    },
+    {
+      "path": "pablicus/rich-composer.js",
+      "sha256": "319f1e176216385432edbb46b296179e670135c55423f1fc00c1c0d8803db628"
+    },
+    {
+      "path": "pablicus/sw.js",
+      "sha256": "538916a82c6025678cd847a47ae1ff048d31316ad82d3834c06d01ddfed068aa"
+    },
+    {
+      "path": "pablicus/tasks-home.js",
+      "sha256": "315573a540160b1b5a415bcba949bff1d9c680596f932adef3162a0d945cfe8c"
+    },
+    {
+      "path": "pablicus/workspace-editor.css",
+      "sha256": "74ca37640dab5962e7aa33553e0a9e4e90ec430890d4f977e81e5656ba655d10"
+    },
+    {
+      "path": "pablicus/workspace-editor.js",
+      "sha256": "78d04bbad140a8834ae99d66fc013aa20febcda38ac6b7dc7d24785137c7a8da"
+    },
+    {
+      "path": "tests/engineering/block-02/components_probe.py",
+      "sha256": "1fad214fa07d1c3e6e6735e543719e51852a544816e0972d3972d85efe070e20"
+    }
+  ],
+  "runtime_changes": [
+    "pablicus/app-shell.js",
+    "pablicus/app.js",
+    "pablicus/bot-factory.js",
+    "pablicus/bots.js",
+    "pablicus/chat-canvas.js",
+    "pablicus/chat-library.css",
+    "pablicus/chat-library.js",
+    "pablicus/chat.js",
+    "pablicus/component-registry.js",
+    "pablicus/controls.css",
+    "pablicus/design-tokens.css",
+    "pablicus/index.html",
+    "pablicus/media-viewer.css",
+    "pablicus/media-viewer.js",
+    "pablicus/pablicus.css",
+    "pablicus/public-ui-foundation.css",
+    "pablicus/rich-composer.css",
+    "pablicus/rich-composer.js",
+    "pablicus/sw.js",
+    "pablicus/tasks-home.js",
+    "pablicus/workspace-editor.css",
+    "pablicus/workspace-editor.js"
+  ],
+  "test_changes": [
+    "tests/engineering/block-02/components_probe.py"
+  ],
+  "workflow_changes": [
+    ".github/workflows/pablicus-components-2b.yml"
+  ],
+  "checks": {
+    "2B-T01": "PASS",
+    "2B-T02": "PASS",
+    "2B-T03": "PASS",
+    "2B-T04": "PASS",
+    "2B-T05": "PASS",
+    "2B-T06": "PASS",
+    "2B-T07": "PASS"
+  },
+  "limitations": [
+    "Chromium desktop engine and synthetic touch/viewport only; no physical iPhone or real keyboard/Dynamic Type/rotation acceptance.",
+    "Safari/WebKit/Firefox and full WCAG compliance not qualified.",
+    "Synthetic HTTP/WebSocket boundary does not qualify production backend/Auth/RLS or real users.",
+    "Native Popover API required for workspace fullscreen; unsupported browsers retain inline editing with explicit unavailable message.",
+    "Existing compact Canvas calendar geometry is retained; no all-controls 44px target claim.",
+    "MediaViewer tested as actual module/native dialog with synthetic Blob resolver, not production storage integration.",
+    "Service workers blocked; allowlist/version changed but install/update/cache lifecycle not qualified.",
+    "No multi-device synchronization, entire Block 2/product acceptance, or design-source approval claimed.",
+    "Future components and CATEGORY_A capabilities remain contracts/required subsequent implementation.",
+    "Artifact expires on 2026-09-26T15:24:07Z; archive original ZIP before expiration."
+  ],
+  "parallel_changes_preserved": {
+    "commits": [
+      "f1e5d82",
+      "39ee3c0",
+      "8ea1c7b03b1dabd26f449e48c751eabe75344b25"
+    ],
+    "paths": [
+      "docs/pablicus/approved/2026-09-12/AMENDMENT_03_DESIGN_AUTHORITY_AND_ORIGINAL_ASSETS.md",
+      "docs/pablicus/approved/2026-09-12/OWNER_DECISION_AMENDMENT_03.md",
+      "docs/pablicus/design/2026-09-12/DESIGN_REFERENCE_REGISTER.md"
+    ],
+    "read_before_final_source_write": true,
+    "non_fast_forward_response": "422 Update is not a fast forward; no force used; recreated candidate with new parent preserving all parallel docs.",
+    "unreferenced_commit_not_published_to_branch": "389be66268c570fa3b38994d836d95b70e718fd8"
+  },
+  "canonical_basis_at_code": {
+    "PABLICUS_CONTEXT.md": "fdc400df588ce2b6d0effeb7e3720aef57f0c7021fcedb311fe82d339a9b1cf7",
+    "docs/pablicus/approved/2026-09-11/AMENDMENT_01_UNIVERSAL_AI_ASSISTANT.md": "709a1832e22e82c8a4c58afdbbda82937a93a849ff2c3e37179c57b8f69bfdb1",
+    "docs/pablicus/approved/2026-09-11/AMENDMENT_02_COMPETITIVE_CAPABILITIES.md": "3aaff30c37ce6f2e1d991af77ddd2ba3ae3705a4cb90b3a542a44e28b7d93813",
+    "docs/pablicus/approved/2026-09-11/OWNER_DECISION.md": "97db917f4a391bed1cf8c7ff808b1dd871365a5cc171d36453b096fda0fb393a",
+    "docs/pablicus/approved/2026-09-11/OWNER_DECISION_AMENDMENT_01.md": "bc1e7cf1ee425799edbf530a996afe2614653967429360ed1d1130b31192d028",
+    "docs/pablicus/approved/2026-09-11/OWNER_DECISION_AMENDMENT_02.md": "90851be6932b4d3e4f65bb60175fb2167f48588dacd53b483cbc0bc2bc6133c8",
+    "docs/pablicus/approved/2026-09-11/Pablicus_Continuation_Plan_2026-09-11.md": "d914625521cebfc3a191580f06c5734782287c9fc15b8034e3ad026891bbbb59",
+    "docs/pablicus/approved/2026-09-11/Pablicus_Source_Scope.md": "c2aac16b19d335e01cf5c9b3e8574286fee8cb48607b6720c9844b06a7c98b00",
+    "docs/pablicus/approved/2026-09-11/Pablicus_Verified_Snapshot_2026-09-11.json": "65ce5c0fef1118d6462a4e68fbe89be2ed957632d6024d0ad9aee107d3b7dc26",
+    "docs/pablicus/approved/2026-09-11/RECOVERY_MANIFEST.json": "43ea8b6ae74731c492ae703dedf7a90420ab36b66b7e7b6042c828482b6d60a2",
+    "docs/pablicus/approved/2026-09-12/AMENDMENT_03_DESIGN_AUTHORITY_AND_ORIGINAL_ASSETS.md": "bba3a3ae9e0a9a415b82113c5ae72745febd2210883a00fb5f234d831efa53a7",
+    "docs/pablicus/approved/2026-09-12/OWNER_DECISION_AMENDMENT_03.md": "be0c37f971777f6342a00f1eaaa7827c1ebbd021cc5f999a9904c96d97032f7b",
+    "docs/engineering/block-01/ACCEPTANCE.md": "b131f83e47388c2455ae1cf9044b03166852b2e167a7b5f03125220250cc4950",
+    "docs/engineering/block-01/REVIEW_MANIFEST.json": "392c57ae4fc3d52625ce73a3eed83b1ef10d570da8873ad9ae59ec202513cc7d",
+    "docs/pablicus/reviews/2026-09-12/2A_HANDOFF_REVIEW_R1.md": "c1186d02817f9576931d70488f851245a847eeea089607c1287439965564ba58",
+    "docs/pablicus/design/2026-09-12/DESIGN_REFERENCE_REGISTER.md": "3f2ac507ed5ac7b3502460c7c21bf7617927eb420b995b8f24e933a07e54bff1"
+  },
+  "plan_basis": "Plan 1.0 + OWNER_APPROVED Amendments 01/02/03; five blocks",
+  "design_scope": "Existing approved presentation retained; no new font/icon assets/reference design implementation. Amendment 03 design authority preserved.",
+  "external_writes": {
+    "github_branch_only": true,
+    "source_commits": [
+      "f5eec611c93cb5477258e934935cc1c5cbfde2f9",
+      "532690560395a0778b59dc5c4aae846db29d6db9",
+      "ccfdd90e05bb5f98dba4ee339b04cf2f00df391c",
+      "f1460551abbd4e7e4f8ddfa7e5023f4bb727d2e5",
+      "c5e26c2f85ef1f6d1f8ab4684d033de4f3b0d3c9"
+    ],
+    "documentation_handoff": "enclosing package commit",
+    "fresh_ci_and_artifacts": true,
+    "safety_refusal_this_task": false,
+    "production_writes": false,
+    "main_writes": false,
+    "merge": false,
+    "deploy": false,
+    "reset_clean_force_push": false
+  },
+  "next_step": "Independent review via Matvey; do not start next substep automatically",
+  "package_bindings": {
+    "COMPONENTS_2B_MAP.json": "fc610cd15e441eab6578a8eb9f6296242c2e4b5a4c1ea0a64f5272381371b348",
+    "COMPONENTS_2B_IMPLEMENTATION.md": "fdb4063c25ef4b01205679d29e04f0e33a9348607d94c8d4d31595b35679276a",
+    "COMPONENTS_2B_TEST_RESULTS.json": "66bfcdcca86882f196bc7703c6d2b325fa90c682b02ef0affe9e3594a65b1500"
+  },
+  "expected_document_only_handoff_paths": [
+    "PABLICUS_CONTEXT.md",
+    "docs/engineering/block-02/COMPONENTS_2B_IMPLEMENTATION.md",
+    "docs/engineering/block-02/COMPONENTS_2B_MAP.json",
+    "docs/engineering/block-02/COMPONENTS_2B_TEST_RESULTS.json",
+    "docs/engineering/block-02/COMPONENTS_2B_MANIFEST.json"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "scope": "File/integrity handoff checks only; not a new design audit or browser acceptance",
+  "copied_original_files": 107,
+  "byte_changed_original_files": [],
+  "source_snapshot_files": 61,
+  "svg_xml_valid_count": 72,
+  "gallery_dependency_missing": [],
+  "gallery_mobile_ids": {
+    "A": true,
+    "B": true,
+    "C": true
+  },
+  "new_visual_files_created_during_handoff": 0,
+  "runtime_application_modified": false,
+  "historical_source_copies_under_docs_only": true,
+  "browser_visual_verification": "Not performed in this handoff; previous attempts failed, retained as limitation",
+  "deployment": "NOT_RUN",
+  "manifests_self_checksum_exclusion": "Only the two self-describing manifest files; their exact hashes are supplied in final response and files are pinned by Git commit"
+}

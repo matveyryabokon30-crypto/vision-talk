@@ -1,0 +1,181 @@
+# Pablicus — восстановление контекста
+
+**Статус стратегии: OWNER_APPROVED · план 1.0 + дополнение 01 + дополнение 02 + дополнение 03 · 12 сентября 2026 года.**
+
+Репозиторий: `matveyryabokon30-crypto/vision-talk`.
+Рабочая ветка при фиксации: `refactor/pablicus-foundation-20260911`.
+Этот файл — точка входа после потери чата. Это не стенограмма и не подтверждение готовности приложения.
+
+## Передача 2B — 12 сентября 2026
+
+**SUBSTEP_2B_READY_FOR_INDEPENDENT_REVIEW**. Это отдельное ограниченное задание Матвея `PABLICUS-BLOCK02-2B-SHARED-COMPONENTS-20260912`, R1. Исполнитель не присваивает ACCEPTED; Block 2 целиком не принят.
+
+WORK_START_HEAD: `6822a58a7a632fcfc182e4a8e2f02eea37d55afb`; CODE_SHA = TESTED_SHA: `c5e26c2f85ef1f6d1f8ab4684d033de4f3b0d3c9`. Свежий CI: `34701805783`, job `103574775764`, artifact `10299754595`. SHA-256 ZIP: `b55508278727f1aa81e0d215ee96dde5e3ff631801c4e50c6c0dcb80db3353b6`.
+
+Канонический пакет: `docs/engineering/block-02/COMPONENTS_2B_IMPLEMENTATION.md`, `COMPONENTS_2B_MAP.json`, `COMPONENTS_2B_TEST_RESULTS.json`, `COMPONENTS_2B_MANIFEST.json` в том же каталоге. Общие native controls и существующие composer/overlay surfaces; current Controller/AppShell/PablicusUI сохранены. 2B-T01…T07 PASS в явно ограниченной квалификации; before FAIL → after PASS, 31/31 1B и 9/9 1C с четырьмя отрицательными контролями на точном SHA.
+
+Сохранены параллельные Amendment 03, owner decision и Design Reference Register. Теперь действуют Plan 1.0 + Amendments 01/02/03, пять блоков; дизайн-контур отдельный, новый дизайн/активы не внедрялись. 1A/1B/1C/1D/Block 1 и 2A остаются принятыми в прежних границах; исторические записи ниже не переписаны.
+
+Физический iPhone, остальные browser engines, production backend, multi-device, Service Worker lifecycle и полная WCAG не квалифицированы. Native Popover API требуется для fullscreen workspace editor; без него сохраняется inline-редактирование с явным сообщением. CATEGORY_A и будущие компоненты не объявлены реализованными. Следующий шаг — независимая проверка 2B через Матвея. Следующий подэтап автоматически не начат; Block 3–5 не начаты этим заданием.
+
+## Независимая приёмка 2A — 12 сентября 2026
+
+**SUBSTEP_2A_ACCEPTED** в границе `PABLICUS-BLOCK02-2A-SHELL-ARCHITECTURE-20260912`, R1. CODE_SHA = TESTED_SHA: `9ee215300ac97b3c48bf5184f414f28333429a1c`; HANDOFF_HEAD: `55754de80a74b45ddd8aef7d2a2a9e95f132aa40`.
+
+[Решение Проверяющего](docs/pablicus/reviews/2026-09-12/2A_HANDOFF_REVIEW_R1.md), [результаты](docs/pablicus/reviews/2026-09-12/2A_R1_RESULTS.json), [точные диагностические пробы](docs/pablicus/reviews/2026-09-12/2A_R1_PROBES.txt).
+
+Лично выполнены: integrity исходного CI ZIP, 531 content hash/235 Git sources; structural checks; 31/31 1B; shell на трёх viewport и duplicate-listener negative control; собственные проверки resize, заголовков, Canvas/draft и expanded composer. 1C 9/9, 145 assertions, 54 transitions и четыре мутации подтверждены по первичному CI artifact без нового локального запуска 1C.
+
+Ранее вынесенный BLOCK_1_ACCEPTED восстановлен из переданного Матвеем `PABLICUS-REVIEWER-CODEX-HANDOFF-20260912`, R1, а не из придуманного исторического Git-файла. Принятые этапы не переоткрыты. Пять блоков и дополнения 01/02 сохранены.
+
+**Block 2 целиком не принят; 2B не начат.** Следующий шаг — отдельное задание 2B через Матвея. Физический iPhone предусмотрен при физической приёмке блока 2; эмуляция его не заменяет. Production/Supabase/RLS/Auth, multi-device, Service Worker и полная WCAG этой приёмкой не квалифицированы. Runtime/tests/workflow данной документальной записью не меняются.
+
+## Историческая передача 2A — до независимой приёмки, 12 сентября 2026
+
+В задании `PABLICUS-BLOCK02-2A-SHELL-ARCHITECTURE-20260912`, R1 владелец прямо подтвердил независимую приёмку **BLOCK_1_ACCEPTED**, включая 1A/1B/1C/1D, и разрешил начать Block 2. Исторический пакет Исполнителя 1D ниже сохранён; отдельный файл решения Проверяющего 1D на WORK_START_HEAD не найден. Новое решение здесь не выдаётся за такой файл.
+
+**2A — SUBSTEP_2A_READY_FOR_INDEPENDENT_REVIEW**, `review_required=true`. Это квалифицированная архитектурная база с ограниченными foundation changes, не приёмка 2A и не завершение Block 2.
+
+WORK_START_HEAD: `abfc878896d8b10acc540d27ed370bbfaf2e8b70`. CODE_SHA = TESTED_SHA: `9ee215300ac97b3c48bf5184f414f28333429a1c`. Основной exact-SHA CI: `34698093479` (shell + 1B + полный 1C + negative controls). SHA/document handoff и artifact binding — в манифесте и итоговой квитанции передачи.
+
+Канонические документы:
+
+- [Архитектура](docs/engineering/block-02/SHELL_2A_ARCHITECTURE.md).
+- [Манифест](docs/engineering/block-02/SHELL_2A_MANIFEST.json).
+- [Карта ownership](docs/engineering/block-02/SHELL_2A_OWNERSHIP_MAP.json).
+- [Реестр компонентов](docs/engineering/block-02/SHELL_2A_COMPONENT_REGISTRY.md).
+- [Результаты T01–T13](docs/engineering/block-02/SHELL_2A_TEST_RESULTS.json).
+
+Один PablicusController владеет маршрутом/identity/lifecycle; stateless AppShell — общей проекцией и внешней геометрией; shell.css — общей геометрией шапки/оболочки; design-tokens.css — глобальными токенами; PablicusUI — общим реестром и Composer contract. Корневые вкладки: **Чаты / Дела / Вы**. Bots/Factory — вложенный вход. Spaces/Threads/Search/Saved/AI/Public Identity и calls отражены в IA/контрактах с явными границами реализации.
+
+Результаты Chromium/synthetic boundary не доказывают physical iPhone, Safari, production backend, multi-device или WCAG compliance. Принятые основания Block 1 и exclusion 1A сохранены. Plan 1.0 + Amendments 01/02 не изменены.
+
+Первоначальный source-write отказ 2A по лимиту review 200000 bytes сохранён как исторический факт. После явного одобрения владельца исходная полная операция create_tree прошла штатно; payload не дробился и транспорт не менялся. Это не общая safety/support clearance.
+
+Следующий шаг: **независимая проверка 2A**. 2B самостоятельно НЕ начинать. Block 3 и engine Block 5 не начаты; main/production/deployment не изменены.
+
+## Исторический пакет 1D — до последующего подтверждения владельца
+
+- **1A — SUBSTEP_1A_ACCEPTED_WITH_EXPLICIT_EXCLUSION**: [решение](docs/engineering/block-01/REVIEW_1A_DECISION.md); `NOT_RECOVERED` / `EXCLUDED_FROM_BASELINE` сохранены.
+- **1B — SUBSTEP_1B_ACCEPTED**: [решение](docs/engineering/block-01/REVIEW_1B_DECISION.md).
+- **1C — SUBSTEP_1C_ACCEPTED**: [независимая приёмка](docs/pablicus/reviews/2026-09-12/1C_HANDOFF_REVIEW_R1.md), [результаты](docs/pablicus/reviews/2026-09-12/1C_R1_RESULTS.json).
+- **1D / Block 1 — BLOCK_1_READY_FOR_INDEPENDENT_FINAL_REVIEW**, `review_required=true`. BLOCK_1_ACCEPTED ещё не присвоен.
+- **Block 2 — NOT_STARTED**.
+
+Канонический пакет: [ACCEPTANCE.md](docs/engineering/block-01/ACCEPTANCE.md) и [REVIEW_MANIFEST.json](docs/engineering/block-01/REVIEW_MANIFEST.json). Следующий шаг: **independent final review of Block 1**. Текущее отдельное задание владельца: `PABLICUS-BLOCK01-1D-CLOSEOUT-20260912`, R1; только closeout документов.
+
+WORK_START_HEAD 1D: `21309859b3e14b7f73f756ed2907373d414e128b`; обе более поздние записи Проверяющего после handoff 1C сохранены. Принятый CODE_SHA = TESTED_SHA 1C: `4b886c1477c44752359ccc4b44f8ff5c072bb241`; handoff 1C: `2d610c10cdd2be62ae2193965cd4d5a6c869f09c`; CI `34688665398`, artifact `10297195136`. 1D не меняет runtime/tests/workflow и не создаёт новый test run. Plan 1.0 + Amendments 01/02 сохранены; Amendment 02 не входил в Block 1 execution.
+
+Ниже сохранены исторические передачи. Их READY/BLOCKED и NOT_STARTED относятся к прежним моментам; позднейшие решения выше определяют текущие статусы. Границы tests, synthetic network, Chromium CI и exclusions не расширяются на production, весь продукт или физический iPhone.
+
+## Историческая передача Исполнителя 1C — до независимой приёмки
+
+**SUBSTEP_1C_READY_FOR_INDEPENDENT_REVIEW**; ACCEPTED не присвоен. CODE_SHA = TESTED_SHA `4b886c1477c44752359ccc4b44f8ff5c072bb241`. [Свежий CI 34688665398](https://github.com/matveyryabokon30-crypto/vision-talk/actions/runs/34688665398) SUCCESS: 9/9 сценариев, 54 completed transitions, 4 конкретных mutation FAIL, 31/31 1B PASS; исходный artifact и hashes проверены. [Отчёт R2](docs/engineering/block-01/INTEGRATION_1C_REPORT.md), [манифест](docs/engineering/block-01/INTEGRATION_1C_MANIFEST.json), [evidence](docs/engineering/block-01/INTEGRATION_1C_EVIDENCE.json).
+
+Обычные source writes текущей среды прошли; исторический safety refusal и specialist PENDING сохранены, новая support clearance не заявляется. Следующий шаг — независимый review 1C. 1A/1B не переоткрыты; 1D/блок2 не начаты. Более старые сведения о незавершённой 1C ниже относятся к историческому раунду R1.
+
+## Утверждённое дополнение 02 — конкурентный функциональный слой
+
+Владелец утвердил **Дополнение 02** со статусом `OWNER_APPROVED`, revision `1.0`: [AMENDMENT_02_COMPETITIVE_CAPABILITIES.md](docs/pablicus/approved/2026-09-11/AMENDMENT_02_COMPETITIVE_CAPABILITIES.md). Краткое неизменяемое решение владельца: [OWNER_DECISION_AMENDMENT_02.md](docs/pablicus/approved/2026-09-11/OWNER_DECISION_AMENDMENT_02.md).
+
+Действующая каноническая база — **план 1.0 + Дополнение 01 + Дополнение 02**. Количество инженерных блоков остаётся **5**; отдельный блок 6 не создаётся. Дополнение 02 относится к блокам **2–5** и закрепляет конкурентный слой, включая Spaces/Communities, Threads/Topics, Global Search, Saved, AI in Composer, public identity, interactive/rich messages, social/moderation/discovery contracts, три режима AI, agent-to-agent, marketplace «Возможности», trust levels, mini-app runtime, deep links, business/commerce primitives и архитектурную готовность к calls/live.
+
+CATEGORY_A обязательна к первому полноценному пользовательскому web-релизу в соответствующих блоках; CATEGORY_B должна быть архитектурно предусмотрена без требования полной реализации первого релиза; CATEGORY_C является последующим расширением.
+
+Дополнение 02 **не расширяет текущий 1C**, не переоткрывает 1A/1B, не разрешает обход safety gate и не запускает 1D или блок 2. Базовая концепция `Чаты / Дела / Вы` сохраняется; отдельные основные вкладки «Лента», «AI», «Marketplace» и «Communities» этим дополнением не утверждены.
+
+Статус при фиксации Дополнения 02: **`SUBSTEP_1C_BLOCKED_AWAITING_SAFETY_REVIEW`**; актуальная передача R2 указана выше.
+
+## Утверждённое дополнение 01 — универсальный ИИ-помощник
+
+Владелец утвердил [дополнение 01](docs/pablicus/approved/2026-09-11/AMENDMENT_01_UNIVERSAL_AI_ASSISTANT.md) и [решение о нём](docs/pablicus/approved/2026-09-11/OWNER_DECISION_AMENDMENT_01.md). Оно действует совместно с планом 1.0 и Дополнением 02, а не как новый план с нуля.
+
+Пять блоков сохраняются. В блоке 5 — самостоятельный универсальный ИИ-чат на общей основе с агентами и фабрикой, с отдельными контекстом, правами и приёмкой. Первая полноценная версия входит в первый пользовательский веб-релиз дополнительно к прежнему сквозному результату. В блоках 2–4 учитываются только необходимые общие контракты.
+
+Текущее задание 1C, оставшаяся приёмка блока 1 и принятые 1A/1B не меняются. Начинать помощника сейчас не разрешено. Название и четвёртая основная вкладка не утверждены. Первый просмотр на iPhone остаётся после реализации блока 2, в рамках его физической приёмки; промежуточный выпуск на 1D не добавляется.
+
+## Историческая проверка R1 — незавершённая 1C и safety review
+
+**1C остаётся `SUBSTEP_1C_BLOCKED_AWAITING_SAFETY_REVIEW`; результат не принят.** [Независимая проверка передачи](docs/pablicus/reviews/2026-09-11/1C_BLOCKED_REVIEW_R1.md) и [ограниченное диагностическое задание](docs/pablicus/tasks/1C_DIAGNOSIS_R1_PROMPT.txt). Проверен TESTED_SHA `f00f253ca2adfe7afc07e64cc3a1dc8f53c5692d`: 31 регрессия 1B имеет PASS в CI, девять браузерных сценариев 1C имеют ERROR до проверок поведения. Все семь требований 1C остаются открытыми.
+
+Safety-блокировка конкретной source-write операции остаётся `NOT_RESOLVED`; обращение в OpenAI Support отправлено владельцем и эскалировано специалисту, review pending. Успешные документальные записи не означают снятие ограничения. Не повторять/не перепаковывать запрещённую source-write и не использовать другой транспорт для обхода. Подготовленный [execution blueprint](docs/engineering/block-01/INTEGRATION_1C_EXECUTION_BLUEPRINT.md) остаётся `DOCUMENTATION_ONLY / DESIGNED_NOT_PUBLISHED`.
+
+## Принятое основание — 1B после проверки коррекции R2
+
+**1B принят: SUBSTEP_1B_ACCEPTED** на `c5d82e96a236317f7a50530fb86da1a5d2bc4e26`, документальная передача `4c8e045aaac051e7d1244fd9dfe23c5124b397eb`. Дефект 1B-LEAVE-RESUME закрыт. Основание: [решение по 1B](docs/engineering/block-01/REVIEW_1B_DECISION.md), [отчёт R3](docs/pablicus/reviews/2026-09-11/1B_HANDOFF_REVIEW_R3.md), [результаты](docs/pablicus/reviews/2026-09-11/1B_R3_RESULTS.json).
+
+В исторической передаче R1 следующее исполняемое задание после штатного снятия блокировки было **[1C: настоящая интеграция модулей и хранения](docs/pablicus/tasks/1C_INTEGRATION_PROMPT.txt)**. 1A/1B не повторять. Блок 1 целиком не принят. 1D и блоки 2–5 не начинаются автоматически. Main, production и Supabase не изменяются этим решением.
+
+Исторические NOT_ACCEPTED ниже и в предыдущих проверках относятся к прежним кандидатам. Они не отменяют более позднюю ограниченную приёмку нового кода и не переписываются задним числом.
+
+## Читать в этом порядке
+
+1. [Решение владельца](docs/pablicus/approved/2026-09-11/OWNER_DECISION.md).
+2. [Исходный утверждённый план 1.0](docs/pablicus/approved/2026-09-11/Pablicus_Continuation_Plan_2026-09-11.md).
+3. [Решение по Дополнению 01](docs/pablicus/approved/2026-09-11/OWNER_DECISION_AMENDMENT_01.md) и [Дополнение 01](docs/pablicus/approved/2026-09-11/AMENDMENT_01_UNIVERSAL_AI_ASSISTANT.md).
+4. [Решение по Дополнению 02](docs/pablicus/approved/2026-09-11/OWNER_DECISION_AMENDMENT_02.md) и [Дополнение 02](docs/pablicus/approved/2026-09-11/AMENDMENT_02_COMPETITIVE_CAPABILITIES.md).
+5. Текущий пакет 1D, решения приёмки 1A/1B/1C по ссылкам выше; затем [снимок состояния при утверждении плана](docs/pablicus/approved/2026-09-11/Pablicus_Verified_Snapshot_2026-09-11.json) и [источники / границы исследования](docs/pablicus/approved/2026-09-11/Pablicus_Source_Scope.md).
+6. [Решение по 1A](docs/engineering/block-01/REVIEW_1A_DECISION.md), актуальные документы `docs/engineering/block-01/`, новые коммиты и результаты проверок.
+7. [Манифест первоначальной фиксации плана](docs/pablicus/approved/2026-09-11/RECOVERY_MANIFEST.json). Его хеши относятся к первоначальному снимку, не к будущим редакциям этой точки входа.
+
+Исторические слова «предложение» и прежние статусы в исходных файлах сохранены намеренно. Более поздние решения владельца утверждают план и дополнения; они не меняют задним числом факты исследования, статусы тестов или неизвестные сведения.
+
+## Что строим
+
+Единое пространство: люди и агенты общаются, работают с долговечными объектами и выполняют реальные действия. Целевая модель: `COMMUNICATION + SOCIAL + CREATION + EXECUTION + AI + SERVICES + COMMERCE`.
+
+Ключевой путь: `разговор → рабочий объект → действие → агент/исполнитель → проверяемый результат → повторно используемый сервис`.
+
+Чаты, темы, Полотно, каналы, социальный слой, редактор контента/видео и фабрика используют общие объекты, права и операции. Сообщение может быть связано с задачей, рабочим объектом, документом, медиапроектом, заданием агенту, публикацией, сервисом или коммерческим действием, но эти сущности остаются различимыми.
+
+Фабрика создаёт действующие боты и мини-приложения из человеческого описания. Ручной граф не является обязательным путём. План сборки, форма ТЗ, таймер или текст модели не подменяют работающий сервис.
+
+## Пять блоков — порядок сохраняется
+
+1. **Основание:** единое состояние, переходы, lifecycle, отмена, сессии и настоящая сохранность данных.
+2. **Оболочка:** согласованные компоненты, навигация и геометрия; по Дополнению 02 — базовые Spaces/Communities, Threads/Topics, Global Search, Saved, AI in Composer, public identity и архитектурная готовность calls/media sessions.
+3. **Полотно и объекты:** MessageDoc/структурированный контент, темы, версии, совместимость, interactive messages, polls/events/checklists/forms, Inline AI и явные связи Message ↔ Thread ↔ Topic ↔ Work Object ↔ Agent Run ↔ Result.
+4. **Социальный и эксплуатационный минимум:** каналы, роли, права, moderation, discovery, scheduled content, translation/summary, восстановление доступа, резервирование и обратимый выпуск; creator monetization/live — в границах категорий B/C.
+5. **Агенты, фабрика и универсальный ИИ-помощник:** AI Chat / AI in Context / AI Inline, agent-to-agent, marketplace «Возможности», trust levels, mini-app runtime, deep links, business/commerce primitives и каталог подключений.
+
+Отдельного блока 6 нет.
+
+Контракты будущих агентов проектируются в соответствующих блоках; исполнение подключается к принятым операциям. Не ждать создания всего будущего marketplace для внедрения агента.
+
+## Историческая точка при первоначальной фиксации плана
+
+На момент первоначальной фиксации прочитан HEAD рабочей ветки `e8f267446fa35e7b83b6a9767e33dea2e6a48bff`. Это исходный кодовый снимок, не бессрочно текущий HEAD: документальные коммиты и будущая разработка продвигают ветку.
+
+- **1A:** `SUBSTEP_1A_ACCEPTED_WITH_EXPLICIT_EXCLUSION`. Не повторять. Неизвестный дополнительный патч: `NOT_RECOVERED` и `EXCLUDED_FROM_BASELINE`. Требования продукта не исключены.
+- **1B:** позднее принят решением R3; не переоткрывать.
+- **1C:** `SUBSTEP_1C_BLOCKED_AWAITING_SAFETY_REVIEW`; все семь требований остаются открытыми.
+- **Блок 1 целиком:** не принят.
+- **Последовательность:** после завершения 1C пакет приёмки 1D выполняется только по отдельному заданию; блок 2 не начинать до завершения блока 1.
+
+Перед любой записью читать актуальные refs, новые изменения и решения. Не откатывать к SHA из этой сводки и не перезаписывать параллельную работу. Обновлённый код нельзя автоматически оценивать по старому отчёту об ошибках.
+
+## Граница первого пользовательского web-релиза
+
+Сохраняется объём плана 1.0 и Дополнения 01: настоящие чаты и рабочее Полотно; агент в разговоре; фабрика, выпускающая сервис; каналы и социальный слой; контентный редактор с ограниченным, но реальным видеоконвейером; проверенный каталог возможностей; самостоятельный универсальный ИИ-чат.
+
+К этому добавляются **CATEGORY_A** возможности Дополнения 02 в соответствующих блоках. CATEGORY_B и CATEGORY_C не считать обязательной полной реализацией первого релиза.
+
+Контрольный путь плана сохраняется: канал + материалы + описание помощника → фабрика создаёт сервис → другой аккаунт использует его → сохраняется ответ/заявка/задача → выдаются MP4 и редактируемый пост → владелец подтверждает публикацию. Закрытие приложения не теряет задание; повтор не дублирует действие.
+
+## Calls boundary
+
+Calls признаны важной конкурентной возможностью, но полный набор 1:1/group audio/video, screen sharing, device handoff, call links, voice rooms и live/stage не становится автоматически обязательным к первому web-релизу. Блоки 2–3 должны сохранить архитектурную возможность их последующей реализации. Перед переводом calls в обязательную релизную границу нужна отдельная квалификация WebRTC/alternative architecture, mobile/background behavior, NAT/TURN, media security, moderation, recording, bandwidth, cost и physical-device QA.
+
+## Не нарушать
+
+Сохранять аккаунты, сообщения, идентификаторы, оригинальные вложения, durable outbox, форматы и проверенные контракты. Не пересоздавать продукт. UI, агент и сервис вызывают доменные операции, а не имитируют клики DOM.
+
+Секреты не выдаются модели, клиенту или произвольному плагину. Права проверяются сервером. Опасные и внешние действия подтверждаются по точным параметрам. «Утверждено направление» не равно «принят весь продукт», «разрешена покупка» или «разрешён production-deploy».
+
+Полные исходные чаты, все видео TelegramTips, новая физическая приёмка iPhone и полная сертификация безопасности этим пакетом не восстановлены. Нельзя заявлять их прочтение/прохождение.
+
+## Как не потерять следующий этап
+
+После значимого решения или завершённого подэтапа сохранять в Git: исходный SHA, цель и границы задания, изменённые файлы, tested SHA/run, evidence, ограничения, решение проверяющего и следующий разрешённый шаг. Обновлять эту точку входа и фиксировать изменения обычным коммитом. Исторические решения не переписывать; новые решения связывать с предыдущими.
+
+Это правило рабочего процесса, а не работающая фоновая синхронизация всех разговоров ChatGPT. Секреты и частные переписки в публичный репозиторий не включать. Утверждённый план хранится в Git; сохранность БД, медиа и иных внешних данных требует отдельных резервных копий.

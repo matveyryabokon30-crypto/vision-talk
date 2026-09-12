@@ -1,0 +1,97 @@
+{
+  "decision": "Owner-selected glass speech-bubble icon, 2026-09-09",
+  "icon_revision": "glass-20260909",
+  "original_icon_sha256": "e410d1c9077a66a33f68b4bb5efbd5d11dea041819607b4991e7057788c81207",
+  "original_dimensions": [
+    1254,
+    1254
+  ],
+  "presentation_margin_crop_xyxy": [
+    181,
+    166,
+    1073,
+    1058
+  ],
+  "runtime_master": {
+    "path": "../branding/glass-icon-master.webp",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "3d1138fc4d4dff99cbdb31674f9a4ba9e54f562474ec947db284b1b660d10419",
+    "encoding": "WebP quality=100, method=6; not a lossless original"
+  },
+  "process": "Approved raster artwork only. Presentation margin cropped, aspect ratio preserved, Lanczos resizing. No redrawing, new symbol, text, recolouring or generated glass effect.",
+  "exports": [
+    {
+      "path": "icon-glass-20260909-32.png",
+      "size": [
+        32,
+        32
+      ],
+      "sha256": "87d00fd10e8f1b287813b7230827ac541511d30605f15620f4f713a17e1d4be3"
+    },
+    {
+      "path": "icon-32.png",
+      "size": [
+        32,
+        32
+      ],
+      "sha256": "87d00fd10e8f1b287813b7230827ac541511d30605f15620f4f713a17e1d4be3"
+    },
+    {
+      "path": "icon-glass-20260909-180.png",
+      "size": [
+        180,
+        180
+      ],
+      "sha256": "ae7243f1240cba5157abfec0a77f1c2bff7bd6074bfc584c5eed160fb95bc692"
+    },
+    {
+      "path": "icon-180.png",
+      "size": [
+        180,
+        180
+      ],
+      "sha256": "ae7243f1240cba5157abfec0a77f1c2bff7bd6074bfc584c5eed160fb95bc692"
+    },
+    {
+      "path": "icon-glass-20260909-192.png",
+      "size": [
+        192,
+        192
+      ],
+      "sha256": "19f130f1ac62d6531f158ce14ac5f44ae0396d1de994296c2872fc06b8bf7f99"
+    },
+    {
+      "path": "icon-192.png",
+      "size": [
+        192,
+        192
+      ],
+      "sha256": "19f130f1ac62d6531f158ce14ac5f44ae0396d1de994296c2872fc06b8bf7f99"
+    },
+    {
+      "path": "icon-glass-20260909-512.png",
+      "size": [
+        512,
+        512
+      ],
+      "sha256": "a6f53200aa9a8f3acba3115206f2105240031475c2123a5053b7947ce32c08ab"
+    },
+    {
+      "path": "icon-512.png",
+      "size": [
+        512,
+        512
+      ],
+      "sha256": "a6f53200aa9a8f3acba3115206f2105240031475c2123a5053b7947ce32c08ab"
+    }
+  ],
+  "original_wordmark_sha256": "908faa4f67adb8b811f3c0bcbd2ea58e2b7b142ab3c4b1cfac48d2a1e54eafc9",
+  "wordmarks_preserved_byte_for_byte": {
+    "wordmark-dark.png": "fd04f676a7cbfecb2b8aef1b3da0aeb05715e48184a302f9d93000381ea5a212",
+    "wordmark-light.png": "b2b4356783dcf2f67c39673d0905ae96cc8f4f7db1e022aea4d3b51724276368"
+  },
+  "compatibility": "Versioned icon URLs for new shell and manifest; previous filenames contain identical new PNG bytes. PWA id, name, start_url, scope, backend and user storage unchanged."
+}

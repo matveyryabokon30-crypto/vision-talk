@@ -1,0 +1,22 @@
+[
+  {
+    "file": "sourceserif4-SourceSerif4[opsz,wght].ttf",
+    "missing": [],
+    "sha256": "97b2d4da6e3cb494b5a1e66ae176914d852ccabef49e0c02c0df25f3e39aca0b"
+  },
+  {
+    "file": "golostext-GolosText[wght].ttf",
+    "missing": [],
+    "sha256": "17bb58fb69aec2dfb047a2ebf52534023e9b688c97a6b7ac795b0a72912c2063"
+  },
+  {
+    "file": "inter-Inter[opsz,wght].ttf",
+    "missing": [],
+    "sha256": "29160a80ff49ddcab2c97711247e08b1fab27a484a329ce8b813d820dc559031"
+  },
+  {
+    "file": "manrope-Manrope[wght].ttf",
+    "missing": [],
+    "sha256": "d0639be45d0af36e798172419d7bd173c4bd4f29e2b76cbb69db1d11bf8b0a40"
+  }
+]

@@ -1,0 +1,53 @@
+﻿Source,Definition,Evidence,Provenance,Target status
+pablicus/message-menu.js,outbox,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,copy,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,pin,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,forward,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,reply,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,edit,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,select,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,download,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,search,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,compose,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,chats,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,feed,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,tasks,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,profile,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,back,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,plus,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,microphone,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,send,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,check,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,close,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,share,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,users,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,delete,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,play,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,pause,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/message-menu.js,corner-up-left,named SVG definition; source inspection,Lucide ISC / Feather MIT notices in file,"interim baseline, not original master"
+pablicus/chat-canvas.js,refresh,named SVG definition; source inspection,origin not fully established,"interim baseline, not original master"
+pablicus/chat-canvas.js,plus,named SVG definition; source inspection,origin not fully established,"interim baseline, not original master"
+pablicus/chat-canvas.js,edit,named SVG definition; source inspection,origin not fully established,"interim baseline, not original master"
+pablicus/chat-canvas.js,source,named SVG definition; source inspection,origin not fully established,"interim baseline, not original master"
+pablicus/chat-canvas.js,close,named SVG definition; source inspection,origin not fully established,"interim baseline, not original master"
+pablicus/chat-canvas.js,check,named SVG definition; source inspection,origin not fully established,"interim baseline, not original master"
+pablicus/chat-canvas.js,copy,named SVG definition; source inspection,origin not fully established,"interim baseline, not original master"
+pablicus/chat-canvas.js,previous,named SVG definition; source inspection,origin not fully established,"interim baseline, not original master"
+pablicus/chat-canvas.js,next,named SVG definition; source inspection,origin not fully established,"interim baseline, not original master"
+pablicus/tasks-home.js,refresh,named SVG definition; source inspection,origin not fully established,"interim baseline, not original master"
+pablicus/tasks-home.js,search,named SVG definition; source inspection,origin not fully established,"interim baseline, not original master"
+pablicus/tasks-home.js,close,named SVG definition; source inspection,origin not fully established,"interim baseline, not original master"
+pablicus/tasks-home.js,check,named SVG definition; source inspection,origin not fully established,"interim baseline, not original master"
+pablicus/tasks-home.js,calendar,named SVG definition; source inspection,origin not fully established,"interim baseline, not original master"
+pablicus/workspace-quick.js,close,local SVG factory,origin not fully established,interim baseline
+pablicus/workspace-quick.js,chevron,local SVG factory,origin not fully established,interim baseline
+pablicus/index.html,▢ Чаты,markup fallback; runtime may replace icon,text glyph; platform-dependent,not original master
+pablicus/index.html,✓ Дела,markup fallback; runtime may replace icon,text glyph; platform-dependent,not original master
+pablicus/index.html,♙ Вы,markup fallback; runtime may replace icon,text glyph; platform-dependent,not original master
+pablicus/index.html,◈ Боты,markup fallback; runtime may replace icon,text glyph; platform-dependent,not original master
+pablicus/index.html,✎ новый разговор,markup fallback; runtime may replace icon,text glyph; platform-dependent,not original master
+pablicus/index.html,＋ добавить,markup fallback; runtime may replace icon,text glyph; platform-dependent,not original master
+pablicus/index.html,⛶ развернуть,markup fallback; runtime may replace icon,text glyph; platform-dependent,not original master
+pablicus/index.html,⌄ скрыть клавиатуру,markup fallback; runtime may replace icon,text glyph; platform-dependent,not original master
+pablicus/index.html,↑ отправить,markup fallback; runtime may replace icon,text glyph; platform-dependent,not original master
+pablicus/index.html,× закрыть,markup fallback; runtime may replace icon,text glyph; platform-dependent,not original master

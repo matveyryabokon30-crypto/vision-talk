@@ -1,0 +1,5811 @@
+{
+  "schema_version": 1,
+  "substep": "2B",
+  "status": "SUBSTEP_2B_READY_FOR_INDEPENDENT_REVIEW",
+  "code_sha": "c5e26c2f85ef1f6d1f8ab4684d033de4f3b0d3c9",
+  "tested_sha": "c5e26c2f85ef1f6d1f8ab4684d033de4f3b0d3c9",
+  "checks": {
+    "2B-T01": {
+      "status": "PASS",
+      "observations": [
+        {
+          "variant": "mobile",
+          "id": "2B-T01",
+          "name": "live-controls-contract",
+          "status": "PASS",
+          "actual": [
+            {
+              "id": "chatBack",
+              "contract": "icon",
+              "name": "К чатам",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "chatTitle",
+              "contract": "button",
+              "name": "Материалы разговора",
+              "width": 121.140625,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "chatLibraryOpen",
+              "contract": "icon",
+              "name": "Поиск по переписке",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "reportBtn",
+              "contract": "icon",
+              "name": "Исходящие сообщения",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "attach",
+              "contract": "icon",
+              "name": "Добавить вложение или действие",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "expand",
+              "contract": "icon",
+              "name": "Редактор на весь экран",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "send",
+              "contract": "icon",
+              "name": "Отправить сообщение",
+              "width": 44,
+              "height": 44,
+              "disabled": true
+            },
+            {
+              "id": "input",
+              "contract": "input",
+              "name": "Текст черновика",
+              "width": 358,
+              "height": 44,
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T01",
+          "name": "live-controls-contract",
+          "status": "PASS",
+          "actual": [
+            {
+              "id": "chatBack",
+              "contract": "icon",
+              "name": "К чатам",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "chatTitle",
+              "contract": "button",
+              "name": "Материалы разговора",
+              "width": 121.140625,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "chatLibraryOpen",
+              "contract": "icon",
+              "name": "Поиск по переписке",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "reportBtn",
+              "contract": "icon",
+              "name": "Исходящие сообщения",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "attach",
+              "contract": "icon",
+              "name": "Добавить вложение или действие",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "expand",
+              "contract": "icon",
+              "name": "Редактор на весь экран",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "send",
+              "contract": "icon",
+              "name": "Отправить сообщение",
+              "width": 44,
+              "height": 44,
+              "disabled": true
+            },
+            {
+              "id": "input",
+              "contract": "input",
+              "name": "Текст черновика",
+              "width": 736,
+              "height": 44,
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T01",
+          "name": "live-controls-contract",
+          "status": "PASS",
+          "actual": [
+            {
+              "id": "chatBack",
+              "contract": "icon",
+              "name": "К чатам",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "chatTitle",
+              "contract": "button",
+              "name": "Материалы разговора",
+              "width": 121.140625,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "chatLibraryOpen",
+              "contract": "icon",
+              "name": "Поиск по переписке",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "reportBtn",
+              "contract": "icon",
+              "name": "Исходящие сообщения",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "attach",
+              "contract": "icon",
+              "name": "Добавить вложение или действие",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "expand",
+              "contract": "icon",
+              "name": "Редактор на весь экран",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "send",
+              "contract": "icon",
+              "name": "Отправить сообщение",
+              "width": 44,
+              "height": 44,
+              "disabled": true
+            },
+            {
+              "id": "input",
+              "contract": "input",
+              "name": "Текст черновика",
+              "width": 768,
+              "height": 44,
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T01",
+          "name": "live-controls-contract",
+          "status": "PASS",
+          "actual": [
+            {
+              "id": "chatBack",
+              "contract": "icon",
+              "name": "К чатам",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "chatTitle",
+              "contract": "button",
+              "name": "Материалы разговора",
+              "width": 74,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "chatLibraryOpen",
+              "contract": "icon",
+              "name": "Поиск по переписке",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "reportBtn",
+              "contract": "icon",
+              "name": "Исходящие сообщения",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "attach",
+              "contract": "icon",
+              "name": "Добавить вложение или действие",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "expand",
+              "contract": "icon",
+              "name": "Редактор на весь экран",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "send",
+              "contract": "icon",
+              "name": "Отправить сообщение",
+              "width": 44,
+              "height": 44,
+              "disabled": true
+            },
+            {
+              "id": "input",
+              "contract": "input",
+              "name": "Текст черновика",
+              "width": 292,
+              "height": 44,
+              "disabled": false
+            }
+          ]
+        }
+      ],
+      "binding": {
+        "artifact_path": "components/summary.json",
+        "sha256": "20d179bb1cb0ccab2032c3e53118b866419f535876c869719c00a22112a055d1"
+      }
+    },
+    "2B-T02": {
+      "status": "PASS",
+      "observations": [
+        {
+          "variant": "mobile",
+          "id": "2B-T02",
+          "name": "root-tasks",
+          "status": "PASS",
+          "actual": {
+            "route": {
+              "section": "tasks",
+              "screen": "home",
+              "resourceId": null,
+              "conversationId": null,
+              "canvas": false,
+              "generation": 2,
+              "sessionGeneration": 1,
+              "sessionUserId": "11111111-1111-4111-8111-111111111111"
+            },
+            "title": "Дела",
+            "home": true
+          }
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T02",
+          "name": "root-profile",
+          "status": "PASS",
+          "actual": {
+            "route": {
+              "section": "profile",
+              "screen": "home",
+              "resourceId": null,
+              "conversationId": null,
+              "canvas": false,
+              "generation": 3,
+              "sessionGeneration": 1,
+              "sessionUserId": "11111111-1111-4111-8111-111111111111"
+            },
+            "title": "Вы",
+            "home": true
+          }
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T02",
+          "name": "root-chats",
+          "status": "PASS",
+          "actual": {
+            "route": {
+              "section": "chats",
+              "screen": "home",
+              "resourceId": null,
+              "conversationId": null,
+              "canvas": false,
+              "generation": 4,
+              "sessionGeneration": 1,
+              "sessionUserId": "11111111-1111-4111-8111-111111111111"
+            },
+            "title": "Чаты",
+            "home": true
+          }
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T02",
+          "name": "nested-factory",
+          "status": "PASS",
+          "actual": {
+            "route": {
+              "section": "bots",
+              "screen": "factory",
+              "resourceId": null,
+              "conversationId": null,
+              "canvas": false,
+              "generation": 6,
+              "sessionGeneration": 1,
+              "sessionUserId": "11111111-1111-4111-8111-111111111111"
+            },
+            "title": "Фабрика",
+            "visible": "‹\n\nОпишите задачу — фабрика превратит её в технический проект и план сборки.\n\nНовый проект\nМои проекты\n\nПроектов пока нет."
+          }
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T02",
+          "name": "root-tasks",
+          "status": "PASS",
+          "actual": {
+            "route": {
+              "section": "tasks",
+              "screen": "home",
+              "resourceId": null,
+              "conversationId": null,
+              "canvas": false,
+              "generation": 2,
+              "sessionGeneration": 1,
+              "sessionUserId": "11111111-1111-4111-8111-111111111111"
+            },
+            "title": "Дела",
+            "home": true
+          }
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T02",
+          "name": "root-profile",
+          "status": "PASS",
+          "actual": {
+            "route": {
+              "section": "profile",
+              "screen": "home",
+              "resourceId": null,
+              "conversationId": null,
+              "canvas": false,
+              "generation": 3,
+              "sessionGeneration": 1,
+              "sessionUserId": "11111111-1111-4111-8111-111111111111"
+            },
+            "title": "Вы",
+            "home": true
+          }
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T02",
+          "name": "root-chats",
+          "status": "PASS",
+          "actual": {
+            "route": {
+              "section": "chats",
+              "screen": "home",
+              "resourceId": null,
+              "conversationId": null,
+              "canvas": false,
+              "generation": 4,
+              "sessionGeneration": 1,
+              "sessionUserId": "11111111-1111-4111-8111-111111111111"
+            },
+            "title": "Чаты",
+            "home": true
+          }
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T02",
+          "name": "nested-factory",
+          "status": "PASS",
+          "actual": {
+            "route": {
+              "section": "bots",
+              "screen": "factory",
+              "resourceId": null,
+              "conversationId": null,
+              "canvas": false,
+              "generation": 6,
+              "sessionGeneration": 1,
+              "sessionUserId": "11111111-1111-4111-8111-111111111111"
+            },
+            "title": "Фабрика",
+            "visible": "‹\n\nОпишите задачу — фабрика превратит её в технический проект и план сборки.\n\nНовый проект\nМои проекты\n\nПроектов пока нет."
+          }
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T02",
+          "name": "root-tasks",
+          "status": "PASS",
+          "actual": {
+            "route": {
+              "section": "tasks",
+              "screen": "home",
+              "resourceId": null,
+              "conversationId": null,
+              "canvas": false,
+              "generation": 2,
+              "sessionGeneration": 1,
+              "sessionUserId": "11111111-1111-4111-8111-111111111111"
+            },
+            "title": "Дела",
+            "home": true
+          }
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T02",
+          "name": "root-profile",
+          "status": "PASS",
+          "actual": {
+            "route": {
+              "section": "profile",
+              "screen": "home",
+              "resourceId": null,
+              "conversationId": null,
+              "canvas": false,
+              "generation": 3,
+              "sessionGeneration": 1,
+              "sessionUserId": "11111111-1111-4111-8111-111111111111"
+            },
+            "title": "Вы",
+            "home": true
+          }
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T02",
+          "name": "root-chats",
+          "status": "PASS",
+          "actual": {
+            "route": {
+              "section": "chats",
+              "screen": "home",
+              "resourceId": null,
+              "conversationId": null,
+              "canvas": false,
+              "generation": 4,
+              "sessionGeneration": 1,
+              "sessionUserId": "11111111-1111-4111-8111-111111111111"
+            },
+            "title": "Чаты",
+            "home": true
+          }
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T02",
+          "name": "nested-factory",
+          "status": "PASS",
+          "actual": {
+            "route": {
+              "section": "bots",
+              "screen": "factory",
+              "resourceId": null,
+              "conversationId": null,
+              "canvas": false,
+              "generation": 6,
+              "sessionGeneration": 1,
+              "sessionUserId": "11111111-1111-4111-8111-111111111111"
+            },
+            "title": "Фабрика",
+            "visible": "‹\n\nОпишите задачу — фабрика превратит её в технический проект и план сборки.\n\nНовый проект\nМои проекты\n\nПроектов пока нет."
+          }
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T02",
+          "name": "root-tasks",
+          "status": "PASS",
+          "actual": {
+            "route": {
+              "section": "tasks",
+              "screen": "home",
+              "resourceId": null,
+              "conversationId": null,
+              "canvas": false,
+              "generation": 2,
+              "sessionGeneration": 1,
+              "sessionUserId": "11111111-1111-4111-8111-111111111111"
+            },
+            "title": "Дела",
+            "home": true
+          }
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T02",
+          "name": "root-profile",
+          "status": "PASS",
+          "actual": {
+            "route": {
+              "section": "profile",
+              "screen": "home",
+              "resourceId": null,
+              "conversationId": null,
+              "canvas": false,
+              "generation": 3,
+              "sessionGeneration": 1,
+              "sessionUserId": "11111111-1111-4111-8111-111111111111"
+            },
+            "title": "Вы",
+            "home": true
+          }
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T02",
+          "name": "root-chats",
+          "status": "PASS",
+          "actual": {
+            "route": {
+              "section": "chats",
+              "screen": "home",
+              "resourceId": null,
+              "conversationId": null,
+              "canvas": false,
+              "generation": 4,
+              "sessionGeneration": 1,
+              "sessionUserId": "11111111-1111-4111-8111-111111111111"
+            },
+            "title": "Чаты",
+            "home": true
+          }
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T02",
+          "name": "nested-factory",
+          "status": "PASS",
+          "actual": {
+            "route": {
+              "section": "bots",
+              "screen": "factory",
+              "resourceId": null,
+              "conversationId": null,
+              "canvas": false,
+              "generation": 6,
+              "sessionGeneration": 1,
+              "sessionUserId": "11111111-1111-4111-8111-111111111111"
+            },
+            "title": "Фабрика",
+            "visible": "‹\n\nОпишите задачу — фабрика превратит её в технический проект и план сборки.\n\nНовый проект\nМои проекты\n\nПроектов пока нет."
+          }
+        }
+      ],
+      "binding": {
+        "artifact_path": "components/summary.json",
+        "sha256": "20d179bb1cb0ccab2032c3e53118b866419f535876c869719c00a22112a055d1"
+      }
+    },
+    "2B-T03": {
+      "status": "PASS",
+      "observations": [
+        {
+          "variant": "mobile",
+          "id": "2B-T03",
+          "name": "segmented-keyboard",
+          "status": "PASS",
+          "actual": "true"
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T03",
+          "name": "empty-send-native-disabled",
+          "status": "PASS",
+          "actual": true
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T03",
+          "name": "keyboard-visible-focus",
+          "status": "PASS",
+          "actual": {
+            "id": "pwq-1-chip-tasks",
+            "focus": true,
+            "outline": "2px"
+          }
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T03",
+          "name": "library-input-focus",
+          "status": "PASS",
+          "actual": {
+            "focus": true,
+            "outline": "2px"
+          }
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T03",
+          "name": "segmented-keyboard",
+          "status": "PASS",
+          "actual": "true"
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T03",
+          "name": "empty-send-native-disabled",
+          "status": "PASS",
+          "actual": true
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T03",
+          "name": "keyboard-visible-focus",
+          "status": "PASS",
+          "actual": {
+            "id": "pwq-1-chip-tasks",
+            "focus": true,
+            "outline": "2px"
+          }
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T03",
+          "name": "library-input-focus",
+          "status": "PASS",
+          "actual": {
+            "focus": true,
+            "outline": "2px"
+          }
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T03",
+          "name": "segmented-keyboard",
+          "status": "PASS",
+          "actual": "true"
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T03",
+          "name": "empty-send-native-disabled",
+          "status": "PASS",
+          "actual": true
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T03",
+          "name": "keyboard-visible-focus",
+          "status": "PASS",
+          "actual": {
+            "id": "pwq-1-chip-tasks",
+            "focus": true,
+            "outline": "2px"
+          }
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T03",
+          "name": "library-input-focus",
+          "status": "PASS",
+          "actual": {
+            "focus": true,
+            "outline": "2px"
+          }
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T03",
+          "name": "segmented-keyboard",
+          "status": "PASS",
+          "actual": "true"
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T03",
+          "name": "empty-send-native-disabled",
+          "status": "PASS",
+          "actual": true
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T03",
+          "name": "keyboard-visible-focus",
+          "status": "PASS",
+          "actual": {
+            "id": "pwq-1-chip-tasks",
+            "focus": true,
+            "outline": "2px"
+          }
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T03",
+          "name": "library-input-focus",
+          "status": "PASS",
+          "actual": {
+            "focus": true,
+            "outline": "2px"
+          }
+        }
+      ],
+      "binding": {
+        "artifact_path": "components/summary.json",
+        "sha256": "20d179bb1cb0ccab2032c3e53118b866419f535876c869719c00a22112a055d1"
+      }
+    },
+    "2B-T04": {
+      "status": "PASS",
+      "observations": [
+        {
+          "variant": "mobile",
+          "id": "2B-T04",
+          "name": "fullscreen-Escape-from-control",
+          "status": "PASS",
+          "actual": "false"
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T04",
+          "name": "fullscreen-focus-return",
+          "status": "PASS",
+          "actual": "expand"
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T04",
+          "name": "fullscreen-focus-contained",
+          "status": "PASS",
+          "actual": true
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T04",
+          "name": "modal-initial-focus",
+          "status": "PASS",
+          "actual": "dialogClose"
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T04",
+          "name": "modal-return-focus",
+          "status": "PASS",
+          "actual": "reportBtn"
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T04",
+          "name": "library-initial-focus",
+          "status": "PASS",
+          "actual": true
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T04",
+          "name": "library-return-focus",
+          "status": "PASS",
+          "actual": "chatLibraryOpen"
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T04",
+          "name": "media-explicit-close",
+          "status": "PASS",
+          "actual": 1
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T04",
+          "name": "media-focus-return",
+          "status": "PASS",
+          "actual": "reportBtn"
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T04",
+          "name": "project-fullscreen-owner",
+          "status": "PASS",
+          "actual": {
+            "position": "fixed",
+            "height": 844,
+            "expanded": true
+          }
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T04",
+          "name": "task-fullscreen-opaque-surface",
+          "status": "PASS",
+          "actual": {
+            "background": "rgb(255, 255, 255)",
+            "position": "fixed"
+          }
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T04",
+          "name": "workspace-Escape-collapses-only",
+          "status": "PASS",
+          "actual": 1
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T04",
+          "name": "dirty-sheet-denied-close-preserves",
+          "status": "PASS",
+          "actual": {
+            "open": 1
+          }
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T04",
+          "name": "task-close-focus-return",
+          "status": "PASS",
+          "actual": true
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T04",
+          "name": "fullscreen-Escape-from-control",
+          "status": "PASS",
+          "actual": "false"
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T04",
+          "name": "fullscreen-focus-return",
+          "status": "PASS",
+          "actual": "expand"
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T04",
+          "name": "fullscreen-focus-contained",
+          "status": "PASS",
+          "actual": true
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T04",
+          "name": "modal-initial-focus",
+          "status": "PASS",
+          "actual": "dialogClose"
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T04",
+          "name": "modal-return-focus",
+          "status": "PASS",
+          "actual": "reportBtn"
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T04",
+          "name": "library-initial-focus",
+          "status": "PASS",
+          "actual": true
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T04",
+          "name": "library-return-focus",
+          "status": "PASS",
+          "actual": "chatLibraryOpen"
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T04",
+          "name": "media-explicit-close",
+          "status": "PASS",
+          "actual": 1
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T04",
+          "name": "media-focus-return",
+          "status": "PASS",
+          "actual": "reportBtn"
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T04",
+          "name": "project-fullscreen-owner",
+          "status": "PASS",
+          "actual": {
+            "position": "fixed",
+            "height": 1024,
+            "expanded": true
+          }
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T04",
+          "name": "task-fullscreen-opaque-surface",
+          "status": "PASS",
+          "actual": {
+            "background": "rgb(255, 255, 255)",
+            "position": "fixed"
+          }
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T04",
+          "name": "workspace-Escape-collapses-only",
+          "status": "PASS",
+          "actual": 1
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T04",
+          "name": "dirty-sheet-denied-close-preserves",
+          "status": "PASS",
+          "actual": {
+            "open": 1
+          }
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T04",
+          "name": "task-close-focus-return",
+          "status": "PASS",
+          "actual": true
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T04",
+          "name": "fullscreen-Escape-from-control",
+          "status": "PASS",
+          "actual": "false"
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T04",
+          "name": "fullscreen-focus-return",
+          "status": "PASS",
+          "actual": "expand"
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T04",
+          "name": "fullscreen-focus-contained",
+          "status": "PASS",
+          "actual": true
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T04",
+          "name": "modal-initial-focus",
+          "status": "PASS",
+          "actual": "dialogClose"
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T04",
+          "name": "modal-return-focus",
+          "status": "PASS",
+          "actual": "reportBtn"
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T04",
+          "name": "library-initial-focus",
+          "status": "PASS",
+          "actual": true
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T04",
+          "name": "library-return-focus",
+          "status": "PASS",
+          "actual": "chatLibraryOpen"
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T04",
+          "name": "media-explicit-close",
+          "status": "PASS",
+          "actual": 1
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T04",
+          "name": "media-focus-return",
+          "status": "PASS",
+          "actual": "reportBtn"
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T04",
+          "name": "project-fullscreen-owner",
+          "status": "PASS",
+          "actual": {
+            "position": "fixed",
+            "height": 900,
+            "expanded": true
+          }
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T04",
+          "name": "task-fullscreen-opaque-surface",
+          "status": "PASS",
+          "actual": {
+            "background": "rgb(255, 255, 255)",
+            "position": "fixed"
+          }
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T04",
+          "name": "workspace-Escape-collapses-only",
+          "status": "PASS",
+          "actual": 1
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T04",
+          "name": "dirty-sheet-denied-close-preserves",
+          "status": "PASS",
+          "actual": {
+            "open": 1
+          }
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T04",
+          "name": "task-close-focus-return",
+          "status": "PASS",
+          "actual": true
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T04",
+          "name": "fullscreen-Escape-from-control",
+          "status": "PASS",
+          "actual": "false"
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T04",
+          "name": "fullscreen-focus-return",
+          "status": "PASS",
+          "actual": "expand"
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T04",
+          "name": "fullscreen-focus-contained",
+          "status": "PASS",
+          "actual": true
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T04",
+          "name": "modal-initial-focus",
+          "status": "PASS",
+          "actual": "dialogClose"
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T04",
+          "name": "modal-return-focus",
+          "status": "PASS",
+          "actual": "reportBtn"
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T04",
+          "name": "library-initial-focus",
+          "status": "PASS",
+          "actual": true
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T04",
+          "name": "library-return-focus",
+          "status": "PASS",
+          "actual": "chatLibraryOpen"
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T04",
+          "name": "media-explicit-close",
+          "status": "PASS",
+          "actual": 1
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T04",
+          "name": "media-focus-return",
+          "status": "PASS",
+          "actual": "reportBtn"
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T04",
+          "name": "project-fullscreen-owner",
+          "status": "PASS",
+          "actual": {
+            "position": "fixed",
+            "height": 568,
+            "expanded": true
+          }
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T04",
+          "name": "task-fullscreen-opaque-surface",
+          "status": "PASS",
+          "actual": {
+            "background": "rgb(255, 255, 255)",
+            "position": "fixed"
+          }
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T04",
+          "name": "workspace-Escape-collapses-only",
+          "status": "PASS",
+          "actual": 1
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T04",
+          "name": "dirty-sheet-denied-close-preserves",
+          "status": "PASS",
+          "actual": {
+            "open": 1
+          }
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T04",
+          "name": "task-close-focus-return",
+          "status": "PASS",
+          "actual": true
+        }
+      ],
+      "binding": {
+        "artifact_path": "components/summary.json",
+        "sha256": "20d179bb1cb0ccab2032c3e53118b866419f535876c869719c00a22112a055d1"
+      }
+    },
+    "2B-T05": {
+      "status": "PASS",
+      "observations": [
+        {
+          "variant": "mobile",
+          "id": "2B-T05",
+          "name": "modal-controls",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 307.5,
+              "y": 352.5,
+              "right": 351.5,
+              "bottom": 401.5,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T05",
+          "name": "media-close",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pmvClose",
+              "x": 338,
+              "y": 8,
+              "right": 382,
+              "bottom": 52,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 42,
+              "scroll": 42
+            }
+          ]
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T05",
+          "name": "project-fullscreen",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pccPlanEditor .workspaceEditorDone",
+              "x": 215.765625,
+              "y": 790,
+              "right": 283,
+              "bottom": 834,
+              "width": 67.234375,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pccPlanEditor .workspaceEditorExpand",
+              "x": 287,
+              "y": 790,
+              "right": 331,
+              "bottom": 834,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            }
+          ]
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T05",
+          "name": "task-fullscreen",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pccTaskSheet .workspaceEditorAttach",
+              "x": 11,
+              "y": 790,
+              "right": 55,
+              "bottom": 834,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pccTaskSheet .workspaceEditorDone",
+              "x": 215.765625,
+              "y": 790,
+              "right": 283,
+              "bottom": 834,
+              "width": 67.234375,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pccTaskSheet .workspaceEditorExpand",
+              "x": 287,
+              "y": 790,
+              "right": 331,
+              "bottom": 834,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            }
+          ]
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T05",
+          "name": "reduced-composer",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#attach",
+              "x": 16,
+              "y": 320,
+              "right": 60,
+              "bottom": 364,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": "#send",
+              "x": 330,
+              "y": 320,
+              "right": 374,
+              "bottom": 364,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": "#input",
+              "x": 18,
+              "y": 193,
+              "right": 372,
+              "bottom": 237,
+              "width": 354,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "hidden",
+              "client": 44,
+              "scroll": 44
+            }
+          ]
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T05",
+          "name": "reduced-short-modal",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 307.5,
+              "y": 122.5,
+              "right": 351.5,
+              "bottom": 171.5,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T05",
+          "name": "reduced-modal",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 307.5,
+              "y": 79.265625,
+              "right": 351.5,
+              "bottom": 128.265625,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T05",
+          "name": "reduced-modal-scroll-content",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 307.5,
+              "y": 79.265625,
+              "right": 351.5,
+              "bottom": 128.265625,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            },
+            {
+              "sel": "#modalEnd",
+              "x": 38.5,
+              "y": 305.03125,
+              "right": 351.5,
+              "bottom": 324.03125,
+              "width": 313,
+              "height": 19,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 19,
+              "scroll": 19
+            }
+          ]
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T05",
+          "name": "reduced-library",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pclClose",
+              "x": 332,
+              "y": 31,
+              "right": 376,
+              "bottom": 75,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pclSearchInput",
+              "x": 56,
+              "y": 177.796875,
+              "right": 374,
+              "bottom": 225.796875,
+              "width": 318,
+              "height": 48,
+              "visible": true,
+              "hit": true,
+              "overflow": "clip",
+              "client": 48,
+              "scroll": 48
+            }
+          ]
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T05",
+          "name": "safe-long-large-composer",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#attach",
+              "x": 16,
+              "y": 320,
+              "right": 60,
+              "bottom": 364,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": "#send",
+              "x": 330,
+              "y": 320,
+              "right": 374,
+              "bottom": 364,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": "#input",
+              "x": 18,
+              "y": 193,
+              "right": 372,
+              "bottom": 237,
+              "width": 354,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "hidden",
+              "client": 44,
+              "scroll": 63
+            }
+          ]
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T05",
+          "name": "safe-long-large-short-modal",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 307.5,
+              "y": 122.5,
+              "right": 351.5,
+              "bottom": 171.5,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T05",
+          "name": "safe-long-large-modal",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 307.5,
+              "y": 119.765625,
+              "right": 351.5,
+              "bottom": 168.765625,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T05",
+          "name": "safe-long-large-modal-scroll-content",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 307.5,
+              "y": 119.765625,
+              "right": 351.5,
+              "bottom": 168.765625,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            },
+            {
+              "sel": "#modalEnd",
+              "x": 38.5,
+              "y": 264.53125,
+              "right": 351.5,
+              "bottom": 283.53125,
+              "width": 313,
+              "height": 19,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 19,
+              "scroll": 19
+            }
+          ]
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T05",
+          "name": "safe-long-large-library",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pclClose",
+              "x": 332,
+              "y": 78,
+              "right": 376,
+              "bottom": 122,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pclSearchInput",
+              "x": 56,
+              "y": 224.796875,
+              "right": 374,
+              "bottom": 272.796875,
+              "width": 318,
+              "height": 48,
+              "visible": true,
+              "hit": true,
+              "overflow": "clip",
+              "client": 48,
+              "scroll": 48
+            }
+          ]
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T05",
+          "name": "modal-controls",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 631,
+              "y": 452,
+              "right": 675,
+              "bottom": 501,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T05",
+          "name": "media-close",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pmvClose",
+              "x": 716,
+              "y": 8,
+              "right": 760,
+              "bottom": 52,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 42,
+              "scroll": 42
+            }
+          ]
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T05",
+          "name": "project-fullscreen",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pccPlanEditor .workspaceEditorDone",
+              "x": 593.765625,
+              "y": 970,
+              "right": 661,
+              "bottom": 1014,
+              "width": 67.234375,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pccPlanEditor .workspaceEditorExpand",
+              "x": 665,
+              "y": 970,
+              "right": 709,
+              "bottom": 1014,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            }
+          ]
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T05",
+          "name": "task-fullscreen",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pccTaskSheet .workspaceEditorAttach",
+              "x": 11,
+              "y": 970,
+              "right": 55,
+              "bottom": 1014,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pccTaskSheet .workspaceEditorDone",
+              "x": 593.765625,
+              "y": 970,
+              "right": 661,
+              "bottom": 1014,
+              "width": 67.234375,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pccTaskSheet .workspaceEditorExpand",
+              "x": 665,
+              "y": 970,
+              "right": 709,
+              "bottom": 1014,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            }
+          ]
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T05",
+          "name": "reduced-composer",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#attach",
+              "x": 16,
+              "y": 320,
+              "right": 60,
+              "bottom": 364,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": "#send",
+              "x": 708,
+              "y": 320,
+              "right": 752,
+              "bottom": 364,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": "#input",
+              "x": 18,
+              "y": 193,
+              "right": 750,
+              "bottom": 237,
+              "width": 732,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "hidden",
+              "client": 44,
+              "scroll": 44
+            }
+          ]
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T05",
+          "name": "reduced-short-modal",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 631,
+              "y": 132,
+              "right": 675,
+              "bottom": 181,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T05",
+          "name": "reduced-modal",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 631,
+              "y": 79.265625,
+              "right": 675,
+              "bottom": 128.265625,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T05",
+          "name": "reduced-modal-scroll-content",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 631,
+              "y": 79.265625,
+              "right": 675,
+              "bottom": 128.265625,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            },
+            {
+              "sel": "#modalEnd",
+              "x": 93,
+              "y": 305.03125,
+              "right": 675,
+              "bottom": 324.03125,
+              "width": 582,
+              "height": 19,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 19,
+              "scroll": 19
+            }
+          ]
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T05",
+          "name": "reduced-library",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pclClose",
+              "x": 657,
+              "y": 60,
+              "right": 701,
+              "bottom": 104,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pclSearchInput",
+              "x": 109,
+              "y": 206.796875,
+              "right": 699,
+              "bottom": 254.796875,
+              "width": 590,
+              "height": 48,
+              "visible": true,
+              "hit": true,
+              "overflow": "clip",
+              "client": 48,
+              "scroll": 48
+            }
+          ]
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T05",
+          "name": "safe-long-large-composer",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#attach",
+              "x": 16,
+              "y": 320,
+              "right": 60,
+              "bottom": 364,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": "#send",
+              "x": 708,
+              "y": 320,
+              "right": 752,
+              "bottom": 364,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": "#input",
+              "x": 18,
+              "y": 193,
+              "right": 750,
+              "bottom": 237,
+              "width": 732,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "hidden",
+              "client": 44,
+              "scroll": 63
+            }
+          ]
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T05",
+          "name": "safe-long-large-short-modal",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 631,
+              "y": 132,
+              "right": 675,
+              "bottom": 181,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T05",
+          "name": "safe-long-large-modal",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 631,
+              "y": 119.765625,
+              "right": 675,
+              "bottom": 168.765625,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T05",
+          "name": "safe-long-large-modal-scroll-content",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 631,
+              "y": 119.765625,
+              "right": 675,
+              "bottom": 168.765625,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            },
+            {
+              "sel": "#modalEnd",
+              "x": 93,
+              "y": 264.53125,
+              "right": 675,
+              "bottom": 283.53125,
+              "width": 582,
+              "height": 19,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 19,
+              "scroll": 19
+            }
+          ]
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T05",
+          "name": "safe-long-large-library",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pclClose",
+              "x": 657,
+              "y": 60,
+              "right": 701,
+              "bottom": 104,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pclSearchInput",
+              "x": 109,
+              "y": 206.796875,
+              "right": 699,
+              "bottom": 254.796875,
+              "width": 590,
+              "height": 48,
+              "visible": true,
+              "hit": true,
+              "overflow": "clip",
+              "client": 48,
+              "scroll": 48
+            }
+          ]
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T05",
+          "name": "modal-controls",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 887,
+              "y": 390,
+              "right": 931,
+              "bottom": 439,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T05",
+          "name": "media-close",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pmvClose",
+              "x": 1228,
+              "y": 8,
+              "right": 1272,
+              "bottom": 52,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 42,
+              "scroll": 42
+            }
+          ]
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T05",
+          "name": "project-fullscreen",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pccPlanEditor .workspaceEditorDone",
+              "x": 1105.765625,
+              "y": 846,
+              "right": 1173,
+              "bottom": 890,
+              "width": 67.234375,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pccPlanEditor .workspaceEditorExpand",
+              "x": 1177,
+              "y": 846,
+              "right": 1221,
+              "bottom": 890,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            }
+          ]
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T05",
+          "name": "task-fullscreen",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pccTaskSheet .workspaceEditorAttach",
+              "x": 11,
+              "y": 846,
+              "right": 55,
+              "bottom": 890,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pccTaskSheet .workspaceEditorDone",
+              "x": 1105.765625,
+              "y": 846,
+              "right": 1173,
+              "bottom": 890,
+              "width": 67.234375,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pccTaskSheet .workspaceEditorExpand",
+              "x": 1177,
+              "y": 846,
+              "right": 1221,
+              "bottom": 890,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            }
+          ]
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T05",
+          "name": "reduced-composer",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#attach",
+              "x": 256,
+              "y": 320,
+              "right": 300,
+              "bottom": 364,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": "#send",
+              "x": 980,
+              "y": 320,
+              "right": 1024,
+              "bottom": 364,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": "#input",
+              "x": 258,
+              "y": 193,
+              "right": 1022,
+              "bottom": 237,
+              "width": 764,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "hidden",
+              "client": 44,
+              "scroll": 44
+            }
+          ]
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T05",
+          "name": "reduced-short-modal",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 887,
+              "y": 132,
+              "right": 931,
+              "bottom": 181,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T05",
+          "name": "reduced-modal",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 887,
+              "y": 79.265625,
+              "right": 931,
+              "bottom": 128.265625,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T05",
+          "name": "reduced-modal-scroll-content",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 887,
+              "y": 79.265625,
+              "right": 931,
+              "bottom": 128.265625,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            },
+            {
+              "sel": "#modalEnd",
+              "x": 349,
+              "y": 305.03125,
+              "right": 931,
+              "bottom": 324.03125,
+              "width": 582,
+              "height": 19,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 19,
+              "scroll": 19
+            }
+          ]
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T05",
+          "name": "reduced-library",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pclClose",
+              "x": 913,
+              "y": 60,
+              "right": 957,
+              "bottom": 104,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pclSearchInput",
+              "x": 365,
+              "y": 206.796875,
+              "right": 955,
+              "bottom": 254.796875,
+              "width": 590,
+              "height": 48,
+              "visible": true,
+              "hit": true,
+              "overflow": "clip",
+              "client": 48,
+              "scroll": 48
+            }
+          ]
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T05",
+          "name": "safe-long-large-composer",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#attach",
+              "x": 256,
+              "y": 320,
+              "right": 300,
+              "bottom": 364,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": "#send",
+              "x": 980,
+              "y": 320,
+              "right": 1024,
+              "bottom": 364,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": "#input",
+              "x": 258,
+              "y": 193,
+              "right": 1022,
+              "bottom": 237,
+              "width": 764,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "hidden",
+              "client": 44,
+              "scroll": 63
+            }
+          ]
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T05",
+          "name": "safe-long-large-short-modal",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 887,
+              "y": 132,
+              "right": 931,
+              "bottom": 181,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T05",
+          "name": "safe-long-large-modal",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 887,
+              "y": 119.765625,
+              "right": 931,
+              "bottom": 168.765625,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T05",
+          "name": "safe-long-large-modal-scroll-content",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 887,
+              "y": 119.765625,
+              "right": 931,
+              "bottom": 168.765625,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            },
+            {
+              "sel": "#modalEnd",
+              "x": 349,
+              "y": 264.53125,
+              "right": 931,
+              "bottom": 283.53125,
+              "width": 582,
+              "height": 19,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 19,
+              "scroll": 19
+            }
+          ]
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T05",
+          "name": "safe-long-large-library",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pclClose",
+              "x": 913,
+              "y": 60,
+              "right": 957,
+              "bottom": 104,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pclSearchInput",
+              "x": 365,
+              "y": 206.796875,
+              "right": 955,
+              "bottom": 254.796875,
+              "width": 590,
+              "height": 48,
+              "visible": true,
+              "hit": true,
+              "overflow": "clip",
+              "client": 48,
+              "scroll": 48
+            }
+          ]
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T05",
+          "name": "modal-controls",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 237.5,
+              "y": 214.5,
+              "right": 281.5,
+              "bottom": 263.5,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T05",
+          "name": "media-close",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pmvClose",
+              "x": 268,
+              "y": 8,
+              "right": 312,
+              "bottom": 52,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 42,
+              "scroll": 42
+            }
+          ]
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T05",
+          "name": "project-fullscreen",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pccPlanEditor .workspaceEditorDone",
+              "x": 145.765625,
+              "y": 514,
+              "right": 213,
+              "bottom": 558,
+              "width": 67.234375,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pccPlanEditor .workspaceEditorExpand",
+              "x": 217,
+              "y": 514,
+              "right": 261,
+              "bottom": 558,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            }
+          ]
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T05",
+          "name": "task-fullscreen",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pccTaskSheet .workspaceEditorAttach",
+              "x": 11,
+              "y": 514,
+              "right": 55,
+              "bottom": 558,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pccTaskSheet .workspaceEditorDone",
+              "x": 145.765625,
+              "y": 514,
+              "right": 213,
+              "bottom": 558,
+              "width": 67.234375,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pccTaskSheet .workspaceEditorExpand",
+              "x": 217,
+              "y": 514,
+              "right": 261,
+              "bottom": 558,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            }
+          ]
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T05",
+          "name": "reduced-composer",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#attach",
+              "x": 14,
+              "y": 320,
+              "right": 58,
+              "bottom": 364,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": "#send",
+              "x": 262,
+              "y": 320,
+              "right": 306,
+              "bottom": 364,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": "#input",
+              "x": 16,
+              "y": 193,
+              "right": 304,
+              "bottom": 237,
+              "width": 288,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "hidden",
+              "client": 44,
+              "scroll": 44
+            }
+          ]
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T05",
+          "name": "reduced-short-modal",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 237.5,
+              "y": 122.5,
+              "right": 281.5,
+              "bottom": 171.5,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T05",
+          "name": "reduced-modal",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 237.5,
+              "y": 79.265625,
+              "right": 281.5,
+              "bottom": 128.265625,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T05",
+          "name": "reduced-modal-scroll-content",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 237.5,
+              "y": 79.265625,
+              "right": 281.5,
+              "bottom": 128.265625,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            },
+            {
+              "sel": "#modalEnd",
+              "x": 38.5,
+              "y": 305.03125,
+              "right": 281.5,
+              "bottom": 324.03125,
+              "width": 243,
+              "height": 19,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 19,
+              "scroll": 19
+            }
+          ]
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T05",
+          "name": "reduced-library",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pclClose",
+              "x": 262,
+              "y": 31,
+              "right": 306,
+              "bottom": 75,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pclSearchInput",
+              "x": 56,
+              "y": 177.796875,
+              "right": 304,
+              "bottom": 225.796875,
+              "width": 248,
+              "height": 48,
+              "visible": true,
+              "hit": true,
+              "overflow": "clip",
+              "client": 48,
+              "scroll": 48
+            }
+          ]
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T05",
+          "name": "safe-long-large-composer",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#attach",
+              "x": 14,
+              "y": 320,
+              "right": 58,
+              "bottom": 364,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": "#send",
+              "x": 262,
+              "y": 320,
+              "right": 306,
+              "bottom": 364,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": "#input",
+              "x": 16,
+              "y": 193,
+              "right": 304,
+              "bottom": 237,
+              "width": 288,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "hidden",
+              "client": 44,
+              "scroll": 109
+            }
+          ]
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T05",
+          "name": "safe-long-large-short-modal",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 237.5,
+              "y": 122.5,
+              "right": 281.5,
+              "bottom": 171.5,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T05",
+          "name": "safe-long-large-modal",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 237.5,
+              "y": 119.765625,
+              "right": 281.5,
+              "bottom": 168.765625,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T05",
+          "name": "safe-long-large-modal-scroll-content",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 237.5,
+              "y": 119.765625,
+              "right": 281.5,
+              "bottom": 168.765625,
+              "width": 44,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            },
+            {
+              "sel": "#modalEnd",
+              "x": 38.5,
+              "y": 264.53125,
+              "right": 281.5,
+              "bottom": 283.53125,
+              "width": 243,
+              "height": 19,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 19,
+              "scroll": 19
+            }
+          ]
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T05",
+          "name": "safe-long-large-library",
+          "status": "PASS",
+          "actual": [
+            {
+              "sel": ".pclClose",
+              "x": 262,
+              "y": 78,
+              "right": 306,
+              "bottom": 122,
+              "width": 44,
+              "height": 44,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 44,
+              "scroll": 44
+            },
+            {
+              "sel": ".pclSearchInput",
+              "x": 56,
+              "y": 224.796875,
+              "right": 304,
+              "bottom": 272.796875,
+              "width": 248,
+              "height": 48,
+              "visible": true,
+              "hit": true,
+              "overflow": "clip",
+              "client": 48,
+              "scroll": 48
+            }
+          ]
+        }
+      ],
+      "binding": {
+        "artifact_path": "components/summary.json",
+        "sha256": "20d179bb1cb0ccab2032c3e53118b866419f535876c869719c00a22112a055d1"
+      }
+    },
+    "2B-T06": {
+      "status": "PASS",
+      "observations": [
+        {
+          "variant": "mobile",
+          "id": "2B-T06",
+          "name": "collapse-keeps-bytes-order-ids",
+          "status": "PASS",
+          "actual": {
+            "text": "2B сохранённый текст\n",
+            "blocks": [
+              {
+                "id": "690465dc-6143-4a95-a2d3-f047ffaea54a",
+                "type": "text",
+                "text": "2B сохранённый текст"
+              },
+              {
+                "id": "debfe100-f37f-4d16-bd78-f75f877ad0b8",
+                "type": "document",
+                "assetId": "059df360-c92a-47fd-a99a-7639b3a9e83c"
+              },
+              {
+                "id": "25117c85-4a92-474c-87e6-b9d45e76a842",
+                "type": "text",
+                "text": ""
+              }
+            ],
+            "files": [
+              {
+                "id": "059df360-c92a-47fd-a99a-7639b3a9e83c",
+                "name": "fixture-2b.bin",
+                "type": "application/octet-stream",
+                "size": 256,
+                "sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880"
+              }
+            ]
+          }
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T06",
+          "name": "Canvas-roundtrip-keeps-draft",
+          "status": "PASS",
+          "actual": {
+            "text": "2B сохранённый текст\n",
+            "blocks": [
+              {
+                "id": "690465dc-6143-4a95-a2d3-f047ffaea54a",
+                "type": "text",
+                "text": "2B сохранённый текст"
+              },
+              {
+                "id": "debfe100-f37f-4d16-bd78-f75f877ad0b8",
+                "type": "document",
+                "assetId": "059df360-c92a-47fd-a99a-7639b3a9e83c"
+              },
+              {
+                "id": "25117c85-4a92-474c-87e6-b9d45e76a842",
+                "type": "text",
+                "text": ""
+              }
+            ],
+            "files": [
+              {
+                "id": "059df360-c92a-47fd-a99a-7639b3a9e83c",
+                "name": "fixture-2b.bin",
+                "type": "application/octet-stream",
+                "size": 256,
+                "sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880"
+              }
+            ]
+          }
+        },
+        {
+          "variant": "mobile",
+          "id": "2B-T06",
+          "name": "reopen-keeps-draft",
+          "status": "PASS",
+          "actual": {
+            "text": "2B сохранённый текст\n",
+            "blocks": [
+              {
+                "id": "690465dc-6143-4a95-a2d3-f047ffaea54a",
+                "type": "text",
+                "text": "2B сохранённый текст"
+              },
+              {
+                "id": "debfe100-f37f-4d16-bd78-f75f877ad0b8",
+                "type": "document",
+                "assetId": "059df360-c92a-47fd-a99a-7639b3a9e83c"
+              },
+              {
+                "id": "25117c85-4a92-474c-87e6-b9d45e76a842",
+                "type": "text",
+                "text": ""
+              }
+            ],
+            "files": [
+              {
+                "id": "059df360-c92a-47fd-a99a-7639b3a9e83c",
+                "name": "fixture-2b.bin",
+                "type": "application/octet-stream",
+                "size": 256,
+                "sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880"
+              }
+            ]
+          }
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T06",
+          "name": "collapse-keeps-bytes-order-ids",
+          "status": "PASS",
+          "actual": {
+            "text": "2B сохранённый текст\n",
+            "blocks": [
+              {
+                "id": "ff04e0f2-c3e7-46cb-8a9d-b4b9b9ac6828",
+                "type": "text",
+                "text": "2B сохранённый текст"
+              },
+              {
+                "id": "077be5e5-0ab2-44de-a6e7-bffd259d0f4f",
+                "type": "document",
+                "assetId": "c9b45679-e938-4a5c-9394-3ccc89f3a0df"
+              },
+              {
+                "id": "5f1fa903-97af-4e35-9c5f-172a8eb8993a",
+                "type": "text",
+                "text": ""
+              }
+            ],
+            "files": [
+              {
+                "id": "c9b45679-e938-4a5c-9394-3ccc89f3a0df",
+                "name": "fixture-2b.bin",
+                "type": "application/octet-stream",
+                "size": 256,
+                "sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880"
+              }
+            ]
+          }
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T06",
+          "name": "Canvas-roundtrip-keeps-draft",
+          "status": "PASS",
+          "actual": {
+            "text": "2B сохранённый текст\n",
+            "blocks": [
+              {
+                "id": "ff04e0f2-c3e7-46cb-8a9d-b4b9b9ac6828",
+                "type": "text",
+                "text": "2B сохранённый текст"
+              },
+              {
+                "id": "077be5e5-0ab2-44de-a6e7-bffd259d0f4f",
+                "type": "document",
+                "assetId": "c9b45679-e938-4a5c-9394-3ccc89f3a0df"
+              },
+              {
+                "id": "5f1fa903-97af-4e35-9c5f-172a8eb8993a",
+                "type": "text",
+                "text": ""
+              }
+            ],
+            "files": [
+              {
+                "id": "c9b45679-e938-4a5c-9394-3ccc89f3a0df",
+                "name": "fixture-2b.bin",
+                "type": "application/octet-stream",
+                "size": 256,
+                "sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880"
+              }
+            ]
+          }
+        },
+        {
+          "variant": "tablet",
+          "id": "2B-T06",
+          "name": "reopen-keeps-draft",
+          "status": "PASS",
+          "actual": {
+            "text": "2B сохранённый текст\n",
+            "blocks": [
+              {
+                "id": "ff04e0f2-c3e7-46cb-8a9d-b4b9b9ac6828",
+                "type": "text",
+                "text": "2B сохранённый текст"
+              },
+              {
+                "id": "077be5e5-0ab2-44de-a6e7-bffd259d0f4f",
+                "type": "document",
+                "assetId": "c9b45679-e938-4a5c-9394-3ccc89f3a0df"
+              },
+              {
+                "id": "5f1fa903-97af-4e35-9c5f-172a8eb8993a",
+                "type": "text",
+                "text": ""
+              }
+            ],
+            "files": [
+              {
+                "id": "c9b45679-e938-4a5c-9394-3ccc89f3a0df",
+                "name": "fixture-2b.bin",
+                "type": "application/octet-stream",
+                "size": 256,
+                "sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880"
+              }
+            ]
+          }
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T06",
+          "name": "collapse-keeps-bytes-order-ids",
+          "status": "PASS",
+          "actual": {
+            "text": "2B сохранённый текст\n",
+            "blocks": [
+              {
+                "id": "f1c5dc54-3a18-4743-a20b-3a55336b4829",
+                "type": "text",
+                "text": "2B сохранённый текст"
+              },
+              {
+                "id": "19c5d069-e33d-49f4-a51b-aa83d3a55ff3",
+                "type": "document",
+                "assetId": "e0668ce6-6f87-4ff7-9fc5-e3f81e5e2490"
+              },
+              {
+                "id": "b172c788-e7ab-4cf1-8ddd-8298f0a9966c",
+                "type": "text",
+                "text": ""
+              }
+            ],
+            "files": [
+              {
+                "id": "e0668ce6-6f87-4ff7-9fc5-e3f81e5e2490",
+                "name": "fixture-2b.bin",
+                "type": "application/octet-stream",
+                "size": 256,
+                "sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880"
+              }
+            ]
+          }
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T06",
+          "name": "Canvas-roundtrip-keeps-draft",
+          "status": "PASS",
+          "actual": {
+            "text": "2B сохранённый текст\n",
+            "blocks": [
+              {
+                "id": "f1c5dc54-3a18-4743-a20b-3a55336b4829",
+                "type": "text",
+                "text": "2B сохранённый текст"
+              },
+              {
+                "id": "19c5d069-e33d-49f4-a51b-aa83d3a55ff3",
+                "type": "document",
+                "assetId": "e0668ce6-6f87-4ff7-9fc5-e3f81e5e2490"
+              },
+              {
+                "id": "b172c788-e7ab-4cf1-8ddd-8298f0a9966c",
+                "type": "text",
+                "text": ""
+              }
+            ],
+            "files": [
+              {
+                "id": "e0668ce6-6f87-4ff7-9fc5-e3f81e5e2490",
+                "name": "fixture-2b.bin",
+                "type": "application/octet-stream",
+                "size": 256,
+                "sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880"
+              }
+            ]
+          }
+        },
+        {
+          "variant": "desktop",
+          "id": "2B-T06",
+          "name": "reopen-keeps-draft",
+          "status": "PASS",
+          "actual": {
+            "text": "2B сохранённый текст\n",
+            "blocks": [
+              {
+                "id": "f1c5dc54-3a18-4743-a20b-3a55336b4829",
+                "type": "text",
+                "text": "2B сохранённый текст"
+              },
+              {
+                "id": "19c5d069-e33d-49f4-a51b-aa83d3a55ff3",
+                "type": "document",
+                "assetId": "e0668ce6-6f87-4ff7-9fc5-e3f81e5e2490"
+              },
+              {
+                "id": "b172c788-e7ab-4cf1-8ddd-8298f0a9966c",
+                "type": "text",
+                "text": ""
+              }
+            ],
+            "files": [
+              {
+                "id": "e0668ce6-6f87-4ff7-9fc5-e3f81e5e2490",
+                "name": "fixture-2b.bin",
+                "type": "application/octet-stream",
+                "size": 256,
+                "sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880"
+              }
+            ]
+          }
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T06",
+          "name": "collapse-keeps-bytes-order-ids",
+          "status": "PASS",
+          "actual": {
+            "text": "2B сохранённый текст\n",
+            "blocks": [
+              {
+                "id": "dcc1340c-4555-4fae-8014-9e431dc20307",
+                "type": "text",
+                "text": "2B сохранённый текст"
+              },
+              {
+                "id": "0f63b265-ff6e-45ff-992d-0865c7ec8e1c",
+                "type": "document",
+                "assetId": "fe0d368f-ad22-4753-853b-4ef382f4285b"
+              },
+              {
+                "id": "55f0cce1-e98f-42b4-9d51-6109683ee7cb",
+                "type": "text",
+                "text": ""
+              }
+            ],
+            "files": [
+              {
+                "id": "fe0d368f-ad22-4753-853b-4ef382f4285b",
+                "name": "fixture-2b.bin",
+                "type": "application/octet-stream",
+                "size": 256,
+                "sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880"
+              }
+            ]
+          }
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T06",
+          "name": "Canvas-roundtrip-keeps-draft",
+          "status": "PASS",
+          "actual": {
+            "text": "2B сохранённый текст\n",
+            "blocks": [
+              {
+                "id": "dcc1340c-4555-4fae-8014-9e431dc20307",
+                "type": "text",
+                "text": "2B сохранённый текст"
+              },
+              {
+                "id": "0f63b265-ff6e-45ff-992d-0865c7ec8e1c",
+                "type": "document",
+                "assetId": "fe0d368f-ad22-4753-853b-4ef382f4285b"
+              },
+              {
+                "id": "55f0cce1-e98f-42b4-9d51-6109683ee7cb",
+                "type": "text",
+                "text": ""
+              }
+            ],
+            "files": [
+              {
+                "id": "fe0d368f-ad22-4753-853b-4ef382f4285b",
+                "name": "fixture-2b.bin",
+                "type": "application/octet-stream",
+                "size": 256,
+                "sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880"
+              }
+            ]
+          }
+        },
+        {
+          "variant": "small-mobile",
+          "id": "2B-T06",
+          "name": "reopen-keeps-draft",
+          "status": "PASS",
+          "actual": {
+            "text": "2B сохранённый текст\n",
+            "blocks": [
+              {
+                "id": "dcc1340c-4555-4fae-8014-9e431dc20307",
+                "type": "text",
+                "text": "2B сохранённый текст"
+              },
+              {
+                "id": "0f63b265-ff6e-45ff-992d-0865c7ec8e1c",
+                "type": "document",
+                "assetId": "fe0d368f-ad22-4753-853b-4ef382f4285b"
+              },
+              {
+                "id": "55f0cce1-e98f-42b4-9d51-6109683ee7cb",
+                "type": "text",
+                "text": ""
+              }
+            ],
+            "files": [
+              {
+                "id": "fe0d368f-ad22-4753-853b-4ef382f4285b",
+                "name": "fixture-2b.bin",
+                "type": "application/octet-stream",
+                "size": 256,
+                "sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880"
+              }
+            ]
+          }
+        }
+      ],
+      "binding": {
+        "artifact_path": "components/summary.json",
+        "sha256": "20d179bb1cb0ccab2032c3e53118b866419f535876c869719c00a22112a055d1"
+      }
+    },
+    "2B-T07": {
+      "status": "PASS",
+      "regression_1b": "31/31 PASS",
+      "integration_1c": {
+        "PASS": 9,
+        "FAIL": 0,
+        "ERROR": 0,
+        "TIMEOUT": 0,
+        "NOT_RUN": 0,
+        "BLOCKED": 0
+      },
+      "bindings": [
+        {
+          "artifact_path": "1b.json",
+          "sha256": "115db9d88c1d7238312713c5fa75989ae5f595878adc19835e6caf742a0cce31"
+        },
+        {
+          "artifact_path": "integration/results.json",
+          "sha256": "dd26f58bda8ecd0cbd2302421d2c35366362b7e21ce612eb0f0ae2302c176359"
+        },
+        {
+          "artifact_path": "integration-negative-controls/results.json",
+          "sha256": "a69dc27fab8cfc0629837c9ca26a1528e31b8e390d061585d734228696d2f847"
+        }
+      ]
+    }
+  },
+  "before_after": {
+    "before_head": "6822a58a7a632fcfc182e4a8e2f02eea37d55afb",
+    "before_status": "FAIL",
+    "candidate_status": "PASS",
+    "checkout_sha_scope": "Before summary tested_sha is the current CI harness checkout; before application runtime is separately bound by all source hashes to before_head. The same exact probe is applied to both runtime trees.",
+    "before_failures": {
+      "mobile": [
+        {
+          "id": "2B-T03",
+          "name": "segmented-keyboard",
+          "status": "FAIL",
+          "actual": null
+        },
+        {
+          "id": "2B-T01",
+          "name": "live-controls-contract",
+          "status": "FAIL",
+          "actual": [
+            {
+              "id": "chatBack",
+              "contract": null,
+              "name": "К чатам",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "chatTitle",
+              "contract": null,
+              "name": "Материалы разговора",
+              "width": 121.140625,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "chatLibraryOpen",
+              "contract": null,
+              "name": "Поиск по переписке",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "reportBtn",
+              "contract": null,
+              "name": "Исходящие сообщения",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "attach",
+              "contract": null,
+              "name": "Добавить вложение или действие",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "expand",
+              "contract": null,
+              "name": "Редактор на весь экран",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "send",
+              "contract": null,
+              "name": "Отправить сообщение",
+              "width": 44,
+              "height": 44,
+              "disabled": true
+            },
+            {
+              "id": "input",
+              "contract": null,
+              "name": "Текст черновика",
+              "width": 358,
+              "height": 41,
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "id": "2B-T04",
+          "name": "fullscreen-Escape-from-control",
+          "status": "FAIL",
+          "actual": "true"
+        },
+        {
+          "id": "2B-T04",
+          "name": "fullscreen-focus-return",
+          "status": "FAIL",
+          "actual": "input"
+        },
+        {
+          "id": "2B-T03",
+          "name": "library-input-focus",
+          "status": "FAIL",
+          "actual": {
+            "focus": true,
+            "outline": "0px"
+          }
+        },
+        {
+          "id": "2B-T04",
+          "name": "media-explicit-close",
+          "status": "FAIL",
+          "actual": 0
+        },
+        {
+          "id": "2B-T04",
+          "name": "project-fullscreen-owner",
+          "status": "FAIL",
+          "actual": {
+            "position": "relative",
+            "height": 112,
+            "expanded": true
+          }
+        },
+        {
+          "id": "2B-T04",
+          "name": "task-fullscreen-opaque-surface",
+          "status": "FAIL",
+          "actual": {
+            "background": "rgba(0, 0, 0, 0)",
+            "position": "fixed"
+          }
+        },
+        {
+          "id": "2B-T04",
+          "name": "dirty-sheet-denied-close-preserves",
+          "status": "FAIL",
+          "actual": {
+            "open": 0
+          }
+        },
+        {
+          "id": "2B-T05",
+          "name": "reduced-short-modal",
+          "status": "FAIL",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 308.890625,
+              "y": 352.5,
+              "right": 351.5,
+              "bottom": 401.5,
+              "width": 42.609375,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "id": "2B-T05",
+          "name": "reduced-modal-scroll-content",
+          "status": "FAIL",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 308.890625,
+              "y": -5796.09375,
+              "right": 351.5,
+              "bottom": -5747.09375,
+              "width": 42.609375,
+              "height": 49,
+              "visible": true,
+              "hit": false,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            },
+            {
+              "sel": "#modalEnd",
+              "x": 38.5,
+              "y": 738.671875,
+              "right": 351.5,
+              "bottom": 757.671875,
+              "width": 313,
+              "height": 19,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 19,
+              "scroll": 19
+            }
+          ]
+        },
+        {
+          "id": "2B-T05",
+          "name": "safe-long-large-short-modal",
+          "status": "FAIL",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 308.890625,
+              "y": 352.5,
+              "right": 351.5,
+              "bottom": 401.5,
+              "width": 42.609375,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "id": "2B-T05",
+          "name": "safe-long-large-modal-scroll-content",
+          "status": "FAIL",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 308.890625,
+              "y": -5796.09375,
+              "right": 351.5,
+              "bottom": -5747.09375,
+              "width": 42.609375,
+              "height": 49,
+              "visible": true,
+              "hit": false,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            },
+            {
+              "sel": "#modalEnd",
+              "x": 38.5,
+              "y": 738.671875,
+              "right": 351.5,
+              "bottom": 757.671875,
+              "width": 313,
+              "height": 19,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 19,
+              "scroll": 19
+            }
+          ]
+        }
+      ],
+      "tablet": [
+        {
+          "id": "2B-T03",
+          "name": "segmented-keyboard",
+          "status": "FAIL",
+          "actual": null
+        },
+        {
+          "id": "2B-T01",
+          "name": "live-controls-contract",
+          "status": "FAIL",
+          "actual": [
+            {
+              "id": "chatBack",
+              "contract": null,
+              "name": "К чатам",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "chatTitle",
+              "contract": null,
+              "name": "Материалы разговора",
+              "width": 121.140625,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "chatLibraryOpen",
+              "contract": null,
+              "name": "Поиск по переписке",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "reportBtn",
+              "contract": null,
+              "name": "Исходящие сообщения",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "attach",
+              "contract": null,
+              "name": "Добавить вложение или действие",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "expand",
+              "contract": null,
+              "name": "Редактор на весь экран",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "send",
+              "contract": null,
+              "name": "Отправить сообщение",
+              "width": 44,
+              "height": 44,
+              "disabled": true
+            },
+            {
+              "id": "input",
+              "contract": null,
+              "name": "Текст черновика",
+              "width": 736,
+              "height": 41,
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "id": "2B-T04",
+          "name": "fullscreen-Escape-from-control",
+          "status": "FAIL",
+          "actual": "true"
+        },
+        {
+          "id": "2B-T04",
+          "name": "fullscreen-focus-return",
+          "status": "FAIL",
+          "actual": "input"
+        },
+        {
+          "id": "2B-T03",
+          "name": "library-input-focus",
+          "status": "FAIL",
+          "actual": {
+            "focus": true,
+            "outline": "0px"
+          }
+        },
+        {
+          "id": "2B-T04",
+          "name": "media-explicit-close",
+          "status": "FAIL",
+          "actual": 0
+        },
+        {
+          "id": "2B-T04",
+          "name": "project-fullscreen-owner",
+          "status": "FAIL",
+          "actual": {
+            "position": "relative",
+            "height": 112,
+            "expanded": true
+          }
+        },
+        {
+          "id": "2B-T04",
+          "name": "task-fullscreen-opaque-surface",
+          "status": "FAIL",
+          "actual": {
+            "background": "rgba(0, 0, 0, 0)",
+            "position": "fixed"
+          }
+        },
+        {
+          "id": "2B-T04",
+          "name": "dirty-sheet-denied-close-preserves",
+          "status": "FAIL",
+          "actual": {
+            "open": 0
+          }
+        },
+        {
+          "id": "2B-T05",
+          "name": "reduced-short-modal",
+          "status": "FAIL",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 632.390625,
+              "y": 452,
+              "right": 675,
+              "bottom": 501,
+              "width": 42.609375,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "id": "2B-T05",
+          "name": "reduced-modal-scroll-content",
+          "status": "FAIL",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 632.390625,
+              "y": -2377.296875,
+              "right": 675,
+              "bottom": -2328.296875,
+              "width": 42.609375,
+              "height": 49,
+              "visible": true,
+              "hit": false,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            },
+            {
+              "sel": "#modalEnd",
+              "x": 93,
+              "y": 907.46875,
+              "right": 675,
+              "bottom": 926.46875,
+              "width": 582,
+              "height": 19,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 19,
+              "scroll": 19
+            }
+          ]
+        },
+        {
+          "id": "2B-T05",
+          "name": "safe-long-large-short-modal",
+          "status": "FAIL",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 632.390625,
+              "y": 452,
+              "right": 675,
+              "bottom": 501,
+              "width": 42.609375,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "id": "2B-T05",
+          "name": "safe-long-large-modal-scroll-content",
+          "status": "FAIL",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 632.390625,
+              "y": -2377.296875,
+              "right": 675,
+              "bottom": -2328.296875,
+              "width": 42.609375,
+              "height": 49,
+              "visible": true,
+              "hit": false,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            },
+            {
+              "sel": "#modalEnd",
+              "x": 93,
+              "y": 907.46875,
+              "right": 675,
+              "bottom": 926.46875,
+              "width": 582,
+              "height": 19,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 19,
+              "scroll": 19
+            }
+          ]
+        }
+      ],
+      "desktop": [
+        {
+          "id": "2B-T03",
+          "name": "segmented-keyboard",
+          "status": "FAIL",
+          "actual": null
+        },
+        {
+          "id": "2B-T01",
+          "name": "live-controls-contract",
+          "status": "FAIL",
+          "actual": [
+            {
+              "id": "chatBack",
+              "contract": null,
+              "name": "К чатам",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "chatTitle",
+              "contract": null,
+              "name": "Материалы разговора",
+              "width": 121.140625,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "chatLibraryOpen",
+              "contract": null,
+              "name": "Поиск по переписке",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "reportBtn",
+              "contract": null,
+              "name": "Исходящие сообщения",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "attach",
+              "contract": null,
+              "name": "Добавить вложение или действие",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "expand",
+              "contract": null,
+              "name": "Редактор на весь экран",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "send",
+              "contract": null,
+              "name": "Отправить сообщение",
+              "width": 44,
+              "height": 44,
+              "disabled": true
+            },
+            {
+              "id": "input",
+              "contract": null,
+              "name": "Текст черновика",
+              "width": 768,
+              "height": 41,
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "id": "2B-T04",
+          "name": "fullscreen-Escape-from-control",
+          "status": "FAIL",
+          "actual": "true"
+        },
+        {
+          "id": "2B-T04",
+          "name": "fullscreen-focus-return",
+          "status": "FAIL",
+          "actual": "input"
+        },
+        {
+          "id": "2B-T03",
+          "name": "library-input-focus",
+          "status": "FAIL",
+          "actual": {
+            "focus": true,
+            "outline": "0px"
+          }
+        },
+        {
+          "id": "2B-T04",
+          "name": "media-explicit-close",
+          "status": "FAIL",
+          "actual": 0
+        },
+        {
+          "id": "2B-T04",
+          "name": "project-fullscreen-owner",
+          "status": "FAIL",
+          "actual": {
+            "position": "relative",
+            "height": 112,
+            "expanded": true
+          }
+        },
+        {
+          "id": "2B-T04",
+          "name": "task-fullscreen-opaque-surface",
+          "status": "FAIL",
+          "actual": {
+            "background": "rgba(0, 0, 0, 0)",
+            "position": "fixed"
+          }
+        },
+        {
+          "id": "2B-T04",
+          "name": "dirty-sheet-denied-close-preserves",
+          "status": "FAIL",
+          "actual": {
+            "open": 0
+          }
+        },
+        {
+          "id": "2B-T05",
+          "name": "reduced-short-modal",
+          "status": "FAIL",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 888.390625,
+              "y": 390,
+              "right": 931,
+              "bottom": 439,
+              "width": 42.609375,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "id": "2B-T05",
+          "name": "reduced-modal-scroll-content",
+          "status": "FAIL",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 888.390625,
+              "y": -2493.734375,
+              "right": 931,
+              "bottom": -2444.734375,
+              "width": 42.609375,
+              "height": 49,
+              "visible": true,
+              "hit": false,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            },
+            {
+              "sel": "#modalEnd",
+              "x": 349,
+              "y": 791.03125,
+              "right": 931,
+              "bottom": 810.03125,
+              "width": 582,
+              "height": 19,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 19,
+              "scroll": 19
+            }
+          ]
+        },
+        {
+          "id": "2B-T05",
+          "name": "safe-long-large-short-modal",
+          "status": "FAIL",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 888.390625,
+              "y": 390,
+              "right": 931,
+              "bottom": 439,
+              "width": 42.609375,
+              "height": 49,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            }
+          ]
+        },
+        {
+          "id": "2B-T05",
+          "name": "safe-long-large-modal-scroll-content",
+          "status": "FAIL",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 888.390625,
+              "y": -2493.734375,
+              "right": 931,
+              "bottom": -2444.734375,
+              "width": 42.609375,
+              "height": 49,
+              "visible": true,
+              "hit": false,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            },
+            {
+              "sel": "#modalEnd",
+              "x": 349,
+              "y": 791.03125,
+              "right": 931,
+              "bottom": 810.03125,
+              "width": 582,
+              "height": 19,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 19,
+              "scroll": 19
+            }
+          ]
+        }
+      ],
+      "small-mobile": [
+        {
+          "id": "2B-T03",
+          "name": "segmented-keyboard",
+          "status": "FAIL",
+          "actual": null
+        },
+        {
+          "id": "2B-T01",
+          "name": "live-controls-contract",
+          "status": "FAIL",
+          "actual": [
+            {
+              "id": "chatBack",
+              "contract": null,
+              "name": "К чатам",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "chatTitle",
+              "contract": null,
+              "name": "Материалы разговора",
+              "width": 74,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "chatLibraryOpen",
+              "contract": null,
+              "name": "Поиск по переписке",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "reportBtn",
+              "contract": null,
+              "name": "Исходящие сообщения",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "attach",
+              "contract": null,
+              "name": "Добавить вложение или действие",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "expand",
+              "contract": null,
+              "name": "Редактор на весь экран",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "id": "send",
+              "contract": null,
+              "name": "Отправить сообщение",
+              "width": 44,
+              "height": 44,
+              "disabled": true
+            },
+            {
+              "id": "input",
+              "contract": null,
+              "name": "Текст черновика",
+              "width": 292,
+              "height": 41,
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "id": "2B-T04",
+          "name": "fullscreen-Escape-from-control",
+          "status": "FAIL",
+          "actual": "true"
+        },
+        {
+          "id": "2B-T04",
+          "name": "fullscreen-focus-return",
+          "status": "FAIL",
+          "actual": "input"
+        },
+        {
+          "id": "2B-T03",
+          "name": "library-input-focus",
+          "status": "FAIL",
+          "actual": {
+            "focus": true,
+            "outline": "0px"
+          }
+        },
+        {
+          "id": "2B-T04",
+          "name": "media-explicit-close",
+          "status": "FAIL",
+          "actual": 0
+        },
+        {
+          "id": "2B-T04",
+          "name": "project-fullscreen-owner",
+          "status": "FAIL",
+          "actual": {
+            "position": "relative",
+            "height": 112,
+            "expanded": true
+          }
+        },
+        {
+          "id": "2B-T04",
+          "name": "task-fullscreen-opaque-surface",
+          "status": "FAIL",
+          "actual": {
+            "background": "rgba(0, 0, 0, 0)",
+            "position": "fixed"
+          }
+        },
+        {
+          "id": "2B-T04",
+          "name": "dirty-sheet-denied-close-preserves",
+          "status": "FAIL",
+          "actual": {
+            "open": 0
+          }
+        },
+        {
+          "id": "2B-T05",
+          "name": "reduced-modal-scroll-content",
+          "status": "FAIL",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 238.890625,
+              "y": -9209.65625,
+              "right": 281.5,
+              "bottom": -9160.65625,
+              "width": 42.609375,
+              "height": 49,
+              "visible": true,
+              "hit": false,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            },
+            {
+              "sel": "#modalEnd",
+              "x": 38.5,
+              "y": 479.109375,
+              "right": 281.5,
+              "bottom": 498.109375,
+              "width": 243,
+              "height": 19,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 19,
+              "scroll": 19
+            }
+          ]
+        },
+        {
+          "id": "2B-T05",
+          "name": "safe-long-large-modal-scroll-content",
+          "status": "FAIL",
+          "actual": [
+            {
+              "sel": "#dialogClose",
+              "x": 238.890625,
+              "y": -9209.65625,
+              "right": 281.5,
+              "bottom": -9160.65625,
+              "width": 42.609375,
+              "height": 49,
+              "visible": true,
+              "hit": false,
+              "overflow": "visible",
+              "client": 49,
+              "scroll": 49
+            },
+            {
+              "sel": "#modalEnd",
+              "x": 38.5,
+              "y": 479.109375,
+              "right": 281.5,
+              "bottom": 498.109375,
+              "width": 243,
+              "height": 19,
+              "visible": true,
+              "hit": true,
+              "overflow": "visible",
+              "client": 19,
+              "scroll": 19
+            }
+          ]
+        }
+      ]
+    },
+    "before_sources_bound_to_work_start": 92,
+    "same_probe_for_before_after": {
+      "artifact_path": "source/tests/engineering/block-02/components_probe.py",
+      "sha256": "1fad214fa07d1c3e6e6735e543719e51852a544816e0972d3972d85efe070e20"
+    },
+    "before_binding": {
+      "artifact_path": "before/summary.json",
+      "sha256": "420d3aa15b7f43f319609f06ad3edca1e78f35f2fceb7265b2127f10f30e884f"
+    },
+    "after_binding": {
+      "artifact_path": "components/summary.json",
+      "sha256": "20d179bb1cb0ccab2032c3e53118b866419f535876c869719c00a22112a055d1"
+    },
+    "long_modal_scroll": {
+      "before_code_sha": "f1460551abbd4e7e4f8ddfa7e5023f4bb727d2e5",
+      "before_binding": {
+        "artifact_path": "scroll-before/summary.json",
+        "sha256": "7c0b7b948c0a251ce9e76ac8c960a8b2c3d2d74de96cc06fb203565d8d81d45a"
+      },
+      "source_hashes_verified": 93,
+      "before_failures": {
+        "mobile": [
+          {
+            "id": "2B-T05",
+            "name": "reduced-modal-scroll-content",
+            "status": "FAIL",
+            "actual": [
+              {
+                "sel": "#dialogClose",
+                "x": 307.5,
+                "y": 166.265625,
+                "right": 351.5,
+                "bottom": 215.265625,
+                "width": 44,
+                "height": 49,
+                "visible": true,
+                "hit": true,
+                "overflow": "visible",
+                "client": 49,
+                "scroll": 49
+              },
+              {
+                "sel": "#modalEnd",
+                "x": 38.5,
+                "y": 305.03125,
+                "right": 351.5,
+                "bottom": 324.03125,
+                "width": 313,
+                "height": 19,
+                "visible": true,
+                "hit": false,
+                "overflow": "visible",
+                "client": 19,
+                "scroll": 19
+              }
+            ]
+          },
+          {
+            "id": "2B-T05",
+            "name": "safe-long-large-modal-scroll-content",
+            "status": "FAIL",
+            "actual": [
+              {
+                "sel": "#dialogClose",
+                "x": 307.5,
+                "y": 127.765625,
+                "right": 351.5,
+                "bottom": 176.765625,
+                "width": 44,
+                "height": 49,
+                "visible": true,
+                "hit": true,
+                "overflow": "visible",
+                "client": 49,
+                "scroll": 49
+              },
+              {
+                "sel": "#modalEnd",
+                "x": 38.5,
+                "y": 264.53125,
+                "right": 351.5,
+                "bottom": 283.53125,
+                "width": 313,
+                "height": 19,
+                "visible": true,
+                "hit": false,
+                "overflow": "visible",
+                "client": 19,
+                "scroll": 19
+              }
+            ]
+          }
+        ],
+        "tablet": [],
+        "desktop": [],
+        "small-mobile": [
+          {
+            "id": "2B-T05",
+            "name": "reduced-modal-scroll-content",
+            "status": "FAIL",
+            "actual": [
+              {
+                "sel": "#dialogClose",
+                "x": 237.5,
+                "y": 166.265625,
+                "right": 281.5,
+                "bottom": 215.265625,
+                "width": 44,
+                "height": 49,
+                "visible": true,
+                "hit": true,
+                "overflow": "visible",
+                "client": 49,
+                "scroll": 49
+              },
+              {
+                "sel": "#modalEnd",
+                "x": 38.5,
+                "y": 305.03125,
+                "right": 281.5,
+                "bottom": 324.03125,
+                "width": 243,
+                "height": 19,
+                "visible": true,
+                "hit": false,
+                "overflow": "visible",
+                "client": 19,
+                "scroll": 19
+              }
+            ]
+          },
+          {
+            "id": "2B-T05",
+            "name": "safe-long-large-modal-scroll-content",
+            "status": "FAIL",
+            "actual": [
+              {
+                "sel": "#dialogClose",
+                "x": 237.5,
+                "y": 127.765625,
+                "right": 281.5,
+                "bottom": 176.765625,
+                "width": 44,
+                "height": 49,
+                "visible": true,
+                "hit": true,
+                "overflow": "visible",
+                "client": 49,
+                "scroll": 49
+              },
+              {
+                "sel": "#modalEnd",
+                "x": 38.5,
+                "y": 264.53125,
+                "right": 281.5,
+                "bottom": 283.53125,
+                "width": 243,
+                "height": 19,
+                "visible": true,
+                "hit": false,
+                "overflow": "visible",
+                "client": 19,
+                "scroll": 19
+              }
+            ]
+          }
+        ]
+      },
+      "after_status": "PASS",
+      "after_binding": {
+        "artifact_path": "components/summary.json",
+        "sha256": "20d179bb1cb0ccab2032c3e53118b866419f535876c869719c00a22112a055d1"
+      }
+    }
+  },
+  "ownership": {
+    "status": "PASS",
+    "checks": [
+      {
+        "id": "2A-T01",
+        "name": "One route state/controller export",
+        "status": "PASS",
+        "actual": [
+          "app-controller.js"
+        ]
+      },
+      {
+        "id": "2A-T02",
+        "name": "One shared heading and outer geometry writer",
+        "status": "PASS",
+        "actual": {
+          "headings": [
+            "app-shell.js"
+          ],
+          "outer_geometry": [
+            "app-shell.js"
+          ],
+          "shared_shell_styles": [
+            "shell.css"
+          ]
+        }
+      },
+      {
+        "id": "2A-T03",
+        "name": "One root click binding, no legacy root insertion",
+        "status": "PASS",
+        "actual": {
+          "dispatch": [
+            "app.js"
+          ],
+          "legacy": []
+        }
+      },
+      {
+        "id": "2A-T04",
+        "name": "No loaded permanent shell-correction MutationObserver",
+        "status": "PASS",
+        "actual": {
+          "observed": [
+            "inbox-monitor.js",
+            "rich-message.js"
+          ],
+          "qualified_boundaries": {
+            "rich-message.js": "detached-media disposal only",
+            "inbox-monitor.js": "own notification positioning only"
+          }
+        }
+      },
+      {
+        "id": "2A-T05",
+        "name": "One global token source",
+        "status": "PASS",
+        "actual": [
+          "design-tokens.css"
+        ]
+      },
+      {
+        "id": "2A-T06",
+        "name": "Registry evaluated, unique, frozen and complete",
+        "status": "PASS",
+        "actual": {
+          "registry": {
+            "version": 1,
+            "components": {
+              "AppShell": {
+                "owner": "PablicusShell",
+                "implementation": "app-shell.js",
+                "region": "#home / #app"
+              },
+              "TopBar": {
+                "owner": "PablicusShell",
+                "implementation": "app-shell.js",
+                "region": ".homeHeader / #app > header"
+              },
+              "BottomNavigation": {
+                "owner": "PablicusShell",
+                "implementation": "app-shell.js",
+                "region": "#mainNav"
+              },
+              "Tab/SegmentedControl": {
+                "owner": "view instance",
+                "implementation": "index.html",
+                "region": "#chatViewTabs / #chatFilters"
+              },
+              "Button": {
+                "owner": "mounting view",
+                "implementation": "controls.css",
+                "contract": "semantic button, type, accessible name, focus-visible, disabled"
+              },
+              "IconButton": {
+                "owner": "mounting view",
+                "implementation": "message-menu.js",
+                "contract": "shared icon, accessible name, 44px target"
+              },
+              "Input": {
+                "owner": "mounting view",
+                "implementation": "index.html",
+                "contract": "label, input type, composition, error description"
+              },
+              "Composer": {
+                "owner": "PablicusChat",
+                "implementation": "rich-composer.js",
+                "adapter": "chat.js"
+              },
+              "SearchField": {
+                "owner": "search view",
+                "implementation": "chat-library.js",
+                "contract": "query state belongs to scoped search, not root navigation"
+              },
+              "List": {
+                "owner": "mounted domain view",
+                "implementation": "chat-list-view.js",
+                "contract": "stable IDs, bounded lifecycle"
+              },
+              "ListItem": {
+                "owner": "mounted domain view",
+                "implementation": "app.js",
+                "contract": "one explicit resource ID and action"
+              },
+              "Avatar": {
+                "owner": "mounted domain view",
+                "implementation": "app.js",
+                "contract": "decorative initials or meaningful image alt"
+              },
+              "Badge": {
+                "owner": "mounted domain view",
+                "implementation": "app.js",
+                "contract": "count meaning available without color"
+              },
+              "Chip": {
+                "owner": "PablicusWorkspaceQuick",
+                "implementation": "workspace-quick.js"
+              },
+              "Card": {
+                "owner": "mounted domain view",
+                "implementation": "bots.js",
+                "contract": "content owns local actions, never root shell"
+              },
+              "Modal": {
+                "owner": "dialog instance",
+                "implementation": "index.html",
+                "contract": "native dialog, label, initial focus, escape, focus return"
+              },
+              "Sheet": {
+                "owner": "sheet instance",
+                "implementation": "chat-canvas.js",
+                "contract": "bounded history entry, leave consent, focus return"
+              },
+              "Toast": {
+                "owner": "app service",
+                "implementation": "app.js",
+                "region": "#toast",
+                "contract": "status, finite lifetime, no secret text"
+              },
+              "EmptyState": {
+                "owner": "mounted domain view",
+                "implementation": "app.js"
+              },
+              "LoadingState": {
+                "owner": "mounted domain view",
+                "implementation": "chat-canvas.js"
+              },
+              "ErrorState": {
+                "owner": "mounted domain view",
+                "implementation": "chat-canvas.js",
+                "contract": "visible error and explicit retry; never fake success"
+              },
+              "Menu": {
+                "owner": "menu instance",
+                "implementation": "message-menu.js",
+                "contract": "outside/keyboard listeners disposed with instance"
+              },
+              "ContextMenu": {
+                "owner": "menu instance",
+                "implementation": "message-menu.js",
+                "contract": "no global navigation interception"
+              },
+              "AgentTaskCard": {
+                "owner": "future agent view",
+                "status": "INTERFACE_ONLY",
+                "contract": "runId, initiator, status, cancel action; no executor"
+              },
+              "PrivateAgentResult": {
+                "owner": "future result view",
+                "status": "INTERFACE_ONLY",
+                "contract": "resultId, scope, provenance, authorized actions; private by default"
+              },
+              "ActionConfirmation": {
+                "owner": "future confirmation view",
+                "status": "INTERFACE_ONLY",
+                "contract": "exact action, parameters, revision, expiry; explicit confirm/cancel"
+              },
+              "WorkObjectPreview": {
+                "owner": "object view",
+                "status": "INTERFACE_ONLY",
+                "contract": "objectId, revision, source, permitted actions; object is not message"
+              },
+              "SidePanel": {
+                "owner": "PablicusShell",
+                "status": "INTERFACE_ONLY",
+                "contract": "desktop object surface; same object/route as FullScreenObjectView"
+              },
+              "FullScreenObjectView": {
+                "owner": "PablicusShell",
+                "status": "INTERFACE_ONLY",
+                "contract": "mobile object surface, close guard, focus return, same object/route as SidePanel"
+              }
+            },
+            "roots": [
+              {
+                "id": "chats",
+                "label": "Чаты"
+              },
+              {
+                "id": "tasks",
+                "label": "Дела"
+              },
+              {
+                "id": "profile",
+                "label": "Вы"
+              }
+            ],
+            "parentRoots": {
+              "chats": "chats",
+              "feed": "chats",
+              "tasks": "tasks",
+              "bots": "tasks",
+              "profile": "profile"
+            },
+            "informationArchitecture": {
+              "Chats": {
+                "root": "chats",
+                "entry": "conversation list",
+                "state": "EXISTING"
+              },
+              "Groups": {
+                "root": "chats",
+                "entry": "conversation directory",
+                "state": "CONTRACT_ONLY"
+              },
+              "Channels": {
+                "root": "chats",
+                "entry": "conversation directory",
+                "state": "CONTRACT_ONLY"
+              },
+              "Spaces": {
+                "root": "chats",
+                "entry": "space switcher / directory",
+                "state": "CONTRACT_ONLY",
+                "category": "A"
+              },
+              "Threads": {
+                "root": "chats",
+                "entry": "within conversation",
+                "state": "CONTRACT_ONLY",
+                "category": "A"
+              },
+              "Search": {
+                "root": "chats",
+                "entry": "search field / scoped results",
+                "state": "CONTRACT_ONLY_GLOBAL",
+                "category": "A"
+              },
+              "Saved": {
+                "root": "chats",
+                "entry": "personal conversation / You shortcut",
+                "state": "EXISTING_SAVED_CONVERSATION_ONLY",
+                "category": "A"
+              },
+              "AIConversations": {
+                "root": "chats",
+                "entry": "new private AI conversation",
+                "state": "CONTRACT_ONLY"
+              },
+              "AIComposer": {
+                "root": "chats",
+                "entry": "composer contextual actions",
+                "state": "CONTRACT_ONLY",
+                "category": "A"
+              },
+              "Profile": {
+                "root": "profile",
+                "entry": "profile and settings",
+                "state": "EXISTING"
+              },
+              "PublicIdentity": {
+                "root": "profile",
+                "entry": "username / profile link",
+                "state": "EXISTING_BASELINE",
+                "category": "A"
+              },
+              "Tasks": {
+                "root": "tasks",
+                "entry": "task list",
+                "state": "EXISTING"
+              },
+              "WorkObjects": {
+                "root": "tasks",
+                "entry": "task / conversation Canvas object",
+                "state": "EXISTING_CANVAS_ONLY"
+              },
+              "BotsFactory": {
+                "root": "tasks",
+                "entry": "nested tools entry",
+                "state": "EXISTING_SPECIFICATION_ONLY"
+              }
+            },
+            "composer": {
+              "version": 1,
+              "implementation": "PablicusRichComposer.create",
+              "adapter": "PablicusChat",
+              "extensionPoints": [
+                "text",
+                "attachments",
+                "richBlocks",
+                "commands",
+                "aiInlineActions",
+                "mentions",
+                "agentInvocation",
+                "taskCreation",
+                "workObjectLinking"
+              ],
+              "existingOperations": [
+                "capture",
+                "restore",
+                "focus",
+                "blur",
+                "destroy"
+              ],
+              "context": [
+                "userId",
+                "conversationId",
+                "sessionGeneration",
+                "routeGeneration",
+                "revision",
+                "signal"
+              ],
+              "states": [
+                "idle",
+                "composing",
+                "saving",
+                "saved",
+                "sending",
+                "error",
+                "cancelled"
+              ],
+              "invariants": [
+                "original Blob retained",
+                "stable IDs and order",
+                "save before send",
+                "identity currentness",
+                "no silent unsupported operation"
+              ],
+              "extensionRequest": {
+                "fields": [
+                  "kind",
+                  "context",
+                  "selection",
+                  "payload"
+                ],
+                "result": [
+                  "applied",
+                  "cancelled",
+                  "unsupported",
+                  "error"
+                ]
+              },
+              "messageDocV2Implemented": false,
+              "agentExecutionImplemented": false,
+              "note": "Existing v1 draft/IndexedDB remains canonical. Future adapters validate context and permission before execution; declarations do not grant capabilities."
+            },
+            "calls": {
+              "category": "B",
+              "implemented": false,
+              "slots": [
+                "audioCallAction",
+                "videoCallAction",
+                "activeCallSurface",
+                "screenShareState",
+                "voiceLiveEntry"
+              ],
+              "context": [
+                "sessionId",
+                "conversationId",
+                "spaceId",
+                "participants",
+                "permissions",
+                "mediaState"
+              ],
+              "surface": "Non-root session overlay; independent from editor/list resource. Mobile full screen and desktop panel share session ID.",
+              "deferred": [
+                "WebRTC/TURN",
+                "background behavior",
+                "media security",
+                "cost",
+                "physical-device QA"
+              ]
+            },
+            "tokenGroups": {
+              "color": [
+                "--color-accent"
+              ],
+              "surface": [
+                "--surface-primary"
+              ],
+              "text": [
+                "--text-primary"
+              ],
+              "border": [
+                "--border-subtle"
+              ],
+              "radius": [
+                "--radius-control",
+                "--radius-pill"
+              ],
+              "spacing": [
+                "--space-1",
+                "--space-2",
+                "--space-3",
+                "--space-4",
+                "--space-6"
+              ],
+              "typography": [
+                "--font-family-ui",
+                "--font-body",
+                "--font-input",
+                "--line-height-body"
+              ],
+              "iconSizes": [
+                "--icon-size"
+              ],
+              "controlSizes": [
+                "--control-size"
+              ],
+              "elevation": [
+                "--elevation-overlay"
+              ],
+              "motion": [
+                "--motion-duration",
+                "--motion-easing"
+              ],
+              "safeArea": [
+                "--safe-area-top",
+                "--safe-area-bottom",
+                "--safe-area-left",
+                "--safe-area-right"
+              ],
+              "breakpoints": [
+                "--breakpoint-tablet",
+                "--breakpoint-desktop"
+              ],
+              "zIndex": [
+                "--layer-base",
+                "--layer-shell",
+                "--layer-popover",
+                "--layer-sheet",
+                "--layer-toast"
+              ]
+            },
+            "controlContract": {
+              "implementation": "native controls + controls.css",
+              "owner": "mounting view",
+              "minimumTargetToken": "--control-size",
+              "focusToken": "--focus-width",
+              "disabledToken": "--disabled-opacity",
+              "states": [
+                "idle",
+                "hover",
+                "focus-visible",
+                "active",
+                "disabled",
+                "busy",
+                "invalid"
+              ],
+              "rules": [
+                "native disabled prevents activation",
+                "accessible name supplied by view",
+                "no global listener or observer",
+                "tabs invoke existing owner action"
+              ],
+              "overlayRules": [
+                "initial focus",
+                "Escape/close through owner guard",
+                "focus return to connected opener",
+                "bounded scrolling and viewport"
+              ]
+            }
+          },
+          "frozen": true,
+          "duplicate": true,
+          "unknown": true
+        }
+      },
+      {
+        "id": "2A-T09",
+        "name": "One semantic registry for all responsive surfaces",
+        "status": "PASS",
+        "actual": {
+          "entrypoint": [
+            "vendor/supabase.js",
+            "component-registry.js",
+            "app-shell.js",
+            "app-controller.js",
+            "chat-list-view.js",
+            "vault.js",
+            "outbox.js",
+            "transport-store.js",
+            "rich-store.js",
+            "rich-composer.js",
+            "message-menu.js",
+            "rich-message.js",
+            "chat.js",
+            "auth-local.js",
+            "auth-config.js",
+            "oauth-login.js",
+            "oauth-session.js",
+            "passkey-login.js",
+            "public-passkey.js",
+            "workspace-editor.js",
+            "media-viewer.js",
+            "inbox-monitor.js",
+            "people.js",
+            "chat-actions.js",
+            "push-notifications.js",
+            "chat-library.js",
+            "chat-canvas.js",
+            "tasks-home.js",
+            "workspace-quick.js",
+            "bots.js",
+            "app.js",
+            "bots-nav.js"
+          ],
+          "physical_layout_proof": "Separate browser variants required"
+        }
+      },
+      {
+        "id": "2A-T10",
+        "name": "Existing composer with declared extension slots; no v2 engine",
+        "status": "PASS",
+        "actual": {
+          "version": 1,
+          "implementation": "PablicusRichComposer.create",
+          "adapter": "PablicusChat",
+          "extensionPoints": [
+            "text",
+            "attachments",
+            "richBlocks",
+            "commands",
+            "aiInlineActions",
+            "mentions",
+            "agentInvocation",
+            "taskCreation",
+            "workObjectLinking"
+          ],
+          "existingOperations": [
+            "capture",
+            "restore",
+            "focus",
+            "blur",
+            "destroy"
+          ],
+          "context": [
+            "userId",
+            "conversationId",
+            "sessionGeneration",
+            "routeGeneration",
+            "revision",
+            "signal"
+          ],
+          "states": [
+            "idle",
+            "composing",
+            "saving",
+            "saved",
+            "sending",
+            "error",
+            "cancelled"
+          ],
+          "invariants": [
+            "original Blob retained",
+            "stable IDs and order",
+            "save before send",
+            "identity currentness",
+            "no silent unsupported operation"
+          ],
+          "extensionRequest": {
+            "fields": [
+              "kind",
+              "context",
+              "selection",
+              "payload"
+            ],
+            "result": [
+              "applied",
+              "cancelled",
+              "unsupported",
+              "error"
+            ]
+          },
+          "messageDocV2Implemented": false,
+          "agentExecutionImplemented": false,
+          "note": "Existing v1 draft/IndexedDB remains canonical. Future adapters validate context and permission before execution; declarations do not grant capabilities."
+        }
+      },
+      {
+        "id": "2A-T11",
+        "name": "Amendment 02 IA fits approved roots",
+        "status": "PASS",
+        "actual": {
+          "Chats": {
+            "root": "chats",
+            "entry": "conversation list",
+            "state": "EXISTING"
+          },
+          "Groups": {
+            "root": "chats",
+            "entry": "conversation directory",
+            "state": "CONTRACT_ONLY"
+          },
+          "Channels": {
+            "root": "chats",
+            "entry": "conversation directory",
+            "state": "CONTRACT_ONLY"
+          },
+          "Spaces": {
+            "root": "chats",
+            "entry": "space switcher / directory",
+            "state": "CONTRACT_ONLY",
+            "category": "A"
+          },
+          "Threads": {
+            "root": "chats",
+            "entry": "within conversation",
+            "state": "CONTRACT_ONLY",
+            "category": "A"
+          },
+          "Search": {
+            "root": "chats",
+            "entry": "search field / scoped results",
+            "state": "CONTRACT_ONLY_GLOBAL",
+            "category": "A"
+          },
+          "Saved": {
+            "root": "chats",
+            "entry": "personal conversation / You shortcut",
+            "state": "EXISTING_SAVED_CONVERSATION_ONLY",
+            "category": "A"
+          },
+          "AIConversations": {
+            "root": "chats",
+            "entry": "new private AI conversation",
+            "state": "CONTRACT_ONLY"
+          },
+          "AIComposer": {
+            "root": "chats",
+            "entry": "composer contextual actions",
+            "state": "CONTRACT_ONLY",
+            "category": "A"
+          },
+          "Profile": {
+            "root": "profile",
+            "entry": "profile and settings",
+            "state": "EXISTING"
+          },
+          "PublicIdentity": {
+            "root": "profile",
+            "entry": "username / profile link",
+            "state": "EXISTING_BASELINE",
+            "category": "A"
+          },
+          "Tasks": {
+            "root": "tasks",
+            "entry": "task list",
+            "state": "EXISTING"
+          },
+          "WorkObjects": {
+            "root": "tasks",
+            "entry": "task / conversation Canvas object",
+            "state": "EXISTING_CANVAS_ONLY"
+          },
+          "BotsFactory": {
+            "root": "tasks",
+            "entry": "nested tools entry",
+            "state": "EXISTING_SPECIFICATION_ONLY"
+          }
+        }
+      },
+      {
+        "id": "2A-T12",
+        "name": "Calls slots without call implementation",
+        "status": "PASS",
+        "actual": {
+          "category": "B",
+          "implemented": false,
+          "slots": [
+            "audioCallAction",
+            "videoCallAction",
+            "activeCallSurface",
+            "screenShareState",
+            "voiceLiveEntry"
+          ],
+          "context": [
+            "sessionId",
+            "conversationId",
+            "spaceId",
+            "participants",
+            "permissions",
+            "mediaState"
+          ],
+          "surface": "Non-root session overlay; independent from editor/list resource. Mobile full screen and desktop panel share session ID.",
+          "deferred": [
+            "WebRTC/TURN",
+            "background behavior",
+            "media security",
+            "cost",
+            "physical-device QA"
+          ]
+        }
+      }
+    ],
+    "active_paths": [
+      "app-controller.js",
+      "app-shell.js",
+      "app.js",
+      "auth-config.js",
+      "auth-local.js",
+      "bot-factory.css",
+      "bot-factory.js",
+      "bot-scenario-bridge.js",
+      "bot-scenario-editor.js",
+      "bots-nav.js",
+      "bots.css",
+      "bots.js",
+      "chat-actions.css",
+      "chat-actions.js",
+      "chat-canvas.css",
+      "chat-canvas.js",
+      "chat-library.css",
+      "chat-library.js",
+      "chat-list-view.js",
+      "chat-minimal.css",
+      "chat.js",
+      "component-registry.js",
+      "controls.css",
+      "design-tokens.css",
+      "inbox-monitor.css",
+      "inbox-monitor.js",
+      "media-viewer.css",
+      "media-viewer.js",
+      "message-menu.css",
+      "message-menu.js",
+      "oauth-login.js",
+      "oauth-session.js",
+      "outbox.js",
+      "pablicus.css",
+      "passkey-login.js",
+      "people.css",
+      "people.js",
+      "profile-discovery.css",
+      "public-passkey.js",
+      "public-ui-foundation.css",
+      "push-notifications.js",
+      "rich-composer.css",
+      "rich-composer.js",
+      "rich-message.css",
+      "rich-message.js",
+      "rich-store.js",
+      "shell.css",
+      "style.css",
+      "tasks-home.css",
+      "tasks-home.js",
+      "transport-store.js",
+      "vault.js",
+      "vendor/supabase.js",
+      "workspace-editor.css",
+      "workspace-editor.js",
+      "workspace-quick.css",
+      "workspace-quick.js"
+    ],
+    "sources": {
+      "app-controller.js": "e8d37eb4431733211c61bb50b3ccc2529ef230d9b0d89b7459710d8520082148",
+      "app-shell.js": "35e7db8a635e8a1d0a7c3218c6b3e8fc4538c4320fd1ca0b91e18ae39dbe8ca8",
+      "app.js": "46a69885c288e7ab137c2c9fc79d9408554fcf4945bf5b50818bd397b76d7407",
+      "auth-config.js": "65439fbbfd11d32ecc2151d78c2081dd4eaa105566a1d66d4fae9af65767e0f2",
+      "auth-local.js": "bb9ce69cdc097856b1b0ce6f9466b4abb34de63942ffcabfa953aa0dd811df97",
+      "bot-factory.css": "f31cb1e3a426d24640d130602bc4d5911b378963efa7e1e8423d157cbf176811",
+      "bot-factory.js": "82e69963963d012c2008855ea5d22babd7693e48bc86dceef2c07c898aefd4ab",
+      "bot-scenario-bridge.js": "1ece4fb607a086b0e2c90a5c2271539718cb9d3054a751f3ed75bcc92a22f7b6",
+      "bot-scenario-editor.js": "598de7eb8428b1ebaf263b52d7c8170fcb9e24ac768bc1dfb85a0cdc6c0c8e22",
+      "bots-nav.js": "1f63ecc99a7b111e655a711ac9f2b87356128bb87a3703788daa73b2a7b9a8ef",
+      "bots.css": "74884a71854034a272f8440efd1ecdc5e9436ea2e7f0132f135982745fd3bdeb",
+      "bots.js": "cfd12f085b59bcc8e88d73898bd148a6f49de6cfcfb111d9b6a3786ae808b569",
+      "chat-actions.css": "d952c66a2c01e64d988346d01c61c3f654f37e297cbf121dadc35ee616f35b41",
+      "chat-actions.js": "8449bced95d25e10449ee432079e60af3eaa15fbf28f06c33a331516c7e3b809",
+      "chat-canvas.css": "936894da9b4a7cac81f72baff0c96bca410bd5c9b8e8df7086b3b8eff167f912",
+      "chat-canvas.js": "f2ef004e99d523b0d4328806170208bf343896d96a856b22a18c902cb50750ca",
+      "chat-library.css": "c7db6f3b0e88ce289d653c969545c07ec012f40339b46f559297a91d13083226",
+      "chat-library.js": "bf5c7f10c53c85132795e2583944b97985ba8fda8a9e8667c5c62e1babaebff0",
+      "chat-list-view.js": "64b3d60a84f335d65f489b5e0db393e6ffb97732ef77acca7e8087abb39b1e54",
+      "chat-minimal.css": "78048b924a601b7b288e71e66c2dc6156174a60f5b990f223272abf39a914336",
+      "chat.js": "513dab818cc6e8e2df82ff944b5d72dc3066cfe0a7e98845d0c72a79d64c0d58",
+      "component-registry.js": "71f50b44dba1187e690706541204cf25ce5aab7c340e717ef05db580e5d4680c",
+      "controls.css": "4a2fe5171cce102ae3ec95a154334e44e3bac9a0f945893f4f3a78ec9626c11a",
+      "design-tokens.css": "6f4288f6007cbee2a465865feea31b143b63ff18a1ff341dfb23dd4e84857bfe",
+      "inbox-monitor.css": "489e0532490d7b7f0bd09b3ac372945e6de5af70d258fe0cbe613f701926d581",
+      "inbox-monitor.js": "0bbeaa2082965d8197c7cc7a3e6304a80a622d83e8b5e57d5bbc79cbb833c6b3",
+      "media-viewer.css": "cb6cc79d5f3481b96e90f23bf20718582241d6f22e242099ef32808d48f70dd1",
+      "media-viewer.js": "5bc722f2d0df2ac682b2ca4c6aae189851595fee8ae661c4dadf48b228a858e9",
+      "message-menu.css": "698b73803fc67be94259aed70bc962d32598ace0c3695a76f7b8e9aa6ec4ec2c",
+      "message-menu.js": "713b4e3886ee227652da4033fba111d343e9c76c5b2b30f5aa8bf60175bcdf8d",
+      "oauth-login.js": "6a1845eee3877cfcc1bd68d3a3b79e3f9112392933ec79c78f3e731620b68bfb",
+      "oauth-session.js": "066f63403b0dd5d493c7cc6d558f95ee2eff0c57357690b397deabdee26fb4fa",
+      "outbox.js": "bd16ec02eb91b3c25b2995e6679d153dec416f9e5e6c374ffbe4d2e22a5a5882",
+      "pablicus.css": "edf8d8e8a4b2af4bae5d9cd882799e9bc2439d2c550ec2eaed0f9dbca3515a81",
+      "passkey-login.js": "e94069c853ef93e71e146fc2f13d7bfa97c1af58b4e6a3a424d4012c0f4dec83",
+      "people.css": "a91a1c08804f6dbd299f0836db37e50d1517dbf24e69687a8a3bfd2344c30735",
+      "people.js": "47b67f909cd20d85c403ebdf163fb4f0dcfce92f726c3512340d0cd997118356",
+      "profile-discovery.css": "ead9766b8dfa5b6ce7047f8eb592b7ecbea75f7d7db738b0eec8781c8453033d",
+      "public-passkey.js": "5bd310e0433e7b34bfecf726e332f15499ba4a8d478d3ddd88885d9bc42af238",
+      "public-ui-foundation.css": "5d438c12400cf496fa2a6b4adc43295df2f5be78e0cacefb6815917f57d36943",
+      "push-notifications.js": "d02fda496151815cd6c649af585fe07fbacc0f3e98a1ea21f9a94441df99149a",
+      "rich-composer.css": "02508818ede9523f102a9125ca624d8806da1bf64d2dbb0682841270e1e210b8",
+      "rich-composer.js": "319f1e176216385432edbb46b296179e670135c55423f1fc00c1c0d8803db628",
+      "rich-message.css": "0876004edd7309ae4b59665c99b3b68d7d9875976d03cf47a757aeea0f699683",
+      "rich-message.js": "af99cb12d86810d4cf67179d677e48fc11818d0676b230eda757911777d8e7e2",
+      "rich-store.js": "7f5a284a15d064c519afda0d7520a3e27f04c8ba8a06090ea827618be2296da4",
+      "shell.css": "45e2b0eb8d15fbe71ddf6877b38211d206cbcb6c5bfdfd45f93cb1a337f1de75",
+      "style.css": "ff8d9b36e411f25d41433708767ad734074b9d54d7b7291bec6916b312c535a5",
+      "tasks-home.css": "a4bd13fe05939db8ac6895975fcd7fbe6edf6c651680c84d09914e5dfda76b81",
+      "tasks-home.js": "315573a540160b1b5a415bcba949bff1d9c680596f932adef3162a0d945cfe8c",
+      "transport-store.js": "b6bea9398fe01a30b30771ce7d9c160bbb59856cc9f5f733e2e43f9369e938a6",
+      "vault.js": "6d8483b72342f259b1ae468f06eac91303bad70eee6fc83287edeaf40cf6eb73",
+      "vendor/supabase.js": "24e8c00dc25da420ee741068b60bcdb5f62cb3598d8834058acf37ec6ee1a724",
+      "workspace-editor.css": "74ca37640dab5962e7aa33553e0a9e4e90ec430890d4f977e81e5656ba655d10",
+      "workspace-editor.js": "78d04bbad140a8834ae99d66fc013aa20febcda38ac6b7dc7d24785137c7a8da",
+      "workspace-quick.css": "d5f87d0d6cda3895c0c4f9959b3f88f6b1208921b31dc8f829e53415b630fb29",
+      "workspace-quick.js": "dd1e74f2d462741a2ef925d4c6716915024f6547d3b40d8919da627f7cb0d754"
+    },
+    "scope": "Structural contracts only. T07/T08 and dispatch/visibility behavior require shell_probe; T13 requires accepted regression execution."
+  },
+  "shell_regressions": {
+    "positive_variants": {
+      "mobile": "PASS",
+      "tablet": "PASS",
+      "desktop": "PASS"
+    },
+    "negative_control_qualified": true,
+    "duplicate_navigation_failures": [
+      {
+        "name": "2A-SINGLE-NAVIGATION-DISPATCH-tasks",
+        "status": "FAIL",
+        "actual": {
+          "route": {
+            "section": "tasks",
+            "screen": "home",
+            "resourceId": null,
+            "conversationId": null,
+            "canvas": false,
+            "generation": 3,
+            "sessionGeneration": 1,
+            "sessionUserId": "11111111-1111-4111-8111-111111111111"
+          },
+          "calls": [
+            {
+              "section": "tasks",
+              "screen": "home",
+              "resourceId": null
+            },
+            {
+              "section": "tasks",
+              "screen": "home"
+            }
+          ],
+          "selected": [
+            "tasks"
+          ],
+          "home": true,
+          "app": false,
+          "heading": "Дела"
+        }
+      },
+      {
+        "name": "2A-SINGLE-NAVIGATION-DISPATCH-profile",
+        "status": "FAIL",
+        "actual": {
+          "route": {
+            "section": "profile",
+            "screen": "home",
+            "resourceId": null,
+            "conversationId": null,
+            "canvas": false,
+            "generation": 5,
+            "sessionGeneration": 1,
+            "sessionUserId": "11111111-1111-4111-8111-111111111111"
+          },
+          "calls": [
+            {
+              "section": "profile",
+              "screen": "home",
+              "resourceId": null
+            },
+            {
+              "section": "profile",
+              "screen": "home"
+            }
+          ],
+          "selected": [
+            "profile"
+          ],
+          "home": true,
+          "app": false,
+          "heading": "Вы"
+        }
+      },
+      {
+        "name": "2A-SINGLE-NAVIGATION-DISPATCH-chats",
+        "status": "FAIL",
+        "actual": {
+          "route": {
+            "section": "chats",
+            "screen": "home",
+            "resourceId": null,
+            "conversationId": null,
+            "canvas": false,
+            "generation": 7,
+            "sessionGeneration": 1,
+            "sessionUserId": "11111111-1111-4111-8111-111111111111"
+          },
+          "calls": [
+            {
+              "section": "chats",
+              "screen": "home",
+              "resourceId": null
+            },
+            {
+              "section": "chats",
+              "screen": "home"
+            }
+          ],
+          "selected": [
+            "chats"
+          ],
+          "home": true,
+          "app": false,
+          "heading": "Чаты"
+        }
+      }
+    ],
+    "binding": {
+      "artifact_path": "browser/summary.json",
+      "sha256": "7c5f63d86ca9e0495f389ba36460d84f1c64a725dd4b1b100a9a6630830386dc"
+    }
+  },
+  "block_1": {
+    "1b_counts": {
+      "PASS": 31
+    },
+    "1c_counts": {
+      "PASS": 9,
+      "FAIL": 0,
+      "ERROR": 0,
+      "TIMEOUT": 0,
+      "NOT_RUN": 0,
+      "BLOCKED": 0
+    },
+    "1c_assertions": 145,
+    "gates": {
+      "boundary": "PASS",
+      "network-browser": "PASS",
+      "selftests": "PASS",
+      "ab": "PASS",
+      "preflight": "PASS"
+    },
+    "negative_controls": {
+      "MUTATION_A_RESOURCE_LEAK": {
+        "status": "PASS",
+        "expected_assertion": "1C-NO-RESOURCE-ACCUMULATION",
+        "inner_status": "FAIL",
+        "qualification": {
+          "failure_class": "RESOURCE_ACCUMULATION",
+          "touch_listener_growth": {
+            "at new NaturalList (http://127.0.0.1:43037/pablicus/chat.js:49:4) | touchstart": 6
+          },
+          "assertion": "1C-NO-RESOURCE-ACCUMULATION",
+          "behavioral_checks_reached": 72,
+          "inner_status": "FAIL",
+          "inner_exit_code": 1,
+          "event_log_sha256": "af7704ad51e83f6c5ae82fd7b5f2c6cc975f0790e15e59d0cb563607b809d596"
+        },
+        "candidate_unchanged": true
+      },
+      "MUTATION_B_LATE_ACCOUNT": {
+        "status": "PASS",
+        "expected_assertion": "1C-LATE-ACCOUNT-ISOLATION",
+        "inner_status": "FAIL",
+        "qualification": {
+          "failure_class": "LATE_ACCOUNT_CONTAMINATION",
+          "before_scope": {
+            "user": "22222222-2222-4222-8222-222222222222",
+            "chat": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1"
+          },
+          "after_scope": {
+            "user": "11111111-1111-4111-8111-111111111111",
+            "chat": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"
+          },
+          "after_store": {
+            "account": "11111111-1111-4111-8111-111111111111",
+            "conversation": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+            "name": "pablicus-v1:11111111-1111-4111-8111-111111111111:aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"
+          },
+          "assertion": "1C-LATE-ACCOUNT-ISOLATION",
+          "behavioral_checks_reached": 3,
+          "inner_status": "FAIL",
+          "inner_exit_code": 1,
+          "event_log_sha256": "9a3416dd037302cd2ad3dcbba661acb7f1a4a81668ea8b2944c012698fcbbf43"
+        },
+        "candidate_unchanged": true
+      },
+      "MUTATION_C_BYTE_OR_ORDER": {
+        "status": "PASS",
+        "expected_assertion": "1C-DRAFT-BYTES",
+        "inner_status": "FAIL",
+        "qualification": {
+          "failure_class": "BYTE_HASH_MISMATCH",
+          "changed_file_indices": [
+            0
+          ],
+          "original_sha256": "9ce81549ae7afaa854078ba74b305266d12a7d0d816e4ac45a2d82f5465e54af",
+          "restored_sha256": "7763b3f664eefec9aa1e759e374986f204a73ca3e655ec6fc8db88c9e8412adc",
+          "assertion": "1C-DRAFT-BYTES",
+          "behavioral_checks_reached": 3,
+          "inner_status": "FAIL",
+          "inner_exit_code": 1,
+          "event_log_sha256": "5084fd195918ed3defa53666fe1cb60830ba1a7119408fb204b7e319ed5f40c0"
+        },
+        "candidate_unchanged": true
+      },
+      "MUTATION_D_ROUTE_RESOURCE": {
+        "status": "PASS",
+        "expected_assertion": "1C-SCENARIO-SURVIVES-POLL",
+        "inner_status": "FAIL",
+        "qualification": {
+          "failure_class": "ROUTE_RESOURCE_MISMATCH",
+          "expected_resource_id": "dddddddd-dddd-4ddd-8ddd-ddddddddddd1",
+          "observed_resource_id": "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee1",
+          "observed_route": {
+            "section": "bots",
+            "screen": "scenario",
+            "resourceId": "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee1",
+            "conversationId": null,
+            "canvas": false,
+            "generation": 7,
+            "sessionGeneration": 1,
+            "sessionUserId": "11111111-1111-4111-8111-111111111111"
+          },
+          "scenario_visible": true,
+          "scenario_text": [
+            "Fixture greeting",
+            "Done"
+          ],
+          "completed_scenario_navigation": {
+            "target": {
+              "section": "bots",
+              "screen": "scenario",
+              "resourceId": "dddddddd-dddd-4ddd-8ddd-ddddddddddd1"
+            },
+            "started": 8197.400000000023,
+            "status": "fulfilled",
+            "result": true,
+            "finished": 8220.5
+          },
+          "assertion": "1C-SCENARIO-SURVIVES-POLL",
+          "behavioral_checks_reached": 7,
+          "inner_status": "FAIL",
+          "inner_exit_code": 1,
+          "event_log_sha256": "addef5b2c3b3bbd4ad96af6b911c7767c8bcd1fb37d0bcf92056b3640b72fbcf"
+        },
+        "candidate_unchanged": true
+      }
+    },
+    "completed_verified_transitions": 54
+  },
+  "environment": {
+    "python": "3.12.7",
+    "platform": "Linux-6.8.0-1064-azure-x86_64-with-glibc2.35",
+    "flags": [
+      "--disable-dev-shm-usage",
+      "--disable-background-networking",
+      "--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1"
+    ],
+    "chromium_sandbox": true,
+    "browser": "143.0.7499.4"
+  },
+  "artifact_integrity": {
+    "status": "PASS",
+    "code_sha": "c5e26c2f85ef1f6d1f8ab4684d033de4f3b0d3c9",
+    "tested_sha": "c5e26c2f85ef1f6d1f8ab4684d033de4f3b0d3c9",
+    "run_id": "34701805783",
+    "job_id": 103574775764,
+    "artifact_id": 10299754595,
+    "github_digest": "sha256:b55508278727f1aa81e0d215ee96dde5e3ff631801c4e50c6c0dcb80db3353b6",
+    "zip_sha256": "b55508278727f1aa81e0d215ee96dde5e3ff631801c4e50c6c0dcb80db3353b6",
+    "zip_size": 9437953,
+    "crc": "PASS",
+    "source_hashes_verified": 249,
+    "artifact_hashes_verified": 681,
+    "job_steps": "ALL_SUCCESS",
+    "cleanup": "PASS",
+    "artifact_expires_at": "2026-09-26T15:24:07Z",
+    "source_manifest_sha256": "7232d188321f007442e9ad8e009a534bf93a162abcc6be1f3f99db8cfd27ff29",
+    "hash_manifest_sha256": "b18ac7281a292d48902b8581de658853a52fc25732dcee5c0b84bdc572859f81",
+    "job_log_sha256": "6e19d95eb270cc1828c5e3ed028e402beed9fba11a3581b4eea39e17450aad4b"
+  },
+  "limitations": [
+    "Chromium desktop engine and synthetic touch/viewport only; no physical iPhone or real keyboard/Dynamic Type/rotation acceptance.",
+    "Safari/WebKit/Firefox and full WCAG compliance not qualified.",
+    "Synthetic HTTP/WebSocket boundary does not qualify production backend/Auth/RLS or real users.",
+    "Native Popover API required for workspace fullscreen; unsupported browsers retain inline editing with explicit unavailable message.",
+    "Existing compact Canvas calendar geometry is retained; no all-controls 44px target claim.",
+    "MediaViewer tested as actual module/native dialog with synthetic Blob resolver, not production storage integration.",
+    "Service workers blocked; allowlist/version changed but install/update/cache lifecycle not qualified.",
+    "No multi-device synchronization, entire Block 2/product acceptance, or design-source approval claimed.",
+    "Future components and CATEGORY_A capabilities remain contracts/required subsequent implementation.",
+    "Artifact expires on 2026-09-26T15:24:07Z; archive original ZIP before expiration."
+  ],
+  "superseded_runs": [
+    {
+      "code_sha": "f5eec611c93cb5477258e934935cc1c5cbfde2f9",
+      "run": 34700520387,
+      "status": "ERROR before assertions",
+      "reason": "Ubuntu 24.04 native Chromium sandbox unavailable; no sandbox/managed-policy disabling performed.",
+      "artifact": 10299498741,
+      "digest": "sha256:eb4fd7a79fb12b90d5379a278b8c21c5779ec3e1d4c754940aaf1d8cfd9b469a"
+    },
+    {
+      "code_sha": "532690560395a0778b59dc5c4aae846db29d6db9",
+      "run": 34700613275,
+      "status": "SUCCESS but superseded",
+      "reason": "Subsequent visual inspection strengthened workspace fullscreen assertions and corrected scoped rendering."
+    },
+    {
+      "code_sha": "ccfdd90e05bb5f98dba4ee339b04cf2f00df391c",
+      "run": 34701095919,
+      "status": "SUCCESS but superseded",
+      "reason": "Added explicit short/long modal scroll proof; later long-title masking fixed."
+    },
+    {
+      "code_sha": "f1460551abbd4e7e4f8ddfa7e5023f4bb727d2e5",
+      "run": 34701574057,
+      "status": "Superseded; not final evidence",
+      "reason": "Long-title masking is reproduced separately by final exact-SHA workflow."
+    }
+  ]
+}

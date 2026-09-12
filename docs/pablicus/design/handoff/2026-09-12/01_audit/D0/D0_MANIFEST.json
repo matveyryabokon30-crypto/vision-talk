@@ -1,0 +1,27 @@
+{
+  "task": "PABLICUS-CHIEF-DESIGNER-BOOTSTRAP-20260912",
+  "revision": "R1",
+  "stage": "D0",
+  "status": "D0_SOURCE_AUDIT_DELIVERED_WITH_VISUAL_EVIDENCE_GAP",
+  "source_sha": "d791adc19aade1015f4ba34cf4beb5ce2069c93f",
+  "accepted_2a_code_sha": "9ee215300ac97b3c48bf5184f414f28333429a1c",
+  "current_2b_code_sha": "c5e26c2f85ef1f6d1f8ab4684d033de4f3b0d3c9",
+  "current_2b_status": "SUBSTEP_2B_READY_FOR_INDEPENDENT_REVIEW",
+  "design_approved": false,
+  "owner_decision": "PENDING",
+  "scope_rows": 49,
+  "semantic_icon_entries": 285,
+  "current_icon_definition_entries": 52,
+  "visual_evidence": "first attempt timed out; retry captured and inspected 01-login-baseline.png at 1280x720; authenticated flows unavailable without test session",
+  "writes": "local D0 documentation only; no remote push/runtime changes",
+  "files": {
+    "SOURCE_LEDGER.csv": "e8386d7ff328d6c10d0fd49ef9e0972ef0b3259f87f82e8cdaf47961c5a4de84",
+    "DESIGN_SCOPE_MATRIX.md": "5ee3d28bb67bedaa5b1be10bae81608828c003330cec0cc996e84848f2465f82",
+    "ICON_INVENTORY.csv": "1c1c905ef69a42f1efa1c042c50eeb34d5324125940753d30ce2967b6fef2027",
+    "CURRENT_ICON_DEFINITIONS.csv": "ecdaa43a2392cb624493600848ee631c76f1bf3c04abbe1aba7e3b4f1e53375c",
+    "D0_FOUNDATION_AUDIT.md": "5715dd4946e18d2041b40f0ad995bc48f772750b098bafd684c5097cb70b420f",
+    "DESIGN_SCOPE_MATRIX.csv": "cb1128ef4772f2a166af0179d1aaf1a15fd93b30ebceeb4882b1c1d94f84ef47",
+    "build_inventory.py": "cf4eb25af784444dad8897de1e085d2afab0ee3d970ba878d2ac7a8108a3b5b8",
+    "01-login-baseline.png": "356d70551789c505554048af2b900810398a939c2e33a49399f591bfbc2f2cd5"
+  }
+}

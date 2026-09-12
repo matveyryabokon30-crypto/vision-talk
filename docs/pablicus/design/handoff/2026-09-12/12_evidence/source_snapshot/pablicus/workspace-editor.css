@@ -1,0 +1,58 @@
+/* Isolated styling: no chat IDs, native textarea frames or unbounded canvas rows. */
+.workspaceEditor { position: relative; box-sizing: border-box; width: 100%; min-width: 0; padding: 8px; border: 1px solid var(--line, #ececee); border-radius: 25px; background: var(--surface, #fff); color: var(--text, #272a2d); box-shadow: 0 4px 20px #00000003; }
+.workspaceEditor *, .workspaceEditor *::before, .workspaceEditor *::after { box-sizing: border-box; }
+.workspaceEditor [hidden] { display: none !important; }
+.workspaceEditorBody { min-width: 0; max-height: min(38dvh, 340px); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+.workspaceEditor .workspaceEditorBody .richText { display: block; box-sizing: border-box; width: 100%; min-height: 46px; max-height: none; border: 0; border-radius: 0; background: transparent; color: inherit; font: inherit; font-size: 16px; line-height: 1.45; resize: none; padding: 9px 10px; overflow: hidden; overflow-wrap: anywhere; box-shadow: none; -webkit-appearance: none; }
+.workspaceEditor .richText::placeholder { color: var(--muted, #777b80); }
+.workspaceEditorToolbar { display: flex; align-items: center; gap: 4px; min-width: 0; padding: 3px 1px 0; }
+.workspaceEditor .workspaceEditorButton, .workspaceEditor .workspaceEditorVoice { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; min-width: var(--control-size); width: auto; height: var(--control-size); min-height: var(--control-size); margin: 0; padding: 6px; border: 0; border-radius: 50%; background: transparent; color: var(--muted, #72777c); font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.workspaceEditor .workspaceEditorButton:focus-visible, .workspaceEditor .workspaceEditorVoice:focus-visible { outline: 2px solid var(--accent, #737a87); outline-offset: 2px; }
+.workspaceEditor .workspaceEditorButton:hover { background: var(--soft, #f5f5f6); }
+.workspaceEditor .workspaceEditorAttach { font-size: 31px; font-weight: 300; line-height: 1; }
+.workspaceEditorHint { flex: 1; min-width: 0; font-size: 12px; color: var(--muted, #777b80); padding-inline: 3px; }
+.workspaceEditor .workspaceEditorVoice svg { width: 21px; height: 24px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+.workspaceEditor .workspaceEditorVoice.is-recording { background: #d747471a; color: #d74747; }
+.workspaceEditorExpand { position: relative; }
+.workspaceEditorExpand::before, .workspaceEditorExpand::after { content: ''; position: absolute; width: 8px; height: 8px; border: solid currentColor; pointer-events: none; }
+.workspaceEditorExpand::before { top: 10px; right: 10px; border-width: 2px 2px 0 0; }
+.workspaceEditorExpand::after { bottom: 10px; left: 10px; border-width: 0 0 2px 2px; }
+.workspaceEditorExpand[aria-expanded='true']::before, .workspaceEditorExpand[aria-expanded='true']::after { transform: rotate(180deg); }
+.workspaceEditorNotice { margin: 4px 10px; font-size: 13px; line-height: 1.4; color: #a84040; overflow-wrap: anywhere; }
+.workspaceEditorMenu { position: absolute; z-index: 5; bottom: 55px; left: 8px; display: flex; flex-direction: column; width: min(235px, calc(100% - 16px)); padding: 5px; border: 1px solid var(--line, #ececee); border-radius: 19px; background: var(--surface, #fff); box-shadow: 0 8px 32px #00000014; }
+.workspaceEditorMenu .workspaceEditorButton { justify-content: flex-start; width: 100%; min-height: var(--control-size); padding: 10px 14px; border-radius: 13px; font-size: 15px; color: var(--text, #272a2d); }
+.workspaceEditorLink { display: flex; align-items: center; gap: 5px; padding: 5px; }
+.workspaceEditorLink input { min-width: 0; width: 100%; height: var(--control-size); padding: 8px; border: 1px solid var(--line, #ececee); border-radius: 12px; background: transparent; color: inherit; font: inherit; font-size: 16px; }
+.workspaceEditorLink .workspaceEditorButton { padding-inline: 10px; border-radius: 12px; font-size: 13px; }
+.workspaceEditor .richMedia { display: block; margin: 4px 5px; padding: 8px; min-width: 0; overflow: hidden; border: 1px solid var(--line, #ececee); border-radius: 16px; background: var(--bg, #fafafa); }
+.workspaceEditor .richMediaHead { display: flex; align-items: center; gap: 7px; min-height: 32px; }
+.workspaceEditor .richMediaName { flex: 1; min-width: 0; font-size: 13px; line-height: 1.35; overflow-wrap: anywhere; }
+.workspaceEditor .richMedia .richAction { width: var(--control-size); height: var(--control-size); min-height: var(--control-size); flex: 0 0 auto; border: 0; padding: 4px; color: var(--muted, #72777c); background: transparent; border-radius: 12px; font: inherit; font-size: 23px; }
+.workspaceEditor .richMedia .richVideoPreview { display: block; width: 100%; height: 48px; font-size: 14px; color: var(--accent, #64758c); background: var(--soft, #f3f3f5); }
+.workspaceEditor .richImage, .workspaceEditor .workspaceEditorRemoteMedia { display: block; width: 100%; max-height: 210px; object-fit: contain; border-radius: 10px; }
+.workspaceEditor .richMedia audio { display: block; width: 100%; max-width: 100%; height: 44px; margin: 5px 0; }
+.workspaceEditor .richMedia video { display: block; width: 100%; max-height: 240px; border-radius: 10px; }
+.workspaceEditor .richMediaDetails { display: block; padding-top: 5px; color: var(--muted, #777b80); font-size: 11px; }
+.workspaceEditor .richMissing { border-color: #d74747; }
+.workspaceEditor .richMissing p { margin: 3px 0; font-size: 13px; color: #d74747; }
+.workspaceEditor .richRecordingState { font-size: 12px; line-height: 1.45; color: var(--muted, #777b80); padding: 4px 0; }
+.workspaceEditor .richRecordingTime { color: #d74747; font-variant-numeric: tabular-nums; font-weight: 600; }
+.workspaceEditor .workspaceEditorOpen, .workspaceEditor .workspaceEditorFileLink { display: inline-flex; width: auto; height: auto; min-height: var(--control-size); padding: 7px 10px; border-radius: 10px; color: var(--accent, #64758c); font-size: 13px; text-decoration: none; }
+.workspaceEditor .workspaceEditorDone { width: auto; padding-inline: 12px; border-radius: 13px; color: var(--text, #272a2d); font-size: 14px; }
+.workspaceEditor.is-expanded { background:var(--surface); margin:0; inset:auto; bottom:auto; max-width:none; max-height:none; position: fixed; z-index: 450; top: var(--workspace-editor-top, 0px); left: 0; right: 0; width: 100%; height: var(--workspace-editor-height, 100dvh); display: flex; flex-direction: column; border: 0; border-radius: 0; padding: max(10px, var(--safe-area-top)) max(10px, var(--safe-area-right)) max(10px, var(--safe-area-bottom)) max(10px, var(--safe-area-left)); }
+.workspaceEditor.is-expanded .workspaceEditorBody { flex: 1; min-height: 0; max-height: none; }
+.workspaceEditor.is-expanded .workspaceEditorToolbar { flex: 0 0 auto; }
+.workspaceEditor.is-disabled .workspaceEditorToolbar { opacity: .55; }
+@media (max-width: 360px) { .workspaceEditor { padding: 6px; } .workspaceEditorHint { font-size: 11px; } }
+
+/* The editor is the message field itself; attachments do not need nested
+   bordered cards. Native media stays visible and independently controllable. */
+.workspaceEditor{padding:0;border:0;border-radius:25px;background:transparent;box-shadow:none}
+.workspaceEditor .richMedia{margin:8px 0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+.workspaceEditor .richMediaHead{min-height:32px;padding:0 2px}
+.workspaceEditor .richMedia .richAction{background:transparent}
+.workspaceEditor .richImage,.workspaceEditor .workspaceEditorRemoteMedia{width:auto;max-width:100%;height:auto;max-height:260px;border-radius:14px;object-fit:contain}
+.workspaceEditor .richMedia video.workspaceEditorRemoteMedia,.workspaceEditor .richMedia video{display:block;width:100%;max-height:280px;background:var(--soft,#f3f3f5);border-radius:14px}
+.workspaceEditor .richMedia audio.workspaceEditorRemoteMedia{display:block;width:100%;height:44px;margin:5px 0}
+.workspaceEditor .richMediaIcon{background:transparent}
+.workspaceEditor .workspaceEditorFileLink{padding-left:0}

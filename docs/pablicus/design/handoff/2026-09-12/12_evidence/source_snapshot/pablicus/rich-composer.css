@@ -1,0 +1,129 @@
+/* One ordered document: text, media and voice remain editable together. */
+/* Text and shortcuts belong to one surface, like a message composer. */
+#composeBox.rich-composer,
+#composeBox.rich-composer.rich,
+#composeBox.rich-composer.rich-has-media {
+  grid-template-columns: var(--control-size) minmax(0, 1fr) var(--control-size) var(--control-size) var(--control-size);
+  grid-template-areas: 'tray tray tray tray tray' 'task task task task task' 'editor editor editor editor editor' 'attach quick expand voice send';
+  gap: 0 2px;
+  align-items: center;
+  padding: 3px 7px 5px;
+}
+#composeBox.rich-composer #workspaceQuick { grid-area: quick; min-width: 0; align-self: center; }
+#app:not(.composer-fullscreen) #composeBox.rich-composer #hideKey { display: none; }
+#composer #composeBox.rich-composer > .cicon { width: var(--control-size); height: var(--control-size); min-height: var(--control-size); align-self: center; }
+#composer #composeBox.rich-composer #expand { width: var(--control-size); }
+#composer #composeBox.rich-composer #send { width: var(--control-size); height: var(--control-size); min-height: var(--control-size); }
+#editor.richEditor.richHasMedia {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  max-height: min(45dvh, 400px);
+  padding: 3px 2px;
+}
+#editor.richEditor .richText {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-height: var(--control-size);
+  max-height: none;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 16.5px;
+  line-height: 1.42;
+  resize: none;
+  padding: 9px 8px;
+  overflow-y: hidden;
+  overflow-wrap: anywhere;
+}
+#editor.richEditor .richText::placeholder { color: var(--muted); }
+#editor.richEditor:not(.richHasMedia) #input { overflow-y: auto; }
+#editor.richEditor .richMedia {
+  display: block;
+  margin: 4px 7px;
+  padding: 8px;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--bg);
+}
+#editor.richEditor .richMediaHead { display: flex; align-items: center; gap: 7px; min-height: 32px; }
+#editor.richEditor .richMediaName { flex: 1; min-width: 0; font-size: 13px; line-height: 1.35; overflow-wrap: anywhere; }
+#composer .richMedia .richAction {
+  width:var(--control-size);
+  height:var(--control-size);
+  min-height:var(--control-size);
+  flex: 0 0 auto;
+  color: var(--muted);
+  background: transparent;
+  border-radius: 12px;
+  font-size: 23px;
+}
+#editor.richEditor .richImage { display: block; width: 100%; max-height: 210px; object-fit: contain; border-radius: 10px; background: var(--incoming); }
+#editor.richEditor .richMedia audio { display: block; width: 100%; max-width: 100%; height: 44px; margin: 5px 0; }
+#editor.richEditor .richMedia video { display: block; width: 100%; max-height: 240px; border-radius: 10px; }
+#composer .richMedia .richVideoPreview { display: block; width: 100%; height: 54px; font-size: 15px; color: var(--accent); background: var(--soft); margin: 4px 0; }
+#editor.richEditor .richMediaDetails { display: block; padding-top: 6px; color: var(--muted); font-size: 11px; }
+#editor.richEditor .richMissing { border-color: #d74747 !important; }
+#editor.richEditor .richMissing p { margin: 3px 0; font-size: 13px; color: #d74747; }
+#editor.richEditor .richRecordingState { font-size: 12px; line-height: 1.45; color: var(--muted); padding: 4px 0; }
+#editor.richEditor .richRecordingTime { color: #d74747; font-variant-numeric: tabular-nums; font-weight: 600; }
+#composer #richVoice { grid-area: voice; display: grid; place-items: center; color: var(--text); }
+#composer #composeBox.rich-composer #attach,
+#composer #composeBox.rich-composer #expand {
+  position: relative;
+  font-size: 0 !important;
+  color: var(--text);
+}
+#composer #composeBox.rich-composer #attach { background: var(--soft); color: var(--accent); }
+#composer #composeBox.rich-composer #attach::before,
+#composer #composeBox.rich-composer #attach::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+#composer #composeBox.rich-composer #attach::after { transform: translate(-50%, -50%) rotate(90deg); }
+#composer #composeBox.rich-composer #expand::before,
+#composer #composeBox.rich-composer #expand::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border: solid currentColor;
+  pointer-events: none;
+}
+#composer #composeBox.rich-composer #expand::before { top: 10px; right: 8px; border-width: 2px 2px 0 0; }
+#composer #composeBox.rich-composer #expand::after { bottom: 10px; left: 8px; border-width: 0 0 2px 2px; }
+#composer #composeBox.rich-composer #expand[aria-expanded='true']::before,
+#composer #composeBox.rich-composer #expand[aria-expanded='true']::after { transform: rotate(180deg); }
+#composer #composeBox.rich-composer #hideKey { color: var(--text); }
+#richVoice svg { width: 21px; height: 24px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+#composer #richVoice.is-recording { background: #d747471a; color: #d74747; }
+.richVoiceStop { display: block; width: 13px; height: 13px; border-radius: 3px; background: currentColor; }
+#app.composer-fullscreen #composeBox.rich-composer {
+  grid-template-columns: var(--control-size) minmax(0, 1fr) var(--control-size) var(--control-size) var(--control-size);
+  grid-template-rows: 40px minmax(0, 1fr) 40px;
+  grid-template-areas: 'title title title hide expand' 'editor editor editor editor editor' 'attach quick quick voice send';
+}
+#app.composer-fullscreen #editor.richEditor { height: 100%; min-height: 0; max-height: none; overflow-y: auto; }
+#app.composer-fullscreen #editor.richEditor.richHasMedia #input { height: auto; min-height: var(--control-size); }
+#app.composer-fullscreen #editor.richEditor:not(.richHasMedia) #input { min-height: var(--control-size); overflow-y: hidden; }
+#app.composer-fullscreen #composeBox.rich-composer #attach { display: block !important; }
+@media (prefers-reduced-motion: no-preference) {
+  #richVoice.is-recording { transition: background-color 120ms ease; }
+}
+
+@media (max-width: 360px) {
+  #app:not(.composer-fullscreen) #composeBox.rich-composer { padding-inline: 5px; }
+}

@@ -1,0 +1,70 @@
+/* Blocks stay in message order and occupy stable space during image loading. */
+.richMessage{display:flex;flex-direction:column;gap:10px;min-width:0;max-width:100%}
+.richMessage.richMessageHasMedia{width:min(320px,64vw)}
+.richMessage .richText{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45;min-width:0}
+.richMessage .richText:empty{display:none}
+.richMessage .richMedia{position:relative;width:100%;max-width:100%;display:flex;align-items:center;gap:12px;min-height:76px;padding:12px;border:1px solid var(--bubble-edge,var(--line));border-radius:14px;background:transparent;color:var(--text);text-align:left;overflow:hidden;font-weight:400}
+.richMessage .richMedia:disabled{cursor:progress;opacity:.7}
+.richMessage .richMedia:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.richMessage .richMediaIcon{flex:0 0 38px;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--soft);color:var(--accent);font-size:21px;line-height:1}
+.richMessage .richMediaInfo{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}
+.richMessage .richMediaTitle{display:block;overflow-wrap:anywhere;font-size:15px;line-height:1.4}
+.richMessage .richMediaDetails{font-size:12px;line-height:1.45;color:var(--muted)}
+.richMessage .richMediaStatus{font-size:12px;line-height:1.45;color:var(--muted);overflow-wrap:anywhere}
+.richMessage .richMediaStatus:empty{display:none}
+.richMessage .richMedia:not(.richMedia-image) .richMediaStatus:not(:empty){position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;padding:12px;background:var(--surface);color:var(--text);text-align:center}
+.richMessage .richMedia-image{position:relative;display:grid;place-items:center;padding:0;aspect-ratio:var(--rich-image-ratio,1.333333);min-height:0;background:var(--line)}
+.richMessage .richImage{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;visibility:hidden}
+.richMessage .richImageReady .richImage{visibility:visible}
+.richMessage .richMedia-image .richMediaStatus:not(:empty){position:absolute;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;padding:18px;text-align:center;color:var(--text)}
+.richMessage .richImageReady .richMediaStatus:not(:empty){background:var(--surface)}
+.richMessage .richMessageUnavailable{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+.richMessage .richMediaGallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px;width:100%;aspect-ratio:1.25;overflow:hidden;border-radius:14px;background:var(--line)}
+.richMessage .richMediaGallery[data-count="3"],.richMessage .richMediaGallery[data-count="4"]{grid-template-rows:repeat(2,minmax(0,1fr))}
+.richMessage .richMediaGallery[data-count="3"]>.richMedia:first-child{grid-row:span 2}
+.richMessage .richMediaGallery>.richMedia{height:100%;min-height:0;aspect-ratio:auto;border:0;border-radius:0}
+.richMessage .richMediaGallery>.richMedia-video{display:flex;flex-direction:column;justify-content:center;gap:8px;padding:10px;background:var(--soft)}
+.richMessage .richMediaGallery .richMedia-video .richMediaInfo{flex:0;text-align:center}
+.richMessage .richMediaGallery .richMedia-video .richMediaTitle{display:none}
+.richMessage .richMediaGallery .richMediaDetails{font-size:11px}
+.richMessage .richMediaGallery .richMediaStatus{font-size:11px}
+.richMessage .richMediaMore{position:absolute;inset:0;z-index:3;display:grid;place-items:center;background:rgba(0,0,0,.48);color:#fff;font-size:30px;font-weight:600;pointer-events:none}
+/* Voice is part of the message, without another card inside the bubble. */
+.richMessage .richMedia-audio{height:68px;min-height:68px;gap:10px;padding:4px 0;border:0;border-radius:0;background:transparent;overflow:visible;--voice-progress:0%}
+.richMessage .richAudioElement{display:none}
+.richMessage .richAudioPlay,.richMessage .richAudioReply{flex:0 0 auto;border:0;display:grid;place-items:center;padding:0;cursor:pointer;touch-action:manipulation;box-shadow:none}
+.richMessage .richAudioPlay{position:relative;width:44px;height:44px;min-height:44px;border-radius:50%;color:var(--control-text);background:var(--control);transition:transform .15s ease,background .15s ease}
+.richMessage .richAudioPlay:active{transform:scale(.94)}
+.richMessage .richAudioPlay svg{width:19px;height:19px;fill:currentColor;stroke-width:1.4}
+.richMessage .richAudioPlayIcon{margin-left:2px}
+.richMessage .richAudioPauseIcon{display:none}
+.richMessage .richAudioPlaying .richAudioPlayIcon{display:none}
+.richMessage .richAudioPlaying .richAudioPauseIcon{display:block}
+.richMessage .richAudioLoading .richAudioPlay svg{opacity:.35}
+.richMessage .richAudioLoading .richAudioPlay::after{content:'';position:absolute;inset:4px;border:2px solid transparent;border-top-color:currentColor;border-right-color:currentColor;border-radius:50%;animation:richVoiceLoad .7s linear infinite}
+.richMessage .richAudioReply{width:30px;height:40px;min-height:40px;border-radius:50%;background:transparent;color:var(--muted);align-self:flex-start;margin-top:5px}
+.richMessage .richAudioReply svg{width:19px;height:19px}
+.richMessage .richAudioReply:hover{background:var(--soft);color:var(--accent)}
+.richMessage .richAudioPlay:focus-visible,.richMessage .richAudioReply:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.richMessage .richAudioInfo{position:relative;display:flex;flex-direction:column;justify-content:center;flex:1;min-width:0;gap:1px;height:60px}
+.richMessage .richAudioTimeline{position:relative;height:28px;width:100%;min-width:0;border-radius:4px;touch-action:pan-y}
+.richMessage .richAudioTimeline:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.richMessage .richAudioTrack{position:absolute;inset:12px 0;height:3px;border-radius:3px;background:var(--muted);opacity:.22}
+.richMessage .richAudioTrack::after{content:'';position:absolute;inset:0 auto 0 0;width:var(--voice-progress);background:var(--accent);border-radius:inherit}
+.richMessage .richAudioWave,.richMessage .richAudioWaveProgress{position:absolute;inset:0;pointer-events:none;display:none}
+.richMessage .richAudioWave svg,.richMessage .richAudioWaveProgress svg{display:block;width:100%;height:100%;fill:currentColor}
+.richMessage .richAudioWave{color:var(--muted);opacity:.28}
+.richMessage .richAudioWaveProgress{color:var(--accent);clip-path:inset(0 calc(100% - var(--voice-progress)) 0 0)}
+.richMessage .richAudioHasWave .richAudioWave,.richMessage .richAudioHasWave .richAudioWaveProgress{display:block}
+.richMessage .richAudioHasWave .richAudioTrack{display:none}
+.richMessage .richAudioCursor{position:absolute;top:9px;left:clamp(0px,var(--voice-progress),calc(100% - 8px));width:8px;height:8px;border-radius:50%;background:var(--accent);opacity:0;pointer-events:none}
+.richMessage .richAudioTimeline:active .richAudioCursor,.richMessage .richAudioTimeline:focus-within .richAudioCursor{opacity:1}
+.richMessage .richAudioSeek{position:absolute;inset:0;width:100%;min-width:0;height:28px;padding:0;margin:0;opacity:0;cursor:pointer;background:transparent;border:0;border-radius:0;touch-action:pan-y}
+.richMessage .richAudioSeek:disabled{cursor:default}
+.richMessage .richAudioFooter{display:flex;align-items:center;justify-content:space-between;min-width:0;height:21px;gap:6px}
+.richMessage .richAudioTime{font-variant-numeric:tabular-nums;font-size:11px;line-height:18px;color:var(--muted);white-space:nowrap;letter-spacing:.02em}
+.richMessage .richAudioStatus{position:absolute;top:48px;left:0;right:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;line-height:12px;color:var(--muted)}
+.richMessage .richAudioStatus:empty{display:none}
+.richMessage .richAudioStatus:not(:empty){background:var(--surface)}
+@keyframes richVoiceLoad{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.richMessage .richAudioPlay{transition:none}.richMessage .richAudioLoading .richAudioPlay::after{animation:none}}
