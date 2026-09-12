@@ -2,6 +2,7 @@ from integration_case import asyncio, check, stage, A, B, C1, C2, CB, BOT, FILES
 from integration_case import RESULT, save
 from urllib.parse import urlparse, parse_qs
 import json
+import time
 from network import API_HOST, uid_of
 
 
@@ -27,13 +28,25 @@ async def completed_response(request, evidence):
  try:
   response=await asyncio.wait_for(request.response(),8)
   if response is None:raise RuntimeError('LATE_OPERATION_HAS_NO_HTTP_RESPONSE')
-  failure=await asyncio.wait_for(response.finished(),8)
+  # Playwright 1.57 Response.finished() leaves its target-close task pending
+  # after successful completion. Use its public body/timing/failure observations:
+  # responseEnd is updated by the requestFinished/requestFailed event handler.
+  # This exact Request already exists, so the driver dispatches its terminal event.
   body=await asyncio.wait_for(response.body(),5)
-  evidence['response']={'status':response.status,'finished':failure is None,
-                        'finish_error':failure,'request_failure':request.failure,
-                        'body_sha256':sha(body),'body_bytes':len(body),'timing':request.timing}
+  evidence['response']={'status':response.status,'finished':False,
+                        'completion_observation':'Actual response body plus public Request.timing.responseEnd and Request.failure',
+                        'body_sha256':sha(body),'body_bytes':len(body)}
   save()
-  if response.status!=200 or failure is not None or request.failure:
+  deadline=time.monotonic()+8
+  while request.timing.get('responseEnd',-1)<0 and request.failure is None and time.monotonic()<deadline:
+   await asyncio.sleep(.01)
+  timing=dict(request.timing);failure=request.failure
+  finished=timing.get('responseEnd',-1)>=0 and failure is None
+  evidence['response'].update(finished=finished,finish_error=failure,request_failure=failure,timing=timing)
+  save()
+  if timing.get('responseEnd',-1)<0 and failure is None:
+   raise asyncio.TimeoutError('REQUEST_FINISHED_TIMING_NOT_OBSERVED')
+  if response.status!=200 or not finished:
    raise RuntimeError('LATE_OPERATION_RESPONSE_NOT_SUCCESSFUL')
   return json.loads(body)
  except BaseException as exc:

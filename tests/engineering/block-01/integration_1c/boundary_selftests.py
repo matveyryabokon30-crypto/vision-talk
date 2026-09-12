@@ -64,7 +64,7 @@ async def run():
         await request('unknown'+path,'https://'+API_HOST+path,{},501)
     await request('invalid-credentials','https://'+API_HOST+'/auth/v1/token?grant_type=password',{'email':'invented@fixture.invalid','password':'anything'},400)
     for uid in [B,'unknown']:
-        await request('profile-other-owner','https://'+API_HOST+'/rest/v1/profiles?id=eq.'+uid,None,403,method='GET')
+        await request('profile-other-owner-'+uid,'https://'+API_HOST+'/rest/v1/profiles?id=eq.'+uid,None,403,method='GET')
     data='Original alpha\nСтрока один\n'.encode()
     raw=(b'--fixture-boundary\r\nContent-Disposition: form-data; name="cacheControl"\r\n\r\n3600\r\n'
          b'--fixture-boundary\r\nContent-Disposition: form-data; name=""; filename="1-alpha.txt"\r\nContent-Type: text/plain\r\n\r\n'+data+b'\r\n--fixture-boundary--\r\n')
@@ -142,12 +142,12 @@ async def run():
     assert net.ws_events[-1]['status']=='NETWORK_UNAVAILABLE' and not net.ws_channels and socket.closed[-1]['code']==1013
     checks.append({'name':'socket-offline-frame-closes','status':'PASS'})
     await socket_case('socket-offline-connect',expected='NETWORK_UNAVAILABLE',offline=True)
-    for invalid_url in [socket_url.replace(API_HOST,'foreign.fixture.invalid'),socket_url.replace('/websocket','/other'),socket_url.replace('wss:','ws:'),socket_url.replace('2.0.0','9.0.0'),socket_url+'&unknown=true']:
-        net,socket=await socket_case('socket-invalid-endpoint',expected='UNMODELED_BOUNDARY',url=invalid_url)
+    for label,invalid_url in [('foreign-host',socket_url.replace(API_HOST,'foreign.fixture.invalid')),('wrong-path',socket_url.replace('/websocket','/other')),('wrong-scheme',socket_url.replace('wss:','ws:')),('wrong-version',socket_url.replace('2.0.0','9.0.0')),('extra-query',socket_url+'&unknown=true')]:
+        net,socket=await socket_case('socket-invalid-endpoint-'+label,expected='UNMODELED_BOUNDARY',url=invalid_url)
         assert socket.closed and net.blocked
-    for token in ['',jwt(B),'invalid-token']:
+    for label,token in [('missing',''),('other-owner',jwt(B)),('invalid','invalid-token')]:
         expected='FORBIDDEN_SUBSCRIPTION' if token==jwt(B) else 'UNAUTHORIZED'
-        net,socket=await socket_case('socket-invalid-auth-context',['1','1',topic,'phx_join',{'config':config,'access_token':token}],expected)
+        net,socket=await socket_case('socket-invalid-auth-context-'+label,['1','1',topic,'phx_join',{'config':config,'access_token':token}],expected)
         assert socket.sent[-1][4]['status']=='error' and not net.ws_channels
     chat_config={**config,'postgres_changes':[dict(config['postgres_changes'][0],filter='conversation_id=eq.'+C1)]}
     await socket_case('socket-chat-join',['1','1','realtime:pablicus-chat-'+C1,'phx_join',{'config':chat_config,'access_token':jwt(A)}])

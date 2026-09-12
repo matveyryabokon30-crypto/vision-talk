@@ -1,6 +1,8 @@
 from integration_case import asyncio, check, stage, A, B, C1, C2, CB, BOT, FILES, TEXT, TAIL, sha
 from urllib.parse import urlparse,parse_qs
 from network import API_HOST,uid_of
+from integration_case import RESULT,save
+from scenario_isolation import completed_response
 
 async def run(a):
  await a.login();await a.conversation();before=await a.write(files=FILES[:2]);a.net.offline=True;await a.ctx.set_offline(True)
@@ -29,14 +31,19 @@ async def run(a):
  async with a.page.expect_response(same_key_ack,timeout=10000) as ack_info:
   a.net.offline=False;await a.ctx.set_offline(False)
  ack_response=await ack_info.value
- await ack_response.finished();ack_payload=await ack_response.json()
+ ack_completion={};RESULT['recovery_ack_completion']=ack_completion;save()
+ ack_payload=await completed_response(ack_response.request,ack_completion)
  ack_body=ack_payload[0] if isinstance(ack_payload,list) and len(ack_payload)==1 else ack_payload
  await a.queue_wait('rows.length===0',timeout=10000);sends=[x for x in a.net.calls if x['path'].endswith('send_rich_message')]
  check('1C-OUTBOX-IDEMPOTENT',len(a.net.effects)==1 and bool(sends) and all(x['operation_key']==operation_key for x in sends) and ack_response.status==200 and isinstance(ack_body,dict) and ack_body.get('client_message_id')==operation_key and ack_body.get('conversation_id')==C1 and ack_body.get('sender_id')==A and ack_body.get('server_seq',0)>0,{'effects':a.net.effects,'send_calls':sends,'original_queue':identity(q0),'recovery_ack':{'url':ack_response.url,'status':ack_response.status,'raw_body':ack_payload,'body':ack_body}})
  refusal_draft=await a.write(text='Explicit refusal then retry',files=FILES[2:],tail='');call_start=len(a.net.calls);a.net.deny_send=True;await a.page.locator('#send').click();denied=await a.queue_wait('rows.length===1 && rows[0].state==="error"')
  check('1C-OUTBOX-EXPLICIT-REFUSAL',len(a.net.effects)==1 and denied[0]['error']['message']=='FIXTURE_EXPLICIT_REJECTION' and denied[0]['files']==refusal_draft['files'] and denied[0]['messages'][0]['blocks']==refusal_draft['blocks'] and denied[0]['messages'][0]['text']==refusal_draft['text'],{'queue':denied,'original':refusal_draft})
- await a.clear_toast();await a.page.locator('#reportBtn').click();error_ui=a.page.locator('.outboxItem .danger').first
- check('1C-OUTBOX-REFUSAL-VISIBLE',await error_ui.is_visible() and await error_ui.inner_text()==denied[0]['error']['message'],{'visible_reason':await error_ui.inner_text(),'stored_reason':denied[0]['error']})
+ await a.clear_toast();await a.page.locator('#reportBtn').click();error_ui=a.page.locator('#dialogContent .outboxItem .danger').first
+ # showOutbox opens the real dialog before its asynchronous IndexedDB read;
+ # observe completion of rendering before taking the visibility assertion.
+ await error_ui.wait_for(state='visible',timeout=8000)
+ error_visible=await error_ui.is_visible();visible_reason=await error_ui.inner_text()
+ check('1C-OUTBOX-REFUSAL-VISIBLE',error_visible and visible_reason==denied[0]['error']['message'],{'visible':error_visible,'visible_reason':visible_reason,'stored_reason':denied[0]['error']})
  a.net.deny_send=False;await a.page.locator('#dialogContent button').filter(has_text='Повторить').first.click();await a.queue_wait('rows.length===0',timeout=10000)
  refusal_calls=[x for x in a.net.calls[call_start:] if x['path'].endswith('send_rich_message')]
  check('1C-OUTBOX-REFUSAL-RETRY',len(a.net.effects)==2 and len({(e['uid'],e['key']) for e in a.net.effects})==2 and len(refusal_calls)>=2 and len({x['operation_key'] for x in refusal_calls})==1 and refusal_calls[-1]['operation_key']==a.net.effects[-1]['key'],{'effects':a.net.effects,'denied_record':denied,'send_calls':refusal_calls})
