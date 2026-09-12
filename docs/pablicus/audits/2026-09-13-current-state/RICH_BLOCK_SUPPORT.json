@@ -1,0 +1,197 @@
+{
+  "source": "pablicus/rich-message.js",
+  "sha256": "af99cb12d86810d4cf67179d677e48fc11818d0676b230eda757911777d8e7e2",
+  "scope": "Real pure validator; does not test rendering, transport or server persistence",
+  "cases": [
+    {
+      "type": "text",
+      "ok": true,
+      "errors": [],
+      "content": {
+        "v": 1,
+        "blocks": [
+          {
+            "id": "audit-1",
+            "type": "text",
+            "text": "Audit"
+          }
+        ]
+      }
+    },
+    {
+      "type": "image",
+      "ok": true,
+      "errors": [],
+      "content": {
+        "v": 1,
+        "blocks": [
+          {
+            "id": "audit-1",
+            "type": "image"
+          }
+        ]
+      }
+    },
+    {
+      "type": "video",
+      "ok": true,
+      "errors": [],
+      "content": {
+        "v": 1,
+        "blocks": [
+          {
+            "id": "audit-1",
+            "type": "video"
+          }
+        ]
+      }
+    },
+    {
+      "type": "audio",
+      "ok": true,
+      "errors": [],
+      "content": {
+        "v": 1,
+        "blocks": [
+          {
+            "id": "audit-1",
+            "type": "audio"
+          }
+        ]
+      }
+    },
+    {
+      "type": "document",
+      "ok": true,
+      "errors": [],
+      "content": {
+        "v": 1,
+        "blocks": [
+          {
+            "id": "audit-1",
+            "type": "document"
+          }
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "ok": false,
+      "errors": [
+        "Неизвестный вид блока 1."
+      ],
+      "content": null
+    },
+    {
+      "type": "list",
+      "ok": false,
+      "errors": [
+        "Неизвестный вид блока 1."
+      ],
+      "content": null
+    },
+    {
+      "type": "table",
+      "ok": false,
+      "errors": [
+        "Неизвестный вид блока 1."
+      ],
+      "content": null
+    },
+    {
+      "type": "quote",
+      "ok": false,
+      "errors": [
+        "Неизвестный вид блока 1."
+      ],
+      "content": null
+    },
+    {
+      "type": "code",
+      "ok": false,
+      "errors": [
+        "Неизвестный вид блока 1."
+      ],
+      "content": null
+    },
+    {
+      "type": "form",
+      "ok": false,
+      "errors": [
+        "Неизвестный вид блока 1."
+      ],
+      "content": null
+    },
+    {
+      "type": "task",
+      "ok": false,
+      "errors": [
+        "Неизвестный вид блока 1."
+      ],
+      "content": null
+    },
+    {
+      "type": "agent_result",
+      "ok": false,
+      "errors": [
+        "Неизвестный вид блока 1."
+      ],
+      "content": null
+    },
+    {
+      "type": "service_preview",
+      "ok": false,
+      "errors": [
+        "Неизвестный вид блока 1."
+      ],
+      "content": null
+    },
+    {
+      "type": "carousel",
+      "ok": false,
+      "errors": [
+        "Неизвестный вид блока 1."
+      ],
+      "content": null
+    },
+    {
+      "type": "action",
+      "ok": false,
+      "errors": [
+        "Неизвестный вид блока 1."
+      ],
+      "content": null
+    },
+    {
+      "type": "poll",
+      "ok": false,
+      "errors": [
+        "Неизвестный вид блока 1."
+      ],
+      "content": null
+    },
+    {
+      "type": "event",
+      "ok": false,
+      "errors": [
+        "Неизвестный вид блока 1."
+      ],
+      "content": null
+    },
+    {
+      "type": "checklist",
+      "ok": false,
+      "errors": [
+        "Неизвестный вид блока 1."
+      ],
+      "content": null
+    }
+  ],
+  "messageDocV2": {
+    "ok": false,
+    "errors": [
+      "Ожидалось сообщение с блоками версии 1."
+    ],
+    "content": null
+  }
+}

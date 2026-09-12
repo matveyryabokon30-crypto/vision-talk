@@ -1,0 +1,18 @@
+{
+  "scope": "Public findings summary only. Raw server catalog is preserved in the owner local documents and is not included in this commit.",
+  "edge_function_count": 6,
+  "capability_count": 20,
+  "capability_status_counts": {
+    "build_required": 10,
+    "available": 8,
+    "integration_required": 2
+  },
+  "findings": [
+    "Existing authentication, tasks, Canvas, reminders and Bot Core are preserved",
+    "Factory implements intake/specification/build planning",
+    "AI orchestration, general job execution, video processing and generated mini-app execution require implementation"
+  ],
+  "private_primary_evidence_sha256": "fb27986d0756c8d418553ad1db9d5adea0835403eeb226ee47211457eaff5f7f",
+  "private_primary_evidence": "Owner local documents: current-state-audit-20260913/BACKEND_INVENTORY.json",
+  "raw_schema_dump_included": false
+}

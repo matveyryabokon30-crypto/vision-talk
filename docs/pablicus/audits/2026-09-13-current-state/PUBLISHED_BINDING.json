@@ -1,0 +1,489 @@
+{
+  "recorded_utc": "2026-09-12T22:24:02.615448+00:00",
+  "work_start_head": "37e78bd49ba470b25e5e11e5e19cb8350600c992",
+  "pages_build": {
+    "commit": "0e953322eac69e6f3e79458ac32323b564acaf55",
+    "status": "built",
+    "created_at": "2026-09-12T16:10:12Z",
+    "updated_at": "2026-09-12T16:10:48Z"
+  },
+  "url": "https://matveyryabokon30-crypto.github.io/vision-talk/pablicus/",
+  "assets": [
+    {
+      "path": "./",
+      "bytes": 17001,
+      "sha256": "029103a74e2c74d46745d24e0e75ee64b34f4142a757591fa877810911924e8a",
+      "matches_checkout": true
+    },
+    {
+      "path": "index.html",
+      "bytes": 17001,
+      "sha256": "029103a74e2c74d46745d24e0e75ee64b34f4142a757591fa877810911924e8a",
+      "matches_checkout": true
+    },
+    {
+      "path": "component-registry.js",
+      "bytes": 9963,
+      "sha256": "71f50b44dba1187e690706541204cf25ce5aab7c340e717ef05db580e5d4680c",
+      "matches_checkout": true
+    },
+    {
+      "path": "app-shell.js",
+      "bytes": 3156,
+      "sha256": "35e7db8a635e8a1d0a7c3218c6b3e8fc4538c4320fd1ca0b91e18ae39dbe8ca8",
+      "matches_checkout": true
+    },
+    {
+      "path": "design-tokens.css",
+      "bytes": 3121,
+      "sha256": "6f4288f6007cbee2a465865feea31b143b63ff18a1ff341dfb23dd4e84857bfe",
+      "matches_checkout": true
+    },
+    {
+      "path": "shell.css",
+      "bytes": 14879,
+      "sha256": "45e2b0eb8d15fbe71ddf6877b38211d206cbcb6c5bfdfd45f93cb1a337f1de75",
+      "matches_checkout": true
+    },
+    {
+      "path": "controls.css",
+      "bytes": 769,
+      "sha256": "4a2fe5171cce102ae3ec95a154334e44e3bac9a0f945893f4f3a78ec9626c11a",
+      "matches_checkout": true
+    },
+    {
+      "path": "app-controller.js",
+      "bytes": 6913,
+      "sha256": "e8d37eb4431733211c61bb50b3ccc2529ef230d9b0d89b7459710d8520082148",
+      "matches_checkout": true
+    },
+    {
+      "path": "chat-list-view.js",
+      "bytes": 947,
+      "sha256": "64b3d60a84f335d65f489b5e0db393e6ffb97732ef77acca7e8087abb39b1e54",
+      "matches_checkout": true
+    },
+    {
+      "path": "style.css",
+      "bytes": 13014,
+      "sha256": "ff8d9b36e411f25d41433708767ad734074b9d54d7b7291bec6916b312c535a5",
+      "matches_checkout": true
+    },
+    {
+      "path": "pablicus.css",
+      "bytes": 10821,
+      "sha256": "edf8d8e8a4b2af4bae5d9cd882799e9bc2439d2c550ec2eaed0f9dbca3515a81",
+      "matches_checkout": true
+    },
+    {
+      "path": "public-ui-foundation.css",
+      "bytes": 17017,
+      "sha256": "5d438c12400cf496fa2a6b4adc43295df2f5be78e0cacefb6815917f57d36943",
+      "matches_checkout": true
+    },
+    {
+      "path": "ux-refinement.js",
+      "bytes": 782,
+      "sha256": "5138c4d275248d5a259256d3db3aad1c5c8e230efe6651813c1428709f711393",
+      "matches_checkout": true
+    },
+    {
+      "path": "creation-flows.css",
+      "bytes": 7867,
+      "sha256": "4d7bd5a246e2886741624cd23fb4d0c1040db7c25de2bea614c4f8f593718730",
+      "matches_checkout": true
+    },
+    {
+      "path": "creation-flows.js",
+      "bytes": 13343,
+      "sha256": "557b88f47c9eed90a7854c887bba655978e8e915870f8e6f3aa6ecfdb2282d3e",
+      "matches_checkout": true
+    },
+    {
+      "path": "public-hotfix-v8.css",
+      "bytes": 10431,
+      "sha256": "be85dce88b00c163b523a3749bf5336458032581b502c03ccc77732e2c6c72d6",
+      "matches_checkout": true
+    },
+    {
+      "path": "public-hotfix-v8.js",
+      "bytes": 181,
+      "sha256": "202dc4c11d677f27f20106d2eb9fad6fcc36eebde81e24e61588916d0fda1c35",
+      "matches_checkout": true
+    },
+    {
+      "path": "vault.js",
+      "bytes": 18131,
+      "sha256": "6d8483b72342f259b1ae468f06eac91303bad70eee6fc83287edeaf40cf6eb73",
+      "matches_checkout": true
+    },
+    {
+      "path": "outbox.js",
+      "bytes": 14158,
+      "sha256": "bd16ec02eb91b3c25b2995e6679d153dec416f9e5e6c374ffbe4d2e22a5a5882",
+      "matches_checkout": true
+    },
+    {
+      "path": "transport-store.js",
+      "bytes": 4116,
+      "sha256": "b6bea9398fe01a30b30771ce7d9c160bbb59856cc9f5f733e2e43f9369e938a6",
+      "matches_checkout": true
+    },
+    {
+      "path": "rich-store.js",
+      "bytes": 10205,
+      "sha256": "7f5a284a15d064c519afda0d7520a3e27f04c8ba8a06090ea827618be2296da4",
+      "matches_checkout": true
+    },
+    {
+      "path": "rich-composer.js",
+      "bytes": 30242,
+      "sha256": "319f1e176216385432edbb46b296179e670135c55423f1fc00c1c0d8803db628",
+      "matches_checkout": true
+    },
+    {
+      "path": "rich-composer.css",
+      "bytes": 6354,
+      "sha256": "02508818ede9523f102a9125ca624d8806da1bf64d2dbb0682841270e1e210b8",
+      "matches_checkout": true
+    },
+    {
+      "path": "rich-message.js",
+      "bytes": 31156,
+      "sha256": "af99cb12d86810d4cf67179d677e48fc11818d0676b230eda757911777d8e7e2",
+      "matches_checkout": true
+    },
+    {
+      "path": "rich-message.css",
+      "bytes": 7969,
+      "sha256": "0876004edd7309ae4b59665c99b3b68d7d9875976d03cf47a757aeea0f699683",
+      "matches_checkout": true
+    },
+    {
+      "path": "media-viewer.js",
+      "bytes": 7521,
+      "sha256": "5bc722f2d0df2ac682b2ca4c6aae189851595fee8ae661c4dadf48b228a858e9",
+      "matches_checkout": true
+    },
+    {
+      "path": "media-viewer.css",
+      "bytes": 2621,
+      "sha256": "cb6cc79d5f3481b96e90f23bf20718582241d6f22e242099ef32808d48f70dd1",
+      "matches_checkout": true
+    },
+    {
+      "path": "inbox-monitor.js",
+      "bytes": 20544,
+      "sha256": "0bbeaa2082965d8197c7cc7a3e6304a80a622d83e8b5e57d5bbc79cbb833c6b3",
+      "matches_checkout": true
+    },
+    {
+      "path": "inbox-monitor.css",
+      "bytes": 4605,
+      "sha256": "489e0532490d7b7f0bd09b3ac372945e6de5af70d258fe0cbe613f701926d581",
+      "matches_checkout": true
+    },
+    {
+      "path": "message-menu.js",
+      "bytes": 16692,
+      "sha256": "713b4e3886ee227652da4033fba111d343e9c76c5b2b30f5aa8bf60175bcdf8d",
+      "matches_checkout": true
+    },
+    {
+      "path": "message-menu.css",
+      "bytes": 3090,
+      "sha256": "698b73803fc67be94259aed70bc962d32598ace0c3695a76f7b8e9aa6ec4ec2c",
+      "matches_checkout": true
+    },
+    {
+      "path": "people.js",
+      "bytes": 6124,
+      "sha256": "47b67f909cd20d85c403ebdf163fb4f0dcfce92f726c3512340d0cd997118356",
+      "matches_checkout": true
+    },
+    {
+      "path": "people.css",
+      "bytes": 2336,
+      "sha256": "a91a1c08804f6dbd299f0836db37e50d1517dbf24e69687a8a3bfd2344c30735",
+      "matches_checkout": true
+    },
+    {
+      "path": "chat-actions.js",
+      "bytes": 20493,
+      "sha256": "8449bced95d25e10449ee432079e60af3eaa15fbf28f06c33a331516c7e3b809",
+      "matches_checkout": true
+    },
+    {
+      "path": "chat-actions.css",
+      "bytes": 3859,
+      "sha256": "d952c66a2c01e64d988346d01c61c3f654f37e297cbf121dadc35ee616f35b41",
+      "matches_checkout": true
+    },
+    {
+      "path": "chat-minimal.css",
+      "bytes": 9856,
+      "sha256": "78048b924a601b7b288e71e66c2dc6156174a60f5b990f223272abf39a914336",
+      "matches_checkout": true
+    },
+    {
+      "path": "profile-discovery.css",
+      "bytes": 603,
+      "sha256": "ead9766b8dfa5b6ce7047f8eb592b7ecbea75f7d7db738b0eec8781c8453033d",
+      "matches_checkout": true
+    },
+    {
+      "path": "chat-library.js",
+      "bytes": 30117,
+      "sha256": "bf5c7f10c53c85132795e2583944b97985ba8fda8a9e8667c5c62e1babaebff0",
+      "matches_checkout": true
+    },
+    {
+      "path": "chat-library.css",
+      "bytes": 9663,
+      "sha256": "c7db6f3b0e88ce289d653c969545c07ec012f40339b46f559297a91d13083226",
+      "matches_checkout": true
+    },
+    {
+      "path": "chat-canvas.js",
+      "bytes": 68199,
+      "sha256": "f2ef004e99d523b0d4328806170208bf343896d96a856b22a18c902cb50750ca",
+      "matches_checkout": true
+    },
+    {
+      "path": "chat-canvas.css",
+      "bytes": 19576,
+      "sha256": "936894da9b4a7cac81f72baff0c96bca410bd5c9b8e8df7086b3b8eff167f912",
+      "matches_checkout": true
+    },
+    {
+      "path": "tasks-home.js",
+      "bytes": 24481,
+      "sha256": "315573a540160b1b5a415bcba949bff1d9c680596f932adef3162a0d945cfe8c",
+      "matches_checkout": true
+    },
+    {
+      "path": "tasks-home.css",
+      "bytes": 5703,
+      "sha256": "a4bd13fe05939db8ac6895975fcd7fbe6edf6c651680c84d09914e5dfda76b81",
+      "matches_checkout": true
+    },
+    {
+      "path": "workspace-editor.js",
+      "bytes": 19922,
+      "sha256": "78d04bbad140a8834ae99d66fc013aa20febcda38ac6b7dc7d24785137c7a8da",
+      "matches_checkout": true
+    },
+    {
+      "path": "workspace-editor.css",
+      "bytes": 8138,
+      "sha256": "74ca37640dab5962e7aa33553e0a9e4e90ec430890d4f977e81e5656ba655d10",
+      "matches_checkout": true
+    },
+    {
+      "path": "workspace-quick.js",
+      "bytes": 19639,
+      "sha256": "dd1e74f2d462741a2ef925d4c6716915024f6547d3b40d8919da627f7cb0d754",
+      "matches_checkout": true
+    },
+    {
+      "path": "workspace-quick.css",
+      "bytes": 3866,
+      "sha256": "d5f87d0d6cda3895c0c4f9959b3f88f6b1208921b31dc8f829e53415b630fb29",
+      "matches_checkout": true
+    },
+    {
+      "path": "push-notifications.js",
+      "bytes": 11143,
+      "sha256": "d02fda496151815cd6c649af585fe07fbacc0f3e98a1ea21f9a94441df99149a",
+      "matches_checkout": true
+    },
+    {
+      "path": "chat.js",
+      "bytes": 65668,
+      "sha256": "513dab818cc6e8e2df82ff944b5d72dc3066cfe0a7e98845d0c72a79d64c0d58",
+      "matches_checkout": true
+    },
+    {
+      "path": "app.js",
+      "bytes": 84402,
+      "sha256": "46a69885c288e7ab137c2c9fc79d9408554fcf4945bf5b50818bd397b76d7407",
+      "matches_checkout": true
+    },
+    {
+      "path": "bots.js",
+      "bytes": 9406,
+      "sha256": "cfd12f085b59bcc8e88d73898bd148a6f49de6cfcfb111d9b6a3786ae808b569",
+      "matches_checkout": true
+    },
+    {
+      "path": "bots.css",
+      "bytes": 3763,
+      "sha256": "74884a71854034a272f8440efd1ecdc5e9436ea2e7f0132f135982745fd3bdeb",
+      "matches_checkout": true
+    },
+    {
+      "path": "bots-nav.js",
+      "bytes": 2231,
+      "sha256": "1f63ecc99a7b111e655a711ac9f2b87356128bb87a3703788daa73b2a7b9a8ef",
+      "matches_checkout": true
+    },
+    {
+      "path": "bot-scenario-bridge.js",
+      "bytes": 2571,
+      "sha256": "1ece4fb607a086b0e2c90a5c2271539718cb9d3054a751f3ed75bcc92a22f7b6",
+      "matches_checkout": true
+    },
+    {
+      "path": "bot-scenario-editor.js",
+      "bytes": 11248,
+      "sha256": "598de7eb8428b1ebaf263b52d7c8170fcb9e24ac768bc1dfb85a0cdc6c0c8e22",
+      "matches_checkout": true
+    },
+    {
+      "path": "bot-factory.js",
+      "bytes": 20190,
+      "sha256": "82e69963963d012c2008855ea5d22babd7693e48bc86dceef2c07c898aefd4ab",
+      "matches_checkout": true
+    },
+    {
+      "path": "bot-factory.css",
+      "bytes": 3232,
+      "sha256": "f31cb1e3a426d24640d130602bc4d5911b378963efa7e1e8423d157cbf176811",
+      "matches_checkout": true
+    },
+    {
+      "path": "auth-local.js",
+      "bytes": 8150,
+      "sha256": "bb9ce69cdc097856b1b0ce6f9466b4abb34de63942ffcabfa953aa0dd811df97",
+      "matches_checkout": true
+    },
+    {
+      "path": "auth-config.js",
+      "bytes": 781,
+      "sha256": "65439fbbfd11d32ecc2151d78c2081dd4eaa105566a1d66d4fae9af65767e0f2",
+      "matches_checkout": true
+    },
+    {
+      "path": "oauth-login.js",
+      "bytes": 7266,
+      "sha256": "6a1845eee3877cfcc1bd68d3a3b79e3f9112392933ec79c78f3e731620b68bfb",
+      "matches_checkout": true
+    },
+    {
+      "path": "oauth-session.js",
+      "bytes": 3677,
+      "sha256": "066f63403b0dd5d493c7cc6d558f95ee2eff0c57357690b397deabdee26fb4fa",
+      "matches_checkout": true
+    },
+    {
+      "path": "passkey-login.js",
+      "bytes": 18315,
+      "sha256": "e94069c853ef93e71e146fc2f13d7bfa97c1af58b4e6a3a424d4012c0f4dec83",
+      "matches_checkout": true
+    },
+    {
+      "path": "public-passkey.js",
+      "bytes": 2296,
+      "sha256": "5bd310e0433e7b34bfecf726e332f15499ba4a8d478d3ddd88885d9bc42af238",
+      "matches_checkout": true
+    },
+    {
+      "path": "passkey-start.html",
+      "bytes": 2805,
+      "sha256": "8d8ed08c3a905f809552ba13407e4a7b38d24cd54ba0cf4dee85e1fb8ed9836c",
+      "matches_checkout": true
+    },
+    {
+      "path": "passkey-start.js",
+      "bytes": 15855,
+      "sha256": "9bef2f987154d6258ff2e76c5be996d444a1e22dc8f0597d4a30143749a10d3a",
+      "matches_checkout": true
+    },
+    {
+      "path": "passkey-start.css",
+      "bytes": 2457,
+      "sha256": "99f4ad417cdc805114244dd0cf5fe6f21280a00bd9f28bef5120228db4d702aa",
+      "matches_checkout": true
+    },
+    {
+      "path": "vendor/supabase.js",
+      "bytes": 195958,
+      "sha256": "24e8c00dc25da420ee741068b60bcdb5f62cb3598d8834058acf37ec6ee1a724",
+      "matches_checkout": true
+    },
+    {
+      "path": "manifest.webmanifest",
+      "bytes": 378,
+      "sha256": "4c793f146ddb74c30e7e5c223e8f6d2cb6044ff017e0a151608d7a5b98423057",
+      "matches_checkout": true
+    },
+    {
+      "path": "assets/icon-32.png",
+      "bytes": 2030,
+      "sha256": "87d00fd10e8f1b287813b7230827ac541511d30605f15620f4f713a17e1d4be3",
+      "matches_checkout": true
+    },
+    {
+      "path": "assets/icon-180.png",
+      "bytes": 29691,
+      "sha256": "ae7243f1240cba5157abfec0a77f1c2bff7bd6074bfc584c5eed160fb95bc692",
+      "matches_checkout": true
+    },
+    {
+      "path": "assets/icon-192.png",
+      "bytes": 32751,
+      "sha256": "19f130f1ac62d6531f158ce14ac5f44ae0396d1de994296c2872fc06b8bf7f99",
+      "matches_checkout": true
+    },
+    {
+      "path": "assets/icon-512.png",
+      "bytes": 116931,
+      "sha256": "a6f53200aa9a8f3acba3115206f2105240031475c2123a5053b7947ce32c08ab",
+      "matches_checkout": true
+    },
+    {
+      "path": "assets/icon-glass-20260909-32.png",
+      "bytes": 2030,
+      "sha256": "87d00fd10e8f1b287813b7230827ac541511d30605f15620f4f713a17e1d4be3",
+      "matches_checkout": true
+    },
+    {
+      "path": "assets/icon-glass-20260909-180.png",
+      "bytes": 29691,
+      "sha256": "ae7243f1240cba5157abfec0a77f1c2bff7bd6074bfc584c5eed160fb95bc692",
+      "matches_checkout": true
+    },
+    {
+      "path": "assets/icon-glass-20260909-192.png",
+      "bytes": 32751,
+      "sha256": "19f130f1ac62d6531f158ce14ac5f44ae0396d1de994296c2872fc06b8bf7f99",
+      "matches_checkout": true
+    },
+    {
+      "path": "assets/icon-glass-20260909-512.png",
+      "bytes": 116931,
+      "sha256": "a6f53200aa9a8f3acba3115206f2105240031475c2123a5053b7947ce32c08ab",
+      "matches_checkout": true
+    },
+    {
+      "path": "assets/wordmark-light.png",
+      "bytes": 21285,
+      "sha256": "b2b4356783dcf2f67c39673d0905ae96cc8f4f7db1e022aea4d3b51724276368",
+      "matches_checkout": true
+    },
+    {
+      "path": "assets/wordmark-dark.png",
+      "bytes": 23179,
+      "sha256": "fd04f676a7cbfecb2b8aef1b3da0aeb05715e48184a302f9d93000381ea5a212",
+      "matches_checkout": true
+    },
+    {
+      "path": "sw.js",
+      "bytes": 7053,
+      "sha256": "538916a82c6025678cd847a47ae1ff048d31316ad82d3834c06d01ddfed068aa",
+      "matches_checkout": true
+    }
+  ],
+  "runtime_diff_from_published_commit": [],
+  "status": "PASS"
+}

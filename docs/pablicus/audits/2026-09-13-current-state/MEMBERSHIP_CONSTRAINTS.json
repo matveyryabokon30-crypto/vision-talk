@@ -1,0 +1,15 @@
+{
+  "scope": "Public product-level summary; SQL text, internal constraint names and full catalog are retained locally only",
+  "supported_conversation_types": [
+    "direct",
+    "group"
+  ],
+  "supported_conversation_roles": [
+    "owner",
+    "member"
+  ],
+  "full_required_community_roles_implemented": false,
+  "private_primary_evidence_sha256": "e9111dddbc7032adaa13fa9b4d0ae1478d4437964a06fc5a513b13d967d55e88",
+  "private_primary_evidence": "Owner local documents: current-state-audit-20260913/MEMBERSHIP_CONSTRAINTS.json",
+  "raw_schema_dump_included": false
+}

@@ -1,0 +1,782 @@
+{
+  "status": "OBSERVED",
+  "boundary": "Published static bytes; synthetic HTTP/Phoenix only; SW blocked; no external forwarding",
+  "observations": [
+    {
+      "id": "ENTRY",
+      "actual": {
+        "http": 200
+      }
+    },
+    {
+      "id": "HOME",
+      "actual": "◈\nЧаты\nВсе\nФокус\nA\nA conversation 1\nFixture conversation 1\n☆\nA\nA conversation 2\nFixture conversation 2\n☆\nЧаты\nДела\nВы"
+    },
+    {
+      "id": "HIDDEN_ENTRIES",
+      "actual": [
+        {
+          "selector": ".savedConversation",
+          "exists": true,
+          "display": "none",
+          "rects": 0
+        },
+        {
+          "selector": ".findPeople",
+          "exists": true,
+          "display": "none",
+          "rects": 0
+        }
+      ]
+    },
+    {
+      "id": "FOCUS_AB_320",
+      "actual": {
+        "before": [
+          {
+            "row": {
+              "left": 20,
+              "right": 300,
+              "width": 280,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "main": {
+              "left": 20,
+              "right": 300,
+              "width": 280,
+              "display": "flex",
+              "shrink": "0",
+              "hit": true
+            },
+            "focus": {
+              "left": 300,
+              "right": 344,
+              "width": 44,
+              "display": "block",
+              "shrink": "0",
+              "hit": false
+            },
+            "viewport": 320
+          },
+          {
+            "row": {
+              "left": 20,
+              "right": 300,
+              "width": 280,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "main": {
+              "left": 20,
+              "right": 300,
+              "width": 280,
+              "display": "flex",
+              "shrink": "0",
+              "hit": true
+            },
+            "focus": {
+              "left": 300,
+              "right": 344,
+              "width": 44,
+              "display": "block",
+              "shrink": "0",
+              "hit": false
+            },
+            "viewport": 320
+          }
+        ],
+        "temporary_css_after": [
+          {
+            "row": {
+              "left": 20,
+              "right": 300,
+              "width": 280,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "main": {
+              "left": 20,
+              "right": 256,
+              "width": 236,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "focus": {
+              "left": 256,
+              "right": 300,
+              "width": 44,
+              "display": "block",
+              "shrink": "0",
+              "hit": true
+            },
+            "viewport": 320
+          },
+          {
+            "row": {
+              "left": 20,
+              "right": 300,
+              "width": 280,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "main": {
+              "left": 20,
+              "right": 256,
+              "width": 236,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "focus": {
+              "left": 256,
+              "right": 300,
+              "width": 44,
+              "display": "block",
+              "shrink": "0",
+              "hit": true
+            },
+            "viewport": 320
+          }
+        ],
+        "source_changed": false
+      }
+    },
+    {
+      "id": "FOCUS_AB_390",
+      "actual": {
+        "before": [
+          {
+            "row": {
+              "left": 20,
+              "right": 370,
+              "width": 350,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "main": {
+              "left": 20,
+              "right": 370,
+              "width": 350,
+              "display": "flex",
+              "shrink": "0",
+              "hit": true
+            },
+            "focus": {
+              "left": 370,
+              "right": 414,
+              "width": 44,
+              "display": "block",
+              "shrink": "0",
+              "hit": false
+            },
+            "viewport": 390
+          },
+          {
+            "row": {
+              "left": 20,
+              "right": 370,
+              "width": 350,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "main": {
+              "left": 20,
+              "right": 370,
+              "width": 350,
+              "display": "flex",
+              "shrink": "0",
+              "hit": true
+            },
+            "focus": {
+              "left": 370,
+              "right": 414,
+              "width": 44,
+              "display": "block",
+              "shrink": "0",
+              "hit": false
+            },
+            "viewport": 390
+          }
+        ],
+        "temporary_css_after": [
+          {
+            "row": {
+              "left": 20,
+              "right": 370,
+              "width": 350,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "main": {
+              "left": 20,
+              "right": 326,
+              "width": 306,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "focus": {
+              "left": 326,
+              "right": 370,
+              "width": 44,
+              "display": "block",
+              "shrink": "0",
+              "hit": true
+            },
+            "viewport": 390
+          },
+          {
+            "row": {
+              "left": 20,
+              "right": 370,
+              "width": 350,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "main": {
+              "left": 20,
+              "right": 326,
+              "width": 306,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "focus": {
+              "left": 326,
+              "right": 370,
+              "width": 44,
+              "display": "block",
+              "shrink": "0",
+              "hit": true
+            },
+            "viewport": 390
+          }
+        ],
+        "source_changed": false
+      }
+    },
+    {
+      "id": "FOCUS_AB_768",
+      "actual": {
+        "before": [
+          {
+            "row": {
+              "left": 20,
+              "right": 748,
+              "width": 728,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "main": {
+              "left": 20,
+              "right": 748,
+              "width": 728,
+              "display": "flex",
+              "shrink": "0",
+              "hit": true
+            },
+            "focus": {
+              "left": 748,
+              "right": 792,
+              "width": 44,
+              "display": "block",
+              "shrink": "0",
+              "hit": false
+            },
+            "viewport": 768
+          },
+          {
+            "row": {
+              "left": 20,
+              "right": 748,
+              "width": 728,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "main": {
+              "left": 20,
+              "right": 748,
+              "width": 728,
+              "display": "flex",
+              "shrink": "0",
+              "hit": true
+            },
+            "focus": {
+              "left": 748,
+              "right": 792,
+              "width": 44,
+              "display": "block",
+              "shrink": "0",
+              "hit": false
+            },
+            "viewport": 768
+          }
+        ],
+        "temporary_css_after": [
+          {
+            "row": {
+              "left": 20,
+              "right": 748,
+              "width": 728,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "main": {
+              "left": 20,
+              "right": 704,
+              "width": 684,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "focus": {
+              "left": 704,
+              "right": 748,
+              "width": 44,
+              "display": "block",
+              "shrink": "0",
+              "hit": true
+            },
+            "viewport": 768
+          },
+          {
+            "row": {
+              "left": 20,
+              "right": 748,
+              "width": 728,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "main": {
+              "left": 20,
+              "right": 704,
+              "width": 684,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "focus": {
+              "left": 704,
+              "right": 748,
+              "width": 44,
+              "display": "block",
+              "shrink": "0",
+              "hit": true
+            },
+            "viewport": 768
+          }
+        ],
+        "source_changed": false
+      }
+    },
+    {
+      "id": "FOCUS_AB_1280",
+      "actual": {
+        "before": [
+          {
+            "row": {
+              "left": 173,
+              "right": 1107,
+              "width": 934,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "main": {
+              "left": 173,
+              "right": 1107,
+              "width": 934,
+              "display": "flex",
+              "shrink": "0",
+              "hit": true
+            },
+            "focus": {
+              "left": 1107,
+              "right": 1151,
+              "width": 44,
+              "display": "block",
+              "shrink": "0",
+              "hit": true
+            },
+            "viewport": 1280
+          },
+          {
+            "row": {
+              "left": 173,
+              "right": 1107,
+              "width": 934,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "main": {
+              "left": 173,
+              "right": 1107,
+              "width": 934,
+              "display": "flex",
+              "shrink": "0",
+              "hit": true
+            },
+            "focus": {
+              "left": 1107,
+              "right": 1151,
+              "width": 44,
+              "display": "block",
+              "shrink": "0",
+              "hit": true
+            },
+            "viewport": 1280
+          }
+        ],
+        "temporary_css_after": [
+          {
+            "row": {
+              "left": 173,
+              "right": 1107,
+              "width": 934,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "main": {
+              "left": 173,
+              "right": 1063,
+              "width": 890,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "focus": {
+              "left": 1063,
+              "right": 1107,
+              "width": 44,
+              "display": "block",
+              "shrink": "0",
+              "hit": true
+            },
+            "viewport": 1280
+          },
+          {
+            "row": {
+              "left": 173,
+              "right": 1107,
+              "width": 934,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "main": {
+              "left": 173,
+              "right": 1063,
+              "width": 890,
+              "display": "flex",
+              "shrink": "1",
+              "hit": true
+            },
+            "focus": {
+              "left": 1063,
+              "right": 1107,
+              "width": 44,
+              "display": "block",
+              "shrink": "0",
+              "hit": true
+            },
+            "viewport": 1280
+          }
+        ],
+        "source_changed": false
+      }
+    },
+    {
+      "id": "SEARCH_PREVIEW",
+      "actual": {
+        "query": "Fixture conversation",
+        "fixture_matching_previews": 2,
+        "visible_rows": 0
+      }
+    },
+    {
+      "id": "SEARCH_TITLE",
+      "actual": {
+        "visible_rows": 1
+      }
+    },
+    {
+      "id": "PROFILE",
+      "actual": {
+        "text": "F\nFixture A\n\n@fixture_a\n\nПоделиться профилем\nСкопировать ссылку\nТема\nСистемная\nСветлая\nТёмная\nДобавить на главный экран\nВыйти\n\nPablicus 0.1.0-rc5 · Кандидат выпуска. Черновики и исходящие сохраняются отдельно для каждого аккаунта и разговора.\n\nХранилище\nВсе вложения Pablicus\n—\nВаши загрузки\n—\n\nПроверяем занятое место…\n\nОбновить данные\nУведомления\nВключить уведомления\n\nСообщения и напоминания о делах смогут появляться на экране, даже когда приложение закрыто.",
+        "file_inputs": 0
+      }
+    },
+    {
+      "id": "TASKS",
+      "actual": "Все\nМне\nПросрочено\nГотово\nАрхив\nПоиск по названию дела\n\nЗагружаем дела…"
+    },
+    {
+      "id": "BOTS",
+      "actual": "Создать бота\n◈\nFixture Bot\nРаботает"
+    },
+    {
+      "id": "FACTORY_HOME",
+      "actual": "‹\n\nОпишите задачу — фабрика превратит её в технический проект и план сборки.\n\nНовый проект\nМои проекты\n\nПроектов пока нет."
+    },
+    {
+      "id": "FACTORY_FORM",
+      "actual": "‹\n\nОпишите задачу обычными словами. Фабрика сама соберёт технический проект сервиса.\n\nЧто должен делать сервис?\nМожно написать как человеку — без технических терминов.\nКто будет пользоваться?\nКакой результат нужен?\nИнтерфейс\nПодберите сами\nЧат-бот\nМини-приложение\nБот + мини-приложение\nВнешний вид\nМатериалы и референсы\nДо 10 файлов, каждый до 100 МБ.\nОграничения\nРазобрать задачу"
+    },
+    {
+      "id": "CONVERSATION",
+      "actual": {
+        "title": "A conversation 1",
+        "registry": {
+          "ia": {
+            "Chats": {
+              "root": "chats",
+              "entry": "conversation list",
+              "state": "EXISTING"
+            },
+            "Groups": {
+              "root": "chats",
+              "entry": "conversation directory",
+              "state": "CONTRACT_ONLY"
+            },
+            "Channels": {
+              "root": "chats",
+              "entry": "conversation directory",
+              "state": "CONTRACT_ONLY"
+            },
+            "Spaces": {
+              "root": "chats",
+              "entry": "space switcher / directory",
+              "state": "CONTRACT_ONLY",
+              "category": "A"
+            },
+            "Threads": {
+              "root": "chats",
+              "entry": "within conversation",
+              "state": "CONTRACT_ONLY",
+              "category": "A"
+            },
+            "Search": {
+              "root": "chats",
+              "entry": "search field / scoped results",
+              "state": "CONTRACT_ONLY_GLOBAL",
+              "category": "A"
+            },
+            "Saved": {
+              "root": "chats",
+              "entry": "personal conversation / You shortcut",
+              "state": "EXISTING_SAVED_CONVERSATION_ONLY",
+              "category": "A"
+            },
+            "AIConversations": {
+              "root": "chats",
+              "entry": "new private AI conversation",
+              "state": "CONTRACT_ONLY"
+            },
+            "AIComposer": {
+              "root": "chats",
+              "entry": "composer contextual actions",
+              "state": "CONTRACT_ONLY",
+              "category": "A"
+            },
+            "Profile": {
+              "root": "profile",
+              "entry": "profile and settings",
+              "state": "EXISTING"
+            },
+            "PublicIdentity": {
+              "root": "profile",
+              "entry": "username / profile link",
+              "state": "EXISTING_BASELINE",
+              "category": "A"
+            },
+            "Tasks": {
+              "root": "tasks",
+              "entry": "task list",
+              "state": "EXISTING"
+            },
+            "WorkObjects": {
+              "root": "tasks",
+              "entry": "task / conversation Canvas object",
+              "state": "EXISTING_CANVAS_ONLY"
+            },
+            "BotsFactory": {
+              "root": "tasks",
+              "entry": "nested tools entry",
+              "state": "EXISTING_SPECIFICATION_ONLY"
+            }
+          },
+          "composer": {
+            "version": 1,
+            "implementation": "PablicusRichComposer.create",
+            "adapter": "PablicusChat",
+            "extensionPoints": [
+              "text",
+              "attachments",
+              "richBlocks",
+              "commands",
+              "aiInlineActions",
+              "mentions",
+              "agentInvocation",
+              "taskCreation",
+              "workObjectLinking"
+            ],
+            "existingOperations": [
+              "capture",
+              "restore",
+              "focus",
+              "blur",
+              "destroy"
+            ],
+            "context": [
+              "userId",
+              "conversationId",
+              "sessionGeneration",
+              "routeGeneration",
+              "revision",
+              "signal"
+            ],
+            "states": [
+              "idle",
+              "composing",
+              "saving",
+              "saved",
+              "sending",
+              "error",
+              "cancelled"
+            ],
+            "invariants": [
+              "original Blob retained",
+              "stable IDs and order",
+              "save before send",
+              "identity currentness",
+              "no silent unsupported operation"
+            ],
+            "extensionRequest": {
+              "fields": [
+                "kind",
+                "context",
+                "selection",
+                "payload"
+              ],
+              "result": [
+                "applied",
+                "cancelled",
+                "unsupported",
+                "error"
+              ]
+            },
+            "messageDocV2Implemented": false,
+            "agentExecutionImplemented": false,
+            "note": "Existing v1 draft/IndexedDB remains canonical. Future adapters validate context and permission before execution; declarations do not grant capabilities."
+          },
+          "calls": {
+            "category": "B",
+            "implemented": false,
+            "slots": [
+              "audioCallAction",
+              "videoCallAction",
+              "activeCallSurface",
+              "screenShareState",
+              "voiceLiveEntry"
+            ],
+            "context": [
+              "sessionId",
+              "conversationId",
+              "spaceId",
+              "participants",
+              "permissions",
+              "mediaState"
+            ],
+            "surface": "Non-root session overlay; independent from editor/list resource. Mobile full screen and desktop panel share session ID.",
+            "deferred": [
+              "WebRTC/TURN",
+              "background behavior",
+              "media security",
+              "cost",
+              "physical-device QA"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "COMPOSER_MEDIA",
+      "actual": "IMG_AUDIT.png\n×"
+    },
+    {
+      "id": "COMPOSER_COLLAPSE",
+      "actual": {
+        "expanded": "false",
+        "text": "Audit preserved draft\n",
+        "files": 1
+      }
+    },
+    {
+      "id": "CANVAS_MEDIA_INLINE",
+      "actual": {
+        "head_text": "IMG_CANVAS_AUDIT.png×",
+        "head_display": "none",
+        "remove_exists": true,
+        "remove_rects": 0,
+        "buttons": [
+          "Добавить вложение",
+          "Развернуть поле",
+          "Записать голосовое сообщение"
+        ]
+      }
+    },
+    {
+      "id": "CANVAS_MEDIA_EXPANDED",
+      "actual": {
+        "head_text": "IMG_CANVAS_AUDIT.png\n×",
+        "head_display": "flex",
+        "remove_exists": true,
+        "remove_rects": 1,
+        "buttons": [
+          "Убрать вложение",
+          "Добавить вложение",
+          "Готово, свернуть поле",
+          "Свернуть поле",
+          "Записать голосовое сообщение"
+        ]
+      }
+    },
+    {
+      "id": "CANVAS_CANCEL",
+      "actual": {
+        "editor_count": 1
+      }
+    }
+  ],
+  "errors": [],
+  "browser": "153.0.8010.36",
+  "network": {
+    "scope": "Summary of entirely synthetic HTTP/Phoenix traffic; detailed trace retained in owner local documents",
+    "calls_count": 25,
+    "effects": [],
+    "unknown": [],
+    "blocked": [],
+    "pending_websocket_jobs": 0,
+    "active_external_channels": []
+  },
+  "server_closed": true,
+  "owned_context_closed": true,
+  "scope_note": "Only synthetic local accounts. Fixture password login is not production login qualification. Physical Face ID remains owner confirmation plus separately preserved real virtual-passkey signup evidence.",
+  "private_full_trace_sha256": "63f23aa59e37f6527d362122c9b37b2ad7b9402af137927a5d4e91a5a122a67c"
+}
