@@ -1,0 +1,81 @@
+Exact reviewer launchers used in this review. Copy each named section to a separate .py file in one review directory, with exact candidate checkout in its candidate/ child. Python Playwright 1.57.0 and Chromium 143.0.7499.4 are required. Run with PYTHONDONTWRITEBYTECODE=1; browser cache path is configured externally. These are reviewer evidence, not application tests or runtime changes. Source candidate is never patched.
+
+===== run-shell-review.py =====
+import asyncio,importlib.util,pathlib,os
+from types import SimpleNamespace
+from playwright.async_api import BrowserType
+root=pathlib.Path(__file__).resolve().parent
+spec=importlib.util.spec_from_file_location('shell_probe',root/'candidate/tests/engineering/block-02/shell_probe.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+m.FLAGS=[f for f in m.FLAGS if f!='--no-sandbox']
+launch=BrowserType.launch
+async def sandbox_launch(self,*a,**kw):
+ kw['chromium_sandbox']=True
+ return await launch(self,*a,**kw)
+BrowserType.launch=sandbox_launch
+os.environ['GITHUB_SHA']='9ee215300ac97b3c48bf5184f414f28333429a1c'
+raise SystemExit(asyncio.run(m.main(SimpleNamespace(source_root=root/'candidate',output=root/'local-shell'))))
+
+===== reviewer-behavior.py =====
+import asyncio,functools,http.server,json,pathlib,sys,threading
+from playwright.async_api import async_playwright
+r=pathlib.Path(__file__).resolve().parent;root=r/'candidate';out=r/'reviewer-behavior';out.mkdir(exist_ok=True)
+sys.path.insert(0,str(root/'tests/engineering/block-01/integration_1c'))
+from network import Boundary,A,C1
+class Server(http.server.SimpleHTTPRequestHandler):
+ def log_message(self,*a):pass
+async def main():
+ results=[];server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(Server,directory=str(root)));t=threading.Thread(target=server.serve_forever,daemon=True);t.start();origin=f'http://127.0.0.1:{server.server_port}'
+ async with async_playwright() as p:
+  browser=await p.chromium.launch(chromium_sandbox=True,args=['--disable-background-networking','--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1'])
+  ctx=await browser.new_context(service_workers='block',viewport={'width':390,'height':844});net=Boundary(origin);await ctx.route('**/*',net.handle);await ctx.route_web_socket('**/*',net.websocket);page=await ctx.new_page();page.set_default_timeout(8000);await net.attach_page(page);errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+  async def record(name,ok,actual):
+   results.append({'name':name,'status':'PASS' if ok else 'FAIL','actual':actual});(out/'results.json').write_text(json.dumps(results,ensure_ascii=False,indent=2))
+  try:
+   await page.goto(origin+'/pablicus/');await page.locator('#email').fill('a@fixture.invalid');await page.locator('#password').fill('fixture-only-password');await page.locator('#loginSubmit').click();await page.wait_for_function('PablicusDebug.user==="'+A+'" && document.querySelectorAll(".chatCard").length>0');await page.locator('#toast').wait_for(state='hidden')
+   for tab,label in [('tasks','Дела'),('profile','Вы'),('chats','Чаты')]:
+    await page.locator('[data-page='+tab+']').click();await page.wait_for_function('(x)=>PablicusController.state().section===x',arg=tab)
+    title=await page.locator('#brandTitle').inner_text();await record('root-heading-'+tab,title==label,title)
+   await page.locator('[data-conversation-id="'+C1+'"] .chatMain').click();await page.wait_for_function('PablicusDebug.current==="'+C1+'" && PablicusChat.list && window.vault?.ready && !document.querySelector("#app").inert')
+   await page.locator('#input').fill('Independent reviewer draft');await page.locator('#canvasTab').click();await page.wait_for_function('PablicusController.state().screen==="canvas"');await page.locator('#conversationTab').click();await page.wait_for_function('PablicusController.state().screen==="conversation"');await record('canvas-roundtrip-draft',await page.locator('#input').input_value()=='Independent reviewer draft',await page.locator('#input').input_value())
+   for w,h in [(320,568),(844,390),(1280,900),(390,844)]:
+    await page.set_viewport_size({'width':w,'height':h});await page.locator('#chatBack').focus();await page.evaluate('()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))')
+    obs=await page.evaluate('''()=>({overflow:document.documentElement.scrollWidth>innerWidth,items:Object.fromEntries(['chatBack','chatTitle','chatLibraryOpen','reportBtn','input','attach','send'].map(id=>{let n=document.getElementById(id),r=n.getBoundingClientRect();return[id,{x:r.x,y:r.y,right:r.right,bottom:r.bottom,width:r.width,height:r.height,hit:n.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))}]}))})''')
+    await record('resize-'+str(w),not obs['overflow'] and all(v['x']>=-1 and v['y']>=-1 and v['right']<=w+1 and v['bottom']<=h+1 for v in obs['items'].values()),obs);await page.screenshot(path=str(out/f'resize-{w}.png'))
+   await page.locator('#chatBack').click();await page.wait_for_function('PablicusController.state().screen==="home"');await page.locator('[data-conversation-id="'+C1+'"] .chatMain').click();await page.wait_for_function('PablicusChat.list && window.vault?.ready && !document.querySelector("#app").inert');await record('reopen-draft',await page.locator('#input').input_value()=='Independent reviewer draft',await page.locator('#input').input_value())
+   await record('no-page-errors',not errors,errors)
+  finally:
+   await ctx.close();await net.drain();await browser.close();server.shutdown();server.server_close();t.join(2);(out/'network.json').write_text(json.dumps(net.summary(),indent=2));await record('network-and-cleanup',not net.unknown and not net.blocked and not t.is_alive(),{'unknown':net.unknown,'blocked':net.blocked,'server_closed':not t.is_alive()})
+ print(json.dumps([(x['name'],x['status']) for x in results]))
+asyncio.run(asyncio.wait_for(main(),120))
+
+===== reviewer-expanded.py =====
+import asyncio,functools,http.server,json,pathlib,sys,threading
+from playwright.async_api import async_playwright
+r=pathlib.Path(__file__).resolve().parent;root=r/'candidate';out=r/'reviewer-expanded';out.mkdir(exist_ok=True)
+sys.path.insert(0,str(root/'tests/engineering/block-01/integration_1c'))
+from network import Boundary,A,C1
+class Server(http.server.SimpleHTTPRequestHandler):
+ def log_message(self,*a):pass
+async def main():
+ results=[];server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(Server,directory=str(root)));t=threading.Thread(target=server.serve_forever,daemon=True);t.start();origin=f'http://127.0.0.1:{server.server_port}'
+ async with async_playwright() as p:
+  browser=await p.chromium.launch(chromium_sandbox=True,args=['--disable-background-networking','--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1'])
+  ctx=await browser.new_context(service_workers='block',viewport={'width':390,'height':844});net=Boundary(origin);await ctx.route('**/*',net.handle);await ctx.route_web_socket('**/*',net.websocket);page=await ctx.new_page();page.set_default_timeout(8000);await net.attach_page(page);errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+  async def record(name,ok,actual):
+   results.append({'name':name,'status':'PASS' if ok else 'FAIL','actual':actual});(out/'results.json').write_text(json.dumps(results,ensure_ascii=False,indent=2))
+  try:
+   await page.goto(origin+'/pablicus/');await page.locator('#email').fill('a@fixture.invalid');await page.locator('#password').fill('fixture-only-password');await page.locator('#loginSubmit').click();await page.wait_for_function('PablicusDebug.user==="'+A+'" && document.querySelectorAll(".chatCard").length>0');await page.locator('#toast').wait_for(state='hidden')
+   for tab,label in [('tasks','Дела'),('profile','Вы'),('chats','Чаты')]:
+    await page.locator('[data-page='+tab+']').click();await page.wait_for_function('(x)=>PablicusController.state().section===x',arg=tab)
+    title=await page.locator('#brandTitle').inner_text();await record('root-heading-'+tab,title==label,title)
+   await page.locator('[data-conversation-id="'+C1+'"] .chatMain').click();await page.wait_for_function('PablicusDebug.current==="'+C1+'" && PablicusChat.list && window.vault?.ready && !document.querySelector("#app").inert')
+   await page.locator('#input').fill('Independent reviewer draft');await page.locator('#canvasTab').click();await page.wait_for_function('PablicusController.state().screen==="canvas"');await page.locator('#conversationTab').click();await page.wait_for_function('PablicusController.state().screen==="conversation"');await record('canvas-roundtrip-draft',await page.locator('#input').input_value()=='Independent reviewer draft',await page.locator('#input').input_value())
+   await page.set_viewport_size({'width':320,'height':568});await page.locator('#expand').click();await page.wait_for_function('document.querySelector("#app").classList.contains("composer-fullscreen")');await page.evaluate('()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))')
+   obs=await page.evaluate("""()=>Object.fromEntries(['expand','hideKey','input','attach','send'].map(id=>{let n=document.getElementById(id),r=n.getBoundingClientRect();return[id,{x:r.x,y:r.y,right:r.right,bottom:r.bottom,width:r.width,height:r.height,hit:n.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))}]}))""")
+   await record('expanded-controls',all(v['x']>=-1 and v['y']>=-1 and v['right']<=321 and v['bottom']<=569 and v['hit'] for v in obs.values()),obs);await page.screenshot(path=str(out/'expanded.png'))
+   await page.locator('#expand').click();await page.wait_for_function('!document.querySelector("#app").classList.contains("composer-fullscreen")');await record('collapse-draft',await page.locator('#input').input_value()=='Independent reviewer draft',await page.locator('#input').input_value())
+   await record('no-page-errors',not errors,errors)
+  finally:
+   await ctx.close();await net.drain();await browser.close();server.shutdown();server.server_close();t.join(2);(out/'network.json').write_text(json.dumps(net.summary(),indent=2));await record('network-and-cleanup',not net.unknown and not net.blocked and not t.is_alive(),{'unknown':net.unknown,'blocked':net.blocked,'server_closed':not t.is_alive()})
+ print(json.dumps([(x['name'],x['status']) for x in results]))
+asyncio.run(asyncio.wait_for(main(),120))

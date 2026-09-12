@@ -6,7 +6,19 @@
 Рабочая ветка при фиксации: `refactor/pablicus-foundation-20260911`.
 Этот файл — точка входа после потери чата. Это не стенограмма и не подтверждение готовности приложения.
 
-## Текущая передача 2A — 12 сентября 2026
+## Независимая приёмка 2A — 12 сентября 2026
+
+**SUBSTEP_2A_ACCEPTED** в границе `PABLICUS-BLOCK02-2A-SHELL-ARCHITECTURE-20260912`, R1. CODE_SHA = TESTED_SHA: `9ee215300ac97b3c48bf5184f414f28333429a1c`; HANDOFF_HEAD: `55754de80a74b45ddd8aef7d2a2a9e95f132aa40`.
+
+[Решение Проверяющего](docs/pablicus/reviews/2026-09-12/2A_HANDOFF_REVIEW_R1.md), [результаты](docs/pablicus/reviews/2026-09-12/2A_R1_RESULTS.json), [точные диагностические пробы](docs/pablicus/reviews/2026-09-12/2A_R1_PROBES.txt).
+
+Лично выполнены: integrity исходного CI ZIP, 531 content hash/235 Git sources; structural checks; 31/31 1B; shell на трёх viewport и duplicate-listener negative control; собственные проверки resize, заголовков, Canvas/draft и expanded composer. 1C 9/9, 145 assertions, 54 transitions и четыре мутации подтверждены по первичному CI artifact без нового локального запуска 1C.
+
+Ранее вынесенный BLOCK_1_ACCEPTED восстановлен из переданного Матвеем `PABLICUS-REVIEWER-CODEX-HANDOFF-20260912`, R1, а не из придуманного исторического Git-файла. Принятые этапы не переоткрыты. Пять блоков и дополнения 01/02 сохранены.
+
+**Block 2 целиком не принят; 2B не начат.** Следующий шаг — отдельное задание 2B через Матвея. Физический iPhone предусмотрен при физической приёмке блока 2; эмуляция его не заменяет. Production/Supabase/RLS/Auth, multi-device, Service Worker и полная WCAG этой приёмкой не квалифицированы. Runtime/tests/workflow данной документальной записью не меняются.
+
+## Историческая передача 2A — до независимой приёмки, 12 сентября 2026
 
 В задании `PABLICUS-BLOCK02-2A-SHELL-ARCHITECTURE-20260912`, R1 владелец прямо подтвердил независимую приёмку **BLOCK_1_ACCEPTED**, включая 1A/1B/1C/1D, и разрешил начать Block 2. Исторический пакет Исполнителя 1D ниже сохранён; отдельный файл решения Проверяющего 1D на WORK_START_HEAD не найден. Новое решение здесь не выдаётся за такой файл.
 
