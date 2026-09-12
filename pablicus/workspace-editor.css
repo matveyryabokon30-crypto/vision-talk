@@ -39,7 +39,7 @@
 .workspaceEditor .richRecordingTime { color: #d74747; font-variant-numeric: tabular-nums; font-weight: 600; }
 .workspaceEditor .workspaceEditorOpen, .workspaceEditor .workspaceEditorFileLink { display: inline-flex; width: auto; height: auto; min-height: var(--control-size); padding: 7px 10px; border-radius: 10px; color: var(--accent, #64758c); font-size: 13px; text-decoration: none; }
 .workspaceEditor .workspaceEditorDone { width: auto; padding-inline: 12px; border-radius: 13px; color: var(--text, #272a2d); font-size: 14px; }
-.workspaceEditor.is-expanded { position: fixed; z-index: 450; top: var(--workspace-editor-top, 0px); left: 0; right: 0; width: 100%; height: var(--workspace-editor-height, 100dvh); display: flex; flex-direction: column; border: 0; border-radius: 0; padding: max(10px, var(--safe-area-top)) max(10px, var(--safe-area-right)) max(10px, var(--safe-area-bottom)) max(10px, var(--safe-area-left)); }
+.workspaceEditor.is-expanded { background:var(--surface); margin:0; inset:auto; bottom:auto; max-width:none; max-height:none; position: fixed; z-index: 450; top: var(--workspace-editor-top, 0px); left: 0; right: 0; width: 100%; height: var(--workspace-editor-height, 100dvh); display: flex; flex-direction: column; border: 0; border-radius: 0; padding: max(10px, var(--safe-area-top)) max(10px, var(--safe-area-right)) max(10px, var(--safe-area-bottom)) max(10px, var(--safe-area-left)); }
 .workspaceEditor.is-expanded .workspaceEditorBody { flex: 1; min-height: 0; max-height: none; }
 .workspaceEditor.is-expanded .workspaceEditorToolbar { flex: 0 0 auto; }
 .workspaceEditor.is-disabled .workspaceEditorToolbar { opacity: .55; }

@@ -208,7 +208,10 @@
     }
     function setExpanded(value) {
       if (destroyed) return;
+      if(value&&!root.showPopover){report('Полноэкранный редактор недоступен в этом браузере. Текст сохранён в поле.');return;}
       expanded = !!value; root.classList.toggle('is-expanded', expanded); done.hidden = !expanded;
+      if(expanded){root.setAttribute('popover','manual');root.showPopover();}
+      else if(root.hasAttribute('popover')){root.hidePopover();root.removeAttribute('popover');}
       expand.setAttribute('aria-expanded', String(expanded)); expand.setAttribute('aria-label', expanded ? 'Свернуть поле' : 'Развернуть поле');
       if(expanded){root.setAttribute('role','dialog');root.setAttribute('aria-modal','true');rich.focus();}
       else{root.removeAttribute('role');root.removeAttribute('aria-modal');expand.focus({preventScroll:true});}

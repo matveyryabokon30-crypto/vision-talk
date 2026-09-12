@@ -59,7 +59,7 @@ jobs:
           assert d['status']=='FAIL' and d['browser_closed'] and d['server_closed'],d
           for name in ['mobile','tablet','desktop']:
               v=d['variants'][name];assert v['status']=='FAIL',v
-              for check in ['fullscreen-Escape-from-control','media-explicit-close','dirty-sheet-denied-close-preserves']:
+              for check in ['fullscreen-Escape-from-control','media-explicit-close','dirty-sheet-denied-close-preserves','project-fullscreen-owner','task-fullscreen-opaque-surface']:
                   assert any(c['name']==check and c['status']=='FAIL' for c in v['checks']),(name,check,v)
           PYCODE
       - name: Existing components and overlays on exact candidate
