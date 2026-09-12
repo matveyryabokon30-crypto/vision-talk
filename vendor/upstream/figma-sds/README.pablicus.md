@@ -1,9 +1,9 @@
-# Figma SDS: материалы для собственной библиотеки Pablicus
+# Figma SDS в библиотеке Pablicus
 
-Источник: официальный `figma/sds`, commit `030aba021183cd5332b35c89c56fbaee5b600162`. Девять неизменённых файлов с MIT notice и SHA-256 сохранены в PROVENANCE.json. Это подборка примеров, не самостоятельный пакет и не новая runtime-зависимость.
+Источник: официальный https://github.com/figma/sds, commit `030aba021183cd5332b35c89c56fbaee5b600162`, MIT, upstream alpha. В PROVENANCE.json — 20 неизменённых файлов с SHA-256. SOURCE_INTEGRITY.json сравнивает их с Git object закреплённого commit.
 
-Реально найдены через подключённый Figma: Card, Form Log In, Form Register, Tabs, Search. Полный ответ и component keys находятся в `docs/pablicus/research/2026-09-13/evidence/figma-discovery.json`. Исследовательский файл: https://www.figma.com/design/ppVDFrQo8drbWCyxWtOHj1 .
+`library/pablicus-ui/foundation.css` реально импортирует theme.css в отдельный прототип. Button/Tab/Card/Forms/Code Connect исходники помогают сопоставлять компоненты с Figma. React/React Aria примеры не являются совместимым runtime-пакетом для существующей vanilla JS PWA. Пример Form Log In сам не реализует вход: рабочая авторизация Pablicus уже существует и не заменяется этим примером.
 
-Применимость: `figma.config.json` связывает имена с конкретными узлами; Forms/Cards показывают композицию общих примитивов; `scripts/tokens/app.mjs` преобразует токены в CSS и поддерживает данные из JSON без обязательного Variables REST API. Остальные импорты/файлы этого скрипта в подборку не включены, поэтому он не запускается из неё как готовый генератор.
+Дополнена цепочка генерации токенов: app.mjs, fromFigma.mjs, tokens.json, styles.json. На изолированной копии `node app.mjs --skip-rest-api` воспроизводит theme.css побайтово без ключей и сети; результат TOKEN_BUILD.json. Для запуска копируйте scripts/tokens и src в временную структуру и запускайте из scripts/tokens. Не запускайте генератор внутри оригинальной подборки: он перезаписывает src/theme.css и пишет служебный snippet.
 
-Ограничения: SDS назван upstream alpha. React-примеры нельзя напрямую подключить в существующую статическую JS PWA. Form Log In имеет пример `onSubmit={() => {}}`: форма сама не реализует авторизацию. Библиотека служит основой контрактов, токенов и повторного использования; Pablicus получает собственную геометрию, активы и работающие обработчики. Установленный дизайн, runtime и зависимости этим сохранением не менялись.
+Через Figma получены Navigation Button/Card/Button, Space/400, Body Base, Background/Default/Default. Сборка из 7 связанных экземпляров: https://www.figma.com/design/ppVDFrQo8drbWCyxWtOHj1?node-id=4-18 . Это конструктор основы; не финальный дизайн приложения и не установленный оригинал ролика uiux.build.

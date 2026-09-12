@@ -1,0 +1,73 @@
+{
+  "libraries": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"libraries_added_to_file\": [\n    {\n      \"name\": \"Material 3 Design Kit\",\n      \"libraryKey\": \"lk-5a31d104cabc6a74d4edf6425e7bc6575e9c0f18cda7efb746193aef4d915b077d115c985e6cf49d36d97d455a17d5127a2cbbfbc618b8a70a38669dccb61462\",\n      \"source\": \"community\"\n    },\n    {\n      \"name\": \"Simple Design System\",\n      \"libraryKey\": \"lk-e0ffcff14368019c4f30f45401cd233d6cbc5f869988484192d04cbbef801fb0064ef68feaa8a2775ee4f1f05d9a4af1a6d07b2658eac4aefb7afb18728c4066\",\n      \"source\": \"community\"\n    },\n    {\n      \"name\": \"iOS and iPadOS 26\",\n      \"libraryKey\": \"lk-a5b98decf0fb24381005421a2986b813149fcf20f37a1169316d44e2802c483494c6fc98ab8e083540a73bd5e45cf892a38123ee61981aee097d5f4eb8487a17\",\n      \"source\": \"community\"\n    },\n    {\n      \"name\": \"watchOS 26\",\n      \"libraryKey\": \"lk-32bda072ec15e732e76d56aa8bd25314051f296f8519a8d868031b46eaabb5ade1290829d0d7deca926b5388f760e9e94aa76d56bfe2ead33d78adeeeb7d15fb\",\n      \"source\": \"community\"\n    },\n    {\n      \"name\": \"visionOS 26\",\n      \"libraryKey\": \"lk-4f44e69da5f723deffc1c2461604f793251559fb3fb0f1f6af7c4fffaa12c05a33c40283401af5f2edf0db0639d516ccef9b73ae6aadff7e6588df60cbd36dd4\",\n      \"source\": \"community\"\n    },\n    {\n      \"name\": \"macOS 26\",\n      \"libraryKey\": \"lk-52492a50a550123b626cdfcd7639929209dc66307681f3f8cf9937770a714f2d76ade248aff2d8a0e42da17e343a440cebc0a04f1800ad34ae6d86e1a7f7aa9a\",\n      \"source\": \"community\"\n    },\n    {\n      \"name\": \"iOS and iPadOS 27\",\n      \"libraryKey\": \"lk-3167e7e1386e96621fc3b20782e2ec1b199754eeceff2ef04bf90d28a124be6414b67982dc8fb71ea1896b0310c316f54d7b9f0ac598cb3111748728c039a567\",\n      \"source\": \"community\"\n    },\n    {\n      \"name\": \"macOS 27\",\n      \"libraryKey\": \"lk-9b6046629e11db2bbe15e5a3fa0443ecd557a34812bc69997a2b8598852d86fb806d4036ca6c146521c7e1cf898a1e3d46dda55a15bf1f86579794b29480aa80\",\n      \"source\": \"community\"\n    }\n  ],\n  \"libraries_available_to_add\": [],\n  \"libraries_available_to_add_next_offset\": null\n}"
+      },
+      {
+        "type": "text",
+        "text": "The above JSON contains two lists: libraries_added_to_file (currently subscribed) and libraries_available_to_add (community UI kits and org libraries). Use the libraryKey values to scope searches with search_design_system by passing them as includeLibraryKeys."
+      }
+    ],
+    "isError": false
+  },
+  "imports": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"sets\":[{\"id\":\"3:303\",\"name\":\"Navigation Button\",\"key\":\"1d2523aed78254402984bbbffdf9010d30b6f35c\",\"props\":{\"Label#515:1\":{\"type\":\"TEXT\",\"defaultValue\":\"Label\"},\"Icon#515:2\":{\"type\":\"INSTANCE_SWAP\",\"defaultValue\":\"icon\"},\"Has Icon#515:5\":{\"type\":\"BOOLEAN\",\"defaultValue\":true},\"Has Label#515:8\":{\"type\":\"BOOLEAN\",\"defaultValue\":true},\"State\":{\"type\":\"VARIANT\",\"defaultValue\":\"Default\"},\"Direction\":{\"type\":\"VARIANT\",\"defaultValue\":\"Column\"},\"Type\":{\"type\":\"VARIANT\",\"defaultValue\":\"Small\"}},\"variants\":[{\"id\":\"3:304\",\"name\":\"State=Default, Direction=Column, Type=Small\"},{\"id\":\"3:305\",\"name\":\"State=Default, Direction=Column, Type=Medium\"},{\"id\":\"3:306\",\"name\":\"State=Default, Direction=Row, Type=Small\"},{\"id\":\"3:307\",\"name\":\"State=Default, Direction=Row, Type=Medium\"},{\"id\":\"3:308\",\"name\":\"State=Hover, Direction=Column, Type=Small\"},{\"id\":\"3:309\",\"name\":\"State=Hover, Direction=Column, Type=Medium\"},{\"id\":\"3:310\",\"name\":\"State=Active, Direction=Column, Type=Small\"},{\"id\":\"3:311\",\"name\":\"State=Active, Direction=Column, Type=Medium\"}]},{\"id\":\"3:143\",\"name\":\"Button\",\"key\":\"cc8b558dc7d9684011b6b99ce8e6509399bc836b\",\"props\":{\"Label#2:0\":{\"type\":\"TEXT\",\"defaultValue\":\"Button\"},\"Icon End#4:0\":{\"type\":\"INSTANCE_SWAP\",\"defaultValue\":\"icon\"},\"Has Icon End#4:64\":{\"type\":\"BOOLEAN\",\"defaultValue\":false},\"Has Icon Start#4:128\":{\"type\":\"BOOLEAN\",\"defaultValue\":false},\"Icon Start#4:192\":{\"type\":\"INSTANCE_SWAP\",\"defaultValue\":\"icon\"},\"Variant\":{\"type\":\"VARIANT\",\"defaultValue\":\"Primary\"},\"State\":{\"type\":\"VARIANT\",\"defaultValue\":\"Default\"},\"Size\":{\"type\":\"VARIANT\",\"defaultValue\":\"Medium\"}},\"variants\":[{\"id\":\"3:144\",\"name\":\"Variant=Primary, State=Default, Size=Medium\"},{\"id\":\"3:145\",\"name\":\"Variant=Primary, State=Hover, Size=Medium\"},{\"id\":\"3:146\",\"name\":\"Variant=Primary, State=Disabled, Size=Medium\"},{\"id\":\"3:147\",\"name\":\"Variant=Neutral, State=Default, Size=Medium\"},{\"id\":\"3:148\",\"name\":\"Variant=Neutral, State=Hover, Size=Medium\"},{\"id\":\"3:149\",\"name\":\"Variant=Neutral, State=Disabled, Size=Medium\"},{\"id\":\"3:150\",\"name\":\"Variant=Subtle, State=Default, Size=Medium\"},{\"id\":\"3:151\",\"name\":\"Variant=Subtle, State=Hover, Size=Medium\"}]},{\"id\":\"3:234\",\"name\":\"Card\",\"key\":\"a5bde480886231526d7dd890df3779dc15b52423\",\"props\":{\"Asset#113:13\":{\"type\":\"BOOLEAN\",\"defaultValue\":true},\"Button#113:15\":{\"type\":\"BOOLEAN\",\"defaultValue\":true},\"Heading#280:0\":{\"type\":\"TEXT\",\"defaultValue\":\"Title\"},\"Body#280:13\":{\"type\":\"TEXT\",\"defaultValue\":\"Body text for whatever you’d like to say. Add main takeaway points, quotes, anecdotes, or even a very very short story. \"},\"Icon#280:68\":{\"type\":\"INSTANCE_SWAP\",\"defaultValue\":\"icon\"},\"Body2#6062:54\":{\"type\":\"SLOT\"},\"Asset Type\":{\"type\":\"VARIANT\",\"defaultValue\":\"Icon\"},\"Variant\":{\"type\":\"VARIANT\",\"defaultValue\":\"Stroke\"},\"Direction\":{\"type\":\"VARIANT\",\"defaultValue\":\"Horizontal\"}},\"variants\":[{\"id\":\"3:235\",\"name\":\"Asset Type=Icon, Variant=Default, Direction=Horizontal\"},{\"id\":\"3:236\",\"name\":\"Asset Type=Icon, Variant=Default, Direction=Vertical\"},{\"id\":\"3:237\",\"name\":\"Asset Type=Icon, Variant=Stroke, Direction=Horizontal\"},{\"id\":\"3:238\",\"name\":\"Asset Type=Icon, Variant=Stroke, Direction=Vertical\"},{\"id\":\"3:239\",\"name\":\"Asset Type=Image, Variant=Default, Direction=Horizontal\"},{\"id\":\"3:240\",\"name\":\"Asset Type=Image, Variant=Default, Direction=Vertical\"},{\"id\":\"3:241\",\"name\":\"Asset Type=Image, Variant=Stroke, Direction=Horizontal\"},{\"id\":\"3:242\",\"name\":\"Asset Type=Image, Variant=Stroke, Direction=Vertical\"}]}],\"gap\":{\"id\":\"VariableID:16bc6f84b6e7e20e4234ef79030ee580ec0f4505/564:258\",\"name\":\"Space/400\",\"values\":{\"9:7\":16}},\"textStyle\":{\"id\":\"S:cebee1b62ea594fa8f97b0b247fd163730736f2a,716:123\",\"name\":\"Body Base\",\"fontName\":{\"family\":\"Inter\",\"style\":\"Regular\",\"variationSettings\":{\"wght\":400,\"slnt\":0}},\"fontSize\":16},\"createdNodeIds\":[]}"
+      }
+    ],
+    "isError": false
+  },
+  "created": [
+    {
+      "type": "text",
+      "text": "{\"createdNodeIds\":[\"6:270\",\"6:337\",\"6:369\"],\"mutatedNodeIds\":[\"4:18\"],\"wrapper\":{\"id\":\"4:18\",\"width\":440,\"height\":542},\"instances\":[{\"id\":\"4:84\",\"name\":\"Navigation Button\",\"linked\":true},{\"id\":\"4:93\",\"name\":\"Navigation Button\",\"linked\":true},{\"id\":\"4:97\",\"name\":\"Navigation Button\",\"linked\":true},{\"id\":\"4:101\",\"name\":\"Navigation Button\",\"linked\":true},{\"id\":\"6:270\",\"name\":\"Card\",\"linked\":true},{\"id\":\"6:337\",\"name\":\"Card\",\"linked\":true},{\"id\":\"6:369\",\"name\":\"Button\",\"linked\":true}]}"
+    }
+  ],
+  "nav": [
+    {
+      "type": "text",
+      "text": "{\"createdNodeIds\":[\"4:83\",\"4:84\",\"4:93\",\"4:97\",\"4:101\"],\"mutatedNodeIds\":[\"4:18\"]}"
+    }
+  ],
+  "quota": {
+    "blocked": true,
+    "reason": "Starter plan MCP call limit reached on final readback; last successful write returned 7 linked instances and rendered screenshot"
+  },
+  "uiuxSearch": {
+    "exactKit": "UNRESOLVED",
+    "publicQueries": [
+      "\"uiux.build\" \"Figma\" kit",
+      "\"Weekly Smart Basket\" figma",
+      "site:figma.com/community \"uiux.build\"",
+      "site:figma.com/community \"Weekly Smart Basket\""
+    ],
+    "instagram": "web fetch cache miss",
+    "community": "robots.txt prevented direct read",
+    "site": "uiux.build domain not verified; non-retryable web open refusal",
+    "scope": "Available subscribed design libraries and public search; not exhaustive private files or unpublished kits",
+    "browser_followup": {
+      "profile": "https://www.instagram.com/uiux.build/",
+      "accessible_without_login": true,
+      "profile_name": "Darpan · UI/UX Design · Web Development · App Development",
+      "links": [
+        {
+          "label": "Start Your Project",
+          "url": "https://forms.gle/dFSSvVxYuWoW86Fs9"
+        },
+        {
+          "label": "Company website",
+          "url": "http://www.marknox.com/"
+        }
+      ],
+      "recent_reel": "https://www.instagram.com/uiux.build/reel/DdLXTM4NJxG/",
+      "caption_observation": "Offers app/SaaS design in Figma via DM; no downloadable kit/source URL in visible caption.",
+      "website_https_result": "ERR_CERT_COMMON_NAME_INVALID; certificate checks were not disabled",
+      "form": "No form submission; web fetch unavailable",
+      "exact_reel_visual_match": "Not yet established; sign-up overlay blocked first screenshot"
+    }
+  }
+}

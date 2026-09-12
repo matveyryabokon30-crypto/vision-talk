@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Пабликус · новая основа</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../../library/pablicus-ui/foundation.css">
+  <link rel="stylesheet" href="./shell.css">
+</head>
+<body>
+  <div id="app">
+    <header class="brand"><span class="brand-mark" aria-hidden="true">п</span><strong>пабликус</strong><span class="prototype-label">Прототип · локально</span></header>
+    <nav id="primary-nav" aria-label="Основные разделы"></nav>
+    <main id="workspace" tabindex="-1"></main>
+    <div id="status" role="status" aria-live="polite"></div>
+  </div>
+  <dialog id="details"><form method="dialog"><button class="close-dialog" aria-label="Закрыть">×</button><div id="details-body"></div><button class="pb-primary">Понятно</button></form></dialog>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

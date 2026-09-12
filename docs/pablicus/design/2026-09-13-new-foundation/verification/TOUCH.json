@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "scope": "CDP-emitted touch events in Chrome, not physical iPhone",
+  "checks": [
+    {
+      "id": "touch-opens",
+      "pass": true
+    },
+    {
+      "id": "touch-selects",
+      "pass": true
+    },
+    {
+      "id": "touch-drag-moves",
+      "pass": true
+    },
+    {
+      "id": "touch-cancel-restores",
+      "pass": true
+    },
+    {
+      "id": "touch-cancel-no-selection",
+      "pass": true
+    },
+    {
+      "id": "tap-after-cancel-works",
+      "pass": true
+    },
+    {
+      "id": "input-returned",
+      "pass": true
+    },
+    {
+      "id": "geometry-input-and-axes",
+      "pass": true
+    },
+    {
+      "id": "geometry-small-viewport-safe",
+      "pass": true
+    }
+  ]
+}

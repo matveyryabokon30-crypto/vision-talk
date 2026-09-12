@@ -1,0 +1,182 @@
+{
+  "codenotch": {
+    "commit": "bd62f4486a81a31e8239f79ae93f3370cb047b78",
+    "files": [
+      {
+        "path": "LICENSE",
+        "sha256": "2868a2239cb49e84eae28db7a9069c6c04f8f9d4623aa360fd69feefa96edc63",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "Sources/Notch/NotchPlacement.swift",
+        "sha256": "bf27b95c367adf349e24418c6a923a228f32c498182b0be56a606d2651997f74",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "Sources/Notch/NotchLayout.swift",
+        "sha256": "e5da4628d58117e428c4170172b3d2cebd7d8738b06fdf226cfdccbef29ad9e0",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "Sources/Notch/SideNotchShape.swift",
+        "sha256": "5330db6393e97c19b10bc48498f56e3de2453b2c113f6d8adbfb9ff29353e784",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "windows/codenotch/ui/notch.html",
+        "sha256": "bfec653c180cf2ea6656d4cecbb0221f75229ffaa87f13d1e33d65ce21ebed47",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "Sources/Notch/NotchMotion.swift",
+        "sha256": "7a83f1b2b947ea3afd953977800d5156368605f4fea801bb80c6ab7b49ed3d33",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "Sources/Notch/NotchGeometry.swift",
+        "sha256": "32d25b24e806825df8453c5978c85512b9ce0b9601efc58b1f145717ffc77026",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "Sources/Notch/NotchEdge.swift",
+        "sha256": "c1bf85eefe5149eb2bcb6ffd8111f11c98905690c67bb2f41b1c0794dbee2b0b",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      }
+    ],
+    "pass": true
+  },
+  "figma-sds": {
+    "commit": "030aba021183cd5332b35c89c56fbaee5b600162",
+    "files": [
+      {
+        "path": "LICENSE",
+        "sha256": "570f1f1c07d32e2cdc7da3eea40f9c772e584782db15cbf455a72a19de36b7bc",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "figma.config.json",
+        "sha256": "49e26c57f3a5e139cbd4e44453e99100501a6ebce0f5a2ca09cdc6ead81628ec",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "src/ui/compositions/Forms/Forms.tsx",
+        "sha256": "aa7d8b1b92930c2baef9e59f01242992a03fe0bacb70c6a3959f383d3c843e30",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "src/ui/compositions/Forms/forms.css",
+        "sha256": "58db8771cde4f9781229a63011fac1ed15009f4609c8464f9cc7317c112fbc38",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "src/ui/compositions/Cards/Cards.tsx",
+        "sha256": "a2e47d0394c964c0c971b5bfb577e776fcd3b184fbfe3c8ab9169349c07193a4",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "src/ui/compositions/Cards/cards.css",
+        "sha256": "ca4dde96e50589f8f412a084b9771c73e477bd8dee516f76c489a839ade671d2",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "src/figma/compositions/form/FormLogIn.figma.ts",
+        "sha256": "0391c1fa4d24b8a10ed85a882a1cf515d9694ca70c3e07cecdf0e9e85974ad2e",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "src/figma/primitives/tab/Tabs.figma.ts",
+        "sha256": "9f7be1009b11d4b91a17cb072d4df7425a311b6842183bc397001922e36392c8",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "scripts/tokens/app.mjs",
+        "sha256": "07b7530aba56017b4baa09de4f518c0805f892c43798d3fe2f9c0b3cc10aa9ce",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "src/theme.css",
+        "sha256": "7648a2dcf995b091c06bf36fdd6f5fc15b684831ca73d09b24521350cac7bab8",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "scripts/tokens/tokens.json",
+        "sha256": "561c68f39de00aa013700089c20a40d11f5c3797b6e71c1058dbfb141acde404",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "scripts/tokens/styles.json",
+        "sha256": "d621b3a3d750e5eb64a30382722b25d5e52831e481768f38ce936638f86c2efe",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "scripts/tokens/fromFigma.mjs",
+        "sha256": "2eb8b7641411f24f030a6a502459566816e3b2cd21fca18808b94be0c490003b",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "scripts/tokens/README.md",
+        "sha256": "5e90989215ee87a69e88b75e11bd3d87f7b445c21bb9d0be3e0d61837f8715be",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "src/ui/primitives/Tab/Tab.tsx",
+        "sha256": "2ea07bf99ef95066c53148bc6ac34cf4c1ac4f76441cc9961ac811b07c254a72",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "src/ui/primitives/Tab/tab.css",
+        "sha256": "eaecb1e83acbbb49ab0bb233a06e7e565ff41e3921b72de1bbb90b0387f50cd9",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "src/ui/primitives/Button/Button.tsx",
+        "sha256": "cae3d803032a37a8fee44024e9ca1daf6e35d35422d0827e4cb0ec7d99328565",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "src/ui/primitives/Button/button.css",
+        "sha256": "28ce913f3419f7c83c7eb978bd72b05a20d3be1c76e29a65391f2f72998d8d70",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "src/figma/primitives/navigation/NavigationButton.figma.ts",
+        "sha256": "6b3e2bd7dadae8eeebe1e4db64ed4f667ba769e31bbd98832c34a7088b53e1b3",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      },
+      {
+        "path": "src/figma/primitives/button/Button.figma.ts",
+        "sha256": "949ba667157e36fc14f927e2c3229dc6498975dda165960e7c3cb36e9b671a51",
+        "matches_manifest": true,
+        "matches_pinned_upstream": true
+      }
+    ],
+    "pass": true
+  }
+}

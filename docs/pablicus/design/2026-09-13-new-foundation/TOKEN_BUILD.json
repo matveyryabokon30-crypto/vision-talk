@@ -1,0 +1,9 @@
+{
+  "command": "node app.mjs --skip-rest-api",
+  "network": "Not used; FIGMA_ACCESS_TOKEN and FIGMA_FILE_KEY unset",
+  "exit": 0,
+  "generated": true,
+  "matches_vendored_theme": true,
+  "stderr": "",
+  "sha256": "7648a2dcf995b091c06bf36fdd6f5fc15b684831ca73d09b24521350cac7bab8"
+}

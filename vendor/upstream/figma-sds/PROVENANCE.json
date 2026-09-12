@@ -48,6 +48,51 @@
       "path": "scripts/tokens/app.mjs",
       "sha256": "07b7530aba56017b4baa09de4f518c0805f892c43798d3fe2f9c0b3cc10aa9ce",
       "bytes": 18070
+    },
+    {
+      "path": "src/theme.css",
+      "sha256": "7648a2dcf995b091c06bf36fdd6f5fc15b684831ca73d09b24521350cac7bab8"
+    },
+    {
+      "path": "scripts/tokens/tokens.json",
+      "sha256": "561c68f39de00aa013700089c20a40d11f5c3797b6e71c1058dbfb141acde404"
+    },
+    {
+      "path": "scripts/tokens/styles.json",
+      "sha256": "d621b3a3d750e5eb64a30382722b25d5e52831e481768f38ce936638f86c2efe"
+    },
+    {
+      "path": "scripts/tokens/fromFigma.mjs",
+      "sha256": "2eb8b7641411f24f030a6a502459566816e3b2cd21fca18808b94be0c490003b"
+    },
+    {
+      "path": "scripts/tokens/README.md",
+      "sha256": "5e90989215ee87a69e88b75e11bd3d87f7b445c21bb9d0be3e0d61837f8715be"
+    },
+    {
+      "path": "src/ui/primitives/Tab/Tab.tsx",
+      "sha256": "2ea07bf99ef95066c53148bc6ac34cf4c1ac4f76441cc9961ac811b07c254a72"
+    },
+    {
+      "path": "src/ui/primitives/Tab/tab.css",
+      "sha256": "eaecb1e83acbbb49ab0bb233a06e7e565ff41e3921b72de1bbb90b0387f50cd9"
+    },
+    {
+      "path": "src/ui/primitives/Button/Button.tsx",
+      "sha256": "cae3d803032a37a8fee44024e9ca1daf6e35d35422d0827e4cb0ec7d99328565"
+    },
+    {
+      "path": "src/ui/primitives/Button/button.css",
+      "sha256": "28ce913f3419f7c83c7eb978bd72b05a20d3be1c76e29a65391f2f72998d8d70"
+    },
+    {
+      "path": "src/figma/primitives/navigation/NavigationButton.figma.ts",
+      "sha256": "6b3e2bd7dadae8eeebe1e4db64ed4f667ba769e31bbd98832c34a7088b53e1b3"
+    },
+    {
+      "path": "src/figma/primitives/button/Button.figma.ts",
+      "sha256": "949ba667157e36fc14f927e2c3229dc6498975dda165960e7c3cb36e9b671a51"
     }
-  ]
+  ],
+  "purpose": "Pinned original code/tokens for Pablicus. theme.css is consumed by the isolated new-shell prototype; React examples remain reference source. Offline token generator verified in a temporary copy."
 }

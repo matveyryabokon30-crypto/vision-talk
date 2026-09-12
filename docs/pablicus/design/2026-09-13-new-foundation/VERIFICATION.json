@@ -1,0 +1,55 @@
+{
+  "status": "FOUNDATION_READY_FOR_OWNER_REVIEW_WITH_SOURCE_GAP",
+  "work_start_head": "973f15c7cbc345d1866adfd32a8f20cf4431e18b",
+  "runtime_hashes": {
+    "prototypes/pablicus-next/index.html": "8987ec93080b085d95523a93b8dec9a97aa9f4711db37eedbbd4a20b914f8596",
+    "prototypes/pablicus-next/app.js": "5aabac53f714471a5414d90cffc33dd310aaf4c8ca05dbcd238fe9e00b27f75e",
+    "prototypes/pablicus-next/shell.css": "8bf4552d90637fc5714b92a8c60ca481137d8ba36e4a3430e18b33b2182683ee",
+    "library/pablicus-ui/edge-picker.js": "010d53ac15bb4374a13bdb9c5ab310e685df6c68e75c9b8dd8d8dbdafd54eb24",
+    "library/pablicus-ui/notch-geometry.js": "5c1de29a2a83330cb2c4f428ef84198701491b8d169c9f19addf46a790e48bd6",
+    "library/pablicus-ui/foundation.css": "96f071f788f41396fd184750a8058255b990bcf4779f1e32dc6587fc5e64f32a",
+    "prototypes/pablicus-next/serve.py": "29d2c153f6e225bb48031363c8276a4251b50d747f31823571d4f986c9372a52"
+  },
+  "tested_runtime_unchanged_since_pass": true,
+  "browser": "153.0.8010.36",
+  "behavior_checks": {
+    "pass": 72,
+    "total": 72
+  },
+  "touch_geometry_checks": {
+    "pass": 9,
+    "total": 9
+  },
+  "upstream_integrity": {
+    "codenotch": {
+      "files": 8,
+      "pass": true
+    },
+    "figma-sds": {
+      "files": 20,
+      "pass": true
+    }
+  },
+  "offline_tokens_reproduced": true,
+  "existing_pablicus_runtime_diff": "",
+  "private_owner_images_in_git": false,
+  "figma": {
+    "url": "https://www.figma.com/design/ppVDFrQo8drbWCyxWtOHj1?node-id=4-18",
+    "linked_instances_confirmed": 7,
+    "last_successful_write_screenshot_inspected": true,
+    "final_full_readback": "BLOCKED_STARTER_MCP_LIMIT",
+    "exact_uiux_video_source": "NOT_FOUND"
+  },
+  "limitations": [
+    "No physical iPhone/Safari qualification",
+    "Local demonstration state only; existing auth/backend not connected to new shell",
+    "No DESIGN_APPROVED or independent acceptance",
+    "No deployment",
+    "Exact editable uiux.build file still unavailable; not substituted silently"
+  ],
+  "prior_runs": {
+    "RUN1_HARNESS_CSP": "45 passing checks then legacy test wait expression hit CSP; changed only test to function predicate",
+    "RUN2_DRAG_OBSTRUCTION": "52 passing checks then real new-shell defect: dragged control intercepted Send. Fixed by bounds region excluding composer; final 72 passed."
+  },
+  "server_approval": "Repository-wide static server rejected by auto-review; replaced with explicit eight-URL loopback allowlist, approved and verified; no remaining server blocker"
+}

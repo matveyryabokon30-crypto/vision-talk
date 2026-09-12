@@ -1,0 +1,602 @@
+{
+  "status": "FAIL",
+  "scope": "Chrome desktop/mobile viewport simulation; isolated local fixture; not physical iPhone qualification",
+  "checks": [
+    {
+      "id": "nav-320x640",
+      "pass": true,
+      "detail": [
+        {
+          "name": "Чаты",
+          "x": 8,
+          "y": 577.5,
+          "right": 81,
+          "bottom": 632,
+          "hit": true
+        },
+        {
+          "name": "Дела",
+          "x": 85,
+          "y": 577.5,
+          "right": 158,
+          "bottom": 632,
+          "hit": true
+        },
+        {
+          "name": "Боты",
+          "x": 162,
+          "y": 577.5,
+          "right": 235,
+          "bottom": 632,
+          "hit": true
+        },
+        {
+          "name": "Вы",
+          "x": 239,
+          "y": 577.5,
+          "right": 312,
+          "bottom": 632,
+          "hit": true
+        }
+      ]
+    },
+    {
+      "id": "bottom-nav-320",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "enter-stable-320",
+      "pass": true,
+      "detail": {
+        "before": {
+          "x": 18,
+          "y": 484.5,
+          "w": 228,
+          "h": 72,
+          "right": 246,
+          "bottom": 556.5
+        },
+        "after": {
+          "x": 18,
+          "y": 484.5,
+          "w": 228,
+          "h": 72,
+          "right": 246,
+          "bottom": 556.5
+        }
+      }
+    },
+    {
+      "id": "workspace-fixed-320-materials",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "workspace-fixed-320-tasks",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "workspace-fixed-320-talk",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "draft-retained-320",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "no-horizontal-scroll-320",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "nav-390x844",
+      "pass": true,
+      "detail": [
+        {
+          "name": "Чаты",
+          "x": 8,
+          "y": 781.5,
+          "right": 98.5,
+          "bottom": 836,
+          "hit": true
+        },
+        {
+          "name": "Дела",
+          "x": 102.5,
+          "y": 781.5,
+          "right": 193,
+          "bottom": 836,
+          "hit": true
+        },
+        {
+          "name": "Боты",
+          "x": 197,
+          "y": 781.5,
+          "right": 287.5,
+          "bottom": 836,
+          "hit": true
+        },
+        {
+          "name": "Вы",
+          "x": 291.5,
+          "y": 781.5,
+          "right": 382,
+          "bottom": 836,
+          "hit": true
+        }
+      ]
+    },
+    {
+      "id": "bottom-nav-390",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "enter-stable-390",
+      "pass": true,
+      "detail": {
+        "before": {
+          "x": 18,
+          "y": 688.5,
+          "w": 298,
+          "h": 72,
+          "right": 316,
+          "bottom": 760.5
+        },
+        "after": {
+          "x": 18,
+          "y": 688.5,
+          "w": 298,
+          "h": 72,
+          "right": 316,
+          "bottom": 760.5
+        }
+      }
+    },
+    {
+      "id": "workspace-fixed-390-materials",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "workspace-fixed-390-tasks",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "workspace-fixed-390-talk",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "draft-retained-390",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "no-horizontal-scroll-390",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "nav-700x800",
+      "pass": true,
+      "detail": [
+        {
+          "name": "Чаты",
+          "x": 8,
+          "y": 737.5,
+          "right": 176,
+          "bottom": 792,
+          "hit": true
+        },
+        {
+          "name": "Дела",
+          "x": 180,
+          "y": 737.5,
+          "right": 348,
+          "bottom": 792,
+          "hit": true
+        },
+        {
+          "name": "Боты",
+          "x": 352,
+          "y": 737.5,
+          "right": 520,
+          "bottom": 792,
+          "hit": true
+        },
+        {
+          "name": "Вы",
+          "x": 524,
+          "y": 737.5,
+          "right": 692,
+          "bottom": 792,
+          "hit": true
+        }
+      ]
+    },
+    {
+      "id": "bottom-nav-700",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "enter-stable-700",
+      "pass": true,
+      "detail": {
+        "before": {
+          "x": 18,
+          "y": 644.5,
+          "w": 608,
+          "h": 72,
+          "right": 626,
+          "bottom": 716.5
+        },
+        "after": {
+          "x": 18,
+          "y": 644.5,
+          "w": 608,
+          "h": 72,
+          "right": 626,
+          "bottom": 716.5
+        }
+      }
+    },
+    {
+      "id": "workspace-fixed-700-materials",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "workspace-fixed-700-tasks",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "workspace-fixed-700-talk",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "draft-retained-700",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "no-horizontal-scroll-700",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "nav-768x1024",
+      "pass": true,
+      "detail": [
+        {
+          "name": "Чаты",
+          "x": 16,
+          "y": 104,
+          "right": 179,
+          "bottom": 156,
+          "hit": true
+        },
+        {
+          "name": "Дела",
+          "x": 16,
+          "y": 164,
+          "right": 179,
+          "bottom": 216,
+          "hit": true
+        },
+        {
+          "name": "Боты",
+          "x": 16,
+          "y": 224,
+          "right": 179,
+          "bottom": 276,
+          "hit": true
+        },
+        {
+          "name": "Вы",
+          "x": 16,
+          "y": 284,
+          "right": 179,
+          "bottom": 336,
+          "hit": true
+        }
+      ]
+    },
+    {
+      "id": "enter-stable-768",
+      "pass": true,
+      "detail": {
+        "before": {
+          "x": 260,
+          "y": 928,
+          "w": 388,
+          "h": 72,
+          "right": 648,
+          "bottom": 1000
+        },
+        "after": {
+          "x": 260,
+          "y": 928,
+          "w": 388,
+          "h": 72,
+          "right": 648,
+          "bottom": 1000
+        }
+      }
+    },
+    {
+      "id": "workspace-fixed-768-materials",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "workspace-fixed-768-tasks",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "workspace-fixed-768-talk",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "draft-retained-768",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "no-horizontal-scroll-768",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "nav-1280x900",
+      "pass": true,
+      "detail": [
+        {
+          "name": "Чаты",
+          "x": 16,
+          "y": 104,
+          "right": 179,
+          "bottom": 156,
+          "hit": true
+        },
+        {
+          "name": "Дела",
+          "x": 16,
+          "y": 164,
+          "right": 179,
+          "bottom": 216,
+          "hit": true
+        },
+        {
+          "name": "Боты",
+          "x": 16,
+          "y": 224,
+          "right": 179,
+          "bottom": 276,
+          "hit": true
+        },
+        {
+          "name": "Вы",
+          "x": 16,
+          "y": 284,
+          "right": 179,
+          "bottom": 336,
+          "hit": true
+        }
+      ]
+    },
+    {
+      "id": "enter-stable-1280",
+      "pass": true,
+      "detail": {
+        "before": {
+          "x": 262,
+          "y": 804,
+          "w": 896,
+          "h": 72,
+          "right": 1158,
+          "bottom": 876
+        },
+        "after": {
+          "x": 262,
+          "y": 804,
+          "w": 896,
+          "h": 72,
+          "right": 1158,
+          "bottom": 876
+        }
+      }
+    },
+    {
+      "id": "workspace-fixed-1280-materials",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "workspace-fixed-1280-tasks",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "workspace-fixed-1280-talk",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "draft-retained-1280",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "no-horizontal-scroll-1280",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "nav-844x390",
+      "pass": true,
+      "detail": [
+        {
+          "name": "Чаты",
+          "x": 16,
+          "y": 104,
+          "right": 179,
+          "bottom": 156,
+          "hit": true
+        },
+        {
+          "name": "Дела",
+          "x": 16,
+          "y": 164,
+          "right": 179,
+          "bottom": 216,
+          "hit": true
+        },
+        {
+          "name": "Боты",
+          "x": 16,
+          "y": 224,
+          "right": 179,
+          "bottom": 276,
+          "hit": true
+        },
+        {
+          "name": "Вы",
+          "x": 16,
+          "y": 284,
+          "right": 179,
+          "bottom": 336,
+          "hit": true
+        }
+      ]
+    },
+    {
+      "id": "enter-stable-844",
+      "pass": true,
+      "detail": {
+        "before": {
+          "x": 260,
+          "y": 310,
+          "w": 464,
+          "h": 72,
+          "right": 724,
+          "bottom": 382
+        },
+        "after": {
+          "x": 260,
+          "y": 310,
+          "w": 464,
+          "h": 72,
+          "right": 724,
+          "bottom": 382
+        }
+      }
+    },
+    {
+      "id": "workspace-fixed-844-materials",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "workspace-fixed-844-tasks",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "workspace-fixed-844-talk",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "draft-retained-844",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "no-horizontal-scroll-844",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "reduced-viewport-input-visible",
+      "pass": true,
+      "detail": {
+        "x": 18,
+        "y": 280.5,
+        "w": 298,
+        "h": 72,
+        "right": 316,
+        "bottom": 352.5
+      }
+    },
+    {
+      "id": "viewport-restored",
+      "pass": true,
+      "detail": {
+        "x": 18,
+        "y": 688.5,
+        "w": 298,
+        "h": 72,
+        "right": 316,
+        "bottom": 760.5
+      }
+    },
+    {
+      "id": "keyboard-view-selection",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "escape-focus-return",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "drag-no-selection-or-shift",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "edge-menu-clamped",
+      "pass": true,
+      "detail": {
+        "x": 174,
+        "y": 613,
+        "w": 164,
+        "h": 150,
+        "right": 338,
+        "bottom": 763
+      }
+    },
+    {
+      "id": "history-and-draft",
+      "pass": true,
+      "detail": null
+    }
+  ],
+  "errors": [],
+  "external_requests": [],
+  "browser": "153.0.8010.36",
+  "failure": "Locator.click: Timeout 10000ms exceeded.\nCall log:\n  - waiting for locator(\"#send\")\n    - locator resolved to <button id=\"send\" type=\"submit\" class=\"pb-primary\" aria-label=\"Добавить сообщение\">↑</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <path d=\"M 46 0 A 12 12 0 0 1 34 12 L 16 12 A 16 16 0 0 0 0 28 L 0 64 A 16 16 0 0 0 16 80 L 34 80 A 12 12 0 0 1 46 92 Z\"></path> from <aside class=\"pb-edge\" data-edge=\"right\" aria-label=\"Представление рабочего пространства\">…</aside> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <path d=\"M 46 0 A 12 12 0 0 1 34 12 L 16 12 A 16 16 0 0 0 0 28 L 0 64 A 16 16 0 0 0 16 80 L 34 80 A 12 12 0 0 1 46 92 Z\"></path> from <aside class=\"pb-edge\" data-edge=\"right\" aria-label=\"Представление рабочего пространства\">…</aside> subtree intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    19 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <path d=\"M 46 0 A 12 12 0 0 1 34 12 L 16 12 A 16 16 0 0 0 0 28 L 0 64 A 16 16 0 0 0 16 80 L 34 80 A 12 12 0 0 1 46 92 Z\"></path> from <aside class=\"pb-edge\" data-edge=\"right\" aria-label=\"Представление рабочего пространства\">…</aside> subtree intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n",
+  "source_hashes": {
+    "prototypes/pablicus-next/index.html": "8987ec93080b085d95523a93b8dec9a97aa9f4711db37eedbbd4a20b914f8596",
+    "prototypes/pablicus-next/serve.py": "29d2c153f6e225bb48031363c8276a4251b50d747f31823571d4f986c9372a52",
+    "prototypes/pablicus-next/shell.css": "8bf4552d90637fc5714b92a8c60ca481137d8ba36e4a3430e18b33b2182683ee",
+    "prototypes/pablicus-next/verify.py": "51b7f0f8d88ddff5d819a3380dedf522973150bad01141ce7f959f24114149e9",
+    "prototypes/pablicus-next/app.js": "2ded13f584ee6dbd2ebc65cae18b3edc6d8bc0b026c26f06f06f793c220d2f18",
+    "library/pablicus-ui/edge-picker.js": "45cc4c0bcaca5134799f559fd0d718868574944902964b3571f32714eebc9b8b",
+    "library/pablicus-ui/notch-geometry.js": "5c1de29a2a83330cb2c4f428ef84198701491b8d169c9f19addf46a790e48bd6",
+    "library/pablicus-ui/THIRD_PARTY_NOTICES.md": "716acdc0815d1e43d532bedebdfcd244bf25c8fbfb2fa32c57b880e7b852d3cc",
+    "library/pablicus-ui/foundation.css": "b894699c45dc3914831329a4ad1c7caa309e6283dd9d378f0f549bfb0fa965e4"
+  }
+}

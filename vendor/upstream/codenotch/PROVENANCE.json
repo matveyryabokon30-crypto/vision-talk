@@ -23,6 +23,18 @@
     {
       "path": "windows/codenotch/ui/notch.html",
       "sha256": "bfec653c180cf2ea6656d4cecbb0221f75229ffaa87f13d1e33d65ce21ebed47"
+    },
+    {
+      "path": "Sources/Notch/NotchMotion.swift",
+      "sha256": "7a83f1b2b947ea3afd953977800d5156368605f4fea801bb80c6ab7b49ed3d33"
+    },
+    {
+      "path": "Sources/Notch/NotchGeometry.swift",
+      "sha256": "32d25b24e806825df8453c5978c85512b9ce0b9601efc58b1f145717ffc77026"
+    },
+    {
+      "path": "Sources/Notch/NotchEdge.swift",
+      "sha256": "c1bf85eefe5149eb2bcb6ffd8111f11c98905690c67bb2f41b1c0794dbee2b0b"
     }
   ]
 }
