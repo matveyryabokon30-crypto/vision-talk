@@ -65,6 +65,7 @@ jobs:
           assert d['negative_control_qualified'],d
           PY
       - name: Accepted 1B regression contracts
+        if: always()
         run: |
           timeout --kill-after=5s 120s python tests/engineering/block-01/test_controller_1b.py --source-root . --output shell-2a-results/1b.json > shell-2a-results/1b.log 2>&1
           python - <<'PY'

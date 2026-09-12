@@ -44,7 +44,7 @@ async def probe(browser,root,origin,out,width,height,mutation=False):
         await page.locator('#password').fill('fixture-only-password')
         await page.locator('#loginSubmit').click()
         await page.wait_for_function('PablicusDebug.user==="'+A+'" && document.querySelectorAll(".chatCard").length>0')
-        await page.wait_for_function('!!document.querySelector("script[src=\"bot-scenario-bridge.js\"]")')
+        await page.wait_for_function("[...document.scripts].some(s=>s.src.endsWith('/bot-scenario-bridge.js'))")
         await page.evaluate('''() => {
           const controller=PablicusController, native=controller.navigate;
           window.__shellNavigationCalls=[];
@@ -129,7 +129,7 @@ async def main(args):
             positives=[summary['variants'].get(name,{}).get('status') for name in ['mobile','tablet','desktop']]
             negative=summary['variants'].get('duplicate-navigation',{})
             summary['negative_control_qualified']=negative.get('status')=='FAIL' and any(c['name'].startswith('2A-SINGLE-NAVIGATION-DISPATCH-') and c['status']=='FAIL' and len(c['actual']['calls'])==2 for c in negative.get('checks',[]))
-            summary['status']='PASS' if positives==['PASS']*3 and summary['negative_control_qualified'] else 'FAIL'
+            summary['status']='ERROR' if 'ERROR' in positives or negative.get('status')=='ERROR' else ('PASS' if positives==['PASS']*3 and summary['negative_control_qualified'] else 'FAIL')
     except BaseException as exc:summary.update(status='ERROR',reason=str(exc),traceback=traceback.format_exc())
     finally:
         server.shutdown();server.server_close();thread.join(2)
