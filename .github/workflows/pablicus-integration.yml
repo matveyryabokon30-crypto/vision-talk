@@ -13,12 +13,13 @@ permissions:
   contents: read
 
 env:
-  INTEGRATION_1C_WORK_START_HEAD: dc4a6031e3a7b5248882f88dee11d83ccd88fd60
+  INTEGRATION_1C_WORK_START_HEAD: 56a6ecf7b5ebdf0e8cc3529d4582707188124e29
+  PYTHONDONTWRITEBYTECODE: '1'
 
 jobs:
   integration:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4.2.2
         with:
@@ -43,24 +44,31 @@ jobs:
           data={'WORK_START_HEAD':os.environ['INTEGRATION_1C_WORK_START_HEAD'],'CAPTURE_SHA':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],'run_attempt':os.environ['GITHUB_RUN_ATTEMPT'],'python':platform.python_version(),'platform':platform.platform(),'node':subprocess.check_output(['node','--version'],text=True,timeout=5).strip(),'sources':hashes,'capture_phase':'BEFORE_CHECKS_NOT_A_VERDICT'}
           (out/'SOURCE_MANIFEST.json').write_text(json.dumps(data,indent=2)+'\n')
           PY
-      - name: Preserve accepted 1B regressions
-        run: |
-          timeout --kill-after=5s 120s python tests/engineering/block-01/test_controller_1b.py --source-root . --output integration-1c-results/regression-1b.json
       - name: Install pinned isolated browser
         run: |
           python -m pip install --disable-pip-version-check playwright==1.57.0
           python -m playwright install --with-deps chromium
       - name: Validate integration harness syntax
         run: |
-          timeout 15s python -m compileall -q tests/engineering/block-01/integration_1c
+          python - <<'PY'
+          import ast,pathlib
+          for source in pathlib.Path('tests/engineering/block-01/integration_1c').glob('*.py'):
+              ast.parse(source.read_text(),filename=str(source))
+          PY
           timeout 5s node --check tests/engineering/block-01/integration_1c/instrument.js
-      - name: Measure real browser integration scenarios
+      - name: Qualify harness and preflight before real browser scenarios
         run: |
-          timeout --kill-after=5s 1120s python tests/engineering/block-01/integration_1c/runner.py --source-root . --output-dir integration-1c-results/browser > integration-1c-results/browser.log 2>&1
+          timeout --kill-after=5s 1800s python tests/engineering/block-01/integration_1c/runner.py --source-root . --output-dir integration-1c-results/browser > integration-1c-results/browser.log 2>&1
+      - name: Qualify three isolated negative controls after positive baseline
+        run: |
+          timeout --kill-after=5s 600s python tests/engineering/block-01/integration_1c/mutation_runner.py --source-root . --positive-results integration-1c-results/browser/results.json --output-dir integration-1c-results/negative-controls > integration-1c-results/negative-controls.log 2>&1
+      - name: Preserve accepted 1B regressions
+        run: |
+          timeout --kill-after=5s 120s python tests/engineering/block-01/test_controller_1b.py --source-root . --output integration-1c-results/regression-1b.json
       - name: Record integration scope
         if: always()
         run: |
-          printf '%s\n' 'Real local index and SDK; real DOM/IndexedDB and application modules. Synthetic HTTP/Phoenix, no external forwarding; native IDB fault boundary. Static local shell supplied during offline reload; not production Service Worker or RLS qualification. This is the initial baseline measurement; negative controls and independent acceptance are not implied.' > integration-1c-results/BOUNDARY.txt
+          printf '%s\n' 'Real local index and SDK; real DOM/IndexedDB and application modules. Synthetic HTTP/Phoenix, no external forwarding; native IDB fault boundary. Static local shell supplied during offline reload; not production Service Worker or RLS qualification. Receiver/collector self-tests, A/B0/B1 and preflight gate positive scenarios. Negative controls run only after the positive baseline passes, followed by accepted 1B regressions. Individual evidence files determine results; this scope note grants no acceptance.' > integration-1c-results/BOUNDARY.txt
       - name: Retain original evidence
         if: always()
         uses: actions/upload-artifact@v4.6.2

@@ -6,7 +6,7 @@ from __future__ import annotations
 import argparse, asyncio, copy, functools, hashlib, http.server, json, mimetypes, os, platform, threading, time, traceback
 from pathlib import Path
 from urllib.parse import urlparse,unquote
-from playwright.async_api import async_playwright
+from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
 from network import Boundary,A,B,C1,C2,CB,BOT
 from collector import BrowserCollector,utc_now
 
@@ -137,7 +137,7 @@ import importlib, sys
 sys.modules['integration_case']=sys.modules[__name__]
 async def main():
  started=time.monotonic();RESULT.update(test_id='1C-'+args.case.upper(),start_time_utc=utc_now(),tested_sha=os.environ.get('PABLICUS_TESTED_SHA') or os.environ.get('GITHUB_SHA'))
- RESULT['source_sha256']={str(p.relative_to(ROOT)):sha(p.read_bytes()) for p in [HERE/'case.py',HERE/'collector.py',HERE/'instrument.js',ROOT/'pablicus/index.html',ROOT/'pablicus/app.js'] if p.is_file() and p.is_relative_to(ROOT)}
+ RESULT['source_sha256']={str(p.relative_to(ROOT)):sha(p.read_bytes()) for folder in [ROOT/'pablicus',HERE] for p in sorted(folder.rglob('*')) if p.is_file() and p.is_relative_to(ROOT) and '__pycache__' not in p.parts}
  save();server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(QuietServer,directory=str(ROOT)));thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start();origin='http://127.0.0.1:'+str(server.server_port);boundary=LocalBoundary(origin);page=None;ctx=None;b=None;collector=None
  RESULT['environment']={'python':platform.python_version(),'platform':platform.platform(),'origin':origin,'service_workers':'blocked','real_browser':'Playwright pinned Chromium'}
  try:
@@ -153,7 +153,7 @@ async def main():
     check('1C-NETWORK-BOUNDARY-COMPLETE',not boundary.unknown and not boundary.blocked,{'unknown':boundary.unknown,'blocked':boundary.blocked})
     observed=await page.evaluate('__integration.snapshot()');check('1C-NO-UNHANDLED-ERRORS',not observed['errors'],observed['errors']);RESULT['final_resources']=observed;RESULT['status']='PASS'
    except AssertionError as exc:RESULT.update(status='FAIL',reason=str(exc),traceback=traceback.format_exc())
-   except BaseException as exc:RESULT.update(status='TIMEOUT' if isinstance(exc,asyncio.TimeoutError) else 'ERROR',reason=str(exc),traceback=traceback.format_exc())
+   except BaseException as exc:RESULT.update(status='TIMEOUT' if isinstance(exc,(asyncio.TimeoutError,PlaywrightTimeoutError)) else 'ERROR',reason=str(exc),traceback=traceback.format_exc())
    finally:
     for h in boundary.holds:h['release'].set()
     RESULT.update(await collector.capture());collector.enforce_result(RESULT);save()
@@ -166,6 +166,7 @@ async def main():
  except BaseException as exc:RESULT.update(status='ERROR',reason=str(exc),traceback=traceback.format_exc())
  finally:
   server.shutdown();server.server_close();thread.join(2);RESULT['network']=boundary.summary();RESULT['closed']={'server':True,'thread_alive':thread.is_alive()}
+  if RESULT['status']=='PASS' and (boundary.unknown or boundary.blocked or thread.is_alive()):RESULT.update(status='ERROR',reason='Final network boundary or server cleanup failed')
   if collector:collector.enforce_result(RESULT)
   RESULT.update(end_time_utc=utc_now(),duration_ms=round((time.monotonic()-started)*1000));save();print(json.dumps({'case':args.case,'status':RESULT['status'],'reason':RESULT.get('reason'),'checks':[(x['name'],x['status']) for x in RESULT['checks']]}))
  return 0 if RESULT['status']=='PASS' else 1

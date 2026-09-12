@@ -327,7 +327,8 @@ async def main(args):
     result['tests']['COLLECTOR-EARLY-ERROR-01'] = await collector_test(output / 'collector', source_root)
     result['status'] = 'PASS' if all(test['status'] == 'PASS' for test in result['tests'].values()) else 'FAIL'
     result['end_time_utc'] = utc_now()
-    result['evidence_sha256'] = {str(path.relative_to(output)): digest(path) for path in output.rglob('*') if path.is_file() and path != output / 'results.json'}
+    # The supervisor finalizes its process.log hash after this process exits.
+    result['evidence_sha256'] = {str(path.relative_to(output)): digest(path) for path in output.rglob('*') if path.is_file() and path not in [output / 'results.json', output / 'process.log']}
     save(output / 'results.json', result)
     print(json.dumps({'status': result['status'], 'tests': {name: value['status'] for name, value in result['tests'].items()}}))
     return 0 if result['status'] == 'PASS' else 1
