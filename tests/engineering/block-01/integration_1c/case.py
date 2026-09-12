@@ -8,6 +8,7 @@ from pathlib import Path
 from urllib.parse import urlparse,unquote
 from playwright.async_api import async_playwright
 from network import Boundary,A,B,C1,C2,CB,BOT
+from collector import BrowserCollector,utc_now
 
 HERE=Path(__file__).resolve().parent
 ap=argparse.ArgumentParser();ap.add_argument('--case',required=True);ap.add_argument('--source-root',type=Path,required=True);ap.add_argument('--output',type=Path,required=True);args=ap.parse_args()
@@ -52,13 +53,6 @@ class LocalBoundary(Boundary):
     if target.is_file():await route.fulfill(path=str(target),content_type=mimetypes.guess_type(str(target))[0] or 'application/octet-stream')
     else:await route.fulfill(status=404,body='Missing local fixture source')
     return
-  if p.path.endswith(('/get_message_actions','/get_pinned_messages')):
-   # Empty action/pin collections are a valid stateful fixture, not a verdict.
-   if self.offline:await route.abort('internetdisconnected')
-   else:await route.fulfill(content_type='application/json',body='[]')
-   return
-  if p.path.endswith('/factory_list_projects'):
-   await route.fulfill(content_type='application/json',body='[]');return
   await super().handle(route)
  def summary(self):return {**super().summary(),'local_source_sha256':self.local_files,'static_offline_shell':'Unchanged local files supplied on declared network boundary; Service Worker not tested'}
 
@@ -142,28 +136,37 @@ class App:
 import importlib, sys
 sys.modules['integration_case']=sys.modules[__name__]
 async def main():
- save();server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(QuietServer,directory=str(ROOT)));thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start();origin='http://127.0.0.1:'+str(server.server_port);boundary=LocalBoundary(origin);page=None;ctx=None;b=None
+ started=time.monotonic();RESULT.update(test_id='1C-'+args.case.upper(),start_time_utc=utc_now(),tested_sha=os.environ.get('PABLICUS_TESTED_SHA') or os.environ.get('GITHUB_SHA'))
+ RESULT['source_sha256']={str(p.relative_to(ROOT)):sha(p.read_bytes()) for p in [HERE/'case.py',HERE/'collector.py',HERE/'instrument.js',ROOT/'pablicus/index.html',ROOT/'pablicus/app.js'] if p.is_file() and p.is_relative_to(ROOT)}
+ save();server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(QuietServer,directory=str(ROOT)));thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start();origin='http://127.0.0.1:'+str(server.server_port);boundary=LocalBoundary(origin);page=None;ctx=None;b=None;collector=None
  RESULT['environment']={'python':platform.python_version(),'platform':platform.platform(),'origin':origin,'service_workers':'blocked','real_browser':'Playwright pinned Chromium'}
  try:
   async with async_playwright() as pw:
    b=await pw.chromium.launch(headless=True,args=['--no-sandbox','--disable-dev-shm-usage','--disable-background-networking','--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1'])
    ctx=await b.new_context(service_workers='block',viewport={'width':430,'height':900});await ctx.add_init_script(path=str(HERE/'instrument.js'));await ctx.route('**/*',boundary.handle);await ctx.route_web_socket('**/*',boundary.websocket)
    page=await ctx.new_page();page.set_default_timeout(8000);page.set_default_navigation_timeout(15000);RESULT['browser_version']=b.version
+   collector=BrowserCollector(page,boundary,OUT)
    app=App(page,ctx,boundary,origin)
    try:
     await asyncio.wait_for(importlib.import_module('scenario_'+args.case.replace('-','_')).run(app),105)
+    if collector.events['page_errors']:raise RuntimeError('UNHANDLED_PAGE_ERROR: '+collector.events['page_errors'][0]['message'])
     check('1C-NETWORK-BOUNDARY-COMPLETE',not boundary.unknown and not boundary.blocked,{'unknown':boundary.unknown,'blocked':boundary.blocked})
     observed=await page.evaluate('__integration.snapshot()');check('1C-NO-UNHANDLED-ERRORS',not observed['errors'],observed['errors']);RESULT['final_resources']=observed;RESULT['status']='PASS'
    except AssertionError as exc:RESULT.update(status='FAIL',reason=str(exc),traceback=traceback.format_exc())
    except BaseException as exc:RESULT.update(status='TIMEOUT' if isinstance(exc,asyncio.TimeoutError) else 'ERROR',reason=str(exc),traceback=traceback.format_exc())
    finally:
     for h in boundary.holds:h['release'].set()
-    try:
-     await page.evaluate('__integration.releaseWrite()');RESULT['final_state']=await app.state();RESULT['instrument']=await page.evaluate('({resources:__integration.snapshot(),native:__integration.idbEvents,navigations:__integration.controllerStats.navigations})');await page.screenshot(path=str(OUT/'final.png'),timeout=5000);(OUT/'final.html').write_text(await page.content())
-    except Exception as exc:RESULT['capture_error']=str(exc)
-    save();await ctx.close();await b.close()
+    RESULT.update(await collector.capture());collector.enforce_result(RESULT);save()
+    RESULT['browser_cleanup']={}
+    for name,resource in [('context',ctx),('browser',b)]:
+     try:await asyncio.wait_for(resource.close(),5);RESULT['browser_cleanup'][name]='CLOSED'
+     except Exception as exc:
+      RESULT['browser_cleanup'][name]={'error':str(exc)}
+      if RESULT['status']=='PASS':RESULT.update(status='ERROR',reason='Browser cleanup failed: '+name)
  except BaseException as exc:RESULT.update(status='ERROR',reason=str(exc),traceback=traceback.format_exc())
  finally:
-  server.shutdown();server.server_close();thread.join(2);RESULT['network']=boundary.summary();RESULT['closed']={'server':True,'thread_alive':thread.is_alive()};save();print(json.dumps({'case':args.case,'status':RESULT['status'],'reason':RESULT.get('reason'),'checks':[(x['name'],x['status']) for x in RESULT['checks']]}))
+  server.shutdown();server.server_close();thread.join(2);RESULT['network']=boundary.summary();RESULT['closed']={'server':True,'thread_alive':thread.is_alive()}
+  if collector:collector.enforce_result(RESULT)
+  RESULT.update(end_time_utc=utc_now(),duration_ms=round((time.monotonic()-started)*1000));save();print(json.dumps({'case':args.case,'status':RESULT['status'],'reason':RESULT.get('reason'),'checks':[(x['name'],x['status']) for x in RESULT['checks']]}))
  return 0 if RESULT['status']=='PASS' else 1
 raise SystemExit(asyncio.run(main()))

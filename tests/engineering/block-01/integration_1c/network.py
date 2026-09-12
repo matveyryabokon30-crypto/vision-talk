@@ -62,7 +62,9 @@ class Boundary:
         uid=uid_of(req.headers.get('authorization',''));path=p.path;q=parse_qs(p.query)
         try: body=req.post_data_json or {}
         except Exception:body={}
-        entry={'method':req.method,'path':path,'uid':uid,'query':p.query,'at':round(time.monotonic(),6)}
+        special={'/rest/v1/rpc/get_message_actions','/rest/v1/rpc/get_pinned_messages','/rest/v1/rpc/factory_list_projects'}
+        entry={'host':p.hostname,'method':req.method,'path':path,'uid':uid,'query':p.query,'at':round(time.monotonic(),6)}
+        if path in special:entry['context']=copy.deepcopy(body)
         if path.endswith('send_rich_message'):entry['operation_key']=body.get('p_client_message_id')
         self.calls.append(entry)
         async def reply(data=None,status=200):
@@ -80,8 +82,28 @@ class Boundary:
             if path.endswith('/user'):await reply(user(uid) if uid else {'msg':'Unauthorized'},200 if uid else 401);return
             if path.endswith('/logout'):await reply(None,204);return
             if path.endswith('/settings'):await reply({});return
-        if not uid:
+        if uid not in [A,B]:
             await reply({'message':'Synthetic boundary: no session'},401);return
+        if path in special:
+            if p.hostname!=API_HOST or req.method!='POST' or p.query or not isinstance(body,dict):
+                entry['status']=501;self.unknown.append(entry.copy());await reply({'message':'UNMODELED_BOUNDARY '+path},501);return
+            if path.endswith('/factory_list_projects'):
+                if body:
+                    await reply({'message':'Fixture invalid factory context'},400);return
+            else:
+                cid=body.get('p_conversation_id')
+                if not self.owns(uid,cid):
+                    await reply({'message':'Fixture forbidden'},403);return
+                allowed={'p_conversation_id'}
+                if path.endswith('/get_message_actions'):
+                    allowed.add('p_message_ids');ids=body.get('p_message_ids')
+                    known={m['id'] for m in self.messages[cid]}
+                    if not isinstance(ids,list) or not ids or len(ids)>200 or any(not isinstance(i,str) or i not in known for i in ids):
+                        await reply({'message':'Fixture invalid message context'},400);return
+                if set(body)!=allowed:
+                    await reply({'message':'Fixture invalid request context'},400);return
+            # Existing empty collections now share host/auth/offline guards and journal.
+            await reply([]);return
         if path.startswith('/rest/v1/rpc/'):
             name=path.split('/')[-1];cid=body.get('p_conversation_id')
             if name in ['my_conversations_v3','my_conversations_v2']:

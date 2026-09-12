@@ -5,7 +5,9 @@
 (() => {
  'use strict';
  const native={add:EventTarget.prototype.addEventListener,remove:EventTarget.prototype.removeEventListener,
-  setTimeout,clearTimeout,setInterval,clearInterval,raf:requestAnimationFrame,caf:cancelAnimationFrame,
+  setTimeout:setTimeout.bind(window),clearTimeout:clearTimeout.bind(window),
+  setInterval:setInterval.bind(window),clearInterval:clearInterval.bind(window),
+  raf:requestAnimationFrame.bind(window),caf:cancelAnimationFrame.bind(window),
   MutationObserver,ResizeObserver,IntersectionObserver,transaction:IDBDatabase.prototype.transaction};
  const timers=new Map(),frames=new Map(),listeners=[],targets=new WeakMap(),observers=[];
  const errors=[],idbEvents=[],quiet=new Map();let serial=0;
@@ -34,7 +36,7 @@
  window.clearTimeout=function(id){timers.delete(id);return native.clearTimeout(id)};
  window.setInterval=function(fn,delay,...args){const id=native.setInterval(fn,delay,...args);timers.set(id,{kind:'interval',source:source()});return id};
  window.clearInterval=function(id){timers.delete(id);return native.clearInterval(id)};
- window.requestAnimationFrame=function(fn){let id;id=native.raf(function(t){frames.delete(id);return fn(t)});frames.set(id,source());return id};
+ window.requestAnimationFrame=function(fn){let id;id=native.raf(function(t){frames.delete(id);return fn.call(this,t)});frames.set(id,source());return id};
  window.cancelAnimationFrame=function(id){frames.delete(id);return native.caf(id)};
  for(const name of ['MutationObserver','ResizeObserver','IntersectionObserver']){
   const Original=native[name];if(!Original)continue;
