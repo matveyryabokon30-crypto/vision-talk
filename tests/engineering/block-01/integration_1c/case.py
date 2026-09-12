@@ -19,7 +19,7 @@ def save():
  p=OUT/'result.json';tmp=p.with_suffix('.tmp');tmp.write_text(json.dumps(RESULT,ensure_ascii=False,indent=2));tmp.replace(p)
 def stage(name):RESULT['stages'].append({'name':name,'at':time.monotonic()});save()
 def check(name,ok,actual):
- RESULT['checks'].append({'name':name,'status':'PASS' if ok else 'FAIL','actual':actual});save()
+ RESULT['checks'].append({'name':name,'status':'PASS' if ok else 'FAIL','actual':copy.deepcopy(actual)});save()
  if not ok:raise AssertionError(name)
 def sha(b):return hashlib.sha256(b).hexdigest()
 
