@@ -1,0 +1,1627 @@
+{
+  "browser": "26.0",
+  "checks": [
+    {
+      "name": "five-tabs-bots-agent",
+      "pass": true,
+      "actual": [
+        {
+          "id": "chats",
+          "disabled": false,
+          "svg": true
+        },
+        {
+          "id": "tasks",
+          "disabled": false,
+          "svg": true
+        },
+        {
+          "id": "bots",
+          "disabled": false,
+          "svg": true
+        },
+        {
+          "id": "agent",
+          "disabled": true,
+          "svg": true
+        },
+        {
+          "id": "profile",
+          "disabled": false,
+          "svg": true
+        }
+      ]
+    },
+    {
+      "name": "bots-removed-from-header",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "nav-targets-320",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "nav-targets-390",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "nav-targets-768",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "nav-targets-1280",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "bots-route",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "bots-selected",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "existing-root-tasks",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "existing-root-profile",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "existing-root-chats",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "initial-input-contained",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 844,
+          "height": 844,
+          "scroll": 844,
+          "client": 844,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 744,
+          "bottom": 788,
+          "height": 44,
+          "scroll": 44,
+          "client": 44,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 744,
+          "bottom": 788,
+          "height": 44,
+          "scroll": 44,
+          "client": 44,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 732,
+          "bottom": 844,
+          "height": 112,
+          "scroll": 111,
+          "client": 111,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 732,
+          "height": 630,
+          "scroll": 630,
+          "client": 630,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 844
+      }
+    },
+    {
+      "name": "initial-shell-visible",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 844,
+          "height": 844,
+          "scroll": 844,
+          "client": 844,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 744,
+          "bottom": 788,
+          "height": 44,
+          "scroll": 44,
+          "client": 44,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 744,
+          "bottom": 788,
+          "height": 44,
+          "scroll": 44,
+          "client": 44,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 732,
+          "bottom": 844,
+          "height": 112,
+          "scroll": 111,
+          "client": 111,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 732,
+          "height": 630,
+          "scroll": 630,
+          "client": 630,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 844
+      }
+    },
+    {
+      "name": "initial-compact",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 844,
+          "height": 844,
+          "scroll": 844,
+          "client": 844,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 744,
+          "bottom": 788,
+          "height": 44,
+          "scroll": 44,
+          "client": 44,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 744,
+          "bottom": 788,
+          "height": 44,
+          "scroll": 44,
+          "client": 44,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 732,
+          "bottom": 844,
+          "height": 112,
+          "scroll": 111,
+          "client": 111,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 732,
+          "height": 630,
+          "scroll": 630,
+          "client": 630,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 844
+      }
+    },
+    {
+      "name": "enter-keeps-text",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "thirty-enters-input-contained",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 430,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 257.609375,
+          "bottom": 378,
+          "height": 120.390625,
+          "scroll": 731,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 257.609375,
+          "bottom": 378,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 245.609375,
+          "bottom": 430,
+          "height": 184.390625,
+          "scroll": 183,
+          "client": 183,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 245.609375,
+          "height": 143.609375,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 430
+      }
+    },
+    {
+      "name": "thirty-enters-shell-visible",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 430,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 257.609375,
+          "bottom": 378,
+          "height": 120.390625,
+          "scroll": 731,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 257.609375,
+          "bottom": 378,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 245.609375,
+          "bottom": 430,
+          "height": 184.390625,
+          "scroll": 183,
+          "client": 183,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 245.609375,
+          "height": 143.609375,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 430
+      }
+    },
+    {
+      "name": "thirty-enters-compact",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 430,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 257.609375,
+          "bottom": 378,
+          "height": 120.390625,
+          "scroll": 731,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 257.609375,
+          "bottom": 378,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 245.609375,
+          "bottom": 430,
+          "height": 184.390625,
+          "scroll": 183,
+          "client": 183,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 245.609375,
+          "height": 143.609375,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 430
+      }
+    },
+    {
+      "name": "viewport-pan-90-input-contained",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 90,
+          "bottom": 520,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 347.609375,
+          "bottom": 468,
+          "height": 120.390625,
+          "scroll": 731,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 347.609375,
+          "bottom": 468,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 335.609375,
+          "bottom": 520,
+          "height": 184.390625,
+          "scroll": 183,
+          "client": 183,
+          "overflow": "visible"
+        },
+        "header": 90,
+        "list": {
+          "top": 192,
+          "bottom": 335.609375,
+          "height": 143.609375,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 90,
+        "height": 430
+      }
+    },
+    {
+      "name": "viewport-pan-90-shell-visible",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 90,
+          "bottom": 520,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 347.609375,
+          "bottom": 468,
+          "height": 120.390625,
+          "scroll": 731,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 347.609375,
+          "bottom": 468,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 335.609375,
+          "bottom": 520,
+          "height": 184.390625,
+          "scroll": 183,
+          "client": 183,
+          "overflow": "visible"
+        },
+        "header": 90,
+        "list": {
+          "top": 192,
+          "bottom": 335.609375,
+          "height": 143.609375,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 90,
+        "height": 430
+      }
+    },
+    {
+      "name": "viewport-pan-90-compact",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 90,
+          "bottom": 520,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 347.609375,
+          "bottom": 468,
+          "height": 120.390625,
+          "scroll": 731,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 347.609375,
+          "bottom": 468,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 335.609375,
+          "bottom": 520,
+          "height": 184.390625,
+          "scroll": 183,
+          "client": 183,
+          "overflow": "visible"
+        },
+        "header": 90,
+        "list": {
+          "top": 192,
+          "bottom": 335.609375,
+          "height": 143.609375,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 90,
+        "height": 430
+      }
+    },
+    {
+      "name": "viewport-pan-180-input-contained",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 180,
+          "bottom": 610,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 437.609375,
+          "bottom": 558,
+          "height": 120.390625,
+          "scroll": 731,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 437.609375,
+          "bottom": 558,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 425.609375,
+          "bottom": 610,
+          "height": 184.390625,
+          "scroll": 183,
+          "client": 183,
+          "overflow": "visible"
+        },
+        "header": 180,
+        "list": {
+          "top": 282,
+          "bottom": 425.609375,
+          "height": 143.609375,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 180,
+        "height": 430
+      }
+    },
+    {
+      "name": "viewport-pan-180-shell-visible",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 180,
+          "bottom": 610,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 437.609375,
+          "bottom": 558,
+          "height": 120.390625,
+          "scroll": 731,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 437.609375,
+          "bottom": 558,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 425.609375,
+          "bottom": 610,
+          "height": 184.390625,
+          "scroll": 183,
+          "client": 183,
+          "overflow": "visible"
+        },
+        "header": 180,
+        "list": {
+          "top": 282,
+          "bottom": 425.609375,
+          "height": 143.609375,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 180,
+        "height": 430
+      }
+    },
+    {
+      "name": "viewport-pan-180-compact",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 180,
+          "bottom": 610,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 437.609375,
+          "bottom": 558,
+          "height": 120.390625,
+          "scroll": 731,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 437.609375,
+          "bottom": 558,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 425.609375,
+          "bottom": 610,
+          "height": 184.390625,
+          "scroll": 183,
+          "client": 183,
+          "overflow": "visible"
+        },
+        "header": 180,
+        "list": {
+          "top": 282,
+          "bottom": 425.609375,
+          "height": 143.609375,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 180,
+        "height": 430
+      }
+    },
+    {
+      "name": "viewport-pan-12-input-contained",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 12,
+          "bottom": 442,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 269.609375,
+          "bottom": 390,
+          "height": 120.390625,
+          "scroll": 731,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 269.609375,
+          "bottom": 390,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 257.609375,
+          "bottom": 442,
+          "height": 184.390625,
+          "scroll": 183,
+          "client": 183,
+          "overflow": "visible"
+        },
+        "header": 12,
+        "list": {
+          "top": 114,
+          "bottom": 257.609375,
+          "height": 143.609375,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 12,
+        "height": 430
+      }
+    },
+    {
+      "name": "viewport-pan-12-shell-visible",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 12,
+          "bottom": 442,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 269.609375,
+          "bottom": 390,
+          "height": 120.390625,
+          "scroll": 731,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 269.609375,
+          "bottom": 390,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 257.609375,
+          "bottom": 442,
+          "height": 184.390625,
+          "scroll": 183,
+          "client": 183,
+          "overflow": "visible"
+        },
+        "header": 12,
+        "list": {
+          "top": 114,
+          "bottom": 257.609375,
+          "height": 143.609375,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 12,
+        "height": 430
+      }
+    },
+    {
+      "name": "viewport-pan-12-compact",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 12,
+          "bottom": 442,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 269.609375,
+          "bottom": 390,
+          "height": 120.390625,
+          "scroll": 731,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 269.609375,
+          "bottom": 390,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 257.609375,
+          "bottom": 442,
+          "height": 184.390625,
+          "scroll": 183,
+          "client": 183,
+          "overflow": "visible"
+        },
+        "header": 12,
+        "list": {
+          "top": 114,
+          "bottom": 257.609375,
+          "height": 143.609375,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 12,
+        "height": 430
+      }
+    },
+    {
+      "name": "viewport-pan-0-input-contained",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 430,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 257.609375,
+          "bottom": 378,
+          "height": 120.390625,
+          "scroll": 731,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 257.609375,
+          "bottom": 378,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 245.609375,
+          "bottom": 430,
+          "height": 184.390625,
+          "scroll": 183,
+          "client": 183,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 245.609375,
+          "height": 143.609375,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 430
+      }
+    },
+    {
+      "name": "viewport-pan-0-shell-visible",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 430,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 257.609375,
+          "bottom": 378,
+          "height": 120.390625,
+          "scroll": 731,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 257.609375,
+          "bottom": 378,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 245.609375,
+          "bottom": 430,
+          "height": 184.390625,
+          "scroll": 183,
+          "client": 183,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 245.609375,
+          "height": 143.609375,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 430
+      }
+    },
+    {
+      "name": "viewport-pan-0-compact",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 430,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 257.609375,
+          "bottom": 378,
+          "height": 120.390625,
+          "scroll": 731,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 257.609375,
+          "bottom": 378,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 245.609375,
+          "bottom": 430,
+          "height": 184.390625,
+          "scroll": 183,
+          "client": 183,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 245.609375,
+          "height": 143.609375,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 430
+      }
+    },
+    {
+      "name": "shortened-input-contained",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 430,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 334,
+          "bottom": 378,
+          "height": 44,
+          "scroll": 44,
+          "client": 44,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 334,
+          "bottom": 378,
+          "height": 44,
+          "scroll": 44,
+          "client": 44,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 322,
+          "bottom": 430,
+          "height": 108,
+          "scroll": 107,
+          "client": 107,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 322,
+          "height": 220,
+          "scroll": 220,
+          "client": 220,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 430
+      }
+    },
+    {
+      "name": "shortened-shell-visible",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 430,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 334,
+          "bottom": 378,
+          "height": 44,
+          "scroll": 44,
+          "client": 44,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 334,
+          "bottom": 378,
+          "height": 44,
+          "scroll": 44,
+          "client": 44,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 322,
+          "bottom": 430,
+          "height": 108,
+          "scroll": 107,
+          "client": 107,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 322,
+          "height": 220,
+          "scroll": 220,
+          "client": 220,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 430
+      }
+    },
+    {
+      "name": "shortened-compact",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 430,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 334,
+          "bottom": 378,
+          "height": 44,
+          "scroll": 44,
+          "client": 44,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 334,
+          "bottom": 378,
+          "height": 44,
+          "scroll": 44,
+          "client": 44,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 322,
+          "bottom": 430,
+          "height": 108,
+          "scroll": 107,
+          "client": 107,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 322,
+          "height": 220,
+          "scroll": 220,
+          "client": 220,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 430
+      }
+    },
+    {
+      "name": "long-paste-input-contained",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 430,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 257.609375,
+          "bottom": 378,
+          "height": 120.390625,
+          "scroll": 961,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 257.609375,
+          "bottom": 378,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 245.609375,
+          "bottom": 430,
+          "height": 184.390625,
+          "scroll": 183,
+          "client": 183,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 245.609375,
+          "height": 143.609375,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 430
+      }
+    },
+    {
+      "name": "long-paste-shell-visible",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 430,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 257.609375,
+          "bottom": 378,
+          "height": 120.390625,
+          "scroll": 961,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 257.609375,
+          "bottom": 378,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 245.609375,
+          "bottom": 430,
+          "height": 184.390625,
+          "scroll": 183,
+          "client": 183,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 245.609375,
+          "height": 143.609375,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 430
+      }
+    },
+    {
+      "name": "long-paste-compact",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 430,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 257.609375,
+          "bottom": 378,
+          "height": 120.390625,
+          "scroll": 961,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 257.609375,
+          "bottom": 378,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 245.609375,
+          "bottom": 430,
+          "height": 184.390625,
+          "scroll": 183,
+          "client": 183,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 245.609375,
+          "height": 143.609375,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 430
+      }
+    },
+    {
+      "name": "explicit-fullscreen",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "fullscreen-return-input-contained",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 430,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 253.609375,
+          "bottom": 374,
+          "height": 120.390625,
+          "scroll": 961,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 253.609375,
+          "bottom": 374,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 241.609375,
+          "bottom": 430,
+          "height": 188.390625,
+          "scroll": 187,
+          "client": 187,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 241.609375,
+          "height": 139.609375,
+          "scroll": 140,
+          "client": 140,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 430
+      }
+    },
+    {
+      "name": "fullscreen-return-shell-visible",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 430,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 253.609375,
+          "bottom": 374,
+          "height": 120.390625,
+          "scroll": 961,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 253.609375,
+          "bottom": 374,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 241.609375,
+          "bottom": 430,
+          "height": 188.390625,
+          "scroll": 187,
+          "client": 187,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 241.609375,
+          "height": 139.609375,
+          "scroll": 140,
+          "client": 140,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 430
+      }
+    },
+    {
+      "name": "fullscreen-return-compact",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 430,
+          "height": 430,
+          "scroll": 430,
+          "client": 430,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 253.609375,
+          "bottom": 374,
+          "height": 120.390625,
+          "scroll": 961,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 253.609375,
+          "bottom": 374,
+          "height": 120.390625,
+          "scroll": 120,
+          "client": 120,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 241.609375,
+          "bottom": 430,
+          "height": 188.390625,
+          "scroll": 187,
+          "client": 187,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 241.609375,
+          "height": 139.609375,
+          "scroll": 140,
+          "client": 140,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 430
+      }
+    },
+    {
+      "name": "keyboard-closed-input-contained",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 844,
+          "height": 844,
+          "scroll": 844,
+          "client": 844,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 644,
+          "bottom": 788,
+          "height": 144,
+          "scroll": 961,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 644,
+          "bottom": 788,
+          "height": 144,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 632,
+          "bottom": 844,
+          "height": 212,
+          "scroll": 211,
+          "client": 211,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 632,
+          "height": 530,
+          "scroll": 530,
+          "client": 530,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 844
+      }
+    },
+    {
+      "name": "keyboard-closed-shell-visible",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 844,
+          "height": 844,
+          "scroll": 844,
+          "client": 844,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 644,
+          "bottom": 788,
+          "height": 144,
+          "scroll": 961,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 644,
+          "bottom": 788,
+          "height": 144,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 632,
+          "bottom": 844,
+          "height": 212,
+          "scroll": 211,
+          "client": 211,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 632,
+          "height": 530,
+          "scroll": 530,
+          "client": 530,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 844
+      }
+    },
+    {
+      "name": "keyboard-closed-compact",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 844,
+          "height": 844,
+          "scroll": 844,
+          "client": 844,
+          "overflow": "clip"
+        },
+        "input": {
+          "top": 644,
+          "bottom": 788,
+          "height": 144,
+          "scroll": 961,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 644,
+          "bottom": 788,
+          "height": 144,
+          "scroll": 144,
+          "client": 144,
+          "overflow": "auto"
+        },
+        "composer": {
+          "top": 632,
+          "bottom": 844,
+          "height": 212,
+          "scroll": 211,
+          "client": 211,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 632,
+          "height": 530,
+          "scroll": 530,
+          "client": 530,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 844
+      }
+    },
+    {
+      "name": "canvas-return-preserves-draft",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "reload-preserves-draft",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "send-once",
+      "pass": false,
+      "actual": null
+    },
+    {
+      "name": "no-page-errors",
+      "pass": true,
+      "actual": []
+    },
+    {
+      "name": "isolated-network",
+      "pass": true,
+      "actual": {
+        "unknown": 0,
+        "blocked": 0
+      }
+    }
+  ],
+  "errors": [],
+  "scope": "Desktop engine, synthetic visual viewport keyboard. Physical iPhone remains owner verification.",
+  "status": "FAIL"
+}

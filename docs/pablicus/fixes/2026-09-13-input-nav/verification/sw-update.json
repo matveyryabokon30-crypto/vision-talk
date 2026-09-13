@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "old-cache-active",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "update-offered",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "new-generation-active",
+      "pass": true,
+      "actual": [
+        "pablicus-shell-input-nav-20260913-r1"
+      ]
+    },
+    {
+      "name": "new-navigation",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "draft-survived-update",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "network-isolated",
+      "pass": true,
+      "actual": {
+        "unknown": 0,
+        "blocked": 0
+      }
+    }
+  ],
+  "browser": "153.0.8010.36"
+}

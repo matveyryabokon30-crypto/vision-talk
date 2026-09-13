@@ -1,0 +1,855 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "2A-T01",
+      "name": "One route state/controller export",
+      "status": "PASS",
+      "actual": [
+        "app-controller.js"
+      ]
+    },
+    {
+      "id": "2A-T02",
+      "name": "One shared heading and outer geometry writer",
+      "status": "PASS",
+      "actual": {
+        "headings": [
+          "app-shell.js"
+        ],
+        "outer_geometry": [
+          "app-shell.js"
+        ],
+        "shared_shell_styles": [
+          "shell.css"
+        ]
+      }
+    },
+    {
+      "id": "2A-T03",
+      "name": "One root click binding, no legacy root insertion",
+      "status": "PASS",
+      "actual": {
+        "dispatch": [
+          "app.js"
+        ],
+        "legacy": []
+      }
+    },
+    {
+      "id": "2A-T04",
+      "name": "No loaded permanent shell-correction MutationObserver",
+      "status": "PASS",
+      "actual": {
+        "observed": [
+          "inbox-monitor.js",
+          "rich-message.js"
+        ],
+        "qualified_boundaries": {
+          "rich-message.js": "detached-media disposal only",
+          "inbox-monitor.js": "own notification positioning only"
+        }
+      }
+    },
+    {
+      "id": "2A-T05",
+      "name": "One global token source",
+      "status": "PASS",
+      "actual": [
+        "design-tokens.css"
+      ]
+    },
+    {
+      "id": "2A-T06",
+      "name": "Registry evaluated, unique, frozen and complete",
+      "status": "PASS",
+      "actual": {
+        "registry": {
+          "version": 1,
+          "components": {
+            "AppShell": {
+              "owner": "PablicusShell",
+              "implementation": "app-shell.js",
+              "region": "#home / #app"
+            },
+            "TopBar": {
+              "owner": "PablicusShell",
+              "implementation": "app-shell.js",
+              "region": ".homeHeader / #app > header"
+            },
+            "BottomNavigation": {
+              "owner": "PablicusShell",
+              "implementation": "app-shell.js",
+              "region": "#mainNav"
+            },
+            "Tab/SegmentedControl": {
+              "owner": "view instance",
+              "implementation": "index.html",
+              "region": "#chatViewTabs / #chatFilters"
+            },
+            "Button": {
+              "owner": "mounting view",
+              "implementation": "controls.css",
+              "contract": "semantic button, type, accessible name, focus-visible, disabled"
+            },
+            "IconButton": {
+              "owner": "mounting view",
+              "implementation": "message-menu.js",
+              "contract": "shared icon, accessible name, 44px target"
+            },
+            "Input": {
+              "owner": "mounting view",
+              "implementation": "index.html",
+              "contract": "label, input type, composition, error description"
+            },
+            "Composer": {
+              "owner": "PablicusChat",
+              "implementation": "rich-composer.js",
+              "adapter": "chat.js"
+            },
+            "SearchField": {
+              "owner": "search view",
+              "implementation": "chat-library.js",
+              "contract": "query state belongs to scoped search, not root navigation"
+            },
+            "List": {
+              "owner": "mounted domain view",
+              "implementation": "chat-list-view.js",
+              "contract": "stable IDs, bounded lifecycle"
+            },
+            "ListItem": {
+              "owner": "mounted domain view",
+              "implementation": "app.js",
+              "contract": "one explicit resource ID and action"
+            },
+            "Avatar": {
+              "owner": "mounted domain view",
+              "implementation": "app.js",
+              "contract": "decorative initials or meaningful image alt"
+            },
+            "Badge": {
+              "owner": "mounted domain view",
+              "implementation": "app.js",
+              "contract": "count meaning available without color"
+            },
+            "Chip": {
+              "owner": "PablicusWorkspaceQuick",
+              "implementation": "workspace-quick.js"
+            },
+            "Card": {
+              "owner": "mounted domain view",
+              "implementation": "bots.js",
+              "contract": "content owns local actions, never root shell"
+            },
+            "Modal": {
+              "owner": "dialog instance",
+              "implementation": "index.html",
+              "contract": "native dialog, label, initial focus, escape, focus return"
+            },
+            "Sheet": {
+              "owner": "sheet instance",
+              "implementation": "chat-canvas.js",
+              "contract": "bounded history entry, leave consent, focus return"
+            },
+            "Toast": {
+              "owner": "app service",
+              "implementation": "app.js",
+              "region": "#toast",
+              "contract": "status, finite lifetime, no secret text"
+            },
+            "EmptyState": {
+              "owner": "mounted domain view",
+              "implementation": "app.js"
+            },
+            "LoadingState": {
+              "owner": "mounted domain view",
+              "implementation": "chat-canvas.js"
+            },
+            "ErrorState": {
+              "owner": "mounted domain view",
+              "implementation": "chat-canvas.js",
+              "contract": "visible error and explicit retry; never fake success"
+            },
+            "Menu": {
+              "owner": "menu instance",
+              "implementation": "message-menu.js",
+              "contract": "outside/keyboard listeners disposed with instance"
+            },
+            "ContextMenu": {
+              "owner": "menu instance",
+              "implementation": "message-menu.js",
+              "contract": "no global navigation interception"
+            },
+            "AgentTaskCard": {
+              "owner": "future agent view",
+              "status": "INTERFACE_ONLY",
+              "contract": "runId, initiator, status, cancel action; no executor"
+            },
+            "PrivateAgentResult": {
+              "owner": "future result view",
+              "status": "INTERFACE_ONLY",
+              "contract": "resultId, scope, provenance, authorized actions; private by default"
+            },
+            "ActionConfirmation": {
+              "owner": "future confirmation view",
+              "status": "INTERFACE_ONLY",
+              "contract": "exact action, parameters, revision, expiry; explicit confirm/cancel"
+            },
+            "WorkObjectPreview": {
+              "owner": "object view",
+              "status": "INTERFACE_ONLY",
+              "contract": "objectId, revision, source, permitted actions; object is not message"
+            },
+            "SidePanel": {
+              "owner": "PablicusShell",
+              "status": "INTERFACE_ONLY",
+              "contract": "desktop object surface; same object/route as FullScreenObjectView"
+            },
+            "FullScreenObjectView": {
+              "owner": "PablicusShell",
+              "status": "INTERFACE_ONLY",
+              "contract": "mobile object surface, close guard, focus return, same object/route as SidePanel"
+            }
+          },
+          "roots": [
+            {
+              "id": "chats",
+              "label": "Чаты"
+            },
+            {
+              "id": "tasks",
+              "label": "Дела"
+            },
+            {
+              "id": "bots",
+              "label": "Боты"
+            },
+            {
+              "id": "agent",
+              "label": "AI-агент",
+              "disabled": true
+            },
+            {
+              "id": "profile",
+              "label": "Вы"
+            }
+          ],
+          "parentRoots": {
+            "chats": "chats",
+            "feed": "chats",
+            "tasks": "tasks",
+            "bots": "bots",
+            "agent": "agent",
+            "profile": "profile"
+          },
+          "informationArchitecture": {
+            "Chats": {
+              "root": "chats",
+              "entry": "conversation list",
+              "state": "EXISTING"
+            },
+            "Groups": {
+              "root": "chats",
+              "entry": "conversation directory",
+              "state": "CONTRACT_ONLY"
+            },
+            "Channels": {
+              "root": "chats",
+              "entry": "conversation directory",
+              "state": "CONTRACT_ONLY"
+            },
+            "Spaces": {
+              "root": "chats",
+              "entry": "space switcher / directory",
+              "state": "CONTRACT_ONLY",
+              "category": "A"
+            },
+            "Threads": {
+              "root": "chats",
+              "entry": "within conversation",
+              "state": "CONTRACT_ONLY",
+              "category": "A"
+            },
+            "Search": {
+              "root": "chats",
+              "entry": "search field / scoped results",
+              "state": "CONTRACT_ONLY_GLOBAL",
+              "category": "A"
+            },
+            "Saved": {
+              "root": "chats",
+              "entry": "personal conversation / You shortcut",
+              "state": "EXISTING_SAVED_CONVERSATION_ONLY",
+              "category": "A"
+            },
+            "AIConversations": {
+              "root": "chats",
+              "entry": "new private AI conversation",
+              "state": "CONTRACT_ONLY"
+            },
+            "AIComposer": {
+              "root": "chats",
+              "entry": "composer contextual actions",
+              "state": "CONTRACT_ONLY",
+              "category": "A"
+            },
+            "Profile": {
+              "root": "profile",
+              "entry": "profile and settings",
+              "state": "EXISTING"
+            },
+            "PublicIdentity": {
+              "root": "profile",
+              "entry": "username / profile link",
+              "state": "EXISTING_BASELINE",
+              "category": "A"
+            },
+            "Tasks": {
+              "root": "tasks",
+              "entry": "task list",
+              "state": "EXISTING"
+            },
+            "WorkObjects": {
+              "root": "tasks",
+              "entry": "task / conversation Canvas object",
+              "state": "EXISTING_CANVAS_ONLY"
+            },
+            "BotsFactory": {
+              "root": "bots",
+              "entry": "main navigation",
+              "state": "EXISTING_SPECIFICATION_ONLY"
+            }
+          },
+          "composer": {
+            "version": 1,
+            "implementation": "PablicusRichComposer.create",
+            "adapter": "PablicusChat",
+            "extensionPoints": [
+              "text",
+              "attachments",
+              "richBlocks",
+              "commands",
+              "aiInlineActions",
+              "mentions",
+              "agentInvocation",
+              "taskCreation",
+              "workObjectLinking"
+            ],
+            "existingOperations": [
+              "capture",
+              "restore",
+              "focus",
+              "blur",
+              "destroy"
+            ],
+            "context": [
+              "userId",
+              "conversationId",
+              "sessionGeneration",
+              "routeGeneration",
+              "revision",
+              "signal"
+            ],
+            "states": [
+              "idle",
+              "composing",
+              "saving",
+              "saved",
+              "sending",
+              "error",
+              "cancelled"
+            ],
+            "invariants": [
+              "original Blob retained",
+              "stable IDs and order",
+              "save before send",
+              "identity currentness",
+              "no silent unsupported operation"
+            ],
+            "extensionRequest": {
+              "fields": [
+                "kind",
+                "context",
+                "selection",
+                "payload"
+              ],
+              "result": [
+                "applied",
+                "cancelled",
+                "unsupported",
+                "error"
+              ]
+            },
+            "messageDocV2Implemented": false,
+            "agentExecutionImplemented": false,
+            "note": "Existing v1 draft/IndexedDB remains canonical. Future adapters validate context and permission before execution; declarations do not grant capabilities."
+          },
+          "calls": {
+            "category": "B",
+            "implemented": false,
+            "slots": [
+              "audioCallAction",
+              "videoCallAction",
+              "activeCallSurface",
+              "screenShareState",
+              "voiceLiveEntry"
+            ],
+            "context": [
+              "sessionId",
+              "conversationId",
+              "spaceId",
+              "participants",
+              "permissions",
+              "mediaState"
+            ],
+            "surface": "Non-root session overlay; independent from editor/list resource. Mobile full screen and desktop panel share session ID.",
+            "deferred": [
+              "WebRTC/TURN",
+              "background behavior",
+              "media security",
+              "cost",
+              "physical-device QA"
+            ]
+          },
+          "tokenGroups": {
+            "color": [
+              "--color-accent"
+            ],
+            "surface": [
+              "--surface-primary"
+            ],
+            "text": [
+              "--text-primary"
+            ],
+            "border": [
+              "--border-subtle"
+            ],
+            "radius": [
+              "--radius-control",
+              "--radius-pill"
+            ],
+            "spacing": [
+              "--space-1",
+              "--space-2",
+              "--space-3",
+              "--space-4",
+              "--space-6"
+            ],
+            "typography": [
+              "--font-family-ui",
+              "--font-body",
+              "--font-input",
+              "--line-height-body"
+            ],
+            "iconSizes": [
+              "--icon-size"
+            ],
+            "controlSizes": [
+              "--control-size"
+            ],
+            "elevation": [
+              "--elevation-overlay"
+            ],
+            "motion": [
+              "--motion-duration",
+              "--motion-easing"
+            ],
+            "safeArea": [
+              "--safe-area-top",
+              "--safe-area-bottom",
+              "--safe-area-left",
+              "--safe-area-right"
+            ],
+            "breakpoints": [
+              "--breakpoint-tablet",
+              "--breakpoint-desktop"
+            ],
+            "zIndex": [
+              "--layer-base",
+              "--layer-shell",
+              "--layer-popover",
+              "--layer-sheet",
+              "--layer-toast"
+            ]
+          },
+          "controlContract": {
+            "implementation": "native controls + controls.css",
+            "owner": "mounting view",
+            "minimumTargetToken": "--control-size",
+            "focusToken": "--focus-width",
+            "disabledToken": "--disabled-opacity",
+            "states": [
+              "idle",
+              "hover",
+              "focus-visible",
+              "active",
+              "disabled",
+              "busy",
+              "invalid"
+            ],
+            "rules": [
+              "native disabled prevents activation",
+              "accessible name supplied by view",
+              "no global listener or observer",
+              "tabs invoke existing owner action"
+            ],
+            "overlayRules": [
+              "initial focus",
+              "Escape/close through owner guard",
+              "focus return to connected opener",
+              "bounded scrolling and viewport"
+            ]
+          }
+        },
+        "frozen": true,
+        "duplicate": true,
+        "unknown": true
+      }
+    },
+    {
+      "id": "2A-T09",
+      "name": "One semantic registry for all responsive surfaces",
+      "status": "PASS",
+      "actual": {
+        "entrypoint": [
+          "vendor/supabase.js",
+          "component-registry.js",
+          "app-shell.js",
+          "app-controller.js",
+          "chat-list-view.js",
+          "vault.js",
+          "outbox.js",
+          "transport-store.js",
+          "rich-store.js",
+          "rich-composer.js",
+          "message-menu.js",
+          "rich-message.js",
+          "chat.js",
+          "auth-local.js",
+          "auth-config.js",
+          "oauth-login.js",
+          "oauth-session.js",
+          "passkey-login.js",
+          "public-passkey.js",
+          "workspace-editor.js",
+          "media-viewer.js",
+          "inbox-monitor.js",
+          "people.js",
+          "chat-actions.js",
+          "push-notifications.js",
+          "chat-library.js",
+          "chat-canvas.js",
+          "tasks-home.js",
+          "workspace-quick.js",
+          "bots.js",
+          "app.js",
+          "bots-nav.js"
+        ],
+        "physical_layout_proof": "Separate browser variants required"
+      }
+    },
+    {
+      "id": "2A-T10",
+      "name": "Existing composer with declared extension slots; no v2 engine",
+      "status": "PASS",
+      "actual": {
+        "version": 1,
+        "implementation": "PablicusRichComposer.create",
+        "adapter": "PablicusChat",
+        "extensionPoints": [
+          "text",
+          "attachments",
+          "richBlocks",
+          "commands",
+          "aiInlineActions",
+          "mentions",
+          "agentInvocation",
+          "taskCreation",
+          "workObjectLinking"
+        ],
+        "existingOperations": [
+          "capture",
+          "restore",
+          "focus",
+          "blur",
+          "destroy"
+        ],
+        "context": [
+          "userId",
+          "conversationId",
+          "sessionGeneration",
+          "routeGeneration",
+          "revision",
+          "signal"
+        ],
+        "states": [
+          "idle",
+          "composing",
+          "saving",
+          "saved",
+          "sending",
+          "error",
+          "cancelled"
+        ],
+        "invariants": [
+          "original Blob retained",
+          "stable IDs and order",
+          "save before send",
+          "identity currentness",
+          "no silent unsupported operation"
+        ],
+        "extensionRequest": {
+          "fields": [
+            "kind",
+            "context",
+            "selection",
+            "payload"
+          ],
+          "result": [
+            "applied",
+            "cancelled",
+            "unsupported",
+            "error"
+          ]
+        },
+        "messageDocV2Implemented": false,
+        "agentExecutionImplemented": false,
+        "note": "Existing v1 draft/IndexedDB remains canonical. Future adapters validate context and permission before execution; declarations do not grant capabilities."
+      }
+    },
+    {
+      "id": "2A-T11",
+      "name": "Owner 2026-09-13 bottom navigation roots",
+      "status": "PASS",
+      "actual": {
+        "Chats": {
+          "root": "chats",
+          "entry": "conversation list",
+          "state": "EXISTING"
+        },
+        "Groups": {
+          "root": "chats",
+          "entry": "conversation directory",
+          "state": "CONTRACT_ONLY"
+        },
+        "Channels": {
+          "root": "chats",
+          "entry": "conversation directory",
+          "state": "CONTRACT_ONLY"
+        },
+        "Spaces": {
+          "root": "chats",
+          "entry": "space switcher / directory",
+          "state": "CONTRACT_ONLY",
+          "category": "A"
+        },
+        "Threads": {
+          "root": "chats",
+          "entry": "within conversation",
+          "state": "CONTRACT_ONLY",
+          "category": "A"
+        },
+        "Search": {
+          "root": "chats",
+          "entry": "search field / scoped results",
+          "state": "CONTRACT_ONLY_GLOBAL",
+          "category": "A"
+        },
+        "Saved": {
+          "root": "chats",
+          "entry": "personal conversation / You shortcut",
+          "state": "EXISTING_SAVED_CONVERSATION_ONLY",
+          "category": "A"
+        },
+        "AIConversations": {
+          "root": "chats",
+          "entry": "new private AI conversation",
+          "state": "CONTRACT_ONLY"
+        },
+        "AIComposer": {
+          "root": "chats",
+          "entry": "composer contextual actions",
+          "state": "CONTRACT_ONLY",
+          "category": "A"
+        },
+        "Profile": {
+          "root": "profile",
+          "entry": "profile and settings",
+          "state": "EXISTING"
+        },
+        "PublicIdentity": {
+          "root": "profile",
+          "entry": "username / profile link",
+          "state": "EXISTING_BASELINE",
+          "category": "A"
+        },
+        "Tasks": {
+          "root": "tasks",
+          "entry": "task list",
+          "state": "EXISTING"
+        },
+        "WorkObjects": {
+          "root": "tasks",
+          "entry": "task / conversation Canvas object",
+          "state": "EXISTING_CANVAS_ONLY"
+        },
+        "BotsFactory": {
+          "root": "bots",
+          "entry": "main navigation",
+          "state": "EXISTING_SPECIFICATION_ONLY"
+        }
+      }
+    },
+    {
+      "id": "2A-T12",
+      "name": "Calls slots without call implementation",
+      "status": "PASS",
+      "actual": {
+        "category": "B",
+        "implemented": false,
+        "slots": [
+          "audioCallAction",
+          "videoCallAction",
+          "activeCallSurface",
+          "screenShareState",
+          "voiceLiveEntry"
+        ],
+        "context": [
+          "sessionId",
+          "conversationId",
+          "spaceId",
+          "participants",
+          "permissions",
+          "mediaState"
+        ],
+        "surface": "Non-root session overlay; independent from editor/list resource. Mobile full screen and desktop panel share session ID.",
+        "deferred": [
+          "WebRTC/TURN",
+          "background behavior",
+          "media security",
+          "cost",
+          "physical-device QA"
+        ]
+      }
+    }
+  ],
+  "active_paths": [
+    "app-controller.js",
+    "app-shell.js",
+    "app.js",
+    "auth-config.js",
+    "auth-local.js",
+    "bot-factory.css",
+    "bot-factory.js",
+    "bot-scenario-bridge.js",
+    "bot-scenario-editor.js",
+    "bots-nav.js",
+    "bots.css",
+    "bots.js",
+    "chat-actions.css",
+    "chat-actions.js",
+    "chat-canvas.css",
+    "chat-canvas.js",
+    "chat-library.css",
+    "chat-library.js",
+    "chat-list-view.js",
+    "chat-minimal.css",
+    "chat.js",
+    "component-registry.js",
+    "controls.css",
+    "design-tokens.css",
+    "inbox-monitor.css",
+    "inbox-monitor.js",
+    "media-viewer.css",
+    "media-viewer.js",
+    "message-menu.css",
+    "message-menu.js",
+    "oauth-login.js",
+    "oauth-session.js",
+    "outbox.js",
+    "pablicus.css",
+    "passkey-login.js",
+    "people.css",
+    "people.js",
+    "profile-discovery.css",
+    "public-passkey.js",
+    "public-ui-foundation.css",
+    "push-notifications.js",
+    "rich-composer.css",
+    "rich-composer.js",
+    "rich-message.css",
+    "rich-message.js",
+    "rich-store.js",
+    "shell.css",
+    "style.css",
+    "tasks-home.css",
+    "tasks-home.js",
+    "transport-store.js",
+    "vault.js",
+    "vendor/supabase.js",
+    "workspace-editor.css",
+    "workspace-editor.js",
+    "workspace-quick.css",
+    "workspace-quick.js"
+  ],
+  "sources": {
+    "app-controller.js": "e8d37eb4431733211c61bb50b3ccc2529ef230d9b0d89b7459710d8520082148",
+    "app-shell.js": "35e7db8a635e8a1d0a7c3218c6b3e8fc4538c4320fd1ca0b91e18ae39dbe8ca8",
+    "app.js": "238056b1a3dcfc93b3aa4cd92986498b2bb3c2e47f0b0dd96378f488fc15c938",
+    "auth-config.js": "65439fbbfd11d32ecc2151d78c2081dd4eaa105566a1d66d4fae9af65767e0f2",
+    "auth-local.js": "bb9ce69cdc097856b1b0ce6f9466b4abb34de63942ffcabfa953aa0dd811df97",
+    "bot-factory.css": "f31cb1e3a426d24640d130602bc4d5911b378963efa7e1e8423d157cbf176811",
+    "bot-factory.js": "82e69963963d012c2008855ea5d22babd7693e48bc86dceef2c07c898aefd4ab",
+    "bot-scenario-bridge.js": "1ece4fb607a086b0e2c90a5c2271539718cb9d3054a751f3ed75bcc92a22f7b6",
+    "bot-scenario-editor.js": "598de7eb8428b1ebaf263b52d7c8170fcb9e24ac768bc1dfb85a0cdc6c0c8e22",
+    "bots-nav.js": "1f63ecc99a7b111e655a711ac9f2b87356128bb87a3703788daa73b2a7b9a8ef",
+    "bots.css": "74884a71854034a272f8440efd1ecdc5e9436ea2e7f0132f135982745fd3bdeb",
+    "bots.js": "cfd12f085b59bcc8e88d73898bd148a6f49de6cfcfb111d9b6a3786ae808b569",
+    "chat-actions.css": "d952c66a2c01e64d988346d01c61c3f654f37e297cbf121dadc35ee616f35b41",
+    "chat-actions.js": "8449bced95d25e10449ee432079e60af3eaa15fbf28f06c33a331516c7e3b809",
+    "chat-canvas.css": "936894da9b4a7cac81f72baff0c96bca410bd5c9b8e8df7086b3b8eff167f912",
+    "chat-canvas.js": "f2ef004e99d523b0d4328806170208bf343896d96a856b22a18c902cb50750ca",
+    "chat-library.css": "c7db6f3b0e88ce289d653c969545c07ec012f40339b46f559297a91d13083226",
+    "chat-library.js": "bf5c7f10c53c85132795e2583944b97985ba8fda8a9e8667c5c62e1babaebff0",
+    "chat-list-view.js": "64b3d60a84f335d65f489b5e0db393e6ffb97732ef77acca7e8087abb39b1e54",
+    "chat-minimal.css": "78048b924a601b7b288e71e66c2dc6156174a60f5b990f223272abf39a914336",
+    "chat.js": "b9a8c4d6557a3c178c47a2f48fcedd2ac342b2e0b1f0fab37f2870a25745e014",
+    "component-registry.js": "d86cbb16b5630a69e153808c73e3a1c5e4e7921633b14a445321460defef0e88",
+    "controls.css": "4a2fe5171cce102ae3ec95a154334e44e3bac9a0f945893f4f3a78ec9626c11a",
+    "design-tokens.css": "6f4288f6007cbee2a465865feea31b143b63ff18a1ff341dfb23dd4e84857bfe",
+    "inbox-monitor.css": "489e0532490d7b7f0bd09b3ac372945e6de5af70d258fe0cbe613f701926d581",
+    "inbox-monitor.js": "0bbeaa2082965d8197c7cc7a3e6304a80a622d83e8b5e57d5bbc79cbb833c6b3",
+    "media-viewer.css": "cb6cc79d5f3481b96e90f23bf20718582241d6f22e242099ef32808d48f70dd1",
+    "media-viewer.js": "5bc722f2d0df2ac682b2ca4c6aae189851595fee8ae661c4dadf48b228a858e9",
+    "message-menu.css": "698b73803fc67be94259aed70bc962d32598ace0c3695a76f7b8e9aa6ec4ec2c",
+    "message-menu.js": "171ccc684a476deca85f43e332d6ee4bc16b593a4440ab97ba29e94da0c71bb4",
+    "oauth-login.js": "6a1845eee3877cfcc1bd68d3a3b79e3f9112392933ec79c78f3e731620b68bfb",
+    "oauth-session.js": "066f63403b0dd5d493c7cc6d558f95ee2eff0c57357690b397deabdee26fb4fa",
+    "outbox.js": "bd16ec02eb91b3c25b2995e6679d153dec416f9e5e6c374ffbe4d2e22a5a5882",
+    "pablicus.css": "edf8d8e8a4b2af4bae5d9cd882799e9bc2439d2c550ec2eaed0f9dbca3515a81",
+    "passkey-login.js": "e94069c853ef93e71e146fc2f13d7bfa97c1af58b4e6a3a424d4012c0f4dec83",
+    "people.css": "a91a1c08804f6dbd299f0836db37e50d1517dbf24e69687a8a3bfd2344c30735",
+    "people.js": "47b67f909cd20d85c403ebdf163fb4f0dcfce92f726c3512340d0cd997118356",
+    "profile-discovery.css": "ead9766b8dfa5b6ce7047f8eb592b7ecbea75f7d7db738b0eec8781c8453033d",
+    "public-passkey.js": "5bd310e0433e7b34bfecf726e332f15499ba4a8d478d3ddd88885d9bc42af238",
+    "public-ui-foundation.css": "5d438c12400cf496fa2a6b4adc43295df2f5be78e0cacefb6815917f57d36943",
+    "push-notifications.js": "d02fda496151815cd6c649af585fe07fbacc0f3e98a1ea21f9a94441df99149a",
+    "rich-composer.css": "4eaf0d251ef56c7945089eecf7525440ec6442516d6f05a17c213b10a6e99e8a",
+    "rich-composer.js": "319f1e176216385432edbb46b296179e670135c55423f1fc00c1c0d8803db628",
+    "rich-message.css": "0876004edd7309ae4b59665c99b3b68d7d9875976d03cf47a757aeea0f699683",
+    "rich-message.js": "af99cb12d86810d4cf67179d677e48fc11818d0676b230eda757911777d8e7e2",
+    "rich-store.js": "7f5a284a15d064c519afda0d7520a3e27f04c8ba8a06090ea827618be2296da4",
+    "shell.css": "37be1c6ae1d5ddb65af16b4ff9f07be77b09c04aecc95c3d3ea826b2f71d53c4",
+    "style.css": "ff8d9b36e411f25d41433708767ad734074b9d54d7b7291bec6916b312c535a5",
+    "tasks-home.css": "a4bd13fe05939db8ac6895975fcd7fbe6edf6c651680c84d09914e5dfda76b81",
+    "tasks-home.js": "315573a540160b1b5a415bcba949bff1d9c680596f932adef3162a0d945cfe8c",
+    "transport-store.js": "b6bea9398fe01a30b30771ce7d9c160bbb59856cc9f5f733e2e43f9369e938a6",
+    "vault.js": "6d8483b72342f259b1ae468f06eac91303bad70eee6fc83287edeaf40cf6eb73",
+    "vendor/supabase.js": "24e8c00dc25da420ee741068b60bcdb5f62cb3598d8834058acf37ec6ee1a724",
+    "workspace-editor.css": "74ca37640dab5962e7aa33553e0a9e4e90ec430890d4f977e81e5656ba655d10",
+    "workspace-editor.js": "78d04bbad140a8834ae99d66fc013aa20febcda38ac6b7dc7d24785137c7a8da",
+    "workspace-quick.css": "d5f87d0d6cda3895c0c4f9959b3f88f6b1208921b31dc8f829e53415b630fb29",
+    "workspace-quick.js": "dd1e74f2d462741a2ef925d4c6716915024f6547d3b40d8919da627f7cb0d754"
+  },
+  "scope": "Structural contracts only. T07/T08 and dispatch/visibility behavior require shell_probe; T13 requires accepted regression execution."
+}

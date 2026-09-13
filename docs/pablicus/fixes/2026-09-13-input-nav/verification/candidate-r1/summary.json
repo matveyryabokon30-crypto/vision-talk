@@ -1,0 +1,16 @@
+{
+  "chromium": {
+    "status": "ERROR",
+    "checks": 0,
+    "failed": [],
+    "error": "Page.goto: Timeout 12000ms exceeded.\nCall log:\n  - navigating to \"http://127.0.0.1:56617/pablicus/\", waiting until \"load\"\n"
+  },
+  "webkit": {
+    "status": "FAIL",
+    "checks": 48,
+    "failed": [
+      "send-once"
+    ],
+    "error": null
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "browser": "153.0.8010.36",
+  "checks": [],
+  "errors": [],
+  "scope": "Desktop engine, synthetic visual viewport keyboard. Physical iPhone remains owner verification.",
+  "status": "ERROR",
+  "error": "Page.goto: Timeout 12000ms exceeded.\nCall log:\n  - navigating to \"http://127.0.0.1:56617/pablicus/\", waiting until \"load\"\n"
+}

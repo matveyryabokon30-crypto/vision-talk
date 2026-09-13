@@ -1,0 +1,24 @@
+{
+  "status": "TESTED_PENDING_PUBLICATION",
+  "work_start": "bf90a64",
+  "published_base": "0e953322eac69e6f3e79458ac32323b564acaf55",
+  "runtime_files": {
+    "pablicus/app.js": "238056b1a3dcfc93b3aa4cd92986498b2bb3c2e47f0b0dd96378f488fc15c938",
+    "pablicus/chat.js": "b9a8c4d6557a3c178c47a2f48fcedd2ac342b2e0b1f0fab37f2870a25745e014",
+    "pablicus/component-registry.js": "d86cbb16b5630a69e153808c73e3a1c5e4e7921633b14a445321460defef0e88",
+    "pablicus/index.html": "3ecd42f0658ef5664a807612afc830faba42802170214165d75cbde70846e1e2",
+    "pablicus/message-menu.js": "171ccc684a476deca85f43e332d6ee4bc16b593a4440ab97ba29e94da0c71bb4",
+    "pablicus/rich-composer.css": "4eaf0d251ef56c7945089eecf7525440ec6442516d6f05a17c213b10a6e99e8a",
+    "pablicus/shell.css": "37be1c6ae1d5ddb65af16b4ff9f07be77b09c04aecc95c3d3ea826b2f71d53c4",
+    "pablicus/sw.js": "1a0f714de5930cc40ab9a1a5f16c110be052e476326552ce3a4a5dc3dead3c8d"
+  },
+  "checks": {
+    "chromium": 48,
+    "webkit": 48,
+    "ownership": 10,
+    "service_worker_update": 6
+  },
+  "other_runtime_files_changed": false,
+  "physical_iphone": "Owner verification pending",
+  "user_agent_icon": "disabled, explicitly requested by owner"
+}

@@ -54,7 +54,7 @@ def main(args):
  c=r.get('composer',{})
  check('2A-T10','Existing composer with declared extension slots; no v2 engine',c.get('extensionPoints')==extensions and c.get('messageDocV2Implemented') is False and c.get('agentExecutionImplemented') is False and c.get('implementation')=='PablicusRichComposer.create',c)
  ia=r.get('informationArchitecture',{});roots=[x['id'] for x in r.get('roots',[])]
- check('2A-T11','Amendment 02 IA fits approved roots',roots==['chats','tasks','profile'] and all(k in ia for k in ['Spaces','Threads','Search','Saved','AIComposer','PublicIdentity']) and all(v.get('root') in roots for v in ia.values()),ia)
+ check('2A-T11','Owner 2026-09-13 bottom navigation roots',roots==['chats','tasks','bots','agent','profile'] and all(k in ia for k in ['Spaces','Threads','Search','Saved','AIComposer','PublicIdentity']) and all(v.get('root') in roots for v in ia.values()),ia)
  calls=r.get('calls',{});new_runtime='\n'.join(scripts.get(name,'') for name in ['component-registry.js','app-shell.js'])
  check('2A-T12','Calls slots without call implementation',calls.get('implemented') is False and set(calls.get('slots',[]))=={'audioCallAction','videoCallAction','activeCallSurface','screenShareState','voiceLiveEntry'} and not re.search(r'RTCPeerConnection|new WebSocket|getUserMedia\(',new_runtime),calls)
  result={'status':'PASS' if all(c['status']=='PASS' for c in checks) else 'FAIL','checks':checks,'active_paths':sorted(active),

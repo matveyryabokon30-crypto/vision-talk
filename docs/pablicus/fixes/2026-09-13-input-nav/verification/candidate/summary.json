@@ -1,0 +1,14 @@
+{
+  "chromium": {
+    "status": "PASS",
+    "checks": 48,
+    "failed": [],
+    "error": null
+  },
+  "webkit": {
+    "status": "PASS",
+    "checks": 48,
+    "failed": [],
+    "error": null
+  }
+}

@@ -1,0 +1,326 @@
+{
+  "browser": "26.0",
+  "checks": [
+    {
+      "name": "initial-input-contained",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 844,
+          "height": 844,
+          "scroll": 844,
+          "client": 844,
+          "overflow": "hidden"
+        },
+        "input": {
+          "top": 744,
+          "bottom": 788,
+          "height": 44,
+          "scroll": 44,
+          "client": 44,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 744,
+          "bottom": 788,
+          "height": 44,
+          "scroll": 44,
+          "client": 44,
+          "overflow": "visible"
+        },
+        "composer": {
+          "top": 732,
+          "bottom": 844,
+          "height": 112,
+          "scroll": 111,
+          "client": 111,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 732,
+          "height": 630,
+          "scroll": 630,
+          "client": 630,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 844
+      }
+    },
+    {
+      "name": "initial-shell-visible",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 844,
+          "height": 844,
+          "scroll": 844,
+          "client": 844,
+          "overflow": "hidden"
+        },
+        "input": {
+          "top": 744,
+          "bottom": 788,
+          "height": 44,
+          "scroll": 44,
+          "client": 44,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 744,
+          "bottom": 788,
+          "height": 44,
+          "scroll": 44,
+          "client": 44,
+          "overflow": "visible"
+        },
+        "composer": {
+          "top": 732,
+          "bottom": 844,
+          "height": 112,
+          "scroll": 111,
+          "client": 111,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 732,
+          "height": 630,
+          "scroll": 630,
+          "client": 630,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 844
+      }
+    },
+    {
+      "name": "initial-compact",
+      "pass": true,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 844,
+          "height": 844,
+          "scroll": 844,
+          "client": 844,
+          "overflow": "hidden"
+        },
+        "input": {
+          "top": 744,
+          "bottom": 788,
+          "height": 44,
+          "scroll": 44,
+          "client": 44,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": 744,
+          "bottom": 788,
+          "height": 44,
+          "scroll": 44,
+          "client": 44,
+          "overflow": "visible"
+        },
+        "composer": {
+          "top": 732,
+          "bottom": 844,
+          "height": 112,
+          "scroll": 111,
+          "client": 111,
+          "overflow": "visible"
+        },
+        "header": 0,
+        "list": {
+          "top": 102,
+          "bottom": 732,
+          "height": 630,
+          "scroll": 630,
+          "client": 630,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 844
+      }
+    },
+    {
+      "name": "enter-keeps-text",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "thirty-enters-input-contained",
+      "pass": false,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 430,
+          "height": 430,
+          "scroll": 909,
+          "client": 430,
+          "overflow": "hidden"
+        },
+        "input": {
+          "top": -290,
+          "bottom": 441,
+          "height": 731,
+          "scroll": 731,
+          "client": 731,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": -290,
+          "bottom": -90,
+          "height": 200,
+          "scroll": 731,
+          "client": 200,
+          "overflow": "visible"
+        },
+        "composer": {
+          "top": -302,
+          "bottom": -38,
+          "height": 264,
+          "scroll": 742,
+          "client": 263,
+          "overflow": "visible"
+        },
+        "header": -468,
+        "list": {
+          "top": -366,
+          "bottom": -302,
+          "height": 64,
+          "scroll": 64,
+          "client": 64,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 430
+      }
+    },
+    {
+      "name": "thirty-enters-shell-visible",
+      "pass": false,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 430,
+          "height": 430,
+          "scroll": 909,
+          "client": 430,
+          "overflow": "hidden"
+        },
+        "input": {
+          "top": -290,
+          "bottom": 441,
+          "height": 731,
+          "scroll": 731,
+          "client": 731,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": -290,
+          "bottom": -90,
+          "height": 200,
+          "scroll": 731,
+          "client": 200,
+          "overflow": "visible"
+        },
+        "composer": {
+          "top": -302,
+          "bottom": -38,
+          "height": 264,
+          "scroll": 742,
+          "client": 263,
+          "overflow": "visible"
+        },
+        "header": -468,
+        "list": {
+          "top": -366,
+          "bottom": -302,
+          "height": 64,
+          "scroll": 64,
+          "client": 64,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 430
+      }
+    },
+    {
+      "name": "thirty-enters-compact",
+      "pass": false,
+      "actual": {
+        "app": {
+          "top": 0,
+          "bottom": 430,
+          "height": 430,
+          "scroll": 909,
+          "client": 430,
+          "overflow": "hidden"
+        },
+        "input": {
+          "top": -290,
+          "bottom": 441,
+          "height": 731,
+          "scroll": 731,
+          "client": 731,
+          "overflow": "auto"
+        },
+        "editor": {
+          "top": -290,
+          "bottom": -90,
+          "height": 200,
+          "scroll": 731,
+          "client": 200,
+          "overflow": "visible"
+        },
+        "composer": {
+          "top": -302,
+          "bottom": -38,
+          "height": 264,
+          "scroll": 742,
+          "client": 263,
+          "overflow": "visible"
+        },
+        "header": -468,
+        "list": {
+          "top": -366,
+          "bottom": -302,
+          "height": 64,
+          "scroll": 64,
+          "client": 64,
+          "overflow": "auto"
+        },
+        "scrollY": 0,
+        "top": 0,
+        "height": 430
+      }
+    },
+    {
+      "name": "no-page-errors",
+      "pass": true,
+      "actual": []
+    },
+    {
+      "name": "isolated-network",
+      "pass": true,
+      "actual": {
+        "unknown": 0,
+        "blocked": 0
+      }
+    }
+  ],
+  "errors": [],
+  "scope": "Desktop engine, synthetic visual viewport keyboard. Physical iPhone remains owner verification.",
+  "status": "FAIL"
+}

@@ -72,7 +72,7 @@ async def probe(browser,root,origin,out,width,height,mutation=False):
               if(button)void PablicusController.navigate({section:button.dataset.page,screen:'home'});
             })''')
         tabs=await page.locator('#mainNav > button').evaluate_all('(nodes)=>nodes.map(n=>({section:n.dataset.page,label:n.innerText}))')
-        check('2A-ROOT-TABS', [x['section'] for x in tabs]==['chats','tasks','profile'], tabs)
+        check('2A-ROOT-TABS', [x['section'] for x in tabs]==['chats','tasks','bots','agent','profile'], tabs)
         visits=[]
         for section in ['tasks','profile','chats']:
             await page.evaluate('__shellNavigationCalls.length=0')
@@ -120,7 +120,7 @@ async def probe(browser,root,origin,out,width,height,mutation=False):
             await page.locator('#openBots').click()
             await page.wait_for_function('!!document.querySelector(".botCard")')
             nested=await page.evaluate('''()=>({route:PablicusController.state(),selected:[...document.querySelectorAll('#mainNav .selected')].map(n=>n.dataset.page),heading:document.getElementById('brandTitle').textContent})''')
-            check('2A-BOTS-NESTED-UNDER-TASKS',nested['route']['screen']=='bots' and nested['selected']==['tasks'] and nested['heading']=='Боты',nested)
+            check('OWNER-20260913-BOTS-ROOT',nested['route']['screen']=='bots' and nested['selected']==['bots'] and nested['heading']=='Боты',nested)
             await page.locator('#mainNav [data-page=chats]').click()
             await page.wait_for_function('document.querySelectorAll(".chatCard").length>0')
         await page.screenshot(path=str(out/'home.png'),full_page=True)

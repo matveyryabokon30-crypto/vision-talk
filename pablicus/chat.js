@@ -225,7 +225,7 @@ if(returning&&!richComposer)input.style.height='40px';
 const needed=naturalInputHeight();
 const chromeHeight=app.querySelector('header').offsetHeight+$('chatViewTabs').offsetHeight+app.querySelector('.tools').offsetHeight+$('status').offsetHeight;
 const overhead=composer.offsetHeight-(richComposer?$('editor').offsetHeight:input.offsetHeight);
-const maxComposer=Math.max(overhead+40,Math.min(Math.floor(app.clientHeight*.78),app.clientHeight-chromeHeight-64));
+const maxComposer=Math.max(overhead+44,Math.min(overhead+144,overhead+Math.floor(app.clientHeight*.28),app.clientHeight-chromeHeight-64));
 const cap=Math.max(40,maxComposer-overhead);
 const target=Math.min(needed,cap);
 const measuredEditor=richComposer?$('editor'):input;if(Math.abs(measuredEditor.offsetHeight-target)>.5)measuredEditor.style.height=target+'px';
