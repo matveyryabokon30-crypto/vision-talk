@@ -237,7 +237,7 @@ def concrete_failure(mutation, actual):
         control_require(route['screen'] == 'scenario' and route['section'] == 'bots'
                 and route['resourceId'] == CORRUPT_RESOURCE and route['conversationId'] is None
                 and actual['uid'] == A and actual['homeVisible'] and not actual['appVisible']
-                and actual['selected'] == ['tasks'] and actual['current'] is None and not actual['list']
+                and actual['selected'] == ['bots'] and actual['current'] is None and not actual['list']
                 and actual['scenario_visible'] is True
                 and actual['scenario_text'] == ['Fixture greeting', 'Done'],
                 'Expected resourceId corruption over the correctly mounted visible scenario was not observed')

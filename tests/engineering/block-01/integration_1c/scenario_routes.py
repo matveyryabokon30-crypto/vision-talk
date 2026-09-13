@@ -39,7 +39,7 @@ async def run(a):
  await a.page.wait_for_function('document.querySelector(".factorySection")?.innerText.includes("Проектов пока нет.")')
  d=await a.state();d['factory_visible']=await a.page.locator('.factoryLead').is_visible()
  d['factory_calls']=[call for call in a.net.calls if call.get('path')=='/rest/v1/rpc/factory_list_projects']
- check('1C-ROUTE-FACTORY',d['route']['screen']=='factory' and d['route']['section']=='bots' and d['route']['resourceId'] is None and d['route']['conversationId'] is None and d['uid']==A and d['selected']==['tasks'] and d['factory_visible'] and any(call.get('uid')==A and call.get('method')=='POST' and call.get('status')==200 for call in d['factory_calls']),d)
+ check('1C-ROUTE-FACTORY',d['route']['screen']=='factory' and d['route']['section']=='bots' and d['route']['resourceId'] is None and d['route']['conversationId'] is None and d['uid']==A and d['selected']==['bots'] and d['factory_visible'] and any(call.get('uid')==A and call.get('method')=='POST' and call.get('status')==200 for call in d['factory_calls']),d)
  await a.consistency('1C-ROUTE-FACTORY-VISIBLE')
  await a.nav('chats');await a.conversation();await a.consistency('1C-ROUTE-FINAL')
  globals=await a.page.evaluate("['supabase','PablicusController','PablicusChat','PablicusChatCanvas','PablicusBots','PablicusBotScenarioEditor','PablicusWorkspaceEditor','DraftVault','OutboxVault','PablicusStore','PablicusRichStore','PablicusRichComposer'].map(k=>[k,!!window[k]])")

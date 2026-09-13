@@ -69,7 +69,7 @@ async def probe(browser,root,origin,out,width,height,mutation=False):
         if mutation:
             await page.evaluate('''() => document.getElementById('mainNav').addEventListener('click',event=>{
               const button=event.target.closest('button[data-page]');
-              if(button)void PablicusController.navigate({section:button.dataset.page,screen:'home'});
+              if(button&&!button.disabled)void PablicusController.navigate({section:button.dataset.page,screen:button.dataset.page==='bots'?'bots':'home'});
             })''')
         tabs=await page.locator('#mainNav > button').evaluate_all('(nodes)=>nodes.map(n=>({section:n.dataset.page,label:n.innerText}))')
         check('2A-ROOT-TABS', [x['section'] for x in tabs]==['chats','tasks','bots','agent','profile'], tabs)
