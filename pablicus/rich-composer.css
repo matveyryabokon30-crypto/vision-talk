@@ -14,6 +14,18 @@
 #composer #composeBox.rich-composer > .cicon { width: var(--control-size); height: var(--control-size); min-height: var(--control-size); align-self: center; }
 #composer #composeBox.rich-composer #expand { width: var(--control-size); }
 #composer #composeBox.rich-composer #send { width: var(--control-size); height: var(--control-size); min-height: var(--control-size); }
+#editor.richEditor {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+/* The textarea itself must fit its slot. Clipping only its parent lets native
+   caret scrolling move the whole chat when Enter adds lines below that slot. */
+#app:not(.composer-fullscreen) #editor.richEditor .richText {
+  max-height: min(144px, max(var(--control-size), calc(var(--viewport-height, 100dvh) * .28)));
+  overflow-y: auto;
+}
 #editor.richEditor.richHasMedia {
   overflow-y: auto;
   overscroll-behavior: contain;

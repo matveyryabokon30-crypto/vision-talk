@@ -413,8 +413,7 @@
    tasksHome.mount(c);
   }else{c.append(el('p','empty','Публикации, подписки и сторис появятся в следующем обновлении. Раздел пока не включён.'))}
  }
- document.querySelectorAll('#mainNav button').forEach(b=>b.onclick=()=>{const target=b.dataset.page;if(window.PablicusController){window.PablicusController.navigate({section:target,screen:'home',resourceId:null}).catch(problem)}else{page=target;renderHome()}});
- $('openBots').onclick=()=>window.PablicusController.navigate({section:'bots',screen:'bots'}).catch(problem);
+ document.querySelectorAll('#mainNav button').forEach(b=>b.onclick=()=>{if(b.disabled)return;const target=b.dataset.page;if(window.PablicusController){window.PablicusController.navigate({section:target,screen:target==='bots'?'bots':'home',resourceId:null}).catch(problem)}else{page=target;renderHome()}});
  if(window.PablicusController){
   window.PablicusController.register('home',async({state,isCurrent})=>{if(!isCurrent())return;await leaveConversationView(isCurrent);if(!isCurrent())return;page=state.section;renderHome();return()=>{};});
   window.PablicusController.subscribe(state=>{if(state.screen==='home')page=state.section;});

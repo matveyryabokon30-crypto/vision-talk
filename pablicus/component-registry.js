@@ -34,8 +34,8 @@
   SidePanel:{owner:'PablicusShell',status:'INTERFACE_ONLY',contract:'desktop object surface; same object/route as FullScreenObjectView'},
   FullScreenObjectView:{owner:'PablicusShell',status:'INTERFACE_ONLY',contract:'mobile object surface, close guard, focus return, same object/route as SidePanel'}
  };
- const roots=[{id:'chats',label:'Чаты'},{id:'tasks',label:'Дела'},{id:'profile',label:'Вы'}];
- const parentRoots={chats:'chats',feed:'chats',tasks:'tasks',bots:'tasks',profile:'profile'};
+ const roots=[{id:'chats',label:'Чаты'},{id:'tasks',label:'Дела'},{id:'bots',label:'Боты'},{id:'agent',label:'AI-агент',disabled:true},{id:'profile',label:'Вы'}];
+ const parentRoots={chats:'chats',feed:'chats',tasks:'tasks',bots:'bots',agent:'agent',profile:'profile'};
  const informationArchitecture={
   Chats:{root:'chats',entry:'conversation list',state:'EXISTING'},
   Groups:{root:'chats',entry:'conversation directory',state:'CONTRACT_ONLY'},
@@ -50,7 +50,7 @@
   PublicIdentity:{root:'profile',entry:'username / profile link',state:'EXISTING_BASELINE',category:'A'},
   Tasks:{root:'tasks',entry:'task list',state:'EXISTING'},
   WorkObjects:{root:'tasks',entry:'task / conversation Canvas object',state:'EXISTING_CANVAS_ONLY'},
-  BotsFactory:{root:'tasks',entry:'nested tools entry',state:'EXISTING_SPECIFICATION_ONLY'}
+  BotsFactory:{root:'bots',entry:'main navigation',state:'EXISTING_SPECIFICATION_ONLY'}
  };
  const composer={
   version:1,implementation:'PablicusRichComposer.create',adapter:'PablicusChat',
