@@ -1,0 +1,145 @@
+{
+  "deployment": "serene-zenith-23vt8rn.shipstatic.com",
+  "url": "https://serene-zenith-23vt8rn.shipstatic.com",
+  "files": 11,
+  "size": 73238,
+  "status": "success",
+  "config": false,
+  "password": false,
+  "labels": [
+    "pablicus",
+    "prototype"
+  ],
+  "via": "gpt",
+  "created": 1789257745,
+  "expires": 1789516945,
+  "source_commit": "4543806b8948cacb64b360dfd3139f6368fa8c68",
+  "expires_utc": "2026-09-16T00:02:25.000Z",
+  "packaging": "Explicit 11-file allowlist; HTML asset paths made absolute because host canonicalizes directory URLs; runtime JS/CSS unchanged.",
+  "browser": {
+    "checks": [
+      {
+        "check": "tab-tasks",
+        "heading": "Шаг за шагом",
+        "pass": true
+      },
+      {
+        "check": "tab-bots",
+        "heading": "Помощники рядом",
+        "pass": true
+      },
+      {
+        "check": "tab-you",
+        "heading": "На вашей стороне",
+        "pass": true
+      },
+      {
+        "check": "tab-chats",
+        "heading": "Ближе к важному",
+        "pass": true
+      },
+      {
+        "bottom": 760.5,
+        "check": "compact-input-visible",
+        "height": 72,
+        "pass": true
+      },
+      {
+        "check": "edge-materials",
+        "pass": true
+      },
+      {
+        "check": "edge-return",
+        "pass": true
+      },
+      {
+        "check": "four-bottom-tabs",
+        "nav": [
+          {
+            "bottom": 836,
+            "hit": true,
+            "name": "Чаты"
+          },
+          {
+            "bottom": 836,
+            "hit": true,
+            "name": "Дела"
+          },
+          {
+            "bottom": 836,
+            "hit": true,
+            "name": "Боты"
+          },
+          {
+            "bottom": 836,
+            "hit": true,
+            "name": "Вы"
+          }
+        ],
+        "pass": true
+      },
+      {
+        "check": "no-horizontal-overflow",
+        "pass": true
+      },
+      {
+        "check": "assets-loaded",
+        "pass": true,
+        "resources": [
+          {
+            "status": 200,
+            "url": "https://serene-zenith-23vt8rn.shipstatic.com/library/pablicus-ui/foundation.css?_ship=23vt8rn"
+          },
+          {
+            "status": 200,
+            "url": "https://serene-zenith-23vt8rn.shipstatic.com/prototypes/pablicus-next/shell.css?_ship=23vt8rn"
+          },
+          {
+            "status": 200,
+            "url": "https://serene-zenith-23vt8rn.shipstatic.com/prototypes/pablicus-next/app.js?_ship=23vt8rn"
+          },
+          {
+            "status": 200,
+            "url": "https://serene-zenith-23vt8rn.shipstatic.com/vendor/upstream/figma-sds/src/theme.css?_ship=23vt8rn"
+          },
+          {
+            "status": 200,
+            "url": "https://serene-zenith-23vt8rn.shipstatic.com/library/pablicus-ui/edge-picker.js?_ship=23vt8rn"
+          },
+          {
+            "status": 200,
+            "url": "https://serene-zenith-23vt8rn.shipstatic.com/library/pablicus-ui/notch-geometry.js?_ship=23vt8rn"
+          }
+        ]
+      },
+      {
+        "check": "https-secure-context",
+        "pass": true
+      }
+    ],
+    "pass": true,
+    "scope": "Desktop Chrome, 390x844 viewport; not a physical iPhone test",
+    "url": "https://serene-zenith-23vt8rn.shipstatic.com/#chats/launch/talk",
+    "viewport": {
+      "height": 844,
+      "width": 390
+    }
+  },
+  "approval": "Initial upload rejected for sensitive export. GitHub verified all ten source files already public and byte-equal to pinned commit; re-review approved. No personal screenshots, documents or backend data deployed.",
+  "production_changed": false,
+  "deep_link_verified": "https://serene-zenith-23vt8rn.shipstatic.com/prototypes/pablicus-next#chats/launch/talk",
+  "screenshot": "verification/phone-preview-390.png",
+  "payload_sha256": {
+    "index.html": "f7eaa63d2526245db6b350d8f40ad93f282f63f3e681bbecf935068cf702bcd1",
+    "prototypes/pablicus-next/index.html": "f7eaa63d2526245db6b350d8f40ad93f282f63f3e681bbecf935068cf702bcd1",
+    "prototypes/pablicus-next/app.js": "5aabac53f714471a5414d90cffc33dd310aaf4c8ca05dbcd238fe9e00b27f75e",
+    "prototypes/pablicus-next/shell.css": "8bf4552d90637fc5714b92a8c60ca481137d8ba36e4a3430e18b33b2182683ee",
+    "library/pablicus-ui/edge-picker.js": "010d53ac15bb4374a13bdb9c5ab310e685df6c68e75c9b8dd8d8dbdafd54eb24",
+    "library/pablicus-ui/notch-geometry.js": "5c1de29a2a83330cb2c4f428ef84198701491b8d169c9f19addf46a790e48bd6",
+    "library/pablicus-ui/foundation.css": "96f071f788f41396fd184750a8058255b990bcf4779f1e32dc6587fc5e64f32a",
+    "vendor/upstream/figma-sds/src/theme.css": "7648a2dcf995b091c06bf36fdd6f5fc15b684831ca73d09b24521350cac7bab8",
+    "library/pablicus-ui/THIRD_PARTY_NOTICES.md": "716acdc0815d1e43d532bedebdfcd244bf25c8fbfb2fa32c57b880e7b852d3cc",
+    "vendor/upstream/figma-sds/LICENSE": "570f1f1c07d32e2cdc7da3eea40f9c772e584782db15cbf455a72a19de36b7bc",
+    "vendor/upstream/codenotch/LICENSE": "2868a2239cb49e84eae28db7a9069c6c04f8f9d4623aa360fd69feefa96edc63"
+  }
+}
