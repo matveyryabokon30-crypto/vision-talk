@@ -1,5 +1,5 @@
 {
-  "status": "TESTED_PENDING_PUBLICATION",
+  "status": "PUBLISHED_VERIFIED",
   "work_start": "bf90a64",
   "published_base": "0e953322eac69e6f3e79458ac32323b564acaf55",
   "runtime_files": {
@@ -20,5 +20,10 @@
   },
   "other_runtime_files_changed": false,
   "physical_iphone": "Owner verification pending",
-  "user_agent_icon": "disabled, explicitly requested by owner"
+  "user_agent_icon": "disabled, explicitly requested by owner",
+  "source_commit": "a4d6b3e87e082686b2eaac5ff7af50059fef94c6",
+  "publication_commit": "de297a51379fd5625551edaf7edf400f70ab0d43",
+  "public_resources_verified": 79,
+  "ci_passed": 4,
+  "ci_receipt": "verification/ci-runs.json"
 }

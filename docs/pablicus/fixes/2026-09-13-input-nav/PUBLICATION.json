@@ -1,0 +1,78 @@
+{
+  "status": "PUBLISHED_AND_PUBLIC_FILES_VERIFIED",
+  "url": "https://matveyryabokon30-crypto.github.io/vision-talk/pablicus/",
+  "source_commit": "a4d6b3e87e082686b2eaac5ff7af50059fef94c6",
+  "publication_commit": "de297a51379fd5625551edaf7edf400f70ab0d43",
+  "publication_branch": "publish/pablicus-2b-20260912",
+  "previous_publication": "0e953322eac69e6f3e79458ac32323b564acaf55",
+  "pages_status": "built",
+  "pages_updated_at": "2026-09-13T00:38:51Z",
+  "pablicus_tree": "5a87980311b69afea8f4fb0b824113d5ae0b01ec",
+  "source_tree_equals_publication": true,
+  "all_79_public_files_match": true,
+  "runtime_changes": [
+    "pablicus/app.js",
+    "pablicus/chat.js",
+    "pablicus/component-registry.js",
+    "pablicus/index.html",
+    "pablicus/message-menu.js",
+    "pablicus/rich-composer.css",
+    "pablicus/shell.css",
+    "pablicus/sw.js"
+  ],
+  "other_publication_paths_changed": false,
+  "live_browser": {
+    "login_ready": true,
+    "bots_in_bottom": true,
+    "agent_disabled": true,
+    "cache": [
+      "pablicus-shell-input-nav-20260913-r1"
+    ],
+    "page_errors": 0
+  },
+  "physical_iphone": "Not remotely tested; owner checks installed client",
+  "initial_ci": {
+    "foundation": "PASS",
+    "1C": "Old bots-to-tasks selection expectation; updated to requested bots root",
+    "2A_2B": "Positive variants PASS; duplicate navigation control injected obsolete home route for moved Bots button; corrected to duplicate the actual bots route"
+  },
+  "final_ci": {
+    "status": "PASS",
+    "commit": "b2bd29652ee8982a2bd859b86a803dce79892fda",
+    "runtime_unchanged_from_source": true,
+    "runs": [
+      {
+        "conclusion": "success",
+        "databaseId": 34728838623,
+        "headSha": "b2bd29652ee8982a2bd859b86a803dce79892fda",
+        "name": "Pablicus foundation Block 01",
+        "status": "completed",
+        "url": "https://github.com/matveyryabokon30-crypto/vision-talk/actions/runs/34728838623"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 34728838582,
+        "headSha": "b2bd29652ee8982a2bd859b86a803dce79892fda",
+        "name": "Pablicus integration 1C",
+        "status": "completed",
+        "url": "https://github.com/matveyryabokon30-crypto/vision-talk/actions/runs/34728838582"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 34728838594,
+        "headSha": "b2bd29652ee8982a2bd859b86a803dce79892fda",
+        "name": "Pablicus shell 2A qualification",
+        "status": "completed",
+        "url": "https://github.com/matveyryabokon30-crypto/vision-talk/actions/runs/34728838594"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 34728838602,
+        "headSha": "b2bd29652ee8982a2bd859b86a803dce79892fda",
+        "name": "Pablicus shared components 2B qualification",
+        "status": "completed",
+        "url": "https://github.com/matveyryabokon30-crypto/vision-talk/actions/runs/34728838602"
+      }
+    ]
+  }
+}
